@@ -16,7 +16,6 @@ body{
   background:linear-gradient(180deg,#fff,#ffd6e8);
   font-family:"Segoe UI",system-ui;
   overflow:hidden;
-  transition:background 2s ease;
 }
 
 /* CARD */
@@ -54,7 +53,12 @@ body{
 .date{margin:6px 0 10px;font-weight:600}
 
 /* TIMER */
-.timer{display:flex;justify-content:center;gap:8px;margin-bottom:10px}
+.timer{
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  margin-bottom:10px;
+}
 .box{
   background:#fff5fa;
   padding:8px 10px;
@@ -64,48 +68,37 @@ body{
 .num{font-weight:700}
 .lbl{font-size:.65rem;color:#666}
 
-/* BDAY STATE */
-body.birthday{
-  background:radial-gradient(circle at center,#e8fbff,#dff6ff,#ffffff);
-}
-
-/* BIG BIRTHDAY TEXT */
-.birthdayText{
+/* HAPPY BIRTHDAY TEXT */
+#birthdayText{
   display:none;
-  text-align:center;
-  position:fixed;
-  inset:0;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
-  z-index:3;
-}
-body.birthday .birthdayText{display:flex}
-
-.birthdayText h1{
-  font-size:4rem;
-  letter-spacing:4px;
+  font-size:3.2rem;
+  margin:18px 0 10px;
   color:#00d4ff;
+  letter-spacing:4px;
   text-shadow:
-    0 0 20px #7ee9ff,
-    0 0 50px #7ee9ff;
-  margin:0;
+    0 0 15px rgba(0,212,255,.8),
+    0 0 35px rgba(0,212,255,.6);
 }
-.birthdayText p{
-  margin-top:10px;
-  color:#333;
-  font-size:1.05rem;
+
+/* BUTTON */
+.bday{
+  margin:6px auto 12px;
+  padding:8px 18px;
+  border-radius:20px;
+  border:none;
+  background:#eee;
+  color:#999;
+  cursor:not-allowed;
 }
 
 /* GIFT */
 .gift{
-  font-size:60px;
-  margin-top:30px;
-  animation:float 2.5s ease-in-out infinite;
+  font-size:52px;
   cursor:pointer;
+  animation:float 2.8s ease-in-out infinite;
 }
 @keyframes float{
-  50%{transform:translateY(-8px)}
+  50%{transform:translateY(-6px)}
 }
 
 /* PARTICLES */
@@ -122,15 +115,15 @@ body.birthday .birthdayText{display:flex}
 }
 @keyframes rise{
   from{transform:translateY(40px) scale(.6);opacity:0}
-  20%{opacity:1}
-  to{transform:translateY(-140vh) scale(1.3);opacity:0}
+  25%{opacity:1}
+  to{transform:translateY(-130vh) scale(1.3);opacity:0}
 }
 </style>
 </head>
 
 <body>
 
-<div class="card" id="card">
+<div class="card">
   <div class="photo">
     <img src="photo1.jpg" class="active">
     <img src="photo2.jpg">
@@ -142,19 +135,19 @@ body.birthday .birthdayText{display:flex}
   <div class="date">13 February</div>
 
   <div class="timer" id="timer"></div>
-</div>
 
-<!-- BIRTHDAY SCREEN -->
-<div class="birthdayText">
-  <h1>HAPPY BIRTHDAY</h1>
-  <p>You make the world softer, brighter & happier 💗</p>
+  <!-- HAPPY BIRTHDAY TEXT (APPEARS AFTER TIMER) -->
+  <div id="birthdayText">HAPPY BIRTHDAY</div>
+
+  <button class="bday" id="bdayBtn" disabled>Happy Birthday 🎉</button>
+
   <div class="gift">🎁</div>
 </div>
 
 <div id="effects"></div>
 
 <script>
-/* PHOTO FADE */
+/* PHOTO ROTATION */
 const imgs=document.querySelectorAll(".photo img");
 let p=0;
 setInterval(()=>{
@@ -166,7 +159,8 @@ setInterval(()=>{
 /* TIMER */
 const TEST_MODE=true;
 const timer=document.getElementById("timer");
-const card=document.getElementById("card");
+const bdayBtn=document.getElementById("bdayBtn");
+const birthdayText=document.getElementById("birthdayText");
 
 let target=TEST_MODE
   ? new Date(Date.now()+5000)
@@ -176,8 +170,14 @@ const countdown=setInterval(()=>{
   const diff=target-new Date();
   if(diff<=0){
     clearInterval(countdown);
-    card.style.display="none";
-    document.body.classList.add("birthday");
+    timer.style.display="none";
+
+    birthdayText.style.display="block";
+    bdayBtn.disabled=false;
+    bdayBtn.style.background="#ff8fbe";
+    bdayBtn.style.color="#fff";
+    bdayBtn.style.cursor="pointer";
+
     startParticles();
     return;
   }
@@ -187,7 +187,7 @@ const countdown=setInterval(()=>{
 
 /* PARTICLES */
 const effects=document.getElementById("effects");
-const icons=["💖","✨","🎉","💙","💫"];
+const icons=["💖","✨","🎉","💫","💙"];
 
 function startParticles(){
   setInterval(()=>{
@@ -195,10 +195,10 @@ function startParticles(){
     p.className="particle";
     p.textContent=icons[Math.floor(Math.random()*icons.length)];
     p.style.left=Math.random()*100+"vw";
-    p.style.animationDuration=6+Math.random()*4+"s";
+    p.style.animationDuration=7+Math.random()*4+"s";
     effects.appendChild(p);
-    setTimeout(()=>p.remove(),10000);
-  },120);
+    setTimeout(()=>p.remove(),12000);
+  },100);
 }
 </script>
 
