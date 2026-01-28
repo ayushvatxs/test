@@ -18,15 +18,25 @@ body{
   overflow:hidden;
 }
 
-/* PARTICLES ABOVE EVERYTHING */
+/* ===== PARTICLES ===== */
 #effects{
   position:fixed;
   inset:0;
   pointer-events:none;
   z-index:999;
 }
+.particle{
+  position:absolute;
+  font-size:22px;
+  animation:rise linear forwards;
+}
+@keyframes rise{
+  from{transform:translateY(60px) scale(.6);opacity:0}
+  20%{opacity:1}
+  to{transform:translateY(-120vh) scale(1.4);opacity:0}
+}
 
-/* CARD */
+/* ===== CARD ===== */
 .card{
   width:92%;
   max-width:420px;
@@ -66,59 +76,57 @@ body{
   display:flex;
   justify-content:center;
   gap:8px;
-  margin-bottom:10px;
 }
 .box{
   background:#fff5fa;
   padding:8px 10px;
   border-radius:10px;
-  min-width:54px;
 }
-.num{font-weight:700}
-.lbl{font-size:.65rem;color:#666}
 
-/* CURVED HAPPY BIRTHDAY */
+/* ===== CURVED TEXT ===== */
 #birthdayWrap{
   display:none;
-  margin:20px 0 10px;
-  animation:floatIdle 3s ease-in-out infinite;
+  margin:25px 0 10px;
+  animation:idle 3s ease-in-out infinite;
 }
-@keyframes floatIdle{
+@keyframes idle{
   50%{transform:translateY(-8px)}
 }
-svg{
-  width:100%;
-  height:160px;
-}
-text{
+svg{width:100%;height:200px;overflow:visible}
+
+.curveText{
   fill:#00d4ff;
   font-size:42px;
   font-weight:900;
   letter-spacing:4px;
-  filter:drop-shadow(0 0 20px rgba(0,212,255,.9));
+  filter:drop-shadow(0 0 18px rgba(0,212,255,.9));
+  opacity:0;
 }
 
 /* BUTTON */
 .bday{
-  margin:10px auto;
+  margin:14px auto;
   padding:10px 22px;
   border-radius:20px;
   border:none;
   background:#eee;
   color:#999;
   cursor:not-allowed;
-  position:relative;
 }
 
-/* CLICK HERE ARROW */
+/* CLICK HINT */
 #hint{
   display:none;
-  font-size:.8rem;
-  margin-bottom:4px;
-  animation:bounce 1.6s infinite;
+  font-size:.85rem;
+  margin:8px 0 -6px;
+}
+.arrow{
+  display:block;
+  font-size:20px;
+  animation:bounce 1.5s infinite;
 }
 @keyframes bounce{
-  50%{transform:translateY(-4px)}
+  50%{transform:translateY(6px)}
 }
 
 /* GIFT */
@@ -126,26 +134,19 @@ text{
   font-size:54px;
   cursor:pointer;
   margin-top:8px;
-  animation:floatIdle 3s ease-in-out infinite;
+  animation:idle 3s ease-in-out infinite;
 }
-#giftText{
+#giftMsg{
   display:none;
   margin-top:6px;
-  font-size:.9rem;
+  font-size:.95rem;
+  color:#ff4f9a;
   font-weight:600;
-  color:#ff5fa2;
+  animation:fadeUp .8s ease forwards;
 }
-
-/* PARTICLES */
-.particle{
-  position:absolute;
-  font-size:22px;
-  animation:rise linear forwards;
-}
-@keyframes rise{
-  from{transform:translateY(40px) scale(.5);opacity:0}
-  25%{opacity:1}
-  to{transform:translateY(-120vh) scale(1.4);opacity:0}
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(6px)}
+  to{opacity:1;transform:none}
 }
 </style>
 </head>
@@ -168,20 +169,25 @@ text{
   <!-- CURVED HAPPY BIRTHDAY -->
   <div id="birthdayWrap">
     <svg viewBox="0 0 400 200">
-      <path id="curve" d="M 50 160 A 150 150 0 0 1 350 160" fill="transparent"/>
-      <text>
-        <textPath href="#curve" startOffset="50%" text-anchor="middle">
-          HAPPY BIRTHDAY
-        </textPath>
+      <path id="curve" d="M 40 160 A 160 160 0 0 1 360 160" fill="transparent"/>
+      <text class="curveText" id="happy">
+        <textPath href="#curve" startOffset="30%">HAPPY</textPath>
+      </text>
+      <text class="curveText" id="birthday">
+        <textPath href="#curve" startOffset="62%">BIRTHDAY</textPath>
       </text>
     </svg>
   </div>
 
-  <div id="hint">⬇ click here ⬇</div>
+  <div id="hint">
+    click here
+    <span class="arrow">⬇</span>
+  </div>
+
   <button class="bday" id="bdayBtn" disabled>Happy Birthday 🎉</button>
 
   <div class="gift" id="gift">🎁</div>
-  <div id="giftText">Only for Violina 💗</div>
+  <div id="giftMsg">Only for Violina 💗</div>
 </div>
 
 <div id="effects"></div>
@@ -189,19 +195,15 @@ text{
 <script>
 /* PHOTO ROTATION */
 const imgs=document.querySelectorAll(".photo img");
-let p=0;
+let i=0;
 setInterval(()=>{
-  imgs[p].classList.remove("active");
-  p=(p+1)%imgs.length;
-  imgs[p].classList.add("active");
+  imgs[i].classList.remove("active");
+  i=(i+1)%imgs.length;
+  imgs[i].classList.add("active");
 },4000);
 
 /* TIMER */
 const timer=document.getElementById("timer");
-const bdayBtn=document.getElementById("bdayBtn");
-const birthdayWrap=document.getElementById("birthdayWrap");
-const hint=document.getElementById("hint");
-
 const target=new Date(Date.now()+5000);
 
 const countdown=setInterval(()=>{
@@ -210,45 +212,48 @@ const countdown=setInterval(()=>{
     clearInterval(countdown);
     timer.style.display="none";
 
-    birthdayWrap.style.display="block";
-    hint.style.display="block";
+    document.getElementById("birthdayWrap").style.display="block";
 
-    bdayBtn.disabled=false;
-    bdayBtn.style.background="#ff8fbe";
-    bdayBtn.style.color="#fff";
-    bdayBtn.style.cursor="pointer";
+    setTimeout(()=>document.getElementById("happy").style.opacity=1,300);
+    setTimeout(()=>document.getElementById("birthday").style.opacity=1,900);
+
+    const btn=document.getElementById("bdayBtn");
+    btn.disabled=false;
+    btn.style.background="#ff8fbe";
+    btn.style.color="#fff";
+    btn.style.cursor="pointer";
+
+    document.getElementById("hint").style.display="block";
 
     startParticles();
     return;
   }
-  timer.innerHTML=`<div class="box"><div class="num">${Math.floor(diff/1000)}</div><div class="lbl">Sec</div></div>`;
+  timer.innerHTML=`<div class="box">${Math.floor(diff/1000)} sec</div>`;
 },1000);
 
-/* PARTICLES */
+/* PARTICLES FULL SCREEN */
 const effects=document.getElementById("effects");
-const icons=["💖","✨","🎉","💫","💙","🎊"];
+const icons=["💖","🎉","✨","💫","🎊"];
 function startParticles(){
   const burst=setInterval(()=>{
-    for(let i=0;i<6;i++){
+    for(let i=0;i<10;i++){
       const p=document.createElement("div");
       p.className="particle";
       p.textContent=icons[Math.floor(Math.random()*icons.length)];
       p.style.left=Math.random()*100+"vw";
+      p.style.bottom=Math.random()*20+"vh";
       p.style.animationDuration=6+Math.random()*4+"s";
       effects.appendChild(p);
       setTimeout(()=>p.remove(),12000);
     }
   },120);
-
-  setTimeout(()=>clearInterval(burst),18000);
+  setTimeout(()=>clearInterval(burst),20000);
 }
 
 /* GIFT */
-const gift=document.getElementById("gift");
-const giftText=document.getElementById("giftText");
-gift.onclick=()=>{
-  gift.textContent="🎊";
-  giftText.style.display="block";
+document.getElementById("gift").onclick=()=>{
+  document.getElementById("gift").textContent="🎊";
+  document.getElementById("giftMsg").style.display="block";
 };
 </script>
 
