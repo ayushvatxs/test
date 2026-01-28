@@ -15,25 +15,8 @@ body{
   align-items:center;
   background:linear-gradient(180deg,#fff,#ffd6e8);
   font-family:"Segoe UI",system-ui;
-  overflow:hidden;}
-.birthday-start{
-  display:none;
-  margin:14px 0;
-  font-size:1.4rem;
-  font-weight:800;
-  color:#ff4fa3;
-  text-shadow:
-    0 0 10px #ff9acb,
-    0 0 25px #ffb6da;
-  animation:pop 1s ease forwards;
+  overflow:hidden;
 }
-
-@keyframes pop{
-  from{transform:scale(.6);opacity:0}
-  to{transform:scale(1);opacity:1}
-}
-
-
 .card{
   width:92%;
   max-width:420px;
@@ -45,7 +28,7 @@ body{
   z-index:2;
 }
 
-/* PHOTO FADE */
+/* PHOTO */
 .photo{
   width:140px;
   height:140px;
@@ -70,7 +53,6 @@ body{
 .date{
   margin:6px 0 10px;
   font-weight:600;
-  color:black;
   text-shadow:0 0 12px #ff9acb;
 }
 
@@ -111,7 +93,7 @@ body{
 }
 .note{font-size:.85rem;color:#444;margin-top:6px}
 
-/* PASSCODE MODAL */
+/* MODAL */
 .modal{
   position:fixed;
   inset:0;
@@ -151,11 +133,9 @@ input{
   background:white;
   width:85%;
   max-width:360px;
-  margin:0;
   padding:22px;
   border-radius:20px;
   position:relative;
-  box-shadow:0 30px 80px rgba(255,120,170,.35);
 }
 .close{
   position:absolute;
@@ -164,7 +144,7 @@ input{
   cursor:pointer;
 }
 
-/* EFFECT LAYER */
+/* EFFECTS */
 #effects{
   position:fixed;
   inset:0;
@@ -195,13 +175,10 @@ input{
   <h2>💌 A Special Day Is Almost Here</h2>
   <div class="sub">Because the girl who means everything to me deserves to be celebrated by the world</div>
   <div class="date">13 February</div>
-  <div id="birthdayStart" class="birthday-start">
-  🎉 Birthday has started 🎉
-  </div>
 
   <div class="timer" id="timer"></div>
 
-  <button class="bday" id="bdayBtn">Happy Birthday 🎉</button>
+  <button class="bday" id="bdayBtn" disabled>Happy Birthday 🎉</button>
 
   <div class="gift" id="gift">🎁</div>
   <div class="note" id="note">Only Violina can open this</div>
@@ -210,7 +187,7 @@ input{
 <div class="modal" id="modal">
   <div class="modalBox">
     <h3>Secret Code 💕</h3>
-    <input id="code" placeholder="Enter secret code" autocomplete="off">
+    <input id="code" placeholder="Enter secret code">
     <button onclick="checkCode()">Open</button>
   </div>
 </div>
@@ -219,7 +196,7 @@ input{
   <div class="messageBox">
     <div class="close" onclick="closeOverlay()">❌</div>
     <p>
-      Ayoo 😭 only 16 days left for your birthday and I genuinely don’t know how to act normal anymore. My brain is already in celebration mode and my heart is clearly ahead of schedule 💃💖 You don’t just make my days better, you make them easier — which is impressive, considering how effortlessly you steal all my attention 😌✨ One smile from you and my brain immediately forgets what it was doing (very rude of you, by the way 😤). Life can be loud, messy, and confusing, but thinking of you feels like pressing pause… until you show up and suddenly everything becomes brighter, louder, and 100x more fun 🌸🎶 There’s something about you that feels safe and familiar, like home — except this home comes with laughter, tiny chaos, and a heart that refuses to behave 💕🙈 And honestly? I’m counting days not just for your birthday… but for the smile you’re going to have when you see all this.
+      Ayoo 😭 only 16 days left for your birthday and I genuinely don’t know how to act normal anymore...
     </p>
   </div>
 </div>
@@ -227,8 +204,7 @@ input{
 <div id="effects"></div>
 
 <script>
-
-  /* PHOTO FADE */
+/* PHOTO FADE */
 const imgs=document.querySelectorAll(".photo img");
 let p=0;
 setInterval(()=>{
@@ -237,149 +213,66 @@ setInterval(()=>{
   imgs[p].classList.add("active");
 },4000);
 
-/* =====================
-   TIMER + TEST MODE
-===================== */
+/* TIMER */
+const TEST_MODE=true;
+const timer=document.getElementById("timer");
+const bdayBtn=document.getElementById("bdayBtn");
 
-const TEST_MODE = true; // 🔁 set to false on Feb 13
-const timer = document.getElementById("timer");
-const bdayBtn = document.getElementById("bdayBtn");
+let target=TEST_MODE
+  ? new Date(Date.now()+5000)
+  : new Date(new Date().getFullYear(),1,13);
 
-let target;
-
-if (TEST_MODE) {
-  // 5 seconds from now (for testing)
-  target = new Date(Date.now() + 5000);
-} else {
-  // Real birthday: Feb 13
-  target = new Date(new Date().getFullYear(), 1, 13);
-}
-
-const countdownInterval = setInterval(() => {
-  const diff = target - new Date();
-
-  if (diff <= 0) {
-    clearInterval(countdownInterval);
-    startBirthday(); // 🎉 IMPORTANT
+const countdown=setInterval(()=>{
+  const diff=target-new Date();
+  if(diff<=0){
+    clearInterval(countdown);
+    timer.remove();
+    bdayBtn.disabled=false;
+    bdayBtn.style.background="#ff8fbe";
+    bdayBtn.style.color="#fff";
+    bdayBtn.style.cursor="pointer";
     return;
   }
+  const s=Math.floor(diff/1000)%60;
+  timer.innerHTML=`<div class="box"><div class="num">${s}</div><div class="lbl">Sec</div></div>`;
+},1000);
 
-  const d = Math.floor(diff / 86400000);
-  const h = Math.floor(diff / 3600000) % 24;
-  const m = Math.floor(diff / 60000) % 60;
-  const s = Math.floor(diff / 1000) % 60;
-
-  timer.innerHTML = `
-    <div class="box"><div class="num">${d}</div><div class="lbl">Days</div></div>
-    <div class="box"><div class="num">${h}</div><div class="lbl">Hrs</div></div>
-    <div class="box"><div class="num">${m}</div><div class="lbl">Min</div></div>
-    <div class="box"><div class="num">${s}</div><div class="lbl">Sec</div></div>
-  `;
-}, 1000);
-
-/* =====================
-   BIRTHDAY START LOGIC
-===================== */
-
-function startBirthday() {
-  // 1️⃣ Remove timer completely
-  timer.remove();
-
-  // 2️⃣ Enable Happy Birthday button
-  bdayBtn.disabled = false;
-  bdayBtn.style.background = "#ff8fbe";
-  bdayBtn.style.color = "#fff";
-  bdayBtn.style.cursor = "pointer";
-
-  // 3️⃣ (Placeholder for next steps)
-  console.log("🎉 Birthday has started!");
-}
-
-
-
-/* GIFT STATE */
+/* GIFT */
 const today=new Date().toDateString();
-let giftOpened=localStorage.getItem("openedDay")===today;
-
 const gift=document.getElementById("gift");
 const note=document.getElementById("note");
+let opened=localStorage.getItem("openedDay")===today;
 
-if(giftOpened){
+if(opened){
   gift.textContent="🎀";
   gift.style.animation="none";
   note.innerHTML="Opened 💗<br>Come back tomorrow";
 }
 
-/* CLICK */
 gift.onclick=()=>{
-  if(giftOpened){openMessage();return;}
-  document.getElementById("modal").style.display="flex";
+  if(opened) openMessage();
+  else document.getElementById("modal").style.display="flex";
 };
 
 function checkCode(){
-  if(document.getElementById("code").value!=="SMILE-FIRST")return;
-  giftOpened=true;
+  if(document.getElementById("code").value!=="SMILE-FIRST") return;
+  opened=true;
   localStorage.setItem("openedDay",today);
-  document.getElementById("modal").remove();
+  document.getElementById("modal").style.display="none";
   gift.textContent="🎀";
   gift.style.animation="none";
   note.innerHTML="Opened 💗<br>Come back tomorrow";
   openMessage();
 }
 
-/* MESSAGE + PREMIUM EFFECT */
+/* MESSAGE */
 function openMessage(){
   document.getElementById("overlay").style.display="flex";
-  const fx=document.getElementById("effects");
-  let count=0;
-  const emit=setInterval(()=>{
-    if(count++>45){clearInterval(emit);return;}
-    const p=document.createElement("div");
-    p.className="particle";
-    p.textContent=Math.random()>.7?"✨":"💗";
-    p.style.left=Math.random()*100+"%";
-    p.style.bottom="-20px";
-    p.style.fontSize=12+Math.random()*22+"px";
-    p.style.animationDuration=6+Math.random()*4+"s";
-    fx.appendChild(p);
-    setTimeout(()=>p.remove(),10000);
-  },120);
 }
-
 function closeOverlay(){
   document.getElementById("overlay").style.display="none";
 }
-// --- TEST MODE TIMER (5 seconds) ---
-const TEST_MODE = true; // change to false on real birthday
-
-const countdownSeconds = TEST_MODE ? 5 : null;
-
-const birthdayStart = document.getElementById("birthdayStart");
-const timerEl = document.getElementById("timer");
-const bdayBtn = document.getElementById("bdayBtn");
-
-let timeLeft = countdownSeconds;
-
-const timerInterval = setInterval(() => {
-  timeLeft--;
-
-  timerEl.innerHTML = `<div class="box"><div class="num">${timeLeft}</div><div class="lbl">sec</div></div>`;
-
-  if (timeLeft <= 0) {
-    clearInterval(timerInterval);
-
-    timerEl.style.display = "none";
-    birthdayStart.style.display = "block";
-    bdayBtn.style.cursor = "pointer";
-    bdayBtn.style.background = "#ff6fae";
-    bdayBtn.style.color = "white";
-    bdayBtn.disabled = false;
-  }
-}, 1000);
-
 </script>
-
-
 
 </body>
 </html>
