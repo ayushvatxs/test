@@ -72,14 +72,16 @@ body{
 .num{font-weight:700}
 .lbl{font-size:.65rem;color:#666}
 
+/* BUTTON */
 .bday{
-  margin:6px auto 12px;
-  padding:8px 18px;
-  border-radius:20px;
+  margin:10px auto;
+  padding:10px 22px;
+  border-radius:22px;
   border:none;
   background:#eee;
   color:#999;
   cursor:not-allowed;
+  font-weight:600;
 }
 
 /* GIFT */
@@ -133,9 +135,14 @@ input{
   background:white;
   width:85%;
   max-width:360px;
-  padding:22px;
-  border-radius:20px;
+  padding:24px;
+  border-radius:22px;
   position:relative;
+  text-align:center;
+}
+.messageBox h1{
+  color:#ff4fa3;
+  text-shadow:0 0 15px #ff9acb;
 }
 .close{
   position:absolute;
@@ -178,7 +185,7 @@ input{
 
   <div class="timer" id="timer"></div>
 
-  <button class="bday" id="bdayBtn" disabled>Happy Birthday 🎉</button>
+  <button class="bday" id="bdayBtn" disabled>Happy Birthday 🎉 ➜</button>
 
   <div class="gift" id="gift">🎁</div>
   <div class="note" id="note">Only Violina can open this</div>
@@ -195,9 +202,8 @@ input{
 <div class="overlay" id="overlay">
   <div class="messageBox">
     <div class="close" onclick="closeOverlay()">❌</div>
-    <p>
-      Ayoo 😭 only 16 days left for your birthday and I genuinely don’t know how to act normal anymore...
-    </p>
+    <h1>🎉 HAPPY BIRTHDAY 🎉</h1>
+    <p>You make the world softer, brighter & happier 💗</p>
   </div>
 </div>
 
@@ -213,41 +219,66 @@ setInterval(()=>{
   imgs[p].classList.add("active");
 },4000);
 
-/* TIMER */
-const TEST_MODE=true;
-const timer=document.getElementById("timer");
-const bdayBtn=document.getElementById("bdayBtn");
+/* ================= TIMER ================= */
+const TEST_MODE = true; // 🔁 set to false on Feb 13
+const timer = document.getElementById("timer");
+const bdayBtn = document.getElementById("bdayBtn");
 
-let target=TEST_MODE
-  ? new Date(Date.now()+5000)
+const target = TEST_MODE
+  ? new Date(Date.now() + 5000)
   : new Date(new Date().getFullYear(),1,13);
 
-const countdown=setInterval(()=>{
-  const diff=target-new Date();
-  if(diff<=0){
+const countdown = setInterval(()=>{
+  const diff = target - new Date();
+
+  if(diff <= 0){
     clearInterval(countdown);
-    timer.remove();
-    bdayBtn.disabled=false;
-    bdayBtn.style.background="#ff8fbe";
-    bdayBtn.style.color="#fff";
-    bdayBtn.style.cursor="pointer";
+    startCelebration();
     return;
   }
-  const s=Math.floor(diff/1000)%60;
-  timer.innerHTML=`<div class="box"><div class="num">${s}</div><div class="lbl">Sec</div></div>`;
+
+  const s = Math.floor(diff/1000)%60;
+  timer.innerHTML = `<div class="box"><div class="num">${s}</div><div class="lbl">Sec</div></div>`;
 },1000);
 
-/* GIFT */
-const today=new Date().toDateString();
+/* ========== CELEBRATION ========== */
+function startCelebration(){
+  timer.remove();
+
+  // Enable button
+  bdayBtn.disabled=false;
+  bdayBtn.style.background="#ff6fae";
+  bdayBtn.style.color="#fff";
+  bdayBtn.style.cursor="pointer";
+
+  // Reset gift
+  localStorage.removeItem("openedDay");
+  gift.textContent="🎁";
+  gift.style.animation="float 2.8s ease-in-out infinite";
+  note.innerHTML="Only Violina can open this";
+
+  // Show popup
+  document.getElementById("overlay").style.display="flex";
+
+  // Particles
+  const fx=document.getElementById("effects");
+  for(let i=0;i<80;i++){
+    const p=document.createElement("div");
+    p.className="particle";
+    p.textContent=["💗","✨","🎉","💖"][Math.floor(Math.random()*4)];
+    p.style.left=Math.random()*100+"%";
+    p.style.bottom="-20px";
+    p.style.fontSize=14+Math.random()*24+"px";
+    p.style.animationDuration=5+Math.random()*4+"s";
+    fx.appendChild(p);
+    setTimeout(()=>p.remove(),9000);
+  }
+}
+
+/* ========== GIFT ========== */
 const gift=document.getElementById("gift");
 const note=document.getElementById("note");
-let opened=localStorage.getItem("openedDay")===today;
-
-if(opened){
-  gift.textContent="🎀";
-  gift.style.animation="none";
-  note.innerHTML="Opened 💗<br>Come back tomorrow";
-}
+let opened=false;
 
 gift.onclick=()=>{
   if(opened) openMessage();
@@ -257,11 +288,10 @@ gift.onclick=()=>{
 function checkCode(){
   if(document.getElementById("code").value!=="SMILE-FIRST") return;
   opened=true;
-  localStorage.setItem("openedDay",today);
   document.getElementById("modal").style.display="none";
   gift.textContent="🎀";
   gift.style.animation="none";
-  note.innerHTML="Opened 💗<br>Come back tomorrow";
+  note.innerHTML="Opened 💗";
   openMessage();
 }
 
