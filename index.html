@@ -218,31 +218,65 @@ setInterval(()=>{
   imgs[p].classList.add("active");
 },4000);
 
-/* TIMER */
-const target=new Date(new Date().getFullYear(),1,13);
-const timer=document.getElementById("timer");
-const bdayBtn=document.getElementById("bdayBtn");
+/* =====================
+   TIMER + TEST MODE
+===================== */
 
-setInterval(()=>{
-  const diff=target-new Date();
-  if(diff<=0){
-    timer.innerHTML="<div class='box'><div class='num'>00</div><div class='lbl'>Done</div></div>";
-    bdayBtn.disabled=false;
-    bdayBtn.style.background="#ff8fbe";
-    bdayBtn.style.color="#fff";
-    bdayBtn.style.cursor="pointer";
+const TEST_MODE = true; // 🔁 set to false on Feb 13
+const timer = document.getElementById("timer");
+const bdayBtn = document.getElementById("bdayBtn");
+
+let target;
+
+if (TEST_MODE) {
+  // 5 seconds from now (for testing)
+  target = new Date(Date.now() + 5000);
+} else {
+  // Real birthday: Feb 13
+  target = new Date(new Date().getFullYear(), 1, 13);
+}
+
+const countdownInterval = setInterval(() => {
+  const diff = target - new Date();
+
+  if (diff <= 0) {
+    clearInterval(countdownInterval);
+    startBirthday(); // 🎉 IMPORTANT
     return;
   }
-  const d=Math.floor(diff/86400000);
-  const h=Math.floor(diff/3600000)%24;
-  const m=Math.floor(diff/60000)%60;
-  const s=Math.floor(diff/1000)%60;
-  timer.innerHTML=`
-  <div class="box"><div class="num">${d}</div><div class="lbl">Days</div></div>
-  <div class="box"><div class="num">${h}</div><div class="lbl">Hrs</div></div>
-  <div class="box"><div class="num">${m}</div><div class="lbl">Min</div></div>
-  <div class="box"><div class="num">${s}</div><div class="lbl">Sec</div></div>`;
-},1000);
+
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor(diff / 3600000) % 24;
+  const m = Math.floor(diff / 60000) % 60;
+  const s = Math.floor(diff / 1000) % 60;
+
+  timer.innerHTML = `
+    <div class="box"><div class="num">${d}</div><div class="lbl">Days</div></div>
+    <div class="box"><div class="num">${h}</div><div class="lbl">Hrs</div></div>
+    <div class="box"><div class="num">${m}</div><div class="lbl">Min</div></div>
+    <div class="box"><div class="num">${s}</div><div class="lbl">Sec</div></div>
+  `;
+}, 1000);
+
+/* =====================
+   BIRTHDAY START LOGIC
+===================== */
+
+function startBirthday() {
+  // 1️⃣ Remove timer completely
+  timer.remove();
+
+  // 2️⃣ Enable Happy Birthday button
+  bdayBtn.disabled = false;
+  bdayBtn.style.background = "#ff8fbe";
+  bdayBtn.style.color = "#fff";
+  bdayBtn.style.cursor = "pointer";
+
+  // 3️⃣ (Placeholder for next steps)
+  console.log("🎉 Birthday has started!");
+}
+
+
 
 /* GIFT STATE */
 const today=new Date().toDateString();
