@@ -42,7 +42,7 @@ body{
   max-width:420px;
   background:white;
   border-radius:22px;
-  padding:20px;
+  padding:18px 20px 16px;
   text-align:center;
   box-shadow:0 25px 70px rgba(255,120,170,.3);
   z-index:2;
@@ -77,27 +77,29 @@ body{
 /* CURVED TEXT */
 #birthdayWrap{
   display:none;
-  margin:14px 0 2px;
+  margin:12px 0 4px;
   animation:float 3.5s ease-in-out infinite;
 }
 @keyframes float{
-  50%{transform:translateY(-8px)}
+  50%{transform:translateY(-6px)}
 }
-svg{width:100%;height:160px}
+svg{width:100%;height:190px}
 
 .curveText{
   fill:#00d4ff;
-  font-size:42px;
+  font-size:38px;
   font-weight:900;
-  letter-spacing:5px;
-  filter:drop-shadow(0 0 20px rgba(0,212,255,.9));
+  letter-spacing:6px;
+  text-shadow:
+    0 0 14px rgba(0,212,255,.8),
+    0 0 30px rgba(0,212,255,.6);
   opacity:0;
   transition:opacity .8s ease;
 }
 
 /* BUTTON */
 .bday{
-  margin:6px auto 4px;
+  margin:6px auto 2px;
   padding:10px 22px;
   border-radius:20px;
   border:none;
@@ -123,9 +125,9 @@ svg{width:100%;height:160px}
 
 /* GIFT */
 .gift{
-  font-size:52px;
+  font-size:50px;
   cursor:pointer;
-  margin-top:4px;
+  margin-top:2px;
   animation:float 3s ease-in-out infinite;
 }
 #giftMsg{
@@ -153,15 +155,15 @@ svg{width:100%;height:160px}
 
   <!-- HAPPY BIRTHDAY -->
   <div id="birthdayWrap">
-    <svg viewBox="0 0 400 160">
+    <svg viewBox="0 0 400 190">
       <!-- HAPPY -->
-      <path id="arc1" d="M 60 120 A 140 140 0 0 1 340 120" fill="none"/>
+      <path id="arc1" d="M 70 150 A 130 130 0 0 1 330 150" fill="none"/>
       <text class="curveText" id="happy">
         <textPath href="#arc1" startOffset="50%" text-anchor="middle">HAPPY</textPath>
       </text>
 
       <!-- BIRTHDAY -->
-      <path id="arc2" d="M 70 135 A 130 130 0 0 1 330 135" fill="none"/>
+      <path id="arc2" d="M 85 170 A 115 115 0 0 1 315 170" fill="none"/>
       <text class="curveText" id="birthday">
         <textPath href="#arc2" startOffset="50%" text-anchor="middle">BIRTHDAY</textPath>
       </text>
@@ -182,7 +184,6 @@ svg{width:100%;height:160px}
 <div id="effects"></div>
 
 <script>
-/* TIMER */
 const timer=document.getElementById("timer");
 const target=new Date(Date.now()+5000);
 
@@ -192,15 +193,14 @@ const countdown=setInterval(()=>{
     clearInterval(countdown);
     timer.style.display="none";
 
-    document.getElementById("birthdayWrap").style.display="block";
+    birthdayWrap.style.display="block";
     setTimeout(()=>happy.style.opacity=1,400);
     setTimeout(()=>birthday.style.opacity=1,1200);
 
-    const btn=bdayBtn;
-    btn.disabled=false;
-    btn.style.background="#ff8fbe";
-    btn.style.color="#fff";
-    btn.style.cursor="pointer";
+    bdayBtn.disabled=false;
+    bdayBtn.style.background="#ff8fbe";
+    bdayBtn.style.color="#fff";
+    bdayBtn.style.cursor="pointer";
 
     hint.style.display="block";
     startParticles();
@@ -209,7 +209,7 @@ const countdown=setInterval(()=>{
   }
 },1000);
 
-/* PARTICLES 10s */
+/* PARTICLES – 10s */
 const effects=document.getElementById("effects");
 const icons=["💖","🎉","✨","💫","🎊"];
 function startParticles(){
