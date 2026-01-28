@@ -27,13 +27,13 @@ body{
 }
 .particle{
   position:absolute;
-  font-size:24px;
+  font-size:22px;
   animation:rise linear forwards;
 }
 @keyframes rise{
   from{transform:translateY(80px) scale(.6);opacity:0}
   20%{opacity:1}
-  to{transform:translateY(-130vh) scale(1.5);opacity:0}
+  to{transform:translateY(-130vh) scale(1.4);opacity:0}
 }
 
 /* CARD */
@@ -42,10 +42,9 @@ body{
   max-width:420px;
   background:white;
   border-radius:22px;
-  padding:18px 20px 16px;
+  padding:18px;
   text-align:center;
   box-shadow:0 25px 70px rgba(255,120,170,.3);
-  z-index:2;
 }
 
 /* PHOTO */
@@ -63,7 +62,7 @@ body{
 
 /* TEXT */
 .sub{font-size:.95rem;color:#555}
-.date{margin:6px 0 6px;font-weight:600}
+.date{margin:6px 0 4px;font-weight:600}
 
 /* TIMER */
 .timer{margin-bottom:6px}
@@ -77,29 +76,24 @@ body{
 /* CURVED TEXT */
 #birthdayWrap{
   display:none;
-  margin:12px 0 4px;
-  animation:float 3.5s ease-in-out infinite;
-}
-@keyframes float{
-  50%{transform:translateY(-6px)}
+  margin:10px 0 0;
 }
 svg{width:100%;height:190px}
 
 .curveText{
-  fill:#00d4ff;
-  font-size:38px;
+  fill:#00cfff;
+  font-size:36px;
   font-weight:900;
   letter-spacing:6px;
-  text-shadow:
-    0 0 14px rgba(0,212,255,.8),
-    0 0 30px rgba(0,212,255,.6);
+  text-shadow:0 0 10px rgba(0,200,255,.6);
   opacity:0;
-  transition:opacity .8s ease;
+  transform:scale(.9);
+  transition:opacity .9s ease, transform .9s ease;
 }
 
 /* BUTTON */
 .bday{
-  margin:6px auto 2px;
+  margin:2px auto 2px;
   padding:10px 22px;
   border-radius:20px;
   border:none;
@@ -112,11 +106,11 @@ svg{width:100%;height:190px}
 #hint{
   display:none;
   font-size:.85rem;
-  margin-bottom:2px;
+  margin:2px 0;
 }
 .arrow{
   display:block;
-  font-size:22px;
+  font-size:20px;
   animation:bounce 1.3s infinite;
 }
 @keyframes bounce{
@@ -125,10 +119,9 @@ svg{width:100%;height:190px}
 
 /* GIFT */
 .gift{
-  font-size:50px;
+  font-size:48px;
   cursor:pointer;
-  margin-top:2px;
-  animation:float 3s ease-in-out infinite;
+  margin-top:0;
 }
 #giftMsg{
   display:none;
@@ -157,13 +150,13 @@ svg{width:100%;height:190px}
   <div id="birthdayWrap">
     <svg viewBox="0 0 400 190">
       <!-- HAPPY -->
-      <path id="arc1" d="M 70 150 A 130 130 0 0 1 330 150" fill="none"/>
+      <path id="arc1" d="M 90 150 A 110 110 0 0 1 310 150" fill="none"/>
       <text class="curveText" id="happy">
         <textPath href="#arc1" startOffset="50%" text-anchor="middle">HAPPY</textPath>
       </text>
 
       <!-- BIRTHDAY -->
-      <path id="arc2" d="M 85 170 A 115 115 0 0 1 315 170" fill="none"/>
+      <path id="arc2" d="M 105 170 A 95 95 0 0 1 295 170" fill="none"/>
       <text class="curveText" id="birthday">
         <textPath href="#arc2" startOffset="50%" text-anchor="middle">BIRTHDAY</textPath>
       </text>
@@ -194,8 +187,16 @@ const countdown=setInterval(()=>{
     timer.style.display="none";
 
     birthdayWrap.style.display="block";
-    setTimeout(()=>happy.style.opacity=1,400);
-    setTimeout(()=>birthday.style.opacity=1,1200);
+
+    setTimeout(()=>{
+      happy.style.opacity=1;
+      happy.style.transform="scale(1)";
+    },400);
+
+    setTimeout(()=>{
+      birthday.style.opacity=1;
+      birthday.style.transform="scale(1)";
+    },1200);
 
     bdayBtn.disabled=false;
     bdayBtn.style.background="#ff8fbe";
@@ -214,17 +215,17 @@ const effects=document.getElementById("effects");
 const icons=["💖","🎉","✨","💫","🎊"];
 function startParticles(){
   const burst=setInterval(()=>{
-    for(let i=0;i<8;i++){
+    for(let i=0;i<6;i++){
       const p=document.createElement("div");
       p.className="particle";
       p.textContent=icons[Math.floor(Math.random()*icons.length)];
       p.style.left=Math.random()*100+"vw";
-      p.style.bottom=Math.random()*30+"vh";
-      p.style.animationDuration=5+Math.random()*4+"s";
+      p.style.bottom=Math.random()*25+"vh";
+      p.style.animationDuration=5+Math.random()*3+"s";
       effects.appendChild(p);
       setTimeout(()=>p.remove(),9000);
     }
-  },120);
+  },140);
   setTimeout(()=>clearInterval(burst),10000);
 }
 
