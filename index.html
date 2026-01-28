@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For Violina 💗</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(180deg,#fff,#ffd6e8);
+  font-family:"Segoe UI",system-ui;
+  overflow:hidden;
+}
+
+.card{
+  width:92%;
+  max-width:420px;
+  background:white;
+  border-radius:22px;
+  padding:22px;
+  text-align:center;
+  box-shadow:0 25px 70px rgba(255,120,170,.3);
+  z-index:2;
+}
+
+/* PHOTO FADE */
+.photo{
+  width:140px;
+  height:140px;
+  margin:0 auto 12px;
+  border-radius:50%;
+  overflow:hidden;
+  border:5px solid #ffd1e5;
+  position:relative;
+}
+.photo img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  opacity:0;
+  transition:opacity 1.6s ease;
+}
+.photo img.active{opacity:1}
+
+.sub{font-size:.95rem;color:#555}
+.date{
+  margin:6px 0 10px;
+  font-weight:600;
+  color:black;
+  text-shadow:0 0 12px #ff9acb;
+}
+
+/* TIMER */
+.timer{
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  margin-bottom:10px;
+}
+.box{
+  background:#fff5fa;
+  padding:8px 10px;
+  border-radius:10px;
+  min-width:54px;
+}
+.num{font-weight:700}
+.lbl{font-size:.65rem;color:#666}
+
+.bday{
+  margin:6px auto 12px;
+  padding:8px 18px;
+  border-radius:20px;
+  border:none;
+  background:#eee;
+  color:#999;
+  cursor:not-allowed;
+}
+
+/* GIFT */
+.gift{
+  font-size:52px;
+  cursor:pointer;
+  animation:float 2.8s ease-in-out infinite;
+}
+@keyframes float{
+  50%{transform:translateY(-6px)}
+}
+.note{font-size:.85rem;color:#444;margin-top:6px}
+
+/* PASSCODE MODAL */
+.modal{
+  position:fixed;
+  inset:0;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  background:rgba(255,200,225,.45);
+  backdrop-filter:blur(6px);
+  z-index:5;
+}
+.modalBox{
+  background:white;
+  padding:22px;
+  border-radius:18px;
+  width:80%;
+  max-width:300px;
+}
+input{
+  width:100%;
+  padding:10px;
+  font-size:1rem;
+  margin-bottom:10px;
+}
+
+/* OVERLAY */
+.overlay{
+  position:fixed;
+  inset:0;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  background:rgba(255,210,230,.55);
+  backdrop-filter:blur(10px);
+  z-index:10;
+}
+.messageBox{
+  background:white;
+  width:85%;
+  max-width:360px;
+  margin:0;
+  padding:22px;
+  border-radius:20px;
+  position:relative;
+  box-shadow:0 30px 80px rgba(255,120,170,.35);
+}
+.close{
+  position:absolute;
+  top:10px;
+  right:12px;
+  cursor:pointer;
+}
+
+/* EFFECT LAYER */
+#effects{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:15;
+}
+.particle{
+  position:absolute;
+  animation:rise linear forwards;
+}
+@keyframes rise{
+  from{transform:translateY(40px) scale(.6);opacity:0}
+  30%{opacity:1}
+  to{transform:translateY(-120vh) scale(1.2);opacity:0}
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <div class="photo">
+    <img src="photo1.jpg" class="active">
+    <img src="photo2.jpg">
+    <img src="photo3.jpg">
+  </div>
+
+  <h2>💌 A Special Day Is Almost Here</h2>
+  <div class="sub">Because the girl who means everything to me deserves to be celebrated by the world</div>
+  <div class="date">13 February</div>
+
+  <div class="timer" id="timer"></div>
+
+  <button class="bday" id="bdayBtn">Happy Birthday 🎉</button>
+
+  <div class="gift" id="gift">🎁</div>
+  <div class="note" id="note">Only Violina can open this</div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modalBox">
+    <h3>Secret Code 💕</h3>
+    <input id="code" placeholder="Enter secret code" autocomplete="off">
+    <button onclick="checkCode()">Open</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="messageBox">
+    <div class="close" onclick="closeOverlay()">❌</div>
+    <p>
+      Ayoo 😭 only 16 days left for your birthday and I genuinely don’t know how to act normal anymore. My brain is already in celebration mode and my heart is clearly ahead of schedule 💃💖 You don’t just make my days better, you make them easier — which is impressive, considering how effortlessly you steal all my attention 😌✨ One smile from you and my brain immediately forgets what it was doing (very rude of you, by the way 😤). Life can be loud, messy, and confusing, but thinking of you feels like pressing pause… until you show up and suddenly everything becomes brighter, louder, and 100x more fun 🌸🎶 There’s something about you that feels safe and familiar, like home — except this home comes with laughter, tiny chaos, and a heart that refuses to behave 💕🙈 And honestly? I’m counting days not just for your birthday… but for the smile you’re going to have when you see all this.
+    </p>
+  </div>
+</div>
+
+<div id="effects"></div>
+
+<script>
+
+  /* PHOTO FADE */
+const imgs=document.querySelectorAll(".photo img");
+let p=0;
+setInterval(()=>{
+  imgs[p].classList.remove("active");
+  p=(p+1)%imgs.length;
+  imgs[p].classList.add("active");
+},4000);
+
+/* TIMER */
+const target=new Date(new Date().getFullYear(),1,13);
+const timer=document.getElementById("timer");
+const bdayBtn=document.getElementById("bdayBtn");
+
+setInterval(()=>{
+  const diff=target-new Date();
+  if(diff<=0){
+    timer.innerHTML="<div class='box'><div class='num'>00</div><div class='lbl'>Done</div></div>";
+    bdayBtn.disabled=false;
+    bdayBtn.style.background="#ff8fbe";
+    bdayBtn.style.color="#fff";
+    bdayBtn.style.cursor="pointer";
+    return;
+  }
+  const d=Math.floor(diff/86400000);
+  const h=Math.floor(diff/3600000)%24;
+  const m=Math.floor(diff/60000)%60;
+  const s=Math.floor(diff/1000)%60;
+  timer.innerHTML=`
+  <div class="box"><div class="num">${d}</div><div class="lbl">Days</div></div>
+  <div class="box"><div class="num">${h}</div><div class="lbl">Hrs</div></div>
+  <div class="box"><div class="num">${m}</div><div class="lbl">Min</div></div>
+  <div class="box"><div class="num">${s}</div><div class="lbl">Sec</div></div>`;
+},1000);
+
+/* GIFT STATE */
+const today=new Date().toDateString();
+let giftOpened=localStorage.getItem("openedDay")===today;
+
+const gift=document.getElementById("gift");
+const note=document.getElementById("note");
+
+if(giftOpened){
+  gift.textContent="🎀";
+  gift.style.animation="none";
+  note.innerHTML="Opened 💗<br>Come back tomorrow";
+}
+
+/* CLICK */
+gift.onclick=()=>{
+  if(giftOpened){openMessage();return;}
+  document.getElementById("modal").style.display="flex";
+};
+
+function checkCode(){
+  if(document.getElementById("code").value!=="SMILE-FIRST")return;
+  giftOpened=true;
+  localStorage.setItem("openedDay",today);
+  document.getElementById("modal").remove();
+  gift.textContent="🎀";
+  gift.style.animation="none";
+  note.innerHTML="Opened 💗<br>Come back tomorrow";
+  openMessage();
+}
+
+/* MESSAGE + PREMIUM EFFECT */
+function openMessage(){
+  document.getElementById("overlay").style.display="flex";
+  const fx=document.getElementById("effects");
+  let count=0;
+  const emit=setInterval(()=>{
+    if(count++>45){clearInterval(emit);return;}
+    const p=document.createElement("div");
+    p.className="particle";
+    p.textContent=Math.random()>.7?"✨":"💗";
+    p.style.left=Math.random()*100+"%";
+    p.style.bottom="-20px";
+    p.style.fontSize=12+Math.random()*22+"px";
+    p.style.animationDuration=6+Math.random()*4+"s";
+    fx.appendChild(p);
+    setTimeout(()=>p.remove(),10000);
+  },120);
+}
+
+function closeOverlay(){
+  document.getElementById("overlay").style.display="none";
+}
+</script>
+
+
+
+</body>
+</html>
