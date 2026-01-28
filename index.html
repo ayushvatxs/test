@@ -13,12 +13,12 @@ body{
   display:flex;
   justify-content:center;
   align-items:center;
-  background:#ffe6ef;
+  background:linear-gradient(180deg,#fff,#ffd6e8);
   font-family:"Segoe UI",system-ui;
   overflow:hidden;
 }
 
-/* CARD */
+/* ================= CARD ================= */
 .card{
   width:92%;
   max-width:420px;
@@ -28,6 +28,7 @@ body{
   text-align:center;
   box-shadow:0 25px 70px rgba(255,120,170,.3);
   z-index:2;
+  transition:opacity 1s ease, transform 1s ease;
 }
 
 /* PHOTO */
@@ -51,11 +52,9 @@ body{
 }
 .photo img.active{opacity:1}
 
-/* TEXT */
 .sub{font-size:.95rem;color:#555}
 .date{margin:6px 0 10px;font-weight:600}
 
-/* TIMER */
 .timer{
   display:flex;
   justify-content:center;
@@ -68,100 +67,91 @@ body{
   border-radius:10px;
   min-width:54px;
 }
+.num{font-weight:700}
+.lbl{font-size:.65rem;color:#666}
 
-/* BUTTON */
 .bday{
-  margin:10px auto;
-  padding:10px 22px;
-  border-radius:22px;
+  margin:6px auto 12px;
+  padding:8px 18px;
+  border-radius:20px;
   border:none;
   background:#eee;
   color:#999;
-  cursor:not-allowed;
 }
 
-/* GIFT */
 .gift{
   font-size:52px;
-  cursor:pointer;
   animation:float 2.8s ease-in-out infinite;
 }
 @keyframes float{50%{transform:translateY(-6px)}}
 .note{font-size:.85rem;color:#444;margin-top:6px}
 
-/* BIRTHDAY POPUP */
-.birthdayOverlay{
+/* ================= CELEBRATION SCREEN ================= */
+#celebration{
   position:fixed;
   inset:0;
+  background:#ffe6f0;
   display:none;
   justify-content:center;
   align-items:center;
-  background:rgba(255,215,235,.55);
-  backdrop-filter:blur(10px);
+  flex-direction:column;
   z-index:20;
-}
-.birthdayBox{
-  background:white;
-  padding:28px;
-  border-radius:26px;
-  text-align:center;
-  width:85%;
-  max-width:380px;
-}
-.birthdayBox h1{
-  color:#ff3f96;
-  font-size:2rem;
-  text-shadow:0 0 18px #ff9acb;
+  overflow:hidden;
 }
 
-/* GIFT MESSAGE */
-.messageOverlay{
-  position:fixed;
-  inset:0;
-  display:none;
-  justify-content:center;
-  align-items:center;
-  background:rgba(255,215,235,.55);
-  backdrop-filter:blur(10px);
-  z-index:15;
-}
-.messageBox{
-  background:white;
-  padding:22px;
-  border-radius:20px;
-  width:80%;
-  max-width:320px;
-  position:relative;
-}
-.close{
+.glow{
   position:absolute;
-  top:10px;
-  right:12px;
-  cursor:pointer;
+  inset:-40%;
+  background:radial-gradient(circle,rgba(0,255,255,.25),transparent 60%);
+  animation:pulse 4s infinite;
+}
+@keyframes pulse{
+  50%{transform:scale(1.2)}
 }
 
-/* EFFECTS */
+.happy{
+  font-size:64px;
+  font-weight:900;
+  color:#00cfff;
+  text-shadow:0 0 25px rgba(0,200,255,.8);
+  letter-spacing:2px;
+  margin-bottom:10px;
+}
+
+.subHappy{
+  font-size:1.1rem;
+  color:#333;
+  margin-bottom:25px;
+}
+
+.bigGift{
+  font-size:90px;
+  animation:float 3s ease-in-out infinite;
+}
+
 #effects{
   position:fixed;
   inset:0;
   pointer-events:none;
   z-index:30;
 }
+
 .particle{
   position:absolute;
+  font-size:18px;
   animation:rise linear forwards;
 }
 @keyframes rise{
   from{transform:translateY(40px) scale(.6);opacity:0}
   20%{opacity:1}
-  to{transform:translateY(-120vh) scale(1.4);opacity:0}
+  to{transform:translateY(-140vh) scale(1.3);opacity:0}
 }
 </style>
 </head>
 
 <body>
 
-<div class="card">
+<div class="card" id="card">
   <div class="photo">
     <img src="photo1.jpg" class="active">
     <img src="photo2.jpg">
@@ -174,35 +164,24 @@ body{
 
   <div class="timer" id="timer"></div>
 
-  <button class="bday" id="bdayBtn" disabled>Happy Birthday 🎉 ➜</button>
+  <button class="bday" disabled>Happy Birthday 🎉</button>
 
-  <div class="gift" id="gift">🎁</div>
-  <div class="note" id="note">Only Violina can open this</div>
+  <div class="gift">🎁</div>
+  <div class="note">Only Violina can open this</div>
 </div>
 
-<!-- BIRTHDAY CELEBRATION -->
-<div class="birthdayOverlay" id="birthdayOverlay">
-  <div class="birthdayBox">
-    <h1>🎉 HAPPY BIRTHDAY 🎉</h1>
-    <p>You make the world softer, brighter & happier 💗</p>
-    <button onclick="closeBirthday()">Continue 💖</button>
-  </div>
-</div>
-
-<!-- GIFT MESSAGE -->
-<div class="messageOverlay" id="messageOverlay">
-  <div class="messageBox">
-    <div class="close" onclick="closeMessage()">❌</div>
-    <p>
-      Ayoo 😭 only 16 days left and I already can’t act normal anymore…
-    </p>
-  </div>
+<!-- CELEBRATION -->
+<div id="celebration">
+  <div class="glow"></div>
+  <div class="happy">HAPPY BIRTHDAY</div>
+  <div class="subHappy">You make the world softer, brighter & happier 💗</div>
+  <div class="bigGift">🎁</div>
 </div>
 
 <div id="effects"></div>
 
 <script>
-/* PHOTO */
+/* PHOTO ROTATION */
 const imgs=document.querySelectorAll(".photo img");
 let p=0;
 setInterval(()=>{
@@ -214,63 +193,47 @@ setInterval(()=>{
 /* TIMER */
 const TEST_MODE=true;
 const timer=document.getElementById("timer");
-const bdayBtn=document.getElementById("bdayBtn");
+const card=document.getElementById("card");
+const celebration=document.getElementById("celebration");
 
-const target=TEST_MODE
-  ? new Date(Date.now()+5000)
-  : new Date(new Date().getFullYear(),1,13);
+let target=TEST_MODE
+ ? new Date(Date.now()+5000)
+ : new Date(new Date().getFullYear(),1,13);
 
-const cd=setInterval(()=>{
+const countdown=setInterval(()=>{
   const diff=target-new Date();
   if(diff<=0){
-    clearInterval(cd);
-    timer.remove();
-    startBirthday();
+    clearInterval(countdown);
+    startCelebration();
     return;
   }
   const s=Math.floor(diff/1000)%60;
-  timer.innerHTML=`<div class="box">${s}s</div>`;
+  timer.innerHTML=`<div class="box"><div class="num">${s}</div><div class="lbl">Sec</div></div>`;
 },1000);
 
-/* BIRTHDAY CELEBRATION */
-function startBirthday(){
-  document.getElementById("birthdayOverlay").style.display="flex";
-
-  bdayBtn.disabled=false;
-  bdayBtn.style.background="#ff6fae";
-  bdayBtn.style.color="#fff";
-  bdayBtn.style.cursor="pointer";
-
-  spawnParticles(160);
-}
-
-function closeBirthday(){
-  document.getElementById("birthdayOverlay").style.display="none";
+/* CELEBRATION */
+function startCelebration(){
+  card.style.opacity="0";
+  card.style.transform="scale(.9)";
+  setTimeout(()=>{
+    card.style.display="none";
+    celebration.style.display="flex";
+    startParticles();
+  },900);
 }
 
 /* PARTICLES */
-function spawnParticles(n){
-  const fx=document.getElementById("effects");
-  const emojis=["💗","✨","🎉","💖","💞","💫"];
-  for(let i=0;i<n;i++){
+const emojis=["💖","✨","💗","🎉","💫","💕"];
+function startParticles(){
+  setInterval(()=>{
     const p=document.createElement("div");
     p.className="particle";
     p.textContent=emojis[Math.floor(Math.random()*emojis.length)];
-    p.style.left=Math.random()*100+"%";
-    p.style.bottom="-20px";
-    p.style.fontSize=14+Math.random()*26+"px";
-    p.style.animationDuration=5+Math.random()*10+"s";
-    fx.appendChild(p);
-    setTimeout(()=>p.remove(),10000);
-  }
-}
-
-/* GIFT */
-const gift=document.getElementById("gift");
-gift.onclick=()=>document.getElementById("messageOverlay").style.display="flex";
-
-function closeMessage(){
-  document.getElementById("messageOverlay").style.display="none";
+    p.style.left=Math.random()*100+"vw";
+    p.style.animationDuration=6+Math.random()*6+"s";
+    document.getElementById("effects").appendChild(p);
+    setTimeout(()=>p.remove(),12000);
+  },180);
 }
 </script>
 
