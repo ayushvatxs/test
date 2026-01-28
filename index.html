@@ -18,7 +18,7 @@ body{
   overflow:hidden;
 }
 
-/* ===== PARTICLES ===== */
+/* PARTICLES */
 #effects{
   position:fixed;
   inset:0;
@@ -36,46 +36,37 @@ body{
   to{transform:translateY(-130vh) scale(1.5);opacity:0}
 }
 
-/* ===== CARD ===== */
+/* CARD */
 .card{
   width:92%;
   max-width:420px;
   background:white;
   border-radius:22px;
-  padding:22px 22px 18px;
+  padding:20px;
   text-align:center;
   box-shadow:0 25px 70px rgba(255,120,170,.3);
-  position:relative;
   z-index:2;
 }
 
 /* PHOTO */
 .photo{
-  width:140px;height:140px;
+  width:135px;height:135px;
   margin:0 auto 10px;
   border-radius:50%;
   overflow:hidden;
   border:5px solid #ffd1e5;
-  position:relative;
 }
 .photo img{
-  position:absolute;inset:0;
   width:100%;height:100%;
   object-fit:cover;
-  opacity:0;
-  transition:opacity 1.6s ease;
 }
-.photo img.active{opacity:1}
 
 /* TEXT */
 .sub{font-size:.95rem;color:#555}
-.date{margin:6px 0 8px;font-weight:600}
+.date{margin:6px 0 6px;font-weight:600}
 
 /* TIMER */
-.timer{
-  display:flex;
-  justify-content:center;
-}
+.timer{margin-bottom:6px}
 .box{
   background:#fff5fa;
   padding:8px 14px;
@@ -83,20 +74,20 @@ body{
   font-weight:700;
 }
 
-/* ===== CURVED HAPPY BIRTHDAY ===== */
+/* CURVED TEXT */
 #birthdayWrap{
   display:none;
-  margin:18px 0 6px;
-  animation:idle 3.5s ease-in-out infinite;
+  margin:14px 0 2px;
+  animation:float 3.5s ease-in-out infinite;
 }
-@keyframes idle{
+@keyframes float{
   50%{transform:translateY(-8px)}
 }
-svg{width:100%;height:190px;overflow:visible}
+svg{width:100%;height:160px}
 
 .curveText{
   fill:#00d4ff;
-  font-size:44px;
+  font-size:42px;
   font-weight:900;
   letter-spacing:5px;
   filter:drop-shadow(0 0 20px rgba(0,212,255,.9));
@@ -106,7 +97,7 @@ svg{width:100%;height:190px;overflow:visible}
 
 /* BUTTON */
 .bday{
-  margin:10px auto 4px;
+  margin:6px auto 4px;
   padding:10px 22px;
   border-radius:20px;
   border:none;
@@ -119,12 +110,12 @@ svg{width:100%;height:190px;overflow:visible}
 #hint{
   display:none;
   font-size:.85rem;
-  margin:2px 0 0;
+  margin-bottom:2px;
 }
 .arrow{
   display:block;
   font-size:22px;
-  animation:bounce 1.4s infinite;
+  animation:bounce 1.3s infinite;
 }
 @keyframes bounce{
   50%{transform:translateY(6px)}
@@ -134,8 +125,8 @@ svg{width:100%;height:190px;overflow:visible}
 .gift{
   font-size:52px;
   cursor:pointer;
-  margin-top:6px;
-  animation:idle 3s ease-in-out infinite;
+  margin-top:4px;
+  animation:float 3s ease-in-out infinite;
 }
 #giftMsg{
   display:none;
@@ -143,11 +134,6 @@ svg{width:100%;height:190px;overflow:visible}
   font-size:1rem;
   color:#ff4f9a;
   font-weight:700;
-  animation:fadeUp .8s ease forwards;
-}
-@keyframes fadeUp{
-  from{opacity:0;transform:translateY(6px)}
-  to{opacity:1;transform:none}
 }
 </style>
 </head>
@@ -156,9 +142,7 @@ svg{width:100%;height:190px;overflow:visible}
 
 <div class="card">
   <div class="photo">
-    <img src="photo1.jpg" class="active">
-    <img src="photo2.jpg">
-    <img src="photo3.jpg">
+    <img src="photo1.jpg">
   </div>
 
   <h2>💌 A Special Day Is Almost Here</h2>
@@ -167,21 +151,19 @@ svg{width:100%;height:190px;overflow:visible}
 
   <div class="timer" id="timer"></div>
 
-  <!-- CURVED TEXT -->
+  <!-- HAPPY BIRTHDAY -->
   <div id="birthdayWrap">
-    <svg viewBox="0 0 400 200">
-      <path id="arc" d="M 60 150 A 140 140 0 0 1 340 150" fill="transparent"/>
-
+    <svg viewBox="0 0 400 160">
+      <!-- HAPPY -->
+      <path id="arc1" d="M 60 120 A 140 140 0 0 1 340 120" fill="none"/>
       <text class="curveText" id="happy">
-        <textPath href="#arc" startOffset="50%" text-anchor="middle">
-          HAPPY
-        </textPath>
+        <textPath href="#arc1" startOffset="50%" text-anchor="middle">HAPPY</textPath>
       </text>
 
+      <!-- BIRTHDAY -->
+      <path id="arc2" d="M 70 135 A 130 130 0 0 1 330 135" fill="none"/>
       <text class="curveText" id="birthday">
-        <textPath href="#arc" startOffset="50%" text-anchor="middle">
-          BIRTHDAY
-        </textPath>
+        <textPath href="#arc2" startOffset="50%" text-anchor="middle">BIRTHDAY</textPath>
       </text>
     </svg>
   </div>
@@ -200,15 +182,6 @@ svg{width:100%;height:190px;overflow:visible}
 <div id="effects"></div>
 
 <script>
-/* PHOTO ROTATION */
-const imgs=document.querySelectorAll(".photo img");
-let i=0;
-setInterval(()=>{
-  imgs[i].classList.remove("active");
-  i=(i+1)%imgs.length;
-  imgs[i].classList.add("active");
-},4000);
-
 /* TIMER */
 const timer=document.getElementById("timer");
 const target=new Date(Date.now()+5000);
@@ -220,29 +193,28 @@ const countdown=setInterval(()=>{
     timer.style.display="none";
 
     document.getElementById("birthdayWrap").style.display="block";
-    setTimeout(()=>document.getElementById("happy").style.opacity=1,400);
-    setTimeout(()=>document.getElementById("birthday").style.opacity=1,1200);
+    setTimeout(()=>happy.style.opacity=1,400);
+    setTimeout(()=>birthday.style.opacity=1,1200);
 
-    const btn=document.getElementById("bdayBtn");
+    const btn=bdayBtn;
     btn.disabled=false;
     btn.style.background="#ff8fbe";
     btn.style.color="#fff";
     btn.style.cursor="pointer";
 
-    document.getElementById("hint").style.display="block";
-
+    hint.style.display="block";
     startParticles();
-    return;
+  } else {
+    timer.innerHTML=`<div class="box">${Math.floor(diff/1000)} sec</div>`;
   }
-  timer.innerHTML=`<div class="box">${Math.floor(diff/1000)} sec</div>`;
 },1000);
 
-/* PARTICLES — 10 SECONDS */
+/* PARTICLES 10s */
 const effects=document.getElementById("effects");
-const icons=["💖","🎉","✨","💫","🎊","💝"];
+const icons=["💖","🎉","✨","💫","🎊"];
 function startParticles(){
   const burst=setInterval(()=>{
-    for(let i=0;i<10;i++){
+    for(let i=0;i<8;i++){
       const p=document.createElement("div");
       p.className="particle";
       p.textContent=icons[Math.floor(Math.random()*icons.length)];
@@ -250,16 +222,16 @@ function startParticles(){
       p.style.bottom=Math.random()*30+"vh";
       p.style.animationDuration=5+Math.random()*4+"s";
       effects.appendChild(p);
-      setTimeout(()=>p.remove(),10000);
+      setTimeout(()=>p.remove(),9000);
     }
   },120);
   setTimeout(()=>clearInterval(burst),10000);
 }
 
 /* GIFT */
-document.getElementById("gift").onclick=()=>{
-  document.getElementById("gift").textContent="🎊";
-  document.getElementById("giftMsg").style.display="block";
+gift.onclick=()=>{
+  gift.textContent="🎊";
+  giftMsg.style.display="block";
 };
 </script>
 
