@@ -68,27 +68,41 @@ body{
 .num{font-weight:700}
 .lbl{font-size:.65rem;color:#666}
 
-/* HAPPY BIRTHDAY TEXT */
-#birthdayText{
+/* CURVED HAPPY BIRTHDAY */
+#birthdayWrap{
   display:none;
-  font-size:3.2rem;
-  margin:18px 0 10px;
+  position:relative;
+  width:100%;
+  height:140px;
+  margin:10px 0;
+}
+.curved span{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform-origin:0 80px;
+  font-size:2.8rem;
+  font-weight:800;
   color:#00d4ff;
-  letter-spacing:4px;
   text-shadow:
-    0 0 15px rgba(0,212,255,.8),
+    0 0 15px rgba(0,212,255,.9),
     0 0 35px rgba(0,212,255,.6);
+  animation:floatText 3.5s ease-in-out infinite;
+}
+@keyframes floatText{
+  50%{transform:translate(-50%,-58%) rotate(var(--r)) translateY(-6px)}
 }
 
 /* BUTTON */
 .bday{
   margin:6px auto 12px;
-  padding:8px 18px;
+  padding:9px 20px;
   border-radius:20px;
   border:none;
   background:#eee;
   color:#999;
   cursor:not-allowed;
+  transition:.4s;
 }
 
 /* GIFT */
@@ -116,7 +130,7 @@ body{
 @keyframes rise{
   from{transform:translateY(40px) scale(.6);opacity:0}
   25%{opacity:1}
-  to{transform:translateY(-130vh) scale(1.3);opacity:0}
+  to{transform:translateY(-130vh) scale(1.4);opacity:0}
 }
 </style>
 </head>
@@ -136,8 +150,8 @@ body{
 
   <div class="timer" id="timer"></div>
 
-  <!-- HAPPY BIRTHDAY TEXT (APPEARS AFTER TIMER) -->
-  <div id="birthdayText">HAPPY BIRTHDAY</div>
+  <!-- CURVED HAPPY BIRTHDAY -->
+  <div id="birthdayWrap" class="curved"></div>
 
   <button class="bday" id="bdayBtn" disabled>Happy Birthday 🎉</button>
 
@@ -160,7 +174,7 @@ setInterval(()=>{
 const TEST_MODE=true;
 const timer=document.getElementById("timer");
 const bdayBtn=document.getElementById("bdayBtn");
-const birthdayText=document.getElementById("birthdayText");
+const birthdayWrap=document.getElementById("birthdayWrap");
 
 let target=TEST_MODE
   ? new Date(Date.now()+5000)
@@ -172,33 +186,62 @@ const countdown=setInterval(()=>{
     clearInterval(countdown);
     timer.style.display="none";
 
-    birthdayText.style.display="block";
-    bdayBtn.disabled=false;
-    bdayBtn.style.background="#ff8fbe";
-    bdayBtn.style.color="#fff";
-    bdayBtn.style.cursor="pointer";
-
+    showCurvedText();
+    enableButton();
     startParticles();
+
     return;
   }
   const s=Math.floor(diff/1000)%60;
   timer.innerHTML=`<div class="box"><div class="num">${s}</div><div class="lbl">Sec</div></div>`;
 },1000);
 
+/* CURVED TEXT CREATION */
+function showCurvedText(){
+  const text="HAPPY BIRTHDAY";
+  const radius=80;
+  const start=-90;
+  const step=180/(text.length-1);
+
+  birthdayWrap.innerHTML="";
+  birthdayWrap.style.display="block";
+
+  [...text].forEach((ch,i)=>{
+    const span=document.createElement("span");
+    const angle=start+step*i;
+    span.textContent=ch;
+    span.style.setProperty("--r",angle+"deg");
+    span.style.transform=`translate(-50%,-50%) rotate(${angle}deg) translateY(-${radius}px)`;
+    birthdayWrap.appendChild(span);
+  });
+}
+
+/* ENABLE BUTTON */
+function enableButton(){
+  bdayBtn.disabled=false;
+  bdayBtn.style.background="#ff8fbe";
+  bdayBtn.style.color="#fff";
+  bdayBtn.style.cursor="pointer";
+}
+
 /* PARTICLES */
 const effects=document.getElementById("effects");
 const icons=["💖","✨","🎉","💫","💙"];
 
 function startParticles(){
-  setInterval(()=>{
-    const p=document.createElement("div");
-    p.className="particle";
-    p.textContent=icons[Math.floor(Math.random()*icons.length)];
-    p.style.left=Math.random()*100+"vw";
-    p.style.animationDuration=7+Math.random()*4+"s";
-    effects.appendChild(p);
-    setTimeout(()=>p.remove(),12000);
-  },100);
+  const burst=setInterval(()=>{
+    for(let i=0;i<6;i++){
+      const p=document.createElement("div");
+      p.className="particle";
+      p.textContent=icons[Math.floor(Math.random()*icons.length)];
+      p.style.left=Math.random()*100+"vw";
+      p.style.animationDuration=6+Math.random()*6+"s";
+      effects.appendChild(p);
+      setTimeout(()=>p.remove(),14000);
+    }
+  },120);
+
+  setTimeout(()=>clearInterval(burst),18000);
 }
 </script>
 
