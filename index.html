@@ -16,9 +16,10 @@ body{
   background:linear-gradient(180deg,#fff,#ffd6e8);
   font-family:"Segoe UI",system-ui;
   overflow:hidden;
+  transition:background 2s ease;
 }
 
-/* ================= CARD ================= */
+/* CARD */
 .card{
   width:92%;
   max-width:420px;
@@ -28,13 +29,11 @@ body{
   text-align:center;
   box-shadow:0 25px 70px rgba(255,120,170,.3);
   z-index:2;
-  transition:opacity 1s ease, transform 1s ease;
 }
 
 /* PHOTO */
 .photo{
-  width:140px;
-  height:140px;
+  width:140px;height:140px;
   margin:0 auto 12px;
   border-radius:50%;
   overflow:hidden;
@@ -42,25 +41,20 @@ body{
   position:relative;
 }
 .photo img{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
+  position:absolute;inset:0;
+  width:100%;height:100%;
   object-fit:cover;
   opacity:0;
   transition:opacity 1.6s ease;
 }
 .photo img.active{opacity:1}
 
+/* TEXT */
 .sub{font-size:.95rem;color:#555}
 .date{margin:6px 0 10px;font-weight:600}
 
-.timer{
-  display:flex;
-  justify-content:center;
-  gap:8px;
-  margin-bottom:10px;
-}
+/* TIMER */
+.timer{display:flex;justify-content:center;gap:8px;margin-bottom:10px}
 .box{
   background:#fff5fa;
   padding:8px 10px;
@@ -70,72 +64,57 @@ body{
 .num{font-weight:700}
 .lbl{font-size:.65rem;color:#666}
 
-.bday{
-  margin:6px auto 12px;
-  padding:8px 18px;
-  border-radius:20px;
-  border:none;
-  background:#eee;
-  color:#999;
+/* BDAY STATE */
+body.birthday{
+  background:radial-gradient(circle at center,#e8fbff,#dff6ff,#ffffff);
 }
 
-.gift{
-  font-size:52px;
-  animation:float 2.8s ease-in-out infinite;
-}
-@keyframes float{50%{transform:translateY(-6px)}}
-.note{font-size:.85rem;color:#444;margin-top:6px}
-
-/* ================= CELEBRATION SCREEN ================= */
-#celebration{
+/* BIG BIRTHDAY TEXT */
+.birthdayText{
+  display:none;
+  text-align:center;
   position:fixed;
   inset:0;
-  background:#ffe6f0;
-  display:none;
   justify-content:center;
   align-items:center;
   flex-direction:column;
-  z-index:20;
-  overflow:hidden;
+  z-index:3;
 }
+body.birthday .birthdayText{display:flex}
 
-.glow{
-  position:absolute;
-  inset:-40%;
-  background:radial-gradient(circle,rgba(0,255,255,.25),transparent 60%);
-  animation:pulse 4s infinite;
+.birthdayText h1{
+  font-size:4rem;
+  letter-spacing:4px;
+  color:#00d4ff;
+  text-shadow:
+    0 0 20px #7ee9ff,
+    0 0 50px #7ee9ff;
+  margin:0;
 }
-@keyframes pulse{
-  50%{transform:scale(1.2)}
-}
-
-.happy{
-  font-size:64px;
-  font-weight:900;
-  color:#00cfff;
-  text-shadow:0 0 25px rgba(0,200,255,.8);
-  letter-spacing:2px;
-  margin-bottom:10px;
-}
-
-.subHappy{
-  font-size:1.1rem;
+.birthdayText p{
+  margin-top:10px;
   color:#333;
-  margin-bottom:25px;
+  font-size:1.05rem;
 }
 
-.bigGift{
-  font-size:90px;
-  animation:float 3s ease-in-out infinite;
+/* GIFT */
+.gift{
+  font-size:60px;
+  margin-top:30px;
+  animation:float 2.5s ease-in-out infinite;
+  cursor:pointer;
+}
+@keyframes float{
+  50%{transform:translateY(-8px)}
 }
 
+/* PARTICLES */
 #effects{
   position:fixed;
   inset:0;
   pointer-events:none;
-  z-index:30;
+  z-index:1;
 }
-
 .particle{
   position:absolute;
   font-size:18px;
@@ -159,29 +138,23 @@ body{
   </div>
 
   <h2>💌 A Special Day Is Almost Here</h2>
-  <div class="sub">Because the girl who means everything to me deserves to be celebrated</div>
+  <div class="sub">Because the girl who means everything to me deserves to be celebrated by the world</div>
   <div class="date">13 February</div>
 
   <div class="timer" id="timer"></div>
-
-  <button class="bday" disabled>Happy Birthday 🎉</button>
-
-  <div class="gift">🎁</div>
-  <div class="note">Only Violina can open this</div>
 </div>
 
-<!-- CELEBRATION -->
-<div id="celebration">
-  <div class="glow"></div>
-  <div class="happy">HAPPY BIRTHDAY</div>
-  <div class="subHappy">You make the world softer, brighter & happier 💗</div>
-  <div class="bigGift">🎁</div>
+<!-- BIRTHDAY SCREEN -->
+<div class="birthdayText">
+  <h1>HAPPY BIRTHDAY</h1>
+  <p>You make the world softer, brighter & happier 💗</p>
+  <div class="gift">🎁</div>
 </div>
 
 <div id="effects"></div>
 
 <script>
-/* PHOTO ROTATION */
+/* PHOTO FADE */
 const imgs=document.querySelectorAll(".photo img");
 let p=0;
 setInterval(()=>{
@@ -194,46 +167,38 @@ setInterval(()=>{
 const TEST_MODE=true;
 const timer=document.getElementById("timer");
 const card=document.getElementById("card");
-const celebration=document.getElementById("celebration");
 
 let target=TEST_MODE
- ? new Date(Date.now()+5000)
- : new Date(new Date().getFullYear(),1,13);
+  ? new Date(Date.now()+5000)
+  : new Date(new Date().getFullYear(),1,13);
 
 const countdown=setInterval(()=>{
   const diff=target-new Date();
   if(diff<=0){
     clearInterval(countdown);
-    startCelebration();
+    card.style.display="none";
+    document.body.classList.add("birthday");
+    startParticles();
     return;
   }
   const s=Math.floor(diff/1000)%60;
   timer.innerHTML=`<div class="box"><div class="num">${s}</div><div class="lbl">Sec</div></div>`;
 },1000);
 
-/* CELEBRATION */
-function startCelebration(){
-  card.style.opacity="0";
-  card.style.transform="scale(.9)";
-  setTimeout(()=>{
-    card.style.display="none";
-    celebration.style.display="flex";
-    startParticles();
-  },900);
-}
-
 /* PARTICLES */
-const emojis=["💖","✨","💗","🎉","💫","💕"];
+const effects=document.getElementById("effects");
+const icons=["💖","✨","🎉","💙","💫"];
+
 function startParticles(){
   setInterval(()=>{
     const p=document.createElement("div");
     p.className="particle";
-    p.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+    p.textContent=icons[Math.floor(Math.random()*icons.length)];
     p.style.left=Math.random()*100+"vw";
-    p.style.animationDuration=6+Math.random()*6+"s";
-    document.getElementById("effects").appendChild(p);
-    setTimeout(()=>p.remove(),12000);
-  },180);
+    p.style.animationDuration=6+Math.random()*4+"s";
+    effects.appendChild(p);
+    setTimeout(()=>p.remove(),10000);
+  },120);
 }
 </script>
 
