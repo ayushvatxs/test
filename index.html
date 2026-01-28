@@ -27,7 +27,6 @@ body{
   padding:20px;
   text-align:center;
   box-shadow:0 25px 70px rgba(255,120,170,.3);
-  z-index:2;
 }
 
 /* PHOTO */
@@ -57,22 +56,26 @@ body{
   display:inline-block;
 }
 
-/* CURVED TEXT */
+/* ===== CURVED HAPPY BIRTHDAY ===== */
 #birthdayWrap{
   display:none;
-  margin:10px 0;
+  margin:12px 0 6px;
 }
 
-svg{width:100%;height:170px}
+svg{
+  width:100%;
+  height:200px; /* IMPORTANT */
+}
 
 .curveText{
   fill:#00cfff;
   font-size:40px;
   font-weight:900;
   letter-spacing:6px;
-  filter:drop-shadow(0 0 6px rgba(0,200,255,.4));
+  filter:drop-shadow(0 0 4px rgba(0,200,255,.35)); /* reduced glow */
   opacity:0;
-  transform:translateY(12px);
+  transform:scale(.7);
+  transform-origin:center;
   transition:opacity .8s ease, transform .8s ease;
 }
 
@@ -131,10 +134,12 @@ svg{width:100%;height:170px}
 
   <!-- HAPPY BIRTHDAY -->
   <div id="birthdayWrap">
-    <svg viewBox="0 0 400 170">
+    <svg viewBox="0 0 400 200">
 
       <!-- HAPPY -->
-      <path id="arcHappy" d="M 60 120 A 140 140 0 0 1 340 120" fill="none"/>
+      <path id="arcHappy"
+            d="M 40 150 A 160 160 0 0 1 360 150"
+            fill="none"/>
       <text class="curveText" id="happy">
         <textPath href="#arcHappy" startOffset="50%" text-anchor="middle">
           HAPPY
@@ -142,7 +147,9 @@ svg{width:100%;height:170px}
       </text>
 
       <!-- BIRTHDAY -->
-      <path id="arcBirthday" d="M 70 140 A 130 130 0 0 1 330 140" fill="none"/>
+      <path id="arcBirthday"
+            d="M 55 175 A 145 145 0 0 1 345 175"
+            fill="none"/>
       <text class="curveText" id="birthday">
         <textPath href="#arcBirthday" startOffset="50%" text-anchor="middle">
           BIRTHDAY
@@ -177,12 +184,12 @@ const countdown=setInterval(()=>{
 
     setTimeout(()=>{
       happy.style.opacity=1;
-      happy.style.transform="translateY(0)";
+      happy.style.transform="scale(1)";
     },300);
 
     setTimeout(()=>{
       birthday.style.opacity=1;
-      birthday.style.transform="translateY(0)";
+      birthday.style.transform="scale(1)";
     },900);
 
     bdayBtn.disabled=false;
