@@ -15,8 +15,24 @@ body{
   align-items:center;
   background:linear-gradient(180deg,#fff,#ffd6e8);
   font-family:"Segoe UI",system-ui;
-  overflow:hidden;
+  overflow:hidden;}
+.birthday-start{
+  display:none;
+  margin:14px 0;
+  font-size:1.4rem;
+  font-weight:800;
+  color:#ff4fa3;
+  text-shadow:
+    0 0 10px #ff9acb,
+    0 0 25px #ffb6da;
+  animation:pop 1s ease forwards;
 }
+
+@keyframes pop{
+  from{transform:scale(.6);opacity:0}
+  to{transform:scale(1);opacity:1}
+}
+
 
 .card{
   width:92%;
@@ -179,6 +195,9 @@ input{
   <h2>💌 A Special Day Is Almost Here</h2>
   <div class="sub">Because the girl who means everything to me deserves to be celebrated by the world</div>
   <div class="date">13 February</div>
+  <div id="birthdayStart" class="birthday-start">
+  🎉 Birthday has started 🎉
+  </div>
 
   <div class="timer" id="timer"></div>
 
@@ -330,6 +349,34 @@ function openMessage(){
 function closeOverlay(){
   document.getElementById("overlay").style.display="none";
 }
+// --- TEST MODE TIMER (5 seconds) ---
+const TEST_MODE = true; // change to false on real birthday
+
+const countdownSeconds = TEST_MODE ? 5 : null;
+
+const birthdayStart = document.getElementById("birthdayStart");
+const timerEl = document.getElementById("timer");
+const bdayBtn = document.getElementById("bdayBtn");
+
+let timeLeft = countdownSeconds;
+
+const timerInterval = setInterval(() => {
+  timeLeft--;
+
+  timerEl.innerHTML = `<div class="box"><div class="num">${timeLeft}</div><div class="lbl">sec</div></div>`;
+
+  if (timeLeft <= 0) {
+    clearInterval(timerInterval);
+
+    timerEl.style.display = "none";
+    birthdayStart.style.display = "block";
+    bdayBtn.style.cursor = "pointer";
+    bdayBtn.style.background = "#ff6fae";
+    bdayBtn.style.color = "white";
+    bdayBtn.disabled = false;
+  }
+}, 1000);
+
 </script>
 
 
