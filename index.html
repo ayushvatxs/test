@@ -89,6 +89,18 @@ body{
   pointer-events:none;
   z-index:5;
 }
+  #boxEffects{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:2;
+}
+
+#messageBox p{
+  position:relative;
+  z-index:3;
+}
+
 .particle{
   position:absolute;
   font-size:22px;
@@ -303,6 +315,7 @@ svg{width:100%;height:210px}
 <!-- MESSAGE BOX -->
 <div id="messageBox">
   <span id="closeMsg">✖</span>
+  <div id="boxEffects"></div>
   <p>
     Ayoo 😭 only 16 days left for your birthday and I genuinely don’t know how
     to act normal anymore. My brain is already in celebration mode and my heart
@@ -371,7 +384,7 @@ const effects=document.getElementById("effects");
 const icons=["💖","🎉","✨","💫","🎊"];
 function startParticles(){
   const burst=setInterval(()=>{
-    for(let i=0;i<6;i++){
+    for(let i=0;i<2;i++){
       const p=document.createElement("div");
       p.className="particle";
       p.textContent=icons[Math.floor(Math.random()*icons.length)];
@@ -381,7 +394,7 @@ function startParticles(){
       effects.appendChild(p);
       setTimeout(()=>p.remove(),9000);
     }
-  },160);
+  },420);
   setTimeout(()=>clearInterval(burst),10000);
 }
 
@@ -415,11 +428,34 @@ openGiftBtn.onclick = () => {
     codeModal.style.display = "none";
     messageBox.style.display = "flex";
     gift.textContent = "🎊";
-    startParticles();
+    giftText.innerHTML = "Opened 💗<br><small>Come back tomorrow</small>";
+    giftText.style.fontWeight = "700";
+
+    startBoxParticles();
   } else {
     alert("Wrong passcode 💔");
   }
 };
+  function startBoxParticles(){
+  const box = document.getElementById("boxEffects");
+  const icons = ["💖","✨","💫"];
+
+  const burst = setInterval(()=>{
+    for(let i=0;i<2;i++){
+      const p = document.createElement("div");
+      p.className = "particle";
+      p.textContent = icons[Math.floor(Math.random()*icons.length)];
+      p.style.left = Math.random()*100 + "%";
+      p.style.bottom = "-20px";
+      p.style.animationDuration = 4 + Math.random()*2 + "s";
+      box.appendChild(p);
+      setTimeout(()=>p.remove(),7000);
+    }
+  },400);
+
+  setTimeout(()=>clearInterval(burst),6000);
+}
+
 
 
 </script>
