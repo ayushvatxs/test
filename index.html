@@ -22,6 +22,65 @@ body{
   from { transform: scale(.6); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
+/* MODAL BACKGROUND */
+#codeModal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.35);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:20;
+}
+
+/* PASSCODE CARD */
+.codeCard{
+  background:white;
+  padding:22px;
+  border-radius:18px;
+  width:90%;
+  max-width:320px;
+  text-align:center;
+  position:relative;
+  box-shadow:0 25px 60px rgba(0,0,0,.25);
+}
+.codeCard input{
+  width:100%;
+  padding:10px;
+  margin:12px 0;
+}
+.codeCard button{
+  padding:8px 18px;
+  cursor:pointer;
+}
+
+/* CLOSE */
+#closeModal,#closeMsg{
+  position:absolute;
+  top:10px;
+  right:12px;
+  cursor:pointer;
+}
+
+/* MESSAGE BOX */
+#messageBox{
+  position:fixed;
+  inset:0;
+  background:#ffe6f2;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:15;
+}
+#messageBox p{
+  background:white;
+  padding:24px;
+  border-radius:20px;
+  max-width:320px;
+  max-height:70vh;
+  overflow-y:auto;
+  box-shadow:0 25px 60px rgba(255,120,170,.4);
+}
 
 /* ===== PARTICLES (ABOVE EVERYTHING) ===== */
 #effects{
@@ -147,6 +206,26 @@ svg{width:100%;height:210px}
   color:#999;
   cursor:not-allowed;
   margin-top: 22px;   /* 👈 THIS MOVES BUTTON DOWN */
+}
+/* STEP 3 – SECRET BOX / MODAL STYLES */
+.secretOverlay{
+  position:fixed;
+  inset:0;
+  background:rgba(255,210,230,.85);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:10;
+}
+
+.secretBox{
+  background:#fff;
+  padding:22px;
+  border-radius:18px;
+  width:90%;
+  max-width:360px;
+  box-shadow:0 20px 50px rgba(255,120,170,.35);
+  animation:pop .5s ease forwards;
 }
 
 /* GIFT */
@@ -329,6 +408,29 @@ function openGift(){
 }
 
 </script>
+<!-- PASSCODE MODAL -->
+<div id="codeModal">
+  <div class="codeCard">
+    <span id="closeModal">✖</span>
+    <h3>Secret Code 💕</h3>
+    <input type="password" id="secretInput" placeholder="Enter secret code">
+    <button id="openGift">Open</button>
+  </div>
+</div>
+
+<!-- MESSAGE BOX -->
+<div id="messageBox">
+  <span id="closeMsg">✖</span>
+  <p>
+    Ayoo 😭 only 16 days left for your birthday and I genuinely don’t know how
+    to act normal anymore. My brain is already in celebration mode and my heart
+    is clearly ahead of schedule 🥰💖  
+    <br><br>
+    You don’t just make my days better, you make them easier ✨  
+    <br><br>
+    Thinking of you feels like pressing pause on the world 💗
+  </p>
+</div>
 
 </body>
 </html>
