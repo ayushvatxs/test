@@ -335,6 +335,8 @@ svg{width:100%;height:210px}
   </p>
 </div>
 <script>
+const TEST_MODE = true; // 👈 change to false for final version
+
 /* PHOTO ROTATION */
 const photos=["photo1.jpg","photo2.jpg","photo3.jpg"];
 let p=0;
@@ -350,7 +352,10 @@ setInterval(()=>{
 
 /* TIMER */
 const timer=document.getElementById("timer");
-const target=new Date("February 13, 2026 00:00:00");
+const target = TEST_MODE
+  ? new Date(Date.now() + 3000) // 3 seconds test timer
+  : new Date("February 13, 2026 00:00:00");
+
 
 const countdown=setInterval(()=>{
   const diff=target-new Date();
