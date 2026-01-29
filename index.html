@@ -241,8 +241,21 @@ const countdown=setInterval(()=>{
     hint.style.display="block";
     startParticles();
   }else{
-    timer.innerHTML=`<div class="box">${Math.floor(diff/1000)} sec</div>`;
-  }
+  const totalSeconds = Math.floor(diff / 1000);
+
+  const days = Math.floor(totalSeconds / (24 * 60 * 60));
+  const hours = Math.floor((totalSeconds % (24 * 60 * 60)) / (60 * 60));
+  const minutes = Math.floor((totalSeconds % (60 * 60)) / 60);
+  const seconds = totalSeconds % 60;
+
+  timer.innerHTML = `
+    <div class="box">${days}d</div>
+    <div class="box">${hours}h</div>
+    <div class="box">${minutes}m</div>
+    <div class="box">${seconds}s</div>
+  `;
+}
+
 },1000);
 
 /* PARTICLES */
