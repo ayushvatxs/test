@@ -360,52 +360,40 @@ function startParticles(){
   },160);
   setTimeout(()=>clearInterval(burst),10000);
 }
+//REPLACED LOGIC//
+const codeModal = document.getElementById("codeModal");
+const secretInput = document.getElementById("secretInput");
+const openGiftBtn = document.getElementById("openGift");
+const closeModal = document.getElementById("closeModal");
 
-/* ===== GIFT WITH PASSCODE ===== */
-
-const correctCode = "1313"; // 🔐 you can change this later
-let giftOpened = false;
+const messageBox = document.getElementById("messageBox");
+const closeMsg = document.getElementById("closeMsg");
 
 gift.onclick = () => {
-  if (giftOpened) return;
+  gift.style.transform = "scale(1.2)";
+  setTimeout(() => gift.style.transform = "scale(1)", 200);
+  codeModal.style.display = "flex";
+};
 
-  const userCode = prompt("Enter the passcode 💝");
+closeModal.onclick = () => {
+  codeModal.style.display = "none";
+};
 
-  if (userCode === null) return;
+closeMsg.onclick = () => {
+  messageBox.style.display = "none";
+};
 
-  if (userCode === correctCode) {
-    openGift();
+openGiftBtn.onclick = () => {
+  if (secretInput.value === "1313") {
+    codeModal.style.display = "none";
+    messageBox.style.display = "flex";
+    gift.textContent = "🎊";
+    startParticles();
   } else {
     alert("Wrong passcode 💔");
   }
 };
 
-function openGift(){
-  giftOpened = true;
-  gift.textContent = "🎊";
-  giftText.textContent = "";
-
-  // Create message box
-  const box = document.createElement("div");
-  box.style.marginTop = "14px";
-  box.style.padding = "16px";
-  box.style.borderRadius = "16px";
-  box.style.background = "#fff0f7";
-  box.style.boxShadow = "0 10px 30px rgba(255,100,160,.35)";
-  box.style.fontWeight = "600";
-  box.style.color = "#ff4f9a";
-  box.style.animation = "pop 0.6s ease forwards";
-
-  box.innerHTML = `
-    💖 For Violina 💖<br><br>
-    This little surprise is just a reminder of how special you are to me.
-    Every smile of yours means the world to me.
-  `;
-
-  document.querySelector(".actions").appendChild(box);
-
-  startParticles(); // reuse existing particles
-}
 
 </script>
 <!-- PASSCODE MODAL -->
