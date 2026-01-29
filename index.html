@@ -409,11 +409,28 @@ const closeModal = document.getElementById("closeModal");
 const messageBox = document.getElementById("messageBox");
 const closeMsg = document.getElementById("closeMsg");
 
+function todayKey(){
+  const d = new Date();
+  return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();
+}
+
 gift.onclick = () => {
+  const openedDate = localStorage.getItem("giftOpenedDate");
+  const today = todayKey();
+
+  // already opened today
+  if (openedDate === today) {
+    gift.textContent = "🎊";
+    giftText.innerHTML = "Opened 💗<br><small>Come back tomorrow</small>";
+    return;
+  }
+
+  // animate gift + open modal
   gift.style.transform = "scale(1.2)";
   setTimeout(() => gift.style.transform = "scale(1)", 200);
   codeModal.style.display = "flex";
 };
+
 
 closeModal.onclick = () => {
   codeModal.style.display = "none";
@@ -425,17 +442,21 @@ closeMsg.onclick = () => {
 
 openGiftBtn.onclick = () => {
   if (secretInput.value === "1313") {
+    const today = todayKey();
+    localStorage.setItem("giftOpenedDate", today);
+
     codeModal.style.display = "none";
     messageBox.style.display = "flex";
+
     gift.textContent = "🎊";
     giftText.innerHTML = "Opened 💗<br><small>Come back tomorrow</small>";
-    giftText.style.fontWeight = "700";
 
     startBoxParticles();
   } else {
     alert("Wrong passcode 💔");
   }
 };
+
   function startBoxParticles(){
   const box = document.getElementById("boxEffects");
   const icons = ["💖","✨","💫"];
@@ -454,6 +475,12 @@ openGiftBtn.onclick = () => {
   },400);
 
   setTimeout(()=>clearInterval(burst),6000);
+}
+
+const openedDate = localStorage.getItem("giftOpenedDate");
+if (openedDate === todayKey()) {
+  gift.textContent = "🎊";
+  giftText.innerHTML = "Opened 💗<br><small>Come back tomorrow</small>";
 }
 
 
