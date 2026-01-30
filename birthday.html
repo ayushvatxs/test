@@ -200,12 +200,30 @@ body{
   .photo{width:140px}
   .center-box{width:94%}
 }
+
+  .balloon-sticker{
+  position: absolute;
+  right: 12px;
+  top: 120px;
+  width: 110px;
+  pointer-events: none;
+  animation: floatBalloon 4s ease-in-out infinite;
+}
+
+@keyframes floatBalloon{
+  0%{ transform: translateY(0); }
+  50%{ transform: translateY(-10px); }
+  100%{ transform: translateY(0); }
+}
+
 </style>
 </head>
 
 <body>
 
 <div class="stage">
+<img src="balloon.png" class="balloon-sticker" alt="balloons">
+
 <div class="heart" style="left:20%; bottom:120px;"></div>
 <div class="heart" style="left:60%; bottom:80px; animation-delay:2s;"></div>
 <div class="heart" style="left:80%; bottom:140px; animation-delay:4s;"></div>
