@@ -50,7 +50,7 @@
       font-size: clamp(28px, 7vw, 44px);
       letter-spacing: 2px;
       white-space: nowrap;
-      margin-top: 8px;
+      margin-top: -8px;  /* move title up */
     }
     .title .emoji { transform: translateY(-2px); font-size: 0.95em; }
 
@@ -72,8 +72,8 @@
 
     /* LEFT photo moved up & left (so title + left image + box all sit higher) */
     .photo-left{
-      left: 4%;
-      top: 46px;                /* moved up */
+      left: -2%;   /* push further left */
+      top: 18px;   /* push further up */
     }
 
     /* RIGHT photo: pushed more to the right so only small corner is overlapped */
@@ -99,8 +99,8 @@
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-      top: 110px;                /* move box up a bit so overlap is small on photos */
-      width: 56%;                /* narrower so images remain visible */
+      top: 96px;      /* move box up */
+      width: 52%;     /* slightly narrower */
       min-width: 260px;
       max-width: 420px;
       height: 64vh;              /* taller so content fits without widening the box */
@@ -178,12 +178,12 @@
     /* Responsive: phone tuning so images and box keep the same relationship */
     @media (max-width:420px){
       .photo-frame{ width:36%; min-width:96px; max-width:160px; }
-      .photo-left{ left: 2%; top: 36px; }        /* further up on mobile */
+      .photo-left{ left: -4%; top: 14px; }        /* further up on mobile */
       .photo-right{ right: -2%; top: calc(50% + 120px); transform: translateY(-8%); } /* keep right photo visible */
 
       .center-box{
-        top: 96px;               /* move box up more on mobile */
-        width: 80%;              /* slightly wider on small screens but still narrow relative to viewport */
+        top: 86px;               /* move box up more on mobile */
+        width: 78%;              /* slightly wider on small screens but still narrow relative to viewport */
         height: 54vh;            /* reduce height so bottom button has space */
       }
       .center-inner{ padding: 28px 18px; background: rgba(255,255,255,0.44); backdrop-filter: blur(10px); }
