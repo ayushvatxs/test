@@ -3,199 +3,178 @@
 <head>
 <meta charset="UTF-8">
 <title>Happy Birthday 💗</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-*{box-sizing:border-box}
+*{box-sizing:border-box;margin:0;padding:0}
+
 body{
-  margin:0;
   min-height:100vh;
-  background:#ffe6f2;
+  background:#ffe6ef;
   font-family:"Segoe UI",system-ui;
-  display:flex;
-  justify-content:center;
-  align-items:center;
+  position:relative;
   overflow:hidden;
 }
 
-/* ===== MAIN WRAPPER ===== */
-.wrapper{
-  width:92%;
-  max-width:420px;
-  position:relative;
-}
-
-/* ===== TITLE ===== */
+/* ===== HAPPY BIRTHDAY ===== */
 .title{
-  text-align:center;
-  font-size:34px;
-  font-weight:900;
-  color:#00cfff;
-  letter-spacing:3px;
-  margin-bottom:12px;
-}
-.title span{
-  font-size:32px;
-}
-
-/* ===== PHOTO FRAMES ===== */
-.photo{
-  width:120px;
-  height:160px;
-  border:6px solid #ff6fae;
-  background:#fff;
   position:absolute;
+  top:25px;
+  width:100%;
+  text-align:center;
+  font-size:38px;
+  font-weight:900;
+  color:#1fc7ff;
+  letter-spacing:4px;
+}
+.title span{font-size:34px;margin-right:8px}
+
+/* ===== PHOTOS ===== */
+.photo{
+  position:absolute;
+  width:160px;
+  height:200px;
+  border:6px solid #ff5b9d;
+  background:white;
 }
 .photo img{
   width:100%;
   height:100%;
   object-fit:cover;
 }
-.photo.left{left:-10px; top:60px;}
-.photo.right{right:-10px; bottom:110px;}
 
-/* flowers on photo corners */
+/* LEFT TOP PHOTO */
+.photo.left{
+  top:100px;
+  left:40px;
+}
+
+/* RIGHT BOTTOM PHOTO */
+.photo.right{
+  bottom:130px;
+  right:40px;
+}
+
+/* ===== SINGLE FLOWERS ===== */
 .flower-corner{
   position:absolute;
-  width:42px;
+  width:40px;
 }
-.photo.left .flower-corner{top:-18px; left:-18px;}
-.photo.right .flower-corner{bottom:-18px; right:-18px;}
+.photo.left .flower-corner{
+  top:-18px;
+  left:-18px;
+}
+.photo.right .flower-corner{
+  top:-18px;
+  right:-18px;
+}
 
 /* ===== MESSAGE BOX ===== */
 .message-box{
-  background:rgba(255,255,255,.75);
-  backdrop-filter:blur(6px);
-  border-radius:24px;
-  padding:24px;
-  margin:90px auto 40px;
-  position:relative;
-  box-shadow:0 20px 50px rgba(255,120,170,.35);
-}
-
-/* overlap effect */
-.message-box{z-index:2}
-.photo{z-index:1}
-
-/* long flower */
-.long-flower{
   position:absolute;
-  left:-28px;
-  top:50%;
-  transform:translateY(-50%);
-  width:40px;
+  top:200px;
+  left:50%;
+  transform:translateX(-50%);
+  width:340px;              /* 👈 reduced width */
+  padding:26px 24px;
+  background:rgba(255,255,255,.65);
+  backdrop-filter:blur(10px);
+  border-radius:22px;
+  box-shadow:0 20px 50px rgba(255,120,170,.35);
+  text-align:left;
 }
 
-/* balloon */
+/* BALLOON */
 .balloon{
   position:absolute;
-  right:-30px;
-  top:20px;
-  width:70px;
+  width:80px;
+  top:-35px;
+  right:-25px;
+}
+
+/* LONG FLOWER */
+.long-flower{
+  position:absolute;
+  width:55px;
+  bottom:-20px;
+  left:-30px;
 }
 
 /* ===== TEXT ===== */
 .message-box p{
-  margin:0;
-  font-size:.95rem;
-  line-height:1.6;
+  font-size:15px;
   color:#444;
+  line-height:1.6;
 }
 
-/* ===== NEXT ===== */
-.next-area{
+/* ===== NEXT BUTTON ===== */
+.next-wrap{
+  position:absolute;
+  bottom:40px;
+  width:100%;
   text-align:center;
-  margin-top:10px;
 }
+
 .hint{
-  font-size:.9rem;
-  animation:float 1.6s ease-in-out infinite;
+  font-size:14px;
+  animation:float 1.5s ease-in-out infinite;
 }
 .arrow{
-  display:block;
   font-size:22px;
 }
+
 @keyframes float{
   50%{transform:translateY(6px)}
 }
+
 .next-btn{
-  margin-top:6px;
+  margin-top:8px;
   padding:10px 26px;
-  border-radius:12px;
+  border-radius:10px;
   border:2px solid #000;
   background:#fff;
-  cursor:pointer;
   font-weight:700;
+  cursor:pointer;
 }
-
-/* ===== MUSIC (hidden) ===== */
-audio{display:none}
 </style>
 </head>
 
 <body>
 
-<div class="wrapper">
+<!-- TITLE -->
+<div class="title"><span>🎈</span>HAPPY BIRTHDAY</div>
 
-  <div class="title">
-    🎈 HAPPY <span>BIRTHDAY</span>
-  </div>
-
-  <!-- LEFT PHOTO -->
-  <div class="photo left">
-    <img src="photo-left.jpg">
-    <img class="flower-corner" src="single-flower.png">
-  </div>
-
-  <!-- RIGHT PHOTO -->
-  <div class="photo right">
-    <img src="photo-right.jpg">
-    <img class="flower-corner" src="single-flower.png">
-  </div>
-
-  <!-- MESSAGE -->
-  <div class="message-box">
-    <img class="long-flower" src="long-flower.png">
-    <img class="balloon" src="balloon.png">
-
-    <p>
-      This is where your birthday paragraph goes 💗  
-      Write anything you want here — sweet, emotional, funny, anything.
-    </p>
-  </div>
-
-  <!-- NEXT -->
-  <div class="next-area">
-    <div class="hint">
-      Click here
-      <span class="arrow">⬇</span>
-    </div>
-    <button class="next-btn" id="nextBtn">Next</button>
-  </div>
-
+<!-- LEFT PHOTO -->
+<div class="photo left">
+  <img src="her1.jpg">
+  <img src="single-flower.png" class="flower-corner">
 </div>
 
-<!-- MUSIC -->
-<audio id="loudMusic" src="happy-birthday.mp3"></audio>
-<audio id="bgMusic" src="bg-music.mp3" loop></audio>
+<!-- RIGHT PHOTO -->
+<div class="photo right">
+  <img src="her2.jpg">
+  <img src="single-flower.png" class="flower-corner">
+</div>
 
-<script>
-const nextBtn = document.getElementById("nextBtn");
-const loudMusic = document.getElementById("loudMusic");
-const bgMusic = document.getElementById("bgMusic");
+<!-- MESSAGE BOX -->
+<div class="message-box">
+  <img src="balloon.png" class="balloon">
+  <img src="long-flower.png" class="long-flower">
 
-nextBtn.onclick = () => {
-  loudMusic.volume = 1;
-  loudMusic.play();
+  <p>
+    This is where your birthday paragraph goes 💗  
+    Write anything you want here — sweet, emotional,
+    funny, anything.
+  </p>
+</div>
 
-  setTimeout(()=>{
-    loudMusic.pause();
-    bgMusic.volume = .3;
-    bgMusic.play();
-  },10000);
-};
-</script>
+<!-- NEXT -->
+<div class="next-wrap">
+  <div class="hint">
+    Click here<br>
+    <span class="arrow">⬇</span>
+  </div>
+  <button class="next-btn">Next</button>
+</div>
 
 </body>
 </html>
-
