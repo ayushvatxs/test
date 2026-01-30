@@ -26,7 +26,7 @@ body{
 /* MAIN WRAPPER */
 .stage{
   width:min(420px,100%);
-  position:relative;
+  padding-bottom:32px; /* IMPORTANT: keeps Next visible */
 }
 
 /* TITLE */
@@ -40,7 +40,7 @@ body{
   font-size:clamp(28px,6vw,44px);
   letter-spacing:2px;
   color:#16b8ff;
-  margin-bottom:24px;
+  margin-bottom:20px;
   white-space:nowrap;
 }
 
@@ -63,25 +63,20 @@ body{
 
 /* LEFT PHOTO */
 .photo-left{
-  margin-left:0;
-  margin-bottom:24px;
+  margin-bottom:20px;
 }
 
-/* CENTER BOX */
+/* CENTER BOX (FIXED) */
 .center-box{
   width:100%;
-  max-width:320px;
-  margin:0 auto 24px;
-  min-height:320px;
+  max-width:360px;     /* wider */
+  margin:0 auto 20px;
   background:rgba(255,255,255,.45);
   backdrop-filter:blur(12px);
   border-radius:18px;
   box-shadow:0 26px 48px rgba(0,0,0,.08);
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  padding:28px 24px;   /* reduced height */
   text-align:center;
-  padding:32px 26px;
 }
 
 .center-box p{
@@ -93,15 +88,15 @@ body{
 /* RIGHT PHOTO */
 .photo-right{
   margin-left:auto;
-  margin-bottom:28px;
+  margin-bottom:20px;
 }
 
-/* NEXT BUTTON */
+/* NEXT */
 .bottom{
   display:flex;
   flex-direction:column;
   align-items:center;
-  gap:10px;
+  gap:8px;
 }
 
 .arrow{
@@ -111,17 +106,17 @@ body{
 .next-btn{
   background:#fff;
   border:8px solid #111;
-  padding:12px 38px;
+  padding:10px 34px;
   border-radius:8px;
   font-size:18px;
   font-weight:700;
   cursor:pointer;
 }
 
-/* MOBILE / TABLET TUNING */
+/* MOBILE / TABLET */
 @media(max-width:480px){
   .photo{width:140px}
-  .center-box{min-height:280px}
+  .center-box{max-width:320px}
 }
 </style>
 </head>
@@ -131,9 +126,7 @@ body{
 <div class="stage">
 
   <!-- TITLE -->
-  <div class="title">
-    🎈 HAPPY BIRTHDAY
-  </div>
+  <div class="title">🎈 HAPPY BIRTHDAY</div>
 
   <!-- LEFT PHOTO -->
   <div class="photo photo-left">
