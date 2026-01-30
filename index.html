@@ -309,11 +309,7 @@ svg{width:100%;height:210px}
   </div>
 </div>
 
-  bdayBtn.onclick = () => {
-  window.location.href = "birthday.html";
-};
-
-
+  
 <!-- PASSCODE MODAL -->
 <div id="codeModal">
   <div class="codeCard">
@@ -416,6 +412,12 @@ function startParticles(){
 }
 
 const gift = document.getElementById("gift");
+const bdayBtn = document.getElementById("bdayBtn");
+
+bdayBtn.onclick = () => {
+  window.location.href = "birthday.html";
+};
+
   
   //REPLACED LOGIC//
 const codeModal = document.getElementById("codeModal");
