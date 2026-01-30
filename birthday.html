@@ -14,33 +14,35 @@
 }
 
 *{box-sizing:border-box}
+
 body{
   margin:0;
   background:var(--pink);
   font-family:system-ui,-apple-system,"Segoe UI",Roboto;
   display:flex;
   justify-content:center;
-  padding:16px;
+  padding:12px;
 }
 
-/* MAIN WRAPPER */
+/* MAIN CONTAINER */
 .stage{
   width:min(420px,100%);
-  padding-bottom:32px; /* IMPORTANT: keeps Next visible */
+  display:flex;
+  flex-direction:column;
+  align-items:center;
 }
 
-/* TITLE */
+/* TITLE – MOVED UP */
 .title{
   display:flex;
-  justify-content:center;
   align-items:center;
   gap:10px;
   font-family:"Baloo 2",sans-serif;
   font-weight:800;
-  font-size:clamp(28px,6vw,44px);
+  font-size:clamp(26px,6vw,40px);
   letter-spacing:2px;
   color:#16b8ff;
-  margin-bottom:20px;
+  margin:4px 0 14px; /* moved up */
   white-space:nowrap;
 }
 
@@ -49,7 +51,7 @@ body{
   width:160px;
   aspect-ratio:3/4;
   background:#fff;
-  border-radius:12px;
+  border-radius:14px;
   border:5px solid var(--frame);
   overflow:hidden;
   box-shadow:0 12px 28px rgba(0,0,0,.08);
@@ -61,62 +63,64 @@ body{
   object-fit:cover;
 }
 
-/* LEFT PHOTO */
+/* LEFT PHOTO – MOVED UP */
 .photo-left{
-  margin-bottom:20px;
+  align-self:flex-start;
+  margin-bottom:16px;
 }
 
-/* CENTER BOX (FIXED) */
+/* CENTER BOX – WIDER + SHORTER */
 .center-box{
-  width:100%;
-  max-width:360px;     /* wider */
-  margin:0 auto 20px;
+  width:92%;
+  max-width:380px;
   background:rgba(255,255,255,.45);
   backdrop-filter:blur(12px);
-  border-radius:18px;
-  box-shadow:0 26px 48px rgba(0,0,0,.08);
-  padding:28px 24px;   /* reduced height */
+  border-radius:20px;
+  box-shadow:0 22px 40px rgba(0,0,0,.08);
+  padding:22px 20px;   /* shorter */
   text-align:center;
+  margin-bottom:16px;
 }
 
 .center-box p{
   margin:0;
-  font-size:18px;
-  line-height:1.6;
+  font-size:17px;
+  line-height:1.55;
 }
 
-/* RIGHT PHOTO */
+/* RIGHT PHOTO – MOVED UP */
 .photo-right{
-  margin-left:auto;
-  margin-bottom:20px;
+  align-self:flex-end;
+  margin-bottom:18px;
 }
 
-/* NEXT */
-.bottom{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:8px;
-}
-
-.arrow{
-  font-size:26px;
-}
-
-.next-btn{
+/* BOTTOM INDICATOR (REPLACES NEXT BUTTON) */
+.bottom-indicator{
+  width:56px;
+  height:6px;
   background:#fff;
-  border:8px solid #111;
-  padding:10px 34px;
-  border-radius:8px;
-  font-size:18px;
-  font-weight:700;
-  cursor:pointer;
+  border-radius:999px;
+  position:relative;
+  opacity:.9;
+}
+
+/* ARROW TIP */
+.bottom-indicator::after{
+  content:"";
+  position:absolute;
+  right:-10px;
+  top:50%;
+  width:8px;
+  height:8px;
+  border-top:3px solid #fff;
+  border-right:3px solid #fff;
+  transform:translateY(-50%) rotate(45deg);
 }
 
 /* MOBILE / TABLET */
 @media(max-width:480px){
   .photo{width:140px}
-  .center-box{max-width:320px}
+  .center-box{width:94%}
 }
 </style>
 </head>
@@ -133,7 +137,7 @@ body{
     <img src="photo-left.jpg" alt="">
   </div>
 
-  <!-- CENTER BOX -->
+  <!-- MESSAGE BOX -->
   <div class="center-box">
     <p>
       Translucent white box<br>
@@ -147,11 +151,8 @@ body{
     <img src="photo-right.jpg" alt="">
   </div>
 
-  <!-- NEXT -->
-  <div class="bottom">
-    <div class="arrow">⬇</div>
-    <button class="next-btn">Next</button>
-  </div>
+  <!-- BOTTOM INDICATOR -->
+  <div class="bottom-indicator"></div>
 
 </div>
 
