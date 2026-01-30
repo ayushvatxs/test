@@ -32,7 +32,7 @@
       max-width: var(--stage-w);
       position: relative;
       margin: 0 auto;
-      padding-bottom: 160px;
+      padding-bottom: 120px;
       overflow: visible;
     }
 
@@ -54,7 +54,7 @@
     }
     .title .emoji { transform: translateY(-3px); font-size:0.95em; }
 
-    /* photo frames: larger frames but thin border (lighter color) */
+    /* photo frames (larger, thin/light border) */
     .photo-frame {
       position: absolute;
       width: 28%;
@@ -66,13 +66,14 @@
       border: 4px solid var(--frame-pink-light);
       overflow: hidden;
       box-shadow: 0 8px 22px var(--shadow);
-      z-index: 30; /* below center-box so the box overlaps only part of corner */
+      z-index: 30;
     }
     .frame-img { width:100%; height:100%; object-fit: cover; display:block; background:#f6f6f6; }
 
     .photo-left { left: 6%; top: 80px; }
-    /* moved to the right so only a small top-left corner is covered */
-    .photo-right { right: -8%; top: calc(50% + 72px); transform: translateY(-18%); }
+
+    /* moved right photo slightly down and slightly left (less covered by the box) */
+    .photo-right { right: -4%; top: calc(50% + 96px); transform: translateY(-12%); }
 
     .corner-flower {
       position: absolute;
@@ -83,34 +84,32 @@
       z-index: 32;
       pointer-events: none;
     }
-    .photo-right .corner-flower { right:-6px; left:auto; top:-6px; }
+    .photo-right .corner-flower { right: -6px; left: auto; top: -6px; }
 
-    /* center translucent message box -- more translucent + stronger blur */
+    /* center translucent message box (slightly more translucent than before) */
     .center-box {
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-      top: 170px;               /* tuned so overlap is subtle */
+      top: 170px;               /* keeps overlap subtle */
       width: 66%;
       min-width: 260px;
       max-width: 360px;
       height: 54vh;
       min-height: 300px;
       max-height: 560px;
-      z-index: 34;              /* above photos so box covers only a little corner */
+      z-index: 34;
       display:flex;
       align-items:center;
       justify-content:center;
       padding: 0;
-      pointer-events: auto;
     }
 
     .center-inner {
       width: 100%;
       height: 100%;
       border-radius: 18px;
-      /* more translucent: lower alpha */
-      background: rgba(255,255,255,0.52);
+      background: rgba(255,255,255,0.50); /* slightly more translucent */
       backdrop-filter: blur(12px);
       box-shadow: 0 22px 40px rgba(0,0,0,0.06);
       padding: 40px 24px;
@@ -130,14 +129,14 @@
       color: #111;
       min-height: 4.6em;
     }
-    .typed-wrap p { margin:0; padding:0; }
+    .typed-wrap p { margin: 0; padding: 0; }
 
-    /* bottom: Next button and arrow. Arrow moved a bit up (higher) so it doesn't touch button or box */
+    /* bottom area - moved lower (arrow + button further down) */
     .bottom-row {
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-      bottom: 20px;
+      bottom: 8px;                /* moved down (closer to bottom) */
       width: 100%;
       display:flex;
       justify-content:center;
@@ -161,11 +160,10 @@
       margin-left: -28px;
     }
 
-    /* arrow placed higher (more negative value) but still not touching message box or button */
+    /* arrow placed above the button but moved a bit up compared to the previous bottom so it sits nicely without overlapping either the box or the button */
     .arrow-down {
       position: absolute;
-      /* moved arrow a bit up so it's centered in gap and does not touch next or box */
-      top: -40px; /* increased negative top to lift arrow further up */
+      top: -30px;                 /* adjust here to control arrow distance from button/box */
       left: 50%;
       transform: translateX(-50%);
       width: 36px;
@@ -174,21 +172,20 @@
       pointer-events: none;
       animation: arrow-bounce 1.2s ease-in-out infinite;
     }
-
     @keyframes arrow-bounce {
       0% { transform: translateX(-50%) translateY(0); opacity: 1; }
       50% { transform: translateX(-50%) translateY(-6px); opacity: .96; }
       100% { transform: translateX(-50%) translateY(0); opacity: 1; }
     }
 
-    /* responsive */
-    @media (max-width:420px) {
-      .photo-frame { width: 30%; min-width: 88px; max-width: 140px; }
+    /* responsive adjustments */
+    @media (max-width: 420px) {
+      .photo-frame { width: 30%; min-width: 88px; max-width:140px; }
       .center-box { top: 180px; width: 86%; height: 56vh; }
       .photo-left { top: 94px; left: 4%; }
-      /* on narrow screens keep the right photo less off-canvas */
-      .photo-right { right: -4%; top: calc(52% + 36px); }
-      .arrow-down { top: -28px; width: 32px; height: 32px; }
+      .photo-right { right: -4%; top: calc(52% + 96px); transform: translateY(-10%); }
+      .arrow-down { top: -22px; width: 32px; height: 32px; }
+      .bottom-row { bottom: 6px; }
     }
   </style>
 </head>
@@ -201,7 +198,7 @@
       <div>HAPPY BIRTHDAY</div>
     </div>
 
-    <!-- left photo (unchanged size for now) -->
+    <!-- left photo -->
     <div class="photo-frame photo-left" aria-label="Left photo frame">
       <img class="frame-img" src="photo-left.jpg" alt="Left photo (replace)">
       <svg class="corner-flower" viewBox="0 0 24 24" aria-hidden="true">
@@ -212,7 +209,7 @@
       </svg>
     </div>
 
-    <!-- right photo moved more to the side (less covered by centre box) -->
+    <!-- right photo (moved slightly down and left) -->
     <div class="photo-frame photo-right" aria-label="Right photo frame">
       <img class="frame-img" src="photo-right.jpg" alt="Right photo (replace)">
       <svg class="corner-flower" viewBox="0 0 24 24" aria-hidden="true" style="right:-6px; left:auto; top:-6px;">
@@ -223,7 +220,7 @@
       </svg>
     </div>
 
-    <!-- center translucent message box (more translucent) -->
+    <!-- center translucent message box -->
     <div class="center-box" aria-hidden="false">
       <div class="center-inner">
         <div class="typed-wrap" id="typed">
@@ -234,7 +231,7 @@
       </div>
     </div>
 
-    <!-- bottom center Next button with arrow above it (arrow moved up as requested) -->
+    <!-- bottom center Next button with arrow above it (moved down overall) -->
     <div class="bottom-row" role="group" aria-label="Next control">
       <div class="next-wrapper">
         <svg class="arrow-down" viewBox="0 0 44 44" aria-hidden="true" focusable="false">
