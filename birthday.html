@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -9,226 +9,235 @@
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&display=swap" rel="stylesheet">
 
   <style>
-    /* Reset-ish */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root{
+      --stage-width: 420px;    /* change this to suit your target device width */
+      --pink: #ff2b87;
+      --purple: #e79bff;
+    }
 
-    html, body { height: 100%; }
-    body {
-      background: #ffffff;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      color: #222;
+    /* Basic reset */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body{
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial;
       -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
-      min-height: 100vh;
+      background: #fff;
       display: flex;
       justify-content: center;
       padding: 18px 12px;
     }
 
-    /* Page wrapper to control portrait width like the sketch */
-    .stage {
-      width: 412px;              /* typical mobile width - change if you want */
-      max-width: 95vw;
+    /* Stage centered and responsive */
+    .stage{
+      width: min(var(--stage-width), 95vw);
+      max-width: var(--stage-width);
       position: relative;
-      background: transparent;
+      margin: 0 auto;
+      height: auto;
+      /* ensure there's enough vertical room for the composition */
+      padding-bottom: 140px;
       overflow: visible;
-      padding-bottom: 120px;     /* room for bottom button */
-      margin-bottom: 30px;
     }
 
     /* Title */
-    .title {
+    .title{
       display:flex;
       align-items:center;
       justify-content:center;
-      gap: 12px;
+      gap: 10px;
       font-family: "Baloo 2", system-ui, sans-serif;
       color: #1fc7ff;
       font-weight: 800;
-      font-size: 48px;
+      font-size: clamp(28px, 6vw, 46px);
       letter-spacing: 2px;
       margin-top: 6px;
     }
-    .title .balloon-emoji { font-size: 40px; transform: translateY(-4px); }
+    .title .balloon-emoji { font-size: 1.1em; transform: translateY(-4px); }
 
-    /* Photo frames (pink) */
-    .photo-frame {
+    /* Photo frame shared */
+    .photo-frame{
       position: absolute;
-      width: 130px;
-      height: 170px;
-      border: 12px solid #ff2b87;
-      border-radius: 6px;
+      width: 28%;
+      aspect-ratio: 3 / 4; /* keeps a portrait frame */
+      min-width: 110px;
+      max-width: 150px;
+      border: 10px solid var(--pink);
+      border-radius: 8px;
       background: #fff;
       overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
     }
-    .photo-frame img { width:100%; height:100%; object-fit:cover; display:block; }
+    /* image inside frame */
+    .photo-frame img.frame-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      background: #f7f7f7;
+    }
 
-    /* top-left */
-    .photo-left { top: 84px; left: 8px; z-index: 4; }
-    /* right-middle-ish */
-    .photo-right { top: 360px; right: 18px; z-index: 4; }
+    /* Top-left frame (slightly above center box) */
+    .photo-left{
+      left: 6%;
+      top: 72px;
+      z-index: 6; /* above center box */
+      transform: translateZ(0);
+    }
+    /* Right-lower frame (overlaps center box bottom-right) */
+    .photo-right{
+      right: 6%;
+      top: 54%;
+      transform: translateY(-20%);
+      z-index: 6;
+    }
 
-    /* Small corner flower decorations on photo frames */
-    .corner-flower {
+    /* corner flower decorations */
+    .corner-flower{
       position: absolute;
       width: 36px;
       height: 36px;
       object-fit: contain;
-      z-index: 6;
       pointer-events: none;
+      z-index: 8;
     }
-    .photo-left .corner-flower { top: -12px; left: -12px; }
-    .photo-right .corner-flower { top: -12px; right: -12px; }
+    .photo-left .corner-flower { top: -10px; left: -10px; }
+    .photo-right .corner-flower { top: -10px; right: -10px; }
 
-    /* Large center framed translucent box */
-    .center-outer {
+    /* center framed translucent box */
+    .center-outer{
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-      top: 130px;
-      width: 290px;
-      height: 430px;
-      z-index: 3; /* sits behind photos which have z-index:4 so overlap looks like sketch */
-      display:flex;
-      align-items: stretch;
-      justify-content: center;
+      top: 120px;
+      width: 64%;
+      max-width: 330px;
+      min-width: 250px;
+      height: 58vh;
+      max-height: 520px;
+      min-height: 300px;
+      z-index: 4;
+      display: block;
     }
-
-    /* create the purple border that sits outside the translucent white inner box */
-    .center-outer::before {
+    /* purple border created with ::before so inner box can be translucent */
+    .center-outer::before{
       content: "";
       position: absolute;
       inset: 0;
-      border-radius: 8px;
-      border: 12px solid;
-      border-color: #e79bff; /* purple frame color */
+      border-radius: 10px;
+      border: 12px solid var(--purple);
       pointer-events: none;
       box-shadow: 0 10px 30px rgba(231,155,255,0.12);
-    }
-
-    .center-inner {
-      position: absolute;
-      inset: 18px; /* space to show the purple border */
-      background: rgba(255,255,255,0.85);
-      backdrop-filter: blur(6px);
-      border-radius: 6px;
-      padding: 48px 22px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      text-align:center;
+      background: transparent;
       z-index: 4;
     }
-
-    .center-inner p {
-      font-size: 20px;
-      line-height: 1.45;
+    /* inner translucent area */
+    .center-inner{
+      position: absolute;
+      inset: 18px; /* leaves room for purple border */
+      border-radius: 6px;
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(6px);
+      padding: clamp(24px, 3.5vw, 48px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      z-index: 5;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06) inset;
+    }
+    .center-inner p{
+      font-size: clamp(16px, 2.6vw, 20px);
+      line-height: 1.6;
       color: #111;
       margin: 0;
     }
 
-    /* Decorative floral vertical cluster on left of center frame */
-    .floral-left {
+    /* decorative floral (left) and balloons (right-top) */
+    .floral-left, .balloon-cluster{
       position: absolute;
-      left: calc(50% - 160px);
-      top: 350px;
-      width: 72px;
-      z-index: 2;
-      transform: translateX(-30px);
+      width: 12%;
+      max-width: 84px;
       pointer-events: none;
+      z-index: 3;
     }
+    .floral-left { left: calc(50% - 46%); top: calc(120px + 38%); transform: translateX(-28%); }
+    .balloon-cluster { right: calc(50% - 40%); top: calc(120px - 20px); transform: translateX(36%); }
 
-    /* Balloon cluster overlapping top-right of the center frame */
-    .balloon-cluster {
+    /* bottom next area */
+    .next-area{
       position: absolute;
-      right: calc(50% - 62px);
-      top: 92px;
-      width: 120px;
-      z-index: 6;
-      pointer-events: none;
-      transform: translateX(60px);
-    }
-
-    /* NEXT area at bottom */
-    .next-area {
-      position: absolute;
-      bottom: 10px;
       left: 50%;
       transform: translateX(-50%);
+      bottom: 12px;
       width: 100%;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap: 18px;
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      align-items: center;
       z-index: 10;
     }
-
-    .hint {
+    .hint{
       font-family: "Baloo 2", system-ui, sans-serif;
-      font-size: 28px;
-      color: #111;
+      font-size: clamp(18px, 3.6vw, 28px);
       text-align: right;
+      color: #111;
       white-space: nowrap;
     }
+    .hint .arrow{ display:block; font-size: clamp(28px, 6vw, 48px); transform: translateY(6px); }
 
-    .hint .arrow {
-      display:block;
-      font-size: 48px;
-      transform: translateY(6px);
-    }
-
-    .next-btn {
+    .next-btn{
       background: #fff;
       border: 8px solid #111;
-      padding: 12px 40px;
+      padding: 10px 36px;
       border-radius: 8px;
-      font-size: 22px;
-      font-weight: 600;
+      font-size: clamp(14px, 3vw, 22px);
+      font-weight: 700;
       cursor: pointer;
-      box-shadow: 0 8px 0 rgba(0,0,0,0.06);
+      box-shadow: 0 10px 0 rgba(0,0,0,0.06);
+      z-index: 11;
     }
 
-    /* Make layout scale down on narrow screens */
-    @media (max-width:420px) {
-      .title { font-size: 42px; gap:8px; }
-      .center-outer { width: 86vw; height: 56vh; top: 140px; }
-      .center-inner { padding: 36px 18px; }
-      .photo-left { left: 6px; top: 80px; transform: scale(0.95); }
-      .photo-right { top: calc(100% - 260px); right: 14px; transform: scale(0.95); }
-      .floral-left { left: 6px; top: calc(50% + 40px); transform: none; }
-      .balloon-cluster { right: 8px; transform: none; top: 120px; }
-      .next-area { bottom: 6px; gap: 12px; }
-      .hint { font-size: 22px; }
-      .next-btn { padding: 10px 30px; font-size: 18px; border-width: 7px; }
+    /* ensure decorative images never overflow stage */
+    img.fallback, img.frame-img, .floral-left, .balloon-cluster { max-width: 100%; height: auto; display: block; }
+
+    /* small screen fine-tuning */
+    @media (max-width: 420px){
+      .photo-left { top: 86px; left: 4%; }
+      .photo-right { top: 54%; right: 4%; transform: translateY(-24%); }
+      .center-outer { top: 136px; width: 86%; height: 56vh; }
+      .floral-left { left: 8%; top: calc(100% - 280px); transform: none; }
+      .balloon-cluster { right: 6%; top: 110px; transform: none; }
+      .next-area { bottom: 6px; }
     }
   </style>
 </head>
 <body>
   <div class="stage" role="main" aria-label="Birthday card">
 
-    <!-- Title -->
+    <!-- TITLE -->
     <div class="title" aria-hidden="false">
       <div class="balloon-emoji">🎈</div>
       <div>HAPPY BIRTHDAY</div>
     </div>
 
-    <!-- Left photo frame -->
-    <div class="photo-frame photo-left" aria-label="Left picture frame (Her picture)">
-      <!-- Put user's image here. If you don't have it yet, keep a placeholder -->
-      <img src="photo-left.jpg" alt="Left photo (replace with your image)">
-      <img src="single-flower.png" class="corner-flower" alt="" aria-hidden="true">
+    <!-- LEFT PHOTO -->
+    <div class="photo-frame photo-left" aria-label="Left picture frame">
+      <!-- Use your image; if missing a subtle gray background will show -->
+      <img class="frame-img" src="photo-left.jpg" alt="Left photo (replace with your image)">
+      <img class="corner-flower" src="single-flower.png" alt="" aria-hidden="true">
     </div>
 
-    <!-- Right photo frame -->
-    <div class="photo-frame.photo-right photo-right" aria-label="Right picture frame (Her picture)">
-      <img src="photo-right.jpg" alt="Right photo (replace with your image)">
-      <img src="single-flower.png" class="corner-flower" alt="" aria-hidden="true">
+    <!-- RIGHT PHOTO -->
+    <div class="photo-frame photo-right" aria-label="Right picture frame">
+      <img class="frame-img" src="photo-right.jpg" alt="Right photo (replace with your image)">
+      <img class="corner-flower" src="single-flower.png" alt="" aria-hidden="true">
     </div>
 
-    <!-- Big centered translucent framed box -->
+    <!-- CENTER translucent framed box -->
     <div class="center-outer" aria-hidden="false">
       <div class="center-inner">
         <p>
@@ -239,13 +248,13 @@
       </div>
     </div>
 
-    <!-- decorative floral cluster on left side of center box -->
-    <img src="floral-cluster-left.png" class="floral-left" alt="" aria-hidden="true">
+    <!-- decorative floral cluster left -->
+    <img class="floral-left" src="floral-cluster-left.png" alt="" aria-hidden="true">
 
-    <!-- decorative balloon cluster near top-right of center box -->
-    <img src="balloon.png" class="balloon-cluster" alt="" aria-hidden="true">
+    <!-- decorative balloon cluster top-right -->
+    <img class="balloon-cluster" src="balloon.png" alt="" aria-hidden="true">
 
-    <!-- NEXT with hint -->
+    <!-- BOTTOM NEXT -->
     <div class="next-area" aria-hidden="false">
       <div style="display:flex;flex-direction:column;align-items:flex-end;">
         <div class="hint">
