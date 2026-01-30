@@ -11,23 +11,23 @@
     :root{
       --stage-w: 420px;
       --pastel-pink: #ffe6ef;
-      --frame-pink-light: #ff9dbf; /* lighter frame color */
+      --frame-pink-light: #ff9dbf;
       --shadow: rgba(0,0,0,0.08);
     }
 
-    /* reset */
+    /* Reset */
     *, *::before, *::after { box-sizing: border-box; }
-    html,body { height:100%; margin:0; }
-    body{
+    html, body { height: 100%; margin: 0; }
+    body {
       background: var(--pastel-pink);
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial;
       -webkit-font-smoothing:antialiased;
-      display:flex;
-      justify-content:center;
+      display: flex;
+      justify-content: center;
       padding: 18px 12px;
     }
 
-    .stage{
+    .stage {
       width: min(var(--stage-w), 96vw);
       max-width: var(--stage-w);
       position: relative;
@@ -36,11 +36,8 @@
       overflow: visible;
     }
 
-    /* background decorative svgs */
-    .bg-deco { position:absolute; inset:0; pointer-events:none; z-index:2; }
-
     /* title */
-    .title{
+    .title {
       position: relative;
       z-index: 20;
       display:flex;
@@ -57,170 +54,146 @@
     }
     .title .emoji { transform: translateY(-3px); font-size:0.95em; }
 
-    /* photo frames: enlarged, thin border, lighter color */
-    .photo-frame{
-      position:absolute;
-      width: 28%;                 /* larger image width */
+    /* photo frames: larger frames but thin border (lighter color) */
+    .photo-frame {
+      position: absolute;
+      width: 28%;
       min-width: 110px;
       max-width: 170px;
-      aspect-ratio: 3/4;
-      background:#fff;
-      border-radius:8px;
-      border: 4px solid var(--frame-pink-light); /* thin and lighter */
-      overflow:hidden;
+      aspect-ratio: 3 / 4;
+      background: #fff;
+      border-radius: 8px;
+      border: 4px solid var(--frame-pink-light);
+      overflow: hidden;
       box-shadow: 0 8px 22px var(--shadow);
-      z-index: 30;                /* make center-box above photos so it slightly overlaps corners */
+      z-index: 30; /* below center-box so the box overlaps only part of corner */
     }
-    .frame-img{ width:100%; height:100%; object-fit:cover; display:block; background:#f6f6f6; }
+    .frame-img { width:100%; height:100%; object-fit: cover; display:block; background:#f6f6f6; }
 
-    .photo-left { left:6%; top: 80px; }
-    .photo-right{ right:6%; top: calc(50% + 72px); transform: translateY(-18%); }
+    .photo-left { left: 6%; top: 80px; }
+    /* moved to the right so only a small top-left corner is covered */
+    .photo-right { right: -8%; top: calc(50% + 72px); transform: translateY(-18%); }
 
-    .corner-flower{
-      position:absolute;
-      width:28px;
-      height:28px;
-      top:-6px;
-      left:-6px;
+    .corner-flower {
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      top: -6px;
+      left: -6px;
       z-index: 32;
-      pointer-events:none;
+      pointer-events: none;
     }
-    .photo-right .corner-flower{ right:-6px; left:auto; top:-6px; }
+    .photo-right .corner-flower { right:-6px; left:auto; top:-6px; }
 
-    /* center translucent message box - more translucent */
-    .center-box{
-      position:absolute;
-      left:50%;
+    /* center translucent message box -- more translucent + stronger blur */
+    .center-box {
+      position: absolute;
+      left: 50%;
       transform: translateX(-50%);
-      top: 170px;                 /* tuned to overlap only slightly */
+      top: 170px;               /* tuned so overlap is subtle */
       width: 66%;
       min-width: 260px;
       max-width: 360px;
       height: 54vh;
       min-height: 300px;
       max-height: 560px;
-      z-index: 34;                /* above photos to cover corners slightly */
+      z-index: 34;              /* above photos so box covers only a little corner */
       display:flex;
       align-items:center;
       justify-content:center;
-      padding:0;
+      padding: 0;
+      pointer-events: auto;
     }
 
-    .center-inner{
-      width:100%;
-      height:100%;
+    .center-inner {
+      width: 100%;
+      height: 100%;
       border-radius: 18px;
-      background: rgba(255,255,255,0.60); /* more translucent (0.60) */
-      backdrop-filter: blur(10px);
+      /* more translucent: lower alpha */
+      background: rgba(255,255,255,0.52);
+      backdrop-filter: blur(12px);
       box-shadow: 0 22px 40px rgba(0,0,0,0.06);
       padding: 40px 24px;
       display:flex;
       align-items:center;
       justify-content:center;
       text-align:center;
-      position:relative;
+      position: relative;
     }
 
-    .typed-wrap{
-      width:100%;
-      max-width:86%;
-      margin:0 auto;
+    .typed-wrap {
+      width: 100%;
+      max-width: 86%;
+      margin: 0 auto;
       font-size: clamp(16px, 2.6vw, 20px);
-      line-height:1.6;
-      color:#111;
+      line-height: 1.6;
+      color: #111;
       min-height: 4.6em;
     }
-    .typed-wrap p{ margin:0; padding:0; }
+    .typed-wrap p { margin:0; padding:0; }
 
-    /* bottom: Next button, arrow positioned lower (no overlap) */
-    .bottom-row{
-      position:absolute;
-      left:50%;
+    /* bottom: Next button and arrow. Arrow moved a bit up (higher) so it doesn't touch button or box */
+    .bottom-row {
+      position: absolute;
+      left: 50%;
       transform: translateX(-50%);
       bottom: 20px;
-      width:100%;
+      width: 100%;
       display:flex;
       justify-content:center;
       align-items:center;
       z-index: 60;
-      pointer-events:auto;
+      pointer-events: auto;
     }
 
-    .next-wrapper{ position: relative; display:flex; align-items:center; justify-content:center; }
+    .next-wrapper { position: relative; display:flex; align-items:center; justify-content:center; }
 
-    .next-btn{
-      background:#fff;
-      border:8px solid #111;
-      padding:10px 34px;
-      border-radius:8px;
+    .next-btn {
+      background: #fff;
+      border: 8px solid #111;
+      padding: 10px 34px;
+      border-radius: 8px;
       font-size: clamp(14px, 3vw, 22px);
-      font-weight:700;
-      cursor:pointer;
+      font-weight: 700;
+      cursor: pointer;
       box-shadow: 0 12px 0 rgba(0,0,0,0.06);
-      z-index:62;
-      margin-left: -28px; /* slight left shift as earlier requested */
+      z-index: 62;
+      margin-left: -28px;
     }
 
-    /* arrow moved down (smaller negative top) so it does not overlap the box */
-    .arrow-down{
-      position:absolute;
-      top: -18px;  /* closer to the button, so it won't overlap the message box */
+    /* arrow placed higher (more negative value) but still not touching message box or button */
+    .arrow-down {
+      position: absolute;
+      /* moved arrow a bit up so it's centered in gap and does not touch next or box */
+      top: -40px; /* increased negative top to lift arrow further up */
       left: 50%;
       transform: translateX(-50%);
-      width:36px;
-      height:36px;
-      z-index:64;
-      pointer-events:none;
+      width: 36px;
+      height: 36px;
+      z-index: 64;
+      pointer-events: none;
       animation: arrow-bounce 1.2s ease-in-out infinite;
     }
-    @keyframes arrow-bounce{
-      0% { transform: translateX(-50%) translateY(0); opacity:1; }
-      50% { transform: translateX(-50%) translateY(-6px); opacity:.96; }
-      100% { transform: translateX(-50%) translateY(0); opacity:1; }
+
+    @keyframes arrow-bounce {
+      0% { transform: translateX(-50%) translateY(0); opacity: 1; }
+      50% { transform: translateX(-50%) translateY(-6px); opacity: .96; }
+      100% { transform: translateX(-50%) translateY(0); opacity: 1; }
     }
 
-    /* decorations */
-    .deco-svg{ position:absolute; z-index:4; pointer-events:none; opacity:.95; }
-    .flower-left{ left:4%; top:200px; width:92px; opacity:.14; }
-    .flower-right{ right:6%; top:120px; width:110px; opacity:.12; }
-    .balloon-small{ left:6%; top:30px; width:48px; opacity:1; }
-    .balloon-top-right{ right:10%; top:26px; width:60px; opacity:1; }
-
-    @media (max-width:420px){
-      .photo-frame{ width: 30%; min-width: 88px; max-width:140px; }
-      .center-box{ top:180px; width:86%; height:56vh; }
-      .photo-left{ top:94px; left:4%; }
-      .photo-right{ top: calc(52% + 36px); right:4%; }
-      .arrow-down{ top:-14px; width:32px; height:32px; }
-      .deco-svg{ display:block }
+    /* responsive */
+    @media (max-width:420px) {
+      .photo-frame { width: 30%; min-width: 88px; max-width: 140px; }
+      .center-box { top: 180px; width: 86%; height: 56vh; }
+      .photo-left { top: 94px; left: 4%; }
+      /* on narrow screens keep the right photo less off-canvas */
+      .photo-right { right: -4%; top: calc(52% + 36px); }
+      .arrow-down { top: -28px; width: 32px; height: 32px; }
     }
   </style>
 </head>
 <body>
   <div class="stage" role="main" aria-label="Birthday card">
-
-    <!-- subtle background decorations (SVGs) -->
-    <div class="bg-deco" aria-hidden="true">
-      <svg class="deco-svg flower-left" viewBox="0 0 100 100" aria-hidden="true">
-        <defs><linearGradient id="gfl" x1="0" x2="1"><stop offset="0" stop-color="#ffd9e6"/><stop offset="1" stop-color="#ffc3db"/></linearGradient></defs>
-        <g fill="url(#gfl)"><circle cx="50" cy="50" r="22" /></g>
-      </svg>
-
-      <svg class="deco-svg balloon-top-right" viewBox="0 0 120 140" aria-hidden="true">
-        <defs><linearGradient id="gbl" x1="0" x2="1"><stop offset="0" stop-color="#ffd54a"/><stop offset="1" stop-color="#ff7fb2"/></linearGradient></defs>
-        <g><ellipse cx="26" cy="32" rx="18" ry="22" fill="url(#gbl)"/></g>
-      </svg>
-
-      <svg class="deco-svg flower-right" viewBox="0 0 120 120" aria-hidden="true">
-        <defs><linearGradient id="gfr" x1="0" x2="1"><stop offset="0" stop-color="#ffe0e9"/><stop offset="1" stop-color="#ffd6df"/></linearGradient></defs>
-        <g><circle cx="60" cy="60" r="30" fill="url(#gfr)"/></g>
-      </svg>
-
-      <svg class="deco-svg balloon-small" viewBox="0 0 64 64" aria-hidden="true">
-        <defs><linearGradient id="gbs" x1="0" x2="1"><stop offset="0" stop-color="#ff9fc2"/><stop offset="1" stop-color="#ff6f91"/></linearGradient></defs>
-        <g><ellipse cx="18" cy="18" rx="12" ry="14" fill="url(#gbs)"/></g>
-      </svg>
-    </div>
 
     <!-- title -->
     <div class="title">
@@ -228,7 +201,7 @@
       <div>HAPPY BIRTHDAY</div>
     </div>
 
-    <!-- left photo (bigger) -->
+    <!-- left photo (unchanged size for now) -->
     <div class="photo-frame photo-left" aria-label="Left photo frame">
       <img class="frame-img" src="photo-left.jpg" alt="Left photo (replace)">
       <svg class="corner-flower" viewBox="0 0 24 24" aria-hidden="true">
@@ -239,7 +212,7 @@
       </svg>
     </div>
 
-    <!-- right photo (bigger) -->
+    <!-- right photo moved more to the side (less covered by centre box) -->
     <div class="photo-frame photo-right" aria-label="Right photo frame">
       <img class="frame-img" src="photo-right.jpg" alt="Right photo (replace)">
       <svg class="corner-flower" viewBox="0 0 24 24" aria-hidden="true" style="right:-6px; left:auto; top:-6px;">
@@ -250,7 +223,7 @@
       </svg>
     </div>
 
-    <!-- center translucent box (more translucent) -->
+    <!-- center translucent message box (more translucent) -->
     <div class="center-box" aria-hidden="false">
       <div class="center-inner">
         <div class="typed-wrap" id="typed">
@@ -261,7 +234,7 @@
       </div>
     </div>
 
-    <!-- bottom Next with arrow above (arrow moved down to avoid overlapping box) -->
+    <!-- bottom center Next button with arrow above it (arrow moved up as requested) -->
     <div class="bottom-row" role="group" aria-label="Next control">
       <div class="next-wrapper">
         <svg class="arrow-down" viewBox="0 0 44 44" aria-hidden="true" focusable="false">
