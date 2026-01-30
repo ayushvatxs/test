@@ -50,7 +50,7 @@
       font-size: clamp(28px, 7vw, 44px);
       letter-spacing: 2px;
       white-space: nowrap;
-      margin-top: -8px;  /* move title up */
+      margin-top: -24px;  /* move title up */
     }
     .title .emoji { transform: translateY(-2px); font-size: 0.95em; }
 
@@ -72,15 +72,15 @@
 
     /* LEFT photo moved up & left (so title + left image + box all sit higher) */
     .photo-left{
-      left: -6%;   /* push further left */
-      top: 64px;   /* push further up */
+      left: -12%;   /* push further left */
+      top: 48px;   /* push further up */
     }
 
     /* RIGHT photo: pushed more to the right so only small corner is overlapped */
     .photo-right{
       right: -6%;
-      top: calc(50% + 92px);
-      transform: translateY(-12%);
+      top: 240px;
+      transform: none;
     }
 
     .corner-flower{
@@ -96,14 +96,15 @@
 
     /* Center translucent message box: narrower and taller so it only covers small corners */
     .center-box{
-      position: absolute;
+      position: relative;
       left: 50%;
       transform: translateX(-50%);
       top: 96px;      /* move box up */
       width: 52%;     /* slightly narrower */
       min-width: 260px;
       max-width: 420px;
-      height: 64vh;              /* taller so content fits without widening the box */
+      margin: 160px auto 0; /* ✅ pushes box down naturally */
+      height: auto;         /* ❌ remove forced vh height */
       min-height: 320px;
       max-height: 720px;
       z-index: 30;               /* above photos so it covers small corners equally */
@@ -178,8 +179,8 @@
     /* Responsive: phone tuning so images and box keep the same relationship */
     @media (max-width:420px){
       .photo-frame{ width:36%; min-width:96px; max-width:160px; }
-      .photo-left{ left: -8%; top: 28px; }        /* further up on mobile */
-      .photo-right{ right: -2%; top: calc(50% + 120px); transform: translateY(-8%); } /* keep right photo visible */
+      .photo-left{ left: -10%; top: 12px; }        /* further up on mobile */
+      .photo-right{ right: -2%; top: 300px; } /* keep right photo visible */
 
       .center-box{
         top: 86px;               /* move box up more on mobile */
