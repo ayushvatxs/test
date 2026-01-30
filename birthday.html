@@ -36,6 +36,14 @@
       overflow: visible;
     }
 
+    .content-row{
+  display: grid;
+  grid-template-columns: 1fr 1.4fr 1fr;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+}
+
     /* Title moved up */
     .title{
       position: relative;
@@ -50,13 +58,13 @@
       font-size: clamp(28px, 7vw, 44px);
       letter-spacing: 2px;
       white-space: nowrap;
-      margin-top: -24px;  /* move title up */
+      margin-top: -18px;  /* move title up */
     }
     .title .emoji { transform: translateY(-2px); font-size: 0.95em; }
 
     /* Photo frames — bigger images, thin lighter border */
     .photo-frame{
-      position: absolute;
+      position: relative;
       width: 34%;                /* bigger images */
       min-width: 130px;
       max-width: 210px;
@@ -96,23 +104,18 @@
 
     /* Center translucent message box: narrower and taller so it only covers small corners */
     .center-box{
-      position: relative;
-      left: 50%;
-      transform: translateX(-50%);
-      top: 96px;      /* move box up */
-      width: 52%;     /* slightly narrower */
-      min-width: 260px;
-      max-width: 420px;
-      margin: 160px auto 0; /* ✅ pushes box down naturally */
-      height: auto;         /* ❌ remove forced vh height */
-      min-height: 320px;
-      max-height: 720px;
-      z-index: 30;               /* above photos so it covers small corners equally */
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:0;
-    }
+  width: 100%;
+  min-height: 320px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.45);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 26px 48px rgba(0,0,0,0.08);
+  padding: 36px 28px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
 
     .center-inner{
       width:100%;
@@ -177,22 +180,22 @@
     }
 
     /* Responsive: phone tuning so images and box keep the same relationship */
-    @media (max-width:420px){
-      .photo-frame{ width:36%; min-width:96px; max-width:160px; }
-      .photo-left{ left: -10%; top: 12px; }        /* further up on mobile */
-      .photo-right{ right: -2%; top: 300px; } /* keep right photo visible */
+    @media (max-width: 768px){
+  .content-row{
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
 
-      .center-box{
-        top: 86px;               /* move box up more on mobile */
-        width: 78%;              /* slightly wider on small screens but still narrow relative to viewport */
-        height: 54vh;            /* reduce height so bottom button has space */
-      }
-      .center-inner{ padding: 28px 18px; background: rgba(255,255,255,0.44); backdrop-filter: blur(10px); }
+  .photo-frame{
+    max-width: 180px;
+    margin: 0 auto;
+  }
 
-      .bottom-row{ bottom: 18px; } /* ensure button is below the box on mobile */
-      .arrow-down{ top: -36px; }
-      .typed-wrap{ font-size:15px; }
-    }
+  .center-box{
+    min-height: 280px;
+  }
+}
+
   </style>
 </head>
 <body>
