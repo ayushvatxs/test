@@ -24,6 +24,31 @@ body{
   padding:12px;
 }
 
+  .blob{
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(40px);
+  opacity: 0.45;
+  z-index: 1;
+}
+
+.blob.pink{
+  width: 220px;
+  height: 220px;
+  background: #ffd1e6;
+  top: 120px;
+  left: -80px;
+}
+
+.blob.peach{
+  width: 260px;
+  height: 260px;
+  background: #ffe6c9;
+  bottom: 120px;
+  right: -100px;
+}
+
+
 /* MAIN */
 .stage{
   width:min(420px,100%);
@@ -115,6 +140,61 @@ body{
   50%{transform:translateX(6px) rotate(45deg)}
 }
 
+  .heart{
+  position:absolute;
+  width:14px;
+  height:14px;
+  background:#ff7aa2;
+  transform: rotate(45deg);
+  opacity:0.6;
+  animation: floatUp 6s infinite ease-in;
+}
+
+.heart::before,
+.heart::after{
+  content:"";
+  position:absolute;
+  width:14px;
+  height:14px;
+  background:#ff7aa2;
+  border-radius:50%;
+}
+
+.heart::before{ top:-7px; left:0; }
+.heart::after{ left:-7px; top:0; }
+
+@keyframes floatUp{
+  0%{ transform: translateY(0) rotate(45deg); opacity:0; }
+  30%{ opacity:0.6; }
+  100%{ transform: translateY(-160px) rotate(45deg); opacity:0; }
+}
+
+  .sparkle{
+  position:absolute;
+  width:6px;
+  height:6px;
+  background:white;
+  border-radius:50%;
+  box-shadow: 0 0 8px white;
+  animation: sparkle 1.8s infinite alternate;
+}
+
+@keyframes sparkle{
+  from{ opacity:0.2; transform: scale(0.6); }
+  to{ opacity:1; transform: scale(1); }
+}
+
+  .box-glow{
+  position:absolute;
+  inset:-30px;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,160,200,0.25), transparent 60%),
+    radial-gradient(circle at 70% 70%, rgba(255,200,220,0.3), transparent 65%);
+  z-index:-1;
+  filter: blur(18px);
+}
+
+
 /* MOBILE */
 @media(max-width:480px){
   .photo{width:140px}
@@ -126,9 +206,22 @@ body{
 <body>
 
 <div class="stage">
+<div class="heart" style="left:20%; bottom:120px;"></div>
+<div class="heart" style="left:60%; bottom:80px; animation-delay:2s;"></div>
+<div class="heart" style="left:80%; bottom:140px; animation-delay:4s;"></div>
+
+<div class="blob pink"></div>
+<div class="blob peach"></div>
+
 
   <!-- TITLE -->
-  <div class="title">🎈 HAPPY BIRTHDAY</div>
+  <div class="title">
+  🎈 HAPPY BIRTHDAY
+  <span class="sparkle s1">✨</span>
+  <span class="sparkle s2">✨</span>
+  <span class="sparkle s3">✨</span>
+</div>
+
 
   <!-- LEFT PHOTO -->
   <div class="photo photo-left">
@@ -137,6 +230,8 @@ body{
 
   <!-- MESSAGE BOX -->
   <div class="center-box">
+    <div class="box-glow"></div>
+
     <p>
       Translucent white box<br>
       I will write a paragraph<br>
