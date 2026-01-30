@@ -34,12 +34,16 @@
       margin: 0 auto;
       padding-bottom: 120px;
       overflow: visible;
+      min-height: 640px;
     }
 
     /* Title moved up */
     .title{
-      position: relative;
-      z-index: 30;
+      position: absolute;
+      top: 10px;             /* fixed near top so it's higher on all viewports */
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 50;
       display:flex;
       align-items:center;
       justify-content:center;
@@ -47,40 +51,40 @@
       font-family: "Baloo 2", system-ui, sans-serif;
       color: #16b8ff;
       font-weight: 800;
-      font-size: clamp(28px, 7vw, 44px);
+      font-size: clamp(26px, 6.5vw, 44px);
       letter-spacing: 2px;
       white-space: nowrap;
-      margin-top: 8px;
     }
     .title .emoji { transform: translateY(-2px); font-size: 0.95em; }
 
     /* Photo frames — bigger images, thin lighter border */
     .photo-frame{
       position: absolute;
-      width: 34%;                /* bigger images */
-      min-width: 130px;
-      max-width: 210px;
+      width: 36%;                /* bigger images */
+      min-width: 110px;
+      max-width: 220px;
       aspect-ratio: 3/4;
       background: #fff;
-      border-radius: 9px;
+      border-radius: 10px;
       border: 5px solid var(--frame-pink);
       overflow: hidden;
       box-shadow: 0 10px 30px var(--shadow);
-      z-index: 28;               /* photos slightly under box so box can overlap a small corner */
+      z-index: 28;               /* photos under box */
+      transition: top 220ms ease, left 220ms ease, right 220ms ease, transform 220ms ease;
     }
     .photo-frame img{ width:100%; height:100%; object-fit:cover; display:block; background:#f6f6f6; }
 
     /* LEFT photo moved up & left (so title + left image + box all sit higher) */
     .photo-left{
-      left: 4%;
-      top: 46px;                /* moved up */
+      left: 6%;
+      top: 62px;                /* initial top for desktop */
     }
 
-    /* RIGHT photo: pushed more to the right so only small corner is overlapped */
+    /* RIGHT photo: pushed to right so only small corner is overlapped */
     .photo-right{
-      right: -6%;
-      top: calc(50% + 92px);
-      transform: translateY(-12%);
+      right: -8%;
+      top: 60%;
+      transform: translateY(-20%);
     }
 
     .corner-flower{
@@ -94,23 +98,25 @@
     }
     .photo-right .corner-flower{ right:-6px; left:auto; top:-6px; }
 
-    /* Center translucent message box: narrower and taller so it only covers small corners */
+    /* Center translucent message box: narrower so it only covers small corners */
     .center-box{
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-      top: 110px;                /* move box up a bit so overlap is small on photos */
-      width: 56%;                /* narrower so images remain visible */
+      top: 120px;                /* positioned below title but above midline */
+      width: 58%;
       min-width: 260px;
       max-width: 420px;
-      height: 64vh;              /* taller so content fits without widening the box */
-      min-height: 320px;
+      height: 62vh;
+      min-height: 300px;
       max-height: 720px;
       z-index: 30;               /* above photos so it covers small corners equally */
       display:flex;
       align-items:center;
       justify-content:center;
       padding:0;
+      border-radius: 20px;
+      pointer-events: auto;
     }
 
     .center-inner{
@@ -126,6 +132,7 @@
       justify-content:center;
       text-align:center;
       position: relative;
+      overflow: hidden;
     }
     .typed-wrap{
       width:100%;
@@ -175,15 +182,25 @@
       100%{ transform: translateX(-50%) translateY(0); }
     }
 
+    /* Small visual tweak: ensure box only clips tiny corner of photos,
+       by nudging photos slightly upward on narrow viewports */
+    @media (max-width:900px){
+      .photo-left{ top: 54px; }
+      .photo-right{ top: 46%; transform: translateY(-28%); right: -6%; }
+      .center-box{ top: 110px; }
+    }
+
     /* Responsive: phone tuning so images and box keep the same relationship */
     @media (max-width:420px){
-      .photo-frame{ width:36%; min-width:96px; max-width:160px; }
-      .photo-left{ left: 2%; top: 36px; }        /* further up on mobile */
+      .stage{ min-height: 740px; }
+      .title{ top: 8px; font-size: clamp(22px, 7.5vw, 36px); }
+      .photo-frame{ width:36%; min-width:92px; max-width:160px; }
+      .photo-left{ left: 4%; top: 46px; }        /* further up on mobile */
       .photo-right{ right: -2%; top: calc(50% + 120px); transform: translateY(-8%); } /* keep right photo visible */
 
       .center-box{
-        top: 96px;               /* move box up more on mobile */
-        width: 80%;              /* slightly wider on small screens but still narrow relative to viewport */
+        top: 92px;               /* move box up more on mobile */
+        width: 78%;              /* slightly wider on small screens but still narrow relative to viewport */
         height: 54vh;            /* reduce height so bottom button has space */
       }
       .center-inner{ padding: 28px 18px; background: rgba(255,255,255,0.44); backdrop-filter: blur(10px); }
@@ -191,6 +208,14 @@
       .bottom-row{ bottom: 18px; } /* ensure button is below the box on mobile */
       .arrow-down{ top: -36px; }
       .typed-wrap{ font-size:15px; }
+    }
+
+    /* Desktop wide screens - keep layout centered and photos visible */
+    @media (min-width:900px){
+      .stage{ width:420px; }
+      .photo-left{ left: 2%; top: 72px; }
+      .photo-right{ right: -12%; top: 58%; transform: translateY(-18%); }
+      .center-box{ top: 140px; width: 54%; }
     }
   </style>
 </head>
@@ -291,6 +316,23 @@
       a.addEventListener('click', ()=> document.getElementById('nextBtn').focus());
       a.style.cursor = 'pointer';
     });
+
+    // Small safety: if images are tall on some screens, reduce box height to avoid hiding photos
+    function adjustForImages(){
+      const left = document.querySelector('.photo-left');
+      const right = document.querySelector('.photo-right');
+      const box = document.querySelector('.center-box');
+      if(!left || !right || !box) return;
+      // if photos are taller than box area, lower the box slightly
+      const stageRect = document.querySelector('.stage').getBoundingClientRect();
+      const leftRect = left.getBoundingClientRect();
+      const overlapThreshold = 80; // px
+      if(leftRect.top + leftRect.height * 0.6 < stageRect.top + overlapThreshold){
+        box.style.top = (parseInt(getComputedStyle(box).top) + 8) + 'px';
+      }
+    }
+    window.addEventListener('load', adjustForImages);
+    window.addEventListener('resize', adjustForImages);
   </script>
 </body>
 </html>
