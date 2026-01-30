@@ -10,184 +10,191 @@
 
   <style>
     :root{
-      --stage-width: 420px;    /* change this to suit your target device width */
+      --stage-width: 420px;
+      --pastel-pink: #ffe6ef;
       --pink: #ff2b87;
-      --purple: #e79bff;
+      --shadow: rgba(0,0,0,0.08);
     }
 
-    /* Basic reset */
-    *, *::before, *::after { box-sizing: border-box; }
-    html, body { height: 100%; margin: 0; }
+    /* Reset */
+    *, *::before, *::after { box-sizing:border-box; }
+    html,body { height:100%; margin:0; }
     body{
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial;
       -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
-      background: #fff;
-      display: flex;
-      justify-content: center;
+      background: var(--pastel-pink);
+      display:flex;
+      justify-content:center;
       padding: 18px 12px;
     }
 
-    /* Stage centered and responsive */
+    /* Stage */
     .stage{
-      width: min(var(--stage-width), 95vw);
+      width: min(var(--stage-width), 96vw);
       max-width: var(--stage-width);
       position: relative;
       margin: 0 auto;
-      height: auto;
-      /* ensure there's enough vertical room for the composition */
-      padding-bottom: 140px;
+      padding-bottom: 140px; /* room for next button area */
       overflow: visible;
     }
 
-    /* Title */
+    /* Title - keep on one line */
     .title{
       display:flex;
       align-items:center;
       justify-content:center;
       gap: 10px;
       font-family: "Baloo 2", system-ui, sans-serif;
-      color: #1fc7ff;
+      color: #16b8ff;
       font-weight: 800;
-      font-size: clamp(28px, 6vw, 46px);
+      font-size: clamp(30px, 7vw, 48px);
       letter-spacing: 2px;
+      white-space: nowrap; /* ensure HAPPY and BIRTHDAY same line */
       margin-top: 6px;
     }
-    .title .balloon-emoji { font-size: 1.1em; transform: translateY(-4px); }
+    .title .emoji { font-size: 0.95em; transform: translateY(-3px); }
 
-    /* Photo frame shared */
-    .photo-frame{
-      position: absolute;
-      width: 28%;
-      aspect-ratio: 3 / 4; /* keeps a portrait frame */
-      min-width: 110px;
-      max-width: 150px;
-      border: 10px solid var(--pink);
-      border-radius: 8px;
-      background: #fff;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-    }
-    /* image inside frame */
-    .photo-frame img.frame-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      background: #f7f7f7;
-    }
-
-    /* Top-left frame (slightly above center box) */
-    .photo-left{
-      left: 6%;
-      top: 72px;
-      z-index: 6; /* above center box */
-      transform: translateZ(0);
-    }
-    /* Right-lower frame (overlaps center box bottom-right) */
-    .photo-right{
-      right: 6%;
-      top: 54%;
-      transform: translateY(-20%);
-      z-index: 6;
-    }
-
-    /* corner flower decorations */
-    .corner-flower{
-      position: absolute;
-      width: 36px;
-      height: 36px;
-      object-fit: contain;
-      pointer-events: none;
-      z-index: 8;
-    }
-    .photo-left .corner-flower { top: -10px; left: -10px; }
-    .photo-right .corner-flower { top: -10px; right: -10px; }
-
-    /* center framed translucent box */
-    .center-outer{
+    /* CENTER translucent message box (no purple frame) */
+    .center-box {
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
       top: 120px;
-      width: 64%;
-      max-width: 330px;
-      min-width: 250px;
-      height: 58vh;
+      width: 68%;
+      min-width: 260px;
+      max-width: 340px;
+      height: 56vh;
+      min-height: 320px;
       max-height: 520px;
-      min-height: 300px;
-      z-index: 4;
-      display: block;
+      z-index: 30; /* center box sits above photos */
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      pointer-events: auto;
     }
-    /* purple border created with ::before so inner box can be translucent */
-    .center-outer::before{
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: 10px;
-      border: 12px solid var(--purple);
-      pointer-events: none;
-      box-shadow: 0 10px 30px rgba(231,155,255,0.12);
-      background: transparent;
-      z-index: 4;
-    }
-    /* inner translucent area */
+
     .center-inner{
-      position: absolute;
-      inset: 18px; /* leaves room for purple border */
-      border-radius: 6px;
-      background: rgba(255,255,255,0.9);
+      width: 100%;
+      height: 100%;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.85); /* translucent white */
       backdrop-filter: blur(6px);
-      padding: clamp(24px, 3.5vw, 48px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      z-index: 5;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.06) inset;
+      box-shadow: 0 12px 30px var(--shadow);
+      padding: 40px 24px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
     }
     .center-inner p{
+      margin:0;
+      color:#111;
       font-size: clamp(16px, 2.6vw, 20px);
-      line-height: 1.6;
-      color: #111;
-      margin: 0;
+      line-height:1.6;
     }
 
-    /* decorative floral (left) and balloons (right-top) */
-    .floral-left, .balloon-cluster{
+    /* PHOTO FRAMES (placed behind center box; only slightly overlap) */
+    .photo-frame{
       position: absolute;
-      width: 12%;
-      max-width: 84px;
-      pointer-events: none;
-      z-index: 3;
+      width: 30%;
+      min-width: 110px;
+      max-width: 150px;
+      aspect-ratio: 3/4;
+      background: #fff;
+      border-radius: 8px;
+      border: 10px solid var(--pink);
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      z-index: 20; /* lower than center-box so photos sit behind */
     }
-    .floral-left { left: calc(50% - 46%); top: calc(120px + 38%); transform: translateX(-28%); }
-    .balloon-cluster { right: calc(50% - 40%); top: calc(120px - 20px); transform: translateX(36%); }
+    .frame-img{
+      display:block;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      background: #f6f6f6;
+    }
+    /* top-left frame (slightly under the center) */
+    .photo-left{ left: 6%; top: 68px; transform: translateY(0); }
+    /* right-bottom frame (partially behind center box) */
+    .photo-right{ right: 6%; top: calc(50% + 60px); transform: translateY(-20%); }
 
-    /* bottom next area */
+    /* corner flower decoration */
+    .corner-flower{
+      position: absolute;
+      width: 34px;
+      height: 34px;
+      object-fit:contain;
+      z-index: 28;
+      pointer-events: none;
+    }
+    .photo-left .corner-flower { top: -8px; left: -8px; }
+    .photo-right .corner-flower { top: -8px; right: -8px; }
+
+    /* stickers (balloons, floral) - try to avoid black background showing */
+    .sticker {
+      position: absolute;
+      width: 84px;
+      height: auto;
+      pointer-events: none;
+      z-index: 26;
+      background: transparent;
+      mix-blend-mode: normal; /* change to 'screen' or 'lighten' only if it helps with black canvas */
+      image-rendering: auto;
+      filter: drop-shadow(0 6px 12px rgba(0,0,0,0.08));
+    }
+
+    /* example positions for stickers */
+    .sticker.balloon { right: 18%; top: 94px; transform: translateX(12px); }
+    .sticker.top-mini { right: 6%; top: 8px; width:40px; }
+
+    /* NEXT area: place at bottom, centered. The hint animates and arrow points to the button */
     .next-area{
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-      bottom: 12px;
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      gap: 16px;
-      align-items: center;
-      z-index: 10;
+      bottom: 10px;
+      display:flex;
+      align-items:center;
+      gap: 18px;
+      z-index: 60;
+      pointer-events: auto;
     }
-    .hint{
+
+    .hint-wrapper {
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+      gap:4px;
+      margin-right: 6px;
+    }
+
+    .hint-text{
       font-family: "Baloo 2", system-ui, sans-serif;
       font-size: clamp(18px, 3.6vw, 28px);
-      text-align: right;
       color: #111;
-      white-space: nowrap;
+      animation: hint-pulse 1.6s ease-in-out infinite;
     }
-    .hint .arrow{ display:block; font-size: clamp(28px, 6vw, 48px); transform: translateY(6px); }
+
+    @keyframes hint-pulse{
+      0%,100% { transform: translateY(0); opacity:1; }
+      50% { transform: translateY(-6px); opacity:0.95; }
+    }
+
+    /* arrow pointing down-right toward button: the arrow will nudge */
+    .hint-arrow{
+      font-size: clamp(28px, 6vw, 48px);
+      transform-origin: center;
+      display:block;
+      color:#111;
+      animation: arrow-bounce 1.2s ease-in-out infinite;
+    }
+    @keyframes arrow-bounce{
+      0% { transform: translate(0,0) rotate(90deg); }
+      50% { transform: translate(6px,6px) rotate(90deg); }
+      100% { transform: translate(0,0) rotate(90deg); }
+    }
 
     .next-btn{
       background: #fff;
@@ -198,47 +205,46 @@
       font-weight: 700;
       cursor: pointer;
       box-shadow: 0 10px 0 rgba(0,0,0,0.06);
-      z-index: 11;
+      transform: translateY(0);
     }
 
-    /* ensure decorative images never overflow stage */
-    img.fallback, img.frame-img, .floral-left, .balloon-cluster { max-width: 100%; height: auto; display: block; }
-
-    /* small screen fine-tuning */
-    @media (max-width: 420px){
+    /* Responsiveness tweaks */
+    @media (max-width:420px){
       .photo-left { top: 86px; left: 4%; }
-      .photo-right { top: 54%; right: 4%; transform: translateY(-24%); }
-      .center-outer { top: 136px; width: 86%; height: 56vh; }
-      .floral-left { left: 8%; top: calc(100% - 280px); transform: none; }
-      .balloon-cluster { right: 6%; top: 110px; transform: none; }
-      .next-area { bottom: 6px; }
+      .photo-right { top: calc(52% + 30px); right: 4%; }
+      .center-box { top: 140px; width: 86%; height: 56vh; }
+      .sticker.balloon { right: 8%; top: 94px; transform:none; width:68px; }
+      .next-area { bottom: 6px; gap: 12px; }
     }
   </style>
 </head>
 <body>
   <div class="stage" role="main" aria-label="Birthday card">
 
-    <!-- TITLE -->
+    <!-- TITLE (both words in same line) -->
     <div class="title" aria-hidden="false">
-      <div class="balloon-emoji">🎈</div>
+      <div class="emoji">🎈</div>
       <div>HAPPY BIRTHDAY</div>
     </div>
 
-    <!-- LEFT PHOTO -->
+    <!-- LEFT PHOTO (sits behind center box) -->
     <div class="photo-frame photo-left" aria-label="Left picture frame">
-      <!-- Use your image; if missing a subtle gray background will show -->
       <img class="frame-img" src="photo-left.jpg" alt="Left photo (replace with your image)">
       <img class="corner-flower" src="single-flower.png" alt="" aria-hidden="true">
     </div>
 
-    <!-- RIGHT PHOTO -->
+    <!-- RIGHT PHOTO (sits behind center box) -->
     <div class="photo-frame photo-right" aria-label="Right picture frame">
       <img class="frame-img" src="photo-right.jpg" alt="Right photo (replace with your image)">
       <img class="corner-flower" src="single-flower.png" alt="" aria-hidden="true">
     </div>
 
-    <!-- CENTER translucent framed box -->
-    <div class="center-outer" aria-hidden="false">
+    <!-- STICKERS (balloons etc). Replace these files with PNGs/SVGs that have transparent backgrounds for best results -->
+    <img class="sticker balloon" src="balloon.png" alt="" aria-hidden="true">
+    <img class="sticker top-mini" src="mini-flower.png" alt="" aria-hidden="true">
+
+    <!-- CENTER translucent message box (above photos; no purple frame) -->
+    <div class="center-box" aria-hidden="false">
       <div class="center-inner">
         <p>
           Translucent white box<br>
@@ -248,24 +254,26 @@
       </div>
     </div>
 
-    <!-- decorative floral cluster left -->
-    <img class="floral-left" src="floral-cluster-left.png" alt="" aria-hidden="true">
-
-    <!-- decorative balloon cluster top-right -->
-    <img class="balloon-cluster" src="balloon.png" alt="" aria-hidden="true">
-
-    <!-- BOTTOM NEXT -->
+    <!-- NEXT area: Click here + arrow + Next button -->
     <div class="next-area" aria-hidden="false">
-      <div style="display:flex;flex-direction:column;align-items:flex-end;">
-        <div class="hint">
-          Click here
-          <span class="arrow">⬇</span>
-        </div>
+      <div class="hint-wrapper" aria-hidden="false">
+        <div class="hint-text">Click here</div>
+        <!-- arrow rotated to point toward the Next button (rotate via CSS animation) -->
+        <div class="hint-arrow" aria-hidden="true">⬇</div>
       </div>
 
       <button class="next-btn" type="button" aria-label="Next">Next</button>
     </div>
 
   </div>
+
+  <!-- small JS: ensure arrow/animations steady; no heavy scripts needed -->
+  <script>
+    // small accessibility improvement: focus Next button on click of hint text
+    document.querySelectorAll('.hint-text, .hint-arrow').forEach(el=>{
+      el.addEventListener('click', ()=> document.querySelector('.next-btn').focus());
+      el.style.cursor = 'pointer';
+    });
+  </script>
 </body>
 </html>
