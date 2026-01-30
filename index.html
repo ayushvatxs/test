@@ -11,23 +11,23 @@
     :root{
       --stage-w: 420px;
       --pastel-pink: #ffe6ef;
-      --frame-pink-light: #ff9dbf;
+      --frame-pink-light: #ffc1d6;
       --shadow: rgba(0,0,0,0.08);
     }
 
     /* Reset */
-    *,*::before,*::after{box-sizing:border-box}
-    html,body{height:100%;margin:0}
-    body{
-      background:var(--pastel-pink);
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      background: var(--pastel-pink);
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial;
       -webkit-font-smoothing:antialiased;
-      display:flex;
-      justify-content:center;
-      padding:18px 12px;
+      display: flex;
+      justify-content: center;
+      padding: 18px 12px;
     }
 
-    .stage{
+    .stage {
       width: min(var(--stage-w), 96vw);
       max-width: var(--stage-w);
       position: relative;
@@ -36,7 +36,8 @@
       overflow: visible;
     }
 
-    .title{
+    /* Title */
+    .title {
       z-index: 20;
       display:flex;
       align-items:center;
@@ -50,67 +51,67 @@
       white-space:nowrap;
       margin-top:6px;
     }
-    .title .emoji{ transform: translateY(-3px); font-size:0.95em; }
+    .title .emoji { transform: translateY(-3px); font-size:0.95em; }
 
-    /* PHOTO FRAMES */
-    .photo-frame{
-      position:absolute;
-      width:28%;                 /* desktop: larger images */
-      min-width:110px;
-      max-width:170px;
-      aspect-ratio:3/4;
-      background:#fff;
-      border-radius:8px;
-      border:4px solid var(--frame-pink-light); /* thin & light */
-      overflow:hidden;
-      box-shadow:0 8px 22px var(--shadow);
-      z-index:30;
+    /* Photo frames: reduced/thin border color lighter */
+    .photo-frame {
+      position: absolute;
+      width: 28%;
+      min-width: 110px;
+      max-width: 170px;
+      aspect-ratio: 3 / 4;
+      background: #fff;
+      border-radius: 8px;
+      border: 4px solid var(--frame-pink-light);
+      overflow: hidden;
+      box-shadow: 0 8px 22px var(--shadow);
+      z-index: 30; /* photos are under center box so box can overlap slightly */
     }
-    .frame-img{ width:100%; height:100%; object-fit:cover; display:block; background:#f6f6f6; }
+    .frame-img { width:100%; height:100%; object-fit:cover; display:block; background:#f6f6f6; }
 
-    .photo-left{ left:6%; top:80px; }
-    /* desktop right position */
-    .photo-right{ right:-4%; top: calc(50% + 72px); transform: translateY(-18%); }
+    /* Position both photos symmetrically (desktop) */
+    .photo-left { left: 6%; top: 76px; }
+    .photo-right { right: 6%; top: calc(50% + 72px); transform: translateY(-18%); }
 
-    .corner-flower{
-      position:absolute;
-      width:28px;
-      height:28px;
-      top:-6px;
-      left:-6px;
-      pointer-events:none;
-      z-index:32;
+    .corner-flower {
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      top: -6px;
+      left: -6px;
+      z-index: 32;
+      pointer-events: none;
     }
-    .photo-right .corner-flower{ right:-6px; left:auto; top:-6px; }
+    .photo-right .corner-flower { right: -6px; left: auto; top: -6px; }
 
-    /* CENTER message box */
-    .center-box{
-      position:absolute;
-      left:50%;
+    /* Center box increased size so it can overlap both images equally */
+    .center-box {
+      position: absolute;
+      left: 50%;
       transform: translateX(-50%);
-      top: 170px;
-      width:66%;
-      min-width:260px;
-      max-width:360px;
-      height:54vh;
-      min-height:300px;
-      max-height:560px;
-      z-index:34; /* sits above photos slightly to cover a small corner */
+      top: 150px;                 /* slightly higher so overlap is equal and subtle */
+      width: 72%;                 /* slightly wider so the left & right overlaps are balanced */
+      min-width: 280px;
+      max-width: 420px;
+      height: 56vh;
+      min-height: 320px;
+      max-height: 640px;
+      z-index: 34;                /* above photos so it covers only small corners */
       display:flex;
       align-items:center;
       justify-content:center;
       padding:0;
     }
 
-    /* more translucent and stronger blur */
-    .center-inner{
-      width:100%;
-      height:100%;
-      border-radius:18px;
-      background: rgba(255,255,255,0.50); /* fairly translucent */
-      backdrop-filter: blur(12px);
-      box-shadow: 0 22px 40px rgba(0,0,0,0.06);
-      padding:40px 24px;
+    /* More translucent: lower alpha and stronger blur */
+    .center-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.46); /* more translucent */
+      backdrop-filter: blur(14px);
+      box-shadow: 0 28px 48px rgba(0,0,0,0.06);
+      padding: 44px 28px;
       display:flex;
       align-items:center;
       justify-content:center;
@@ -118,122 +119,113 @@
       position:relative;
     }
 
-    .typed-wrap{
+    .typed-wrap {
       width:100%;
       max-width:86%;
       margin:0 auto;
       font-size: clamp(16px, 2.6vw, 20px);
       line-height:1.6;
       color:#111;
-      min-height:4.6em;
+      min-height: 4.8em;
     }
-    .typed-wrap p{ margin:0; padding:0; }
+    .typed-wrap p { margin:0; padding:0; }
 
-    /* BOTTOM: arrow + Next button */
-    .bottom-row{
-      position:absolute;
-      left:50%;
+    /* Bottom controls: Next button slightly right-bottom center */
+    .bottom-row {
+      position: absolute;
+      left: 50%;
       transform: translateX(-50%);
-      bottom: 8px; /* desktop default bottom space */
-      width:100%;
+      bottom: 6px;
+      width: 100%;
       display:flex;
       justify-content:center;
       align-items:center;
-      z-index:60;
-      pointer-events:auto;
+      z-index: 60;
+      pointer-events: auto;
     }
 
-    .next-wrapper{ position: relative; display:flex; align-items:center; justify-content:center; }
+    .next-wrapper { position: relative; display:flex; align-items:center; justify-content:center; }
 
-    .next-btn{
-      background:#fff;
-      border:8px solid #111;
-      padding:10px 34px;
-      border-radius:8px;
+    .next-btn {
+      background: #fff;
+      border: 8px solid #111;
+      padding: 10px 34px;
+      border-radius: 8px;
       font-size: clamp(14px, 3vw, 22px);
-      font-weight:700;
-      cursor:pointer;
+      font-weight: 700;
+      cursor: pointer;
       box-shadow: 0 12px 0 rgba(0,0,0,0.06);
-      z-index:62;
-      margin-left:-28px;
+      z-index: 62;
+      margin-left: 36px; /* shift button to right of center (bottom-center but a bit right) */
     }
 
-    /* arrow above button */
-    .arrow-down{
-      position:absolute;
-      top:-34px; /* desktop arrow placed above button; on mobile we'll change */
-      left:50%;
-      transform: translateX(-50%);
-      width:36px;
-      height:36px;
-      z-index:64;
-      pointer-events:none;
+    /* Arrow: move up and slightly left so it doesn't overlap the Next button */
+    .arrow-down {
+      position: absolute;
+      top: -48px;               /* raised above button */
+      left: 50%;
+      transform: translateX(calc(-50% - 8px)); /* slight left shift */
+      width: 36px;
+      height: 36px;
+      z-index: 64;
+      pointer-events: none;
       animation: arrow-bounce 1.2s ease-in-out infinite;
     }
-    @keyframes arrow-bounce{
-      0%{ transform: translateX(-50%) translateY(0); opacity:1; }
-      50%{ transform: translateX(-50%) translateY(-6px); opacity:.96; }
-      100%{ transform: translateX(-50%) translateY(0); opacity:1; }
+    @keyframes arrow-bounce {
+      0% { transform: translateX(calc(-50% - 8px)) translateY(0); opacity: 1; }
+      50% { transform: translateX(calc(-50% - 8px)) translateY(-6px); opacity: .96; }
+      100% { transform: translateX(calc(-50% - 8px)) translateY(0); opacity: 1; }
     }
 
-    /* ----- MOBILE ADJUSTMENTS ----- */
+    /* Responsive: phone adjustments to keep both images visible and box overlap equal */
     @media (max-width: 420px) {
-      /* make center box smaller and move up so it doesn't cover photos too much */
-      .center-box{
-        top: 120px;          /* move the whole box up */
-        height: 46vh;        /* shorten height to leave space for button */
-        width: 86%;
+      .photo-frame { width: 30%; min-width: 84px; max-width: 150px; }
+
+      /* Lift the center box and reduce height so it doesn't cover too much of either photo */
+      .center-box {
+        top: 120px;
+        width: 84%;
+        height: 48vh;
+        min-height: 260px;
       }
-      .center-inner{
-        padding: 30px 18px;
+      .center-inner {
+        padding: 32px 20px;
         border-radius: 14px;
-        background: rgba(255,255,255,0.46);
+        background: rgba(255,255,255,0.44);
         backdrop-filter: blur(10px);
       }
 
-      /* move left photo up & slightly left (nearer to title) */
-      .photo-left{
+      /* move left photo up and slightly left so both images sit nicely relative to box */
+      .photo-left {
         left: 2%;
-        top: 56px;           /* move up on phone */
+        top: 56px;
       }
 
-      /* move right photo slightly down and slightly left (so it's visible) */
-      .photo-right{
-        right: 4%;
-        top: calc(50% + 120px);  /* push down so more of image is visible below the box */
-        transform: translateY(-6%);
+      /* move right photo slightly more to the right and a bit lower than desktop so box overlap is only the top-left corner */
+      .photo-right {
+        right: -2%;
+        top: calc(50% + 108px);
+        transform: translateY(-8%);
       }
 
-      /* make frames a bit smaller on small screens */
-      .photo-frame{
-        width: 30%;
-        min-width: 82px;
-        max-width: 140px;
-        border-width: 4px;
+      /* arrow and next: push further down on phones so no overlap with box */
+      .bottom-row { bottom: 14px; }
+      .arrow-down {
+        top: -36px; /* closer to button but still clear of the center box */
+        transform: translateX(calc(-50% - 8px));
       }
 
-      /* move arrow and Next button further down, so they are clearly below the box */
-      .bottom-row{
-        bottom: 18px;        /* more bottom offset on mobile */
-      }
-
-      .arrow-down{
-        top: -18px;         /* arrow above the button but clear of the box */
-        width: 34px;
-        height: 34px;
-      }
-
-      /* Slightly reduce text size inside center */
-      .typed-wrap{ font-size: 16px; }
+      /* keep typed text a touch smaller */
+      .typed-wrap { font-size: 15px; }
     }
 
-    /* small screens narrower than 360px: tune further */
+    /* very small devices */
     @media (max-width: 360px) {
-      .center-box{ top:110px; height:44vh; }
-      .photo-left{ top:50px; left: 2%; }
-      .photo-right{ top: calc(50% + 130px); right: 6%; transform: translateY(-4%); }
-      .bottom-row{ bottom: 14px; }
-      .arrow-down{ top: -14px; }
+      .center-box { top: 110px; height: 46vh; }
+      .photo-left { top: 50px; left: 2%; }
+      .photo-right { right: 0%; top: calc(50% + 120px); transform: translateY(-6%); }
+      .arrow-down { top: -32px; }
+      .next-btn { margin-left: 28px; padding: 8px 28px; }
     }
   </style>
 </head>
@@ -246,29 +238,29 @@
       <div>HAPPY BIRTHDAY</div>
     </div>
 
-    <!-- Left photo (moved up & left on mobile via media query) -->
+    <!-- Left photo -->
     <div class="photo-frame photo-left" aria-label="Left photo frame">
       <img class="frame-img" src="photo-left.jpg" alt="Left photo (replace)">
       <svg class="corner-flower" viewBox="0 0 24 24" aria-hidden="true">
         <g fill="none" fill-rule="evenodd">
-          <circle cx="12" cy="12" r="10" fill="#ffb6d0"/>
+          <circle cx="12" cy="12" r="10" fill="#ffd0df"/>
           <path d="M12 7a1 1 0 01.94.66l.9 2.5a1 1 0 01-.35 1.09l-2 1.6a1 1 0 01-1.17 0l-2-1.6a1 1 0 01-.35-1.09l.9-2.5A1 1 0 0112 7z" fill="#fff" opacity="0.12"/>
         </g>
       </svg>
     </div>
 
-    <!-- Right photo (moved more right/down on small devices via media query) -->
+    <!-- Right photo -->
     <div class="photo-frame photo-right" aria-label="Right photo frame">
       <img class="frame-img" src="photo-right.jpg" alt="Right photo (replace)">
       <svg class="corner-flower" viewBox="0 0 24 24" aria-hidden="true" style="right:-6px; left:auto; top:-6px;">
         <g fill="none" fill-rule="evenodd">
-          <circle cx="12" cy="12" r="10" fill="#ffb6d0"/>
+          <circle cx="12" cy="12" r="10" fill="#ffd0df"/>
           <path d="M12 7a1 1 0 01.94.66l.9 2.5a1 1 0 01-.35 1.09l-2 1.6a1 1 0 01-1.17 0l-2-1.6a1 1 0 01-.35-1.09l.9-2.5A1 1 0 0112 7z" fill="#fff" opacity="0.12"/>
         </g>
       </svg>
     </div>
 
-    <!-- Center translucent message box -->
+    <!-- Center translucent message box (bigger and more translucent) -->
     <div class="center-box" aria-hidden="false">
       <div class="center-inner">
         <div class="typed-wrap" id="typed">
@@ -279,7 +271,7 @@
       </div>
     </div>
 
-    <!-- Bottom Next with arrow positioned above (moved further down on mobile) -->
+    <!-- Bottom: Next + arrow (arrow shifted up & left; button nudged right) -->
     <div class="bottom-row" role="group" aria-label="Next control">
       <div class="next-wrapper">
         <svg class="arrow-down" viewBox="0 0 44 44" aria-hidden="true" focusable="false">
@@ -296,7 +288,7 @@
   </div>
 
   <script>
-    // simple typewriter: lines typed sequentially
+    // Typewriter effect: lines typed sequentially
     (function(){
       const lines = [
         "Translucent white box",
@@ -305,7 +297,7 @@
       ];
       const out = document.getElementById('typed');
 
-      const ps = lines.map(()=> {
+      const paragraphs = lines.map(() => {
         const p = document.createElement('p');
         p.style.margin = '0';
         p.style.padding = '0';
@@ -317,9 +309,9 @@
 
       function typeLine(p, text, speed=34){
         return new Promise(resolve=>{
-          let i=0;
-          const t=setInterval(()=>{
-            if(i>=text.length){ clearInterval(t); resolve(); }
+          let i = 0;
+          const t = setInterval(()=>{
+            if(i >= text.length){ clearInterval(t); resolve(); }
             else p.textContent += text[i++];
           }, speed);
         });
@@ -327,12 +319,12 @@
 
       async function run(){
         for(let i=0;i<lines.length;i++){
-          await typeLine(ps[i], lines[i], 34);
-          await new Promise(r=>setTimeout(r,320));
+          await typeLine(paragraphs[i], lines[i], 34);
+          await new Promise(r => setTimeout(r, 320));
         }
       }
 
-      setTimeout(run,450);
+      setTimeout(run, 450);
     })();
 
     // accessibility: clicking arrow focuses Next
