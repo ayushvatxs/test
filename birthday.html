@@ -11,7 +11,7 @@
     :root{
       --stage-w: 420px;
       --pastel-pink: #ffe6ef;
-      --frame-pink-light: #ff9dbf;
+      --frame-pink-light: #ffc6dd;
       --shadow: rgba(0,0,0,0.08);
     }
 
@@ -36,9 +36,8 @@
       overflow: visible;
     }
 
-    /* title */
+    /* Title */
     .title {
-      position: relative;
       z-index: 20;
       display:flex;
       align-items:center;
@@ -54,7 +53,7 @@
     }
     .title .emoji { transform: translateY(-3px); font-size:0.95em; }
 
-    /* photo frames (larger, thin/light border) */
+    /* Photo frames: slightly larger, thin & lighter color */
     .photo-frame {
       position: absolute;
       width: 28%;
@@ -66,14 +65,13 @@
       border: 4px solid var(--frame-pink-light);
       overflow: hidden;
       box-shadow: 0 8px 22px var(--shadow);
-      z-index: 30;
+      z-index: 30; /* photos sit below the center box so it can overlap small corners */
     }
-    .frame-img { width:100%; height:100%; object-fit: cover; display:block; background:#f6f6f6; }
+    .frame-img { width:100%; height:100%; object-fit:cover; display:block; background:#f6f6f6; }
 
-    .photo-left { left: 6%; top: 80px; }
-
-    /* moved right photo slightly down and slightly left (less covered by the box) */
-    .photo-right { right: -4%; top: calc(50% + 96px); transform: translateY(-12%); }
+    /* photo positions - symmetric on desktop */
+    .photo-left { left: 6%; top: 72px; }
+    .photo-right { right: 6%; top: calc(50% + 72px); transform: translateY(-18%); }
 
     .corner-flower {
       position: absolute;
@@ -86,33 +84,33 @@
     }
     .photo-right .corner-flower { right: -6px; left: auto; top: -6px; }
 
-    /* center translucent message box (slightly more translucent than before) */
+    /* Center box: narrower (so it overlaps equally) and taller (increase height) */
     .center-box {
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-      top: 170px;               /* keeps overlap subtle */
-      width: 66%;
+      top: 140px;                /* slightly higher so overlap is symmetric on top corners */
+      width: 60%;                /* reduced width per request (narrower) */
       min-width: 260px;
-      max-width: 360px;
-      height: 54vh;
-      min-height: 300px;
-      max-height: 560px;
+      max-width: 380px;
+      height: 66vh;              /* increased height so both photos are overlapped only at corners */
+      min-height: 360px;
+      max-height: 720px;
       z-index: 34;
       display:flex;
       align-items:center;
       justify-content:center;
-      padding: 0;
+      padding:0;
     }
 
     .center-inner {
       width: 100%;
       height: 100%;
       border-radius: 18px;
-      background: rgba(255,255,255,0.50); /* slightly more translucent */
-      backdrop-filter: blur(12px);
-      box-shadow: 0 22px 40px rgba(0,0,0,0.06);
-      padding: 40px 24px;
+      background: rgba(255,255,255,0.44); /* more translucent */
+      backdrop-filter: blur(14px);
+      box-shadow: 0 28px 48px rgba(0,0,0,0.06);
+      padding: 44px 28px;
       display:flex;
       align-items:center;
       justify-content:center;
@@ -121,22 +119,22 @@
     }
 
     .typed-wrap {
-      width: 100%;
-      max-width: 86%;
-      margin: 0 auto;
+      width:100%;
+      max-width:86%;
+      margin:0 auto;
       font-size: clamp(16px, 2.6vw, 20px);
-      line-height: 1.6;
-      color: #111;
-      min-height: 4.6em;
+      line-height:1.6;
+      color:#111;
+      min-height: 4.8em;
     }
-    .typed-wrap p { margin: 0; padding: 0; }
+    .typed-wrap p { margin:0; padding:0; }
 
-    /* bottom area - moved lower (arrow + button further down) */
+    /* Bottom area: Next centered (but a bit right) - now centered as requested */
     .bottom-row {
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-      bottom: 8px;                /* moved down (closer to bottom) */
+      bottom: 18px;
       width: 100%;
       display:flex;
       justify-content:center;
@@ -157,15 +155,15 @@
       cursor: pointer;
       box-shadow: 0 12px 0 rgba(0,0,0,0.06);
       z-index: 62;
-      margin-left: -28px;
+      margin-left: 0; /* centered */
     }
 
-    /* arrow placed above the button but moved a bit up compared to the previous bottom so it sits nicely without overlapping either the box or the button */
+    /* Arrow: moved up & a little left so it does not overlap the Next button */
     .arrow-down {
       position: absolute;
-      top: -30px;                 /* adjust here to control arrow distance from button/box */
+      top: -56px; /* move arrow up so it doesn't touch the button */
       left: 50%;
-      transform: translateX(-50%);
+      transform: translateX(calc(-50% - 6px)); /* slight left nudge */
       width: 36px;
       height: 36px;
       z-index: 64;
@@ -173,54 +171,79 @@
       animation: arrow-bounce 1.2s ease-in-out infinite;
     }
     @keyframes arrow-bounce {
-      0% { transform: translateX(-50%) translateY(0); opacity: 1; }
-      50% { transform: translateX(-50%) translateY(-6px); opacity: .96; }
-      100% { transform: translateX(-50%) translateY(0); opacity: 1; }
+      0% { transform: translateX(calc(-50% - 6px)) translateY(0); opacity: 1; }
+      50% { transform: translateX(calc(-50% - 6px)) translateY(-6px); opacity: .96; }
+      100% { transform: translateX(calc(-50% - 6px)) translateY(0); opacity: 1; }
     }
 
-    /* responsive adjustments */
+    /* Responsive: mobile rules to keep equal overlap and visibility */
     @media (max-width: 420px) {
-      .photo-frame { width: 30%; min-width: 88px; max-width:140px; }
-      .center-box { top: 180px; width: 86%; height: 56vh; }
-      .photo-left { top: 94px; left: 4%; }
-      .photo-right { right: -4%; top: calc(52% + 96px); transform: translateY(-10%); }
-      .arrow-down { top: -22px; width: 32px; height: 32px; }
-      .bottom-row { bottom: 6px; }
+      .photo-frame { width: 30%; min-width: 84px; max-width: 150px; }
+
+      /* Lift the center box and reduce height so it doesn't cover too much of either photo */
+      .center-box {
+        top: 120px;    /* move box higher on phone to reveal top images */
+        width: 84%;
+        height: 48vh;
+        min-height: 260px;
+      }
+      .center-inner { padding: 32px 20px; border-radius: 14px; background: rgba(255,255,255,0.44); backdrop-filter: blur(10px); }
+
+      /* move left photo up & left to be visible near the title */
+      .photo-left { left: 2%; top: 50px; }
+
+      /* move right photo further right and down so only top-left corner is under the box */
+      .photo-right { right: -2%; top: calc(50% + 132px); transform: translateY(-6%); }
+
+      /* push arrow and button further down on mobile so they do not overlap the box */
+      .bottom-row { bottom: 14px; }
+      .arrow-down { top: -44px; transform: translateX(calc(-50% - 6px)); }
+
+      .photo-frame { width: 30%; min-width: 82px; max-width: 150px; }
+      .typed-wrap { font-size: 15px; }
+    }
+
+    @media (max-width: 360px) {
+      .center-box { top: 100px; height: 56vh; width: 82%; min-height: 280px; }
+      .photo-left { top: 46px; left: 2%; }
+      .photo-right { top: calc(50% + 140px); right: 0%; transform: translateY(-4%); }
+      .arrow-down { top: -32px; }
+      .next-btn { padding: 8px 28px; }
     }
   </style>
 </head>
 <body>
   <div class="stage" role="main" aria-label="Birthday card">
 
-    <!-- title -->
+    <!-- Title -->
     <div class="title">
       <div class="emoji">🎈</div>
       <div>HAPPY BIRTHDAY</div>
     </div>
 
-    <!-- left photo -->
+    <!-- Left photo -->
     <div class="photo-frame photo-left" aria-label="Left photo frame">
       <img class="frame-img" src="photo-left.jpg" alt="Left photo (replace)">
       <svg class="corner-flower" viewBox="0 0 24 24" aria-hidden="true">
         <g fill="none" fill-rule="evenodd">
-          <circle cx="12" cy="12" r="10" fill="#ffb6d0"/>
+          <circle cx="12" cy="12" r="10" fill="#ffdfe7"/>
           <path d="M12 7a1 1 0 01.94.66l.9 2.5a1 1 0 01-.35 1.09l-2 1.6a1 1 0 01-1.17 0l-2-1.6a1 1 0 01-.35-1.09l.9-2.5A1 1 0 0112 7z" fill="#fff" opacity="0.12"/>
         </g>
       </svg>
     </div>
 
-    <!-- right photo (moved slightly down and left) -->
+    <!-- Right photo -->
     <div class="photo-frame photo-right" aria-label="Right photo frame">
       <img class="frame-img" src="photo-right.jpg" alt="Right photo (replace)">
       <svg class="corner-flower" viewBox="0 0 24 24" aria-hidden="true" style="right:-6px; left:auto; top:-6px;">
         <g fill="none" fill-rule="evenodd">
-          <circle cx="12" cy="12" r="10" fill="#ffb6d0"/>
+          <circle cx="12" cy="12" r="10" fill="#ffdfe7"/>
           <path d="M12 7a1 1 0 01.94.66l.9 2.5a1 1 0 01-.35 1.09l-2 1.6a1 1 0 01-1.17 0l-2-1.6a1 1 0 01-.35-1.09l.9-2.5A1 1 0 0112 7z" fill="#fff" opacity="0.12"/>
         </g>
       </svg>
     </div>
 
-    <!-- center translucent message box -->
+    <!-- Center translucent message box -->
     <div class="center-box" aria-hidden="false">
       <div class="center-inner">
         <div class="typed-wrap" id="typed">
@@ -231,7 +254,7 @@
       </div>
     </div>
 
-    <!-- bottom center Next button with arrow above it (moved down overall) -->
+    <!-- Bottom: arrow + Next (arrow shifted up & left; button nudged right) -->
     <div class="bottom-row" role="group" aria-label="Next control">
       <div class="next-wrapper">
         <svg class="arrow-down" viewBox="0 0 44 44" aria-hidden="true" focusable="false">
@@ -248,7 +271,7 @@
   </div>
 
   <script>
-    // typewriter effect (line-by-line)
+    // Typewriter: lines typed sequentially, letter-by-letter
     (function(){
       const lines = [
         "Translucent white box",
@@ -270,8 +293,8 @@
       function typeLine(p, text, speed=34){
         return new Promise(resolve=>{
           let i = 0;
-          const timer = setInterval(()=>{
-            if(i >= text.length){ clearInterval(timer); resolve(); }
+          const t = setInterval(()=>{
+            if(i >= text.length){ clearInterval(t); resolve(); }
             else p.textContent += text[i++];
           }, speed);
         });
@@ -287,7 +310,7 @@
       setTimeout(run, 450);
     })();
 
-    // arrow click focuses Next for accessibility
+    // accessibility: clicking arrow focuses Next
     document.querySelectorAll('.arrow-down').forEach(a=>{
       a.addEventListener('click', ()=> document.getElementById('nextBtn').focus());
       a.style.cursor = 'pointer';
