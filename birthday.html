@@ -1,215 +1,166 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Happy Birthday 💗</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Happy Birthday 💗</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&display=swap" rel="stylesheet">
 
-  <style>
-    :root{
-      --stage-w: 420px;
-      --pastel-pink: #ffe6ef;
-      --frame-pink: #ffc6dd;
-      --shadow: rgba(0,0,0,0.08);
-    }
+<style>
+:root{
+  --pink:#ffe6ef;
+  --frame:#ffc6dd;
+}
 
-    /* RESET */
-    *, *::before, *::after { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; }
-    body{
-      background: var(--pastel-pink);
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial;
-      display:flex;
-      justify-content:center;
-      padding: 18px 12px;
-    }
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--pink);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto;
+  display:flex;
+  justify-content:center;
+  padding:16px;
+}
 
-    /* MAIN STAGE */
-    .stage{
-      width: min(var(--stage-w), 100%);
-      margin: 0 auto;
-      position: relative;
-    }
+/* MAIN WRAPPER */
+.stage{
+  width:min(420px,100%);
+  position:relative;
+}
 
-    /* TITLE */
-    .title{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      font-family:"Baloo 2", sans-serif;
-      font-weight:800;
-      font-size: clamp(26px, 6vw, 44px);
-      letter-spacing:2px;
-      color:#16b8ff;
-      margin-bottom: 26px;
-    }
+/* TITLE */
+.title{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:10px;
+  font-family:"Baloo 2",sans-serif;
+  font-weight:800;
+  font-size:clamp(28px,6vw,44px);
+  letter-spacing:2px;
+  color:#16b8ff;
+  margin-bottom:24px;
+  white-space:nowrap;
+}
 
-    /* CONTENT GRID */
-    .content-row{
-      display:grid;
-      grid-template-columns: 1fr 1.5fr 1fr;
-      align-items:center;
-      gap: 18px;
-    }
+/* PHOTO BASE */
+.photo{
+  width:160px;
+  aspect-ratio:3/4;
+  background:#fff;
+  border-radius:12px;
+  border:5px solid var(--frame);
+  overflow:hidden;
+  box-shadow:0 12px 28px rgba(0,0,0,.08);
+}
 
-    /* PHOTO */
-    .photo-frame{
-      width:100%;
-      max-width:190px;
-      aspect-ratio:3/4;
-      margin: 0 auto;
-      background:#fff;
-      border-radius:12px;
-      border:5px solid var(--frame-pink);
-      overflow:hidden;
-      box-shadow:0 10px 28px var(--shadow);
-    }
-    .photo-frame img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
-    }
+.photo img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
 
-    /* CENTER BOX */
-    .center-box{
-      width:100%;
-      min-height:320px;
-      border-radius:18px;
-      background: rgba(255,255,255,0.45);
-      backdrop-filter: blur(12px);
-      box-shadow:0 26px 48px rgba(0,0,0,0.08);
-      padding:36px 28px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      text-align:center;
-    }
+/* LEFT PHOTO */
+.photo-left{
+  margin-left:0;
+  margin-bottom:24px;
+}
 
-    .typed-wrap{
-      max-width:90%;
-      font-size: clamp(16px, 2.6vw, 20px);
-      line-height:1.6;
-      color:#111;
-    }
+/* CENTER BOX */
+.center-box{
+  width:100%;
+  max-width:320px;
+  margin:0 auto 24px;
+  min-height:320px;
+  background:rgba(255,255,255,.45);
+  backdrop-filter:blur(12px);
+  border-radius:18px;
+  box-shadow:0 26px 48px rgba(0,0,0,.08);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:32px 26px;
+}
 
-    /* BOTTOM BUTTON */
-    .bottom-row{
-      margin-top: 32px;
-      display:flex;
-      justify-content:center;
-      position:relative;
-    }
+.center-box p{
+  margin:0;
+  font-size:18px;
+  line-height:1.6;
+}
 
-    .next-btn{
-      background:#fff;
-      border:8px solid #111;
-      padding:12px 38px;
-      border-radius:8px;
-      font-size: clamp(14px, 3vw, 20px);
-      font-weight:700;
-      cursor:pointer;
-      box-shadow:0 12px 0 rgba(0,0,0,0.06);
-    }
+/* RIGHT PHOTO */
+.photo-right{
+  margin-left:auto;
+  margin-bottom:28px;
+}
 
-    .arrow-down{
-      position:absolute;
-      top:-40px;
-      left:50%;
-      transform:translateX(-50%);
-      width:34px;
-      animation:bounce 1.2s infinite;
-    }
+/* NEXT BUTTON */
+.bottom{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+}
 
-    @keyframes bounce{
-      50%{ transform:translateX(-50%) translateY(-6px); }
-    }
+.arrow{
+  font-size:26px;
+}
 
-    /* RESPONSIVE (PHONE + iPAD) */
-    @media (max-width: 768px){
-      .content-row{
-        grid-template-columns:1fr;
-        gap:22px;
-      }
+.next-btn{
+  background:#fff;
+  border:8px solid #111;
+  padding:12px 38px;
+  border-radius:8px;
+  font-size:18px;
+  font-weight:700;
+  cursor:pointer;
+}
 
-      .photo-frame{
-        max-width:170px;
-      }
-
-      .center-box{
-        min-height:280px;
-      }
-    }
-  </style>
+/* MOBILE / TABLET TUNING */
+@media(max-width:480px){
+  .photo{width:140px}
+  .center-box{min-height:280px}
+}
+</style>
 </head>
 
 <body>
 
-  <div class="stage">
+<div class="stage">
 
-    <!-- TITLE -->
-    <div class="title">
-      🎈 <span>HAPPY BIRTHDAY</span>
-    </div>
-
-    <!-- CONTENT -->
-    <div class="content-row">
-
-      <!-- LEFT PHOTO -->
-      <div class="photo-frame">
-        <img src="photo-left.jpg" alt="Left photo">
-      </div>
-
-      <!-- CENTER BOX -->
-      <div class="center-box">
-        <div class="typed-wrap" id="typed">
-          <noscript>
-            <p>Translucent white box<br>I will write a paragraph<br>In this box</p>
-          </noscript>
-        </div>
-      </div>
-
-      <!-- RIGHT PHOTO -->
-      <div class="photo-frame">
-        <img src="photo-right.jpg" alt="Right photo">
-      </div>
-
-    </div>
-
-    <!-- NEXT -->
-    <div class="bottom-row">
-      <svg class="arrow-down" viewBox="0 0 44 44">
-        <g fill="none" stroke="#111" stroke-width="4" stroke-linecap="round">
-          <path d="M22 6 L22 28"></path>
-          <path d="M12 20 L22 30 L32 20"></path>
-        </g>
-      </svg>
-      <button class="next-btn">Next</button>
-    </div>
-
+  <!-- TITLE -->
+  <div class="title">
+    🎈 HAPPY BIRTHDAY
   </div>
 
-  <script>
-    // TYPEWRITER EFFECT
-    (function(){
-      const lines = [
-        "Translucent white box",
-        "I will write a paragraph",
-        "In this box"
-      ];
-      const out = document.getElementById("typed");
+  <!-- LEFT PHOTO -->
+  <div class="photo photo-left">
+    <img src="photo-left.jpg" alt="">
+  </div>
 
-      lines.forEach(line=>{
-        const p = document.createElement("p");
-        p.textContent = line;
-        p.style.margin = "0";
-        out.appendChild(p);
-      });
-    })();
-  </script>
+  <!-- CENTER BOX -->
+  <div class="center-box">
+    <p>
+      Translucent white box<br>
+      I will write a paragraph<br>
+      In this box
+    </p>
+  </div>
+
+  <!-- RIGHT PHOTO -->
+  <div class="photo photo-right">
+    <img src="photo-right.jpg" alt="">
+  </div>
+
+  <!-- NEXT -->
+  <div class="bottom">
+    <div class="arrow">⬇</div>
+    <button class="next-btn">Next</button>
+  </div>
+
+</div>
 
 </body>
 </html>
