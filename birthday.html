@@ -24,7 +24,7 @@ body{
   padding:12px;
 }
 
-/* MAIN CONTAINER */
+/* MAIN */
 .stage{
   width:min(420px,100%);
   display:flex;
@@ -32,7 +32,7 @@ body{
   align-items:center;
 }
 
-/* TITLE – MOVED UP */
+/* TITLE */
 .title{
   display:flex;
   align-items:center;
@@ -42,11 +42,11 @@ body{
   font-size:clamp(26px,6vw,40px);
   letter-spacing:2px;
   color:#16b8ff;
-  margin:4px 0 14px; /* moved up */
+  margin:6px 0 12px;
   white-space:nowrap;
 }
 
-/* PHOTO BASE */
+/* PHOTOS */
 .photo{
   width:160px;
   aspect-ratio:3/4;
@@ -66,58 +66,56 @@ body{
 /* LEFT PHOTO – MOVED UP */
 .photo-left{
   align-self:flex-start;
-  margin-bottom:16px;
+  margin-bottom:12px;
+  margin-top:-6px; /* moved UP slightly */
 }
 
-/* CENTER BOX – WIDER + SHORTER */
+/* MESSAGE BOX – TALLER */
 .center-box{
   width:92%;
   max-width:380px;
   background:rgba(255,255,255,.45);
   backdrop-filter:blur(12px);
-  border-radius:20px;
+  border-radius:22px;
   box-shadow:0 22px 40px rgba(0,0,0,.08);
-  padding:22px 20px;   /* shorter */
+  padding:34px 22px; /* increased height */
   text-align:center;
-  margin-bottom:16px;
+  margin-bottom:14px;
 }
 
 .center-box p{
   margin:0;
   font-size:17px;
-  line-height:1.55;
+  line-height:1.6;
 }
 
-/* RIGHT PHOTO – MOVED UP */
+/* RIGHT PHOTO */
 .photo-right{
   align-self:flex-end;
-  margin-bottom:18px;
+  margin-bottom:14px;
 }
 
-/* BOTTOM INDICATOR (REPLACES NEXT BUTTON) */
-.bottom-indicator{
-  width:56px;
-  height:6px;
-  background:#fff;
-  border-radius:999px;
-  position:relative;
-  opacity:.9;
+/* CLICKABLE ARROW */
+.arrow-wrap{
+  margin-top:6px; /* moved UP */
+  cursor:pointer;
 }
 
-/* ARROW TIP */
-.bottom-indicator::after{
-  content:"";
-  position:absolute;
-  right:-10px;
-  top:50%;
-  width:8px;
-  height:8px;
-  border-top:3px solid #fff;
-  border-right:3px solid #fff;
-  transform:translateY(-50%) rotate(45deg);
+.arrow{
+  width:32px;
+  height:32px;
+  border-right:4px solid #000;
+  border-bottom:4px solid #000;
+  transform:rotate(45deg);
+  animation:bounce 1.2s infinite;
 }
 
-/* MOBILE / TABLET */
+@keyframes bounce{
+  0%,100%{transform:translateY(0) rotate(45deg)}
+  50%{transform:translateY(6px) rotate(45deg)}
+}
+
+/* MOBILE */
 @media(max-width:480px){
   .photo{width:140px}
   .center-box{width:94%}
@@ -151,8 +149,10 @@ body{
     <img src="photo-right.jpg" alt="">
   </div>
 
-  <!-- BOTTOM INDICATOR -->
-  <div class="bottom-indicator"></div>
+  <!-- CLICKABLE ARROW -->
+  <div class="arrow-wrap" onclick="alert('Next page action here')">
+    <div class="arrow"></div>
+  </div>
 
 </div>
 
