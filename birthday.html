@@ -5,25 +5,24 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Happy Birthday 💗</title>
 
-  <!-- Bubbly font for title -->
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&display=swap" rel="stylesheet">
 
   <style>
     :root{
-      --stage-width: 420px;
+      --stage-w: 420px;
       --pastel-pink: #ffe6ef;
-      --pink: #ff2b87;
-      --shadow: rgba(0,0,0,0.08);
+      --frame-pink: #ff2b87;
+      --shadow: rgba(0,0,0,0.09);
     }
 
     /* Reset */
     *, *::before, *::after { box-sizing:border-box; }
-    html,body { height:100%; margin:0; }
+    html,body{ height:100%; margin:0; }
     body{
+      background: var(--pastel-pink);
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial;
       -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
-      background: var(--pastel-pink);
       display:flex;
       justify-content:center;
       padding: 18px 12px;
@@ -31,15 +30,15 @@
 
     /* Stage */
     .stage{
-      width: min(var(--stage-width), 96vw);
-      max-width: var(--stage-width);
+      width: min(var(--stage-w), 96vw);
+      max-width: var(--stage-w);
       position: relative;
       margin: 0 auto;
-      padding-bottom: 140px; /* room for next button area */
+      padding-bottom: 140px; /* room for Next area */
       overflow: visible;
     }
 
-    /* Title - keep on one line */
+    /* Title (single line) */
     .title{
       display:flex;
       align-items:center;
@@ -50,51 +49,12 @@
       font-weight: 800;
       font-size: clamp(30px, 7vw, 48px);
       letter-spacing: 2px;
-      white-space: nowrap; /* ensure HAPPY and BIRTHDAY same line */
+      white-space: nowrap; /* keep on one line */
       margin-top: 6px;
     }
-    .title .emoji { font-size: 0.95em; transform: translateY(-3px); }
+    .title .emoji { transform: translateY(-3px); font-size: 0.9em; }
 
-    /* CENTER translucent message box (no purple frame) */
-    .center-box {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      top: 120px;
-      width: 68%;
-      min-width: 260px;
-      max-width: 340px;
-      height: 56vh;
-      min-height: 320px;
-      max-height: 520px;
-      z-index: 30; /* center box sits above photos */
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      pointer-events: auto;
-    }
-
-    .center-inner{
-      width: 100%;
-      height: 100%;
-      border-radius: 10px;
-      background: rgba(255,255,255,0.85); /* translucent white */
-      backdrop-filter: blur(6px);
-      box-shadow: 0 12px 30px var(--shadow);
-      padding: 40px 24px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      text-align:center;
-    }
-    .center-inner p{
-      margin:0;
-      color:#111;
-      font-size: clamp(16px, 2.6vw, 20px);
-      line-height:1.6;
-    }
-
-    /* PHOTO FRAMES (placed behind center box; only slightly overlap) */
+    /* Photo frames - placed so they slightly overlap center box, and they sit in front (higher z-index) */
     .photo-frame{
       position: absolute;
       width: 30%;
@@ -103,176 +63,308 @@
       aspect-ratio: 3/4;
       background: #fff;
       border-radius: 8px;
-      border: 10px solid var(--pink);
+      border: 10px solid var(--frame-pink);
       overflow: hidden;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-      z-index: 20; /* lower than center-box so photos sit behind */
+      box-shadow: 0 8px 20px var(--shadow);
+      z-index: 40; /* photos sit above the center box edges */
     }
     .frame-img{
-      display:block;
       width:100%;
       height:100%;
-      object-fit:cover;
-      background: #f6f6f6;
+      object-fit: cover;
+      display:block;
+      background:#f6f6f6;
     }
-    /* top-left frame (slightly under the center) */
-    .photo-left{ left: 6%; top: 68px; transform: translateY(0); }
-    /* right-bottom frame (partially behind center box) */
-    .photo-right{ right: 6%; top: calc(50% + 60px); transform: translateY(-20%); }
 
-    /* corner flower decoration */
+    /* top-left photo */
+    .photo-left { left: 6%; top: 72px; }
+    /* bottom-right photo */
+    .photo-right { right: 6%; top: calc(50% + 70px); transform: translateY(-18%); }
+
+    /* small corner flower (inline SVG) */
     .corner-flower{
       position: absolute;
-      width: 34px;
-      height: 34px;
-      object-fit:contain;
-      z-index: 28;
+      width: 36px;
+      height: 36px;
+      top: -8px;
+      left: -8px;
+      z-index: 45;
       pointer-events: none;
     }
-    .photo-left .corner-flower { top: -8px; left: -8px; }
-    .photo-right .corner-flower { top: -8px; right: -8px; }
+    .photo-right .corner-flower { right: -8px; left: auto; top: -8px; }
 
-    /* stickers (balloons, floral) - try to avoid black background showing */
-    .sticker {
-      position: absolute;
-      width: 84px;
-      height: auto;
-      pointer-events: none;
-      z-index: 26;
-      background: transparent;
-      mix-blend-mode: normal; /* change to 'screen' or 'lighten' only if it helps with black canvas */
-      image-rendering: auto;
-      filter: drop-shadow(0 6px 12px rgba(0,0,0,0.08));
-    }
-
-    /* example positions for stickers */
-    .sticker.balloon { right: 18%; top: 94px; transform: translateX(12px); }
-    .sticker.top-mini { right: 6%; top: 8px; width:40px; }
-
-    /* NEXT area: place at bottom, centered. The hint animates and arrow points to the button */
-    .next-area{
+    /* Center translucent message box - reduced overlap (photos sit above edges) */
+    .center-box{
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-      bottom: 10px;
+      top: 140px;
+      width: 66%;
+      min-width: 260px;
+      max-width: 340px;
+      height: 54vh;
+      min-height: 300px;
+      max-height: 520px;
+      z-index: 30; /* intentionally lower than photos so frames appear in front slightly */
       display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 0;
+    }
+    .center-inner{
+      width: 100%;
+      height: 100%;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.88); /* translucent */
+      backdrop-filter: blur(6px);
+      box-shadow: 0 12px 30px var(--shadow);
+      padding: 36px 20px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      position: relative;
+    }
+    /* typed text container centers vertically */
+    .typed-wrap{
+      width:100%;
+      max-width: 86%;
+      margin: 0 auto;
+      font-size: clamp(16px, 2.6vw, 20px);
+      line-height: 1.6;
+      color: #111;
+      min-height: 3.2em; /* avoid layout jump while typing */
+    }
+
+    /* Stickers converted to inline SVG elements below; position classes */
+    .sticker-svg{
+      position: absolute;
+      width: 78px;
+      height: auto;
+      z-index: 38;
+      pointer-events: none;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,0.12));
+    }
+    .sticker-balloon { right: 12%; top: 92px; transform: translateX(8px); }
+    .sticker-mini { right: 6%; top: 18px; width: 36px; }
+
+    /* Next area: button centered bottom, hint left */
+    .bottom-row{
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 12px;
+      width: 100%;
+      display:flex;
+      justify-content:center;
       align-items:center;
       gap: 18px;
       z-index: 60;
       pointer-events: auto;
     }
 
-    .hint-wrapper {
+    .hint {
       display:flex;
-      flex-direction:column;
+      align-items:center;
+      gap:8px;
+      flex-direction: column;
       align-items:flex-end;
-      gap:4px;
       margin-right: 6px;
+      user-select: none;
     }
-
-    .hint-text{
+    .hint .text {
       font-family: "Baloo 2", system-ui, sans-serif;
       font-size: clamp(18px, 3.6vw, 28px);
       color: #111;
       animation: hint-pulse 1.6s ease-in-out infinite;
+      cursor: default;
     }
-
     @keyframes hint-pulse{
       0%,100% { transform: translateY(0); opacity:1; }
       50% { transform: translateY(-6px); opacity:0.95; }
     }
 
-    /* arrow pointing down-right toward button: the arrow will nudge */
-    .hint-arrow{
-      font-size: clamp(28px, 6vw, 48px);
-      transform-origin: center;
+    /* arrow svg points right and animates sliding toward button */
+    .hint-arrow {
+      width: 40px;
+      height: 36px;
       display:block;
-      color:#111;
-      animation: arrow-bounce 1.2s ease-in-out infinite;
+      transform-origin: left center;
+      animation: arrow-slide 1.2s ease-in-out infinite;
+      color: #111;
     }
-    @keyframes arrow-bounce{
-      0% { transform: translate(0,0) rotate(90deg); }
-      50% { transform: translate(6px,6px) rotate(90deg); }
-      100% { transform: translate(0,0) rotate(90deg); }
+    @keyframes arrow-slide{
+      0% { transform: translateX(0); opacity: 1; }
+      50% { transform: translateX(8px); opacity: .95; }
+      100% { transform: translateX(0); opacity: 1; }
     }
 
     .next-btn{
-      background: #fff;
+      background:#fff;
       border: 8px solid #111;
-      padding: 10px 36px;
+      padding: 10px 34px;
       border-radius: 8px;
       font-size: clamp(14px, 3vw, 22px);
       font-weight: 700;
       cursor: pointer;
-      box-shadow: 0 10px 0 rgba(0,0,0,0.06);
-      transform: translateY(0);
+      box-shadow: 0 12px 0 rgba(0,0,0,0.06);
     }
 
-    /* Responsiveness tweaks */
+    /* Responsive tweaks */
     @media (max-width:420px){
-      .photo-left { top: 86px; left: 4%; }
+      .center-box { top: 150px; width: 86%; height: 56vh; }
+      .photo-left { top: 88px; left: 4%; }
       .photo-right { top: calc(52% + 30px); right: 4%; }
-      .center-box { top: 140px; width: 86%; height: 56vh; }
-      .sticker.balloon { right: 8%; top: 94px; transform:none; width:68px; }
-      .next-area { bottom: 6px; gap: 12px; }
+      .sticker-balloon { right: 8%; top: 100px; width: 64px; }
+      .bottom-row { bottom: 6px; gap:10px; }
     }
   </style>
 </head>
 <body>
   <div class="stage" role="main" aria-label="Birthday card">
 
-    <!-- TITLE (both words in same line) -->
-    <div class="title" aria-hidden="false">
+    <!-- Title -->
+    <div class="title">
       <div class="emoji">🎈</div>
       <div>HAPPY BIRTHDAY</div>
     </div>
 
-    <!-- LEFT PHOTO (sits behind center box) -->
-    <div class="photo-frame photo-left" aria-label="Left picture frame">
-      <img class="frame-img" src="photo-left.jpg" alt="Left photo (replace with your image)">
-      <img class="corner-flower" src="single-flower.png" alt="" aria-hidden="true">
+    <!-- Top-left photo frame (slightly overlaps center box but appears on top) -->
+    <div class="photo-frame photo-left" aria-label="Left photo frame">
+      <img class="frame-img" src="photo-left.jpg" alt="Left photo (replace)">
+      <!-- small inline flower so no black background -->
+      <svg class="corner-flower" viewBox="0 0 24 24" aria-hidden="true">
+        <g fill="none" fill-rule="evenodd">
+          <circle cx="12" cy="12" r="10" fill="#ff7fb2"/>
+          <path d="M12 7a1 1 0 01.94.66l.9 2.5a1 1 0 01-.35 1.09l-2 1.6a1 1 0 01-1.17 0l-2-1.6a1 1 0 01-.35-1.09l.9-2.5A1 1 0 0112 7z" fill="#fff" opacity="0.15"/>
+        </g>
+      </svg>
     </div>
 
-    <!-- RIGHT PHOTO (sits behind center box) -->
-    <div class="photo-frame photo-right" aria-label="Right picture frame">
-      <img class="frame-img" src="photo-right.jpg" alt="Right photo (replace with your image)">
-      <img class="corner-flower" src="single-flower.png" alt="" aria-hidden="true">
+    <!-- Bottom-right photo frame -->
+    <div class="photo-frame photo-right" aria-label="Right photo frame">
+      <img class="frame-img" src="photo-right.jpg" alt="Right photo (replace)">
+      <svg class="corner-flower" viewBox="0 0 24 24" aria-hidden="true" style="right:-8px; left:auto;">
+        <g fill="none" fill-rule="evenodd">
+          <circle cx="12" cy="12" r="10" fill="#ff7fb2"/>
+          <path d="M12 7a1 1 0 01.94.66l.9 2.5a1 1 0 01-.35 1.09l-2 1.6a1 1 0 01-1.17 0l-2-1.6a1 1 0 01-.35-1.09l.9-2.5A1 1 0 0112 7z" fill="#fff" opacity="0.15"/>
+        </g>
+      </svg>
     </div>
 
-    <!-- STICKERS (balloons etc). Replace these files with PNGs/SVGs that have transparent backgrounds for best results -->
-    <img class="sticker balloon" src="balloon.png" alt="" aria-hidden="true">
-    <img class="sticker top-mini" src="mini-flower.png" alt="" aria-hidden="true">
+    <!-- Sticker: inline balloon SVG (no black background) -->
+    <svg class="sticker-svg sticker-balloon" viewBox="0 0 120 140" aria-hidden="true">
+      <defs>
+        <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0" stop-color="#ffd54a"/>
+          <stop offset="1" stop-color="#ff7043"/>
+        </linearGradient>
+        <linearGradient id="g2" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0" stop-color="#ff6f91"/>
+          <stop offset="1" stop-color="#ff9fce"/>
+        </linearGradient>
+      </defs>
+      <!-- three balloons -->
+      <g transform="translate(6,6)">
+        <ellipse cx="26" cy="28" rx="18" ry="24" fill="url(#g1)"/>
+        <ellipse cx="66" cy="22" rx="22" ry="30" fill="#f44f4f"/>
+        <ellipse cx="100" cy="36" rx="14" ry="20" fill="url(#g2)" />
+        <!-- strings -->
+        <path d="M26 46c6 12 10 28 6 34" stroke="#c75" stroke-width="2" fill="none"/>
+        <path d="M66 52c2 14 6 28 6 34" stroke="#a23" stroke-width="2" fill="none"/>
+        <path d="M100 56c-4 12-10 26-6 34" stroke="#e88" stroke-width="2" fill="none"/>
+      </g>
+    </svg>
 
-    <!-- CENTER translucent message box (above photos; no purple frame) -->
+    <!-- small mini sticker (flower) top-right near title -->
+    <svg class="sticker-svg sticker-mini" viewBox="0 0 48 48" aria-hidden="true">
+      <g transform="translate(4,4)" fill="none" fill-rule="evenodd">
+        <circle cx="20" cy="20" r="18" fill="#ff7fb2"/>
+        <path d="M20 8c3.8 0 4.8 3 7 6 2.3 3 4 4 4 7s-1.7 4-4 7c-2.2 3-3.2 6-7 6s-4.8-3-7-6c-2.3-3-4-4-4-7s1.7-4 4-7c2.2-3 3.2-6 7-6z" fill="#fff" opacity="0.12"/>
+      </g>
+    </svg>
+
+    <!-- CENTER translucent message box -->
     <div class="center-box" aria-hidden="false">
       <div class="center-inner">
-        <p>
-          Translucent white box<br>
-          I will write a paragraph<br>
-          In this box
-        </p>
+        <div class="typed-wrap" id="typed">
+          <!-- JS will type into this element line by line.
+               Provide fallback content for no-JS users -->
+          <noscript>
+            <p>Translucent white box<br>I will write a paragraph<br>In this box</p>
+          </noscript>
+        </div>
       </div>
     </div>
 
-    <!-- NEXT area: Click here + arrow + Next button -->
-    <div class="next-area" aria-hidden="false">
-      <div class="hint-wrapper" aria-hidden="false">
-        <div class="hint-text">Click here</div>
-        <!-- arrow rotated to point toward the Next button (rotate via CSS animation) -->
-        <div class="hint-arrow" aria-hidden="true">⬇</div>
+    <!-- Bottom controls: click hint left & next button centered -->
+    <div class="bottom-row" role="group" aria-label="Next control">
+      <div class="hint" aria-hidden="false">
+        <div class="text">Click here</div>
+        <!-- arrow pointing right (inline svg) -->
+        <svg class="hint-arrow" viewBox="0 0 64 32" aria-hidden="true">
+          <path d="M2 16 L50 16" stroke="#111" stroke-width="4" stroke-linecap="round" fill="none"></path>
+          <path d="M42 8 L54 16 L42 24" stroke="#111" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+        </svg>
       </div>
 
-      <button class="next-btn" type="button" aria-label="Next">Next</button>
+      <button class="next-btn" id="nextBtn" type="button" aria-label="Next">Next</button>
     </div>
 
   </div>
 
-  <!-- small JS: ensure arrow/animations steady; no heavy scripts needed -->
   <script>
-    // small accessibility improvement: focus Next button on click of hint text
-    document.querySelectorAll('.hint-text, .hint-arrow').forEach(el=>{
-      el.addEventListener('click', ()=> document.querySelector('.next-btn').focus());
-      el.style.cursor = 'pointer';
+    // Typewriter: lines typed sequentially, letter-by-letter
+    (function(){
+      const lines = [
+        "Translucent white box",
+        "I will write a paragraph",
+        "In this box"
+      ];
+      const out = document.getElementById('typed');
+
+      // create a container paragraph for each line so we can show them one by one
+      const ps = lines.map(()=> {
+        const p = document.createElement('p');
+        p.style.margin = '0';
+        p.style.padding = '0';
+        p.style.whiteSpace = 'pre-wrap';
+        p.style.minHeight = '1.4em';
+        out.appendChild(p);
+        return p;
+      });
+
+      // type function returns a promise that resolves after typing a line
+      function typeLine(p, text, speed=36){
+        return new Promise(resolve=>{
+          let i = 0;
+          const t = setInterval(()=>{
+            if(i >= text.length){
+              clearInterval(t);
+              resolve();
+            } else {
+              p.textContent += text[i++];
+            }
+          }, speed);
+        });
+      }
+
+      // sequential typing with a short pause between lines
+      async function run(){
+        for(let i=0;i<lines.length;i++){
+          await typeLine(ps[i], lines[i], 36);
+          // small pause after each line
+          await new Promise(r => setTimeout(r, 350));
+        }
+      }
+
+      // start typing after a short initial delay
+      setTimeout(run, 450);
+    })();
+
+    // Accessibility: clicking hint focuses Next button
+    document.querySelector('.hint').addEventListener('click', ()=> {
+      document.getElementById('nextBtn').focus();
     });
   </script>
 </body>
