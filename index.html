@@ -371,7 +371,7 @@ svg{width:100%;height:210px}
   box-shadow:0 10px 25px rgba(0,0,0,.2);
   cursor:pointer;
 ">
-🎵
+<span id="musicIcon">🎵</span>
 </button>
 
 <audio id="loudMusic" src="happy-birthday.mp3"></audio>
@@ -380,6 +380,7 @@ svg{width:100%;height:210px}
 const TEST_MODE = false; // 👈 change to false for final version
 const musicBtn = document.getElementById("musicBtn");
 const loudMusic = document.getElementById("loudMusic");
+const musicIcon = document.getElementById("musicIcon");
 
 loudMusic.loop = false;
 
