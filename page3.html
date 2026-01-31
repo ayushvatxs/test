@@ -16,11 +16,13 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center; /* Centers everything vertically */
             padding: 20px 0;
             margin: 0;
             box-sizing: border-box;
             overflow-x: hidden;
             position: relative;
+            gap: 15px; /* Adds consistent space between all items */
         }
 
         /* --- FLOATING ANIMATION --- */
@@ -58,18 +60,19 @@
         h1 {
             font-family: 'Chewy', cursive;
             color: #4facfe;
-            font-size: clamp(3rem, 10vw, 4.5rem);
+            /* Reduced size significantly */
+            font-size: clamp(2.5rem, 6vw, 3.5rem); 
             margin: 0;
             line-height: 1.1;
-            text-shadow: 3px 3px 0px #fff;
+            text-shadow: 2px 2px 0px #fff;
             white-space: nowrap;
             z-index: 10;
         }
 
         .sub-text {
-            font-size: 1.1rem;
+            font-size: 0.9rem;
             color: #555;
-            margin: 0 0 20px 0;
+            margin: 0;
             font-weight: 500;
             z-index: 10;
         }
@@ -78,21 +81,20 @@
         .timer-box {
             background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(5px);
-            padding: 15px;
-            border-radius: 20px;
+            padding: 10px;
+            border-radius: 15px;
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            width: 90%;
-            max-width: 450px;
+            width: 85%;
+            max-width: 350px; /* Made compact again */
             border: 3px solid #fff;
-            margin-bottom: 20px;
             z-index: 10;
         }
 
         .timer-title {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             color: #d81b60;
             font-family: 'Fredoka', sans-serif;
         }
@@ -100,7 +102,7 @@
         .time-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            gap: 8px;
             justify-content: center;
         }
         
@@ -108,18 +110,18 @@
             grid-column: span 3;
             display: flex;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .time-unit {
             background: #fff;
-            padding: 10px;
-            border-radius: 15px;
-            min-width: 70px;
+            padding: 8px;
+            border-radius: 10px;
+            min-width: 60px;
         }
 
         .number {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: bold;
             color: #d81b60;
             display: block;
@@ -127,71 +129,67 @@
         }
 
         .label {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: #777;
         }
 
         /* --- PHOTOS --- */
         .photo-container {
             position: relative;
-            height: 220px;
+            /* Reduced height to fit photos without wasting space */
+            height: 180px; 
             width: 100%;
             max-width: 400px;
-            margin-bottom: 10px;
             z-index: 10;
         }
 
         .photo-frame {
             position: absolute;
-            width: 170px;
-            padding: 8px;
+            /* Made images smaller again */
+            width: 130px; 
+            padding: 6px;
             background: white;
             box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-            border-radius: 10px;
+            border-radius: 8px;
             transition: transform 0.3s;
         }
 
         .photo1 {
-            left: 10%;
+            left: 15%; /* Centered them a bit more */
             top: 10px;
             transform: rotate(-8deg);
             z-index: 2;
         }
 
         .photo2 {
-            right: 10%;
-            top: 50px;
+            right: 15%; /* Centered them a bit more */
+            top: 40px;
             transform: rotate(8deg);
             z-index: 3;
         }
 
         .photo-frame img {
             width: 100%;
-            border-radius: 6px;
+            border-radius: 4px;
             display: block;
         }
 
-        /* --- FOOTER --- */
-        .footer-spacer {
-            margin-top: auto;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            z-index: 10;
-        }
-
+        /* --- MESSAGE & ARROW --- */
+        /* Removed footer-spacer pushing to bottom. Now it sits naturally. */
+        
         .message {
             background: rgba(255, 255, 255, 0.9);
-            padding: 15px 20px;
-            border-radius: 15px;
+            padding: 12px 15px;
+            border-radius: 12px;
             width: 90%;
-            max-width: 600px;
-            font-size: 1rem;
-            line-height: 1.5;
+            max-width: 500px;
+            font-size: 0.9rem;
+            line-height: 1.4;
             font-style: italic;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            margin-bottom: 15px;
+            z-index: 10;
+            /* Added margin top to ensure it never overlaps photos */
+            margin-top: 10px; 
         }
 
         .next-btn {
@@ -200,8 +198,8 @@
             text-decoration: none;
             display: block;
             line-height: 1;
-            padding-bottom: 10px;
             animation: bounce 2s infinite;
+            z-index: 10;
         }
 
         @keyframes bounce {
@@ -223,8 +221,10 @@
         <div class="floater f6">✨</div>
     </div>
 
-    <h1>OFFICIALLY 19! 🎀</h1>
-    <p class="sub-text">The world got lucky on Feb 13, 2007</p>
+    <div>
+        <h1>OFFICIALLY 19! 🎀</h1>
+        <p class="sub-text">The world got lucky on Feb 13, 2007</p>
+    </div>
 
     <div class="timer-box">
         <div class="timer-title">Time You've Been Loved</div>
@@ -241,12 +241,11 @@
         </div>
     </div>
 
-    <div class="footer-spacer">
-        <div class="message">
-            "19 years of making the world brighter. Every second on this clock is a moment to be cherished." ❤️
-        </div>
-        <a href="page4.html" class="next-btn">&#10095;</a>
+    <div class="message">
+        "19 years of making the world brighter. Every second on this clock is a moment to be cherished." ❤️
     </div>
+    
+    <a href="page4.html" class="next-btn">&#10095;</a>
 
     <script>
         const birthDate = new Date(2007, 1, 13, 14, 35, 0); 
