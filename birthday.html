@@ -106,6 +106,8 @@ body{
   padding:34px 22px; /* increased height */
   text-align:center;
   margin-bottom:14px;
+
+  position: relative;   /* ✅ ADD THIS */
 }
 
 .center-box p{
@@ -113,6 +115,24 @@ body{
   font-size:17px;
   line-height:1.6;
 }
+
+  .balloon-sticker{
+  position: absolute;
+  top: -45px;        /* move up/down */
+  right: -22px;      /* move left/right */
+  width: 120px;
+  pointer-events: none;
+  z-index: 3;
+
+  animation: balloon-float 4s ease-in-out infinite;
+}
+
+@keyframes balloon-float{
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
+}
+
 
 /* RIGHT PHOTO */
 .photo-right{
@@ -222,7 +242,7 @@ body{
 <body>
 
 <div class="stage">
-<img src="balloon.png" class="balloon-sticker" alt="balloons">
+
 
 <div class="heart" style="left:20%; bottom:120px;"></div>
 <div class="heart" style="left:60%; bottom:80px; animation-delay:2s;"></div>
@@ -248,6 +268,8 @@ body{
 
   <!-- MESSAGE BOX -->
   <div class="center-box">
+    <img src="balloon.png" class="balloon-sticker" alt="balloons">
+
     <div class="box-glow"></div>
 
     <p>
