@@ -277,6 +277,18 @@ body{
   </div>
 
 </div>
+  
+<audio id="bgMusic" src="soft-bg.mp3" autoplay loop></audio>
+
+
+<script>
+document.addEventListener("click", () => {
+  const bg = document.getElementById("bgMusic");
+  if (bg.paused) bg.play();
+}, { once: true });
+</script>
+
+
 
 </body>
 </html>
