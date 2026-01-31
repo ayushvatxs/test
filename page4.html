@@ -20,6 +20,24 @@
             margin: 0;
             overflow: hidden;
             position: relative;
+            transition: background 1s;
+        }
+
+        /* --- THE DARK ROOM EFFECT --- */
+        .dark-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 20; 
+            pointer-events: none; 
+            transition: opacity 1.5s ease-in-out;
+        }
+
+        .lights-on {
+            opacity: 0;
         }
 
         /* --- HEADER --- */
@@ -29,40 +47,37 @@
             font-size: clamp(2.5rem, 8vw, 4rem);
             margin: 0 0 10px 0;
             text-shadow: 2px 2px 0px #fff;
-            z-index: 10;
+            z-index: 30; 
+            position: relative;
         }
 
         .instruction {
             font-size: 1.1rem;
-            color: #555;
+            color: #fff;
             margin-bottom: 30px;
-            z-index: 10;
-            background: rgba(255,255,255,0.5);
-            padding: 5px 15px;
-            border-radius: 20px;
+            z-index: 30;
+            position: relative;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
 
         /* --- CAKE CONTAINER --- */
         .cake-container {
             position: relative;
-            width: 300px; /* Adjust size if needed */
+            width: 300px;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
             z-index: 10;
-            transition: transform 0.2s;
-        }
-
-        .cake-container:active {
-            transform: scale(0.95);
         }
 
         .cake-img {
             width: 100%;
-            border-radius: 20px; /* Rounds the corners of the image */
+            border-radius: 20px;
             box-shadow: 0 10px 20px rgba(0,0,0,0.2);
             z-index: 5;
+            filter: brightness(0.6); 
+            transition: filter 1.5s;
         }
 
         /* --- FLAME ANIMATION --- */
@@ -70,33 +85,24 @@
             position: absolute;
             width: 20px;
             height: 40px;
-            background: rgba(255, 165, 0, 0.8); /* Semi-transparent orange */
+            background: rgba(255, 165, 0, 0.9);
             border-radius: 50% 50% 20% 20%;
             box-shadow: 
-                0 0 10px yellow, 
-                0 0 20px orange, 
-                0 0 40px red;
+                0 0 20px yellow, 
+                0 0 50px orange, 
+                0 0 80px red,
+                0 0 100px rgba(255, 165, 0, 0.5); 
             animation: flicker 0.5s infinite alternate;
-            z-index: 6;
+            z-index: 30;
             transition: opacity 0.5s;
-            /* Mix blend mode makes it look glowing over the photo */
             mix-blend-mode: screen; 
         }
 
-        /* Positioning for the '1' and '9' on your specific image */
-        /* You might need to tweak these slightly depending on exact cropping */
-        .f-one { 
-            left: 42%; 
-            top: 0%; /* Moves it up to the wick of the 1 */
-        }
-        
-        .f-nine { 
-            left: 54%; 
-            top: 2%; /* Moves it up to the wick of the 9 */
-        }
+        .f-one { left: 42%; top: 0%; }
+        .f-nine { left: 54%; top: 2%; }
 
         @keyframes flicker {
-            0% { transform: scale(1) rotate(-2deg); opacity: 0.8; }
+            0% { transform: scale(1) rotate(-2deg); opacity: 0.9; }
             100% { transform: scale(1.1) rotate(2deg); opacity: 1; }
         }
 
@@ -111,6 +117,8 @@
             transition: all 1s ease;
             margin-top: 30px;
             pointer-events: none;
+            z-index: 30;
+            position: relative;
         }
 
         .show-message {
@@ -127,9 +135,7 @@
             border-radius: 15px;
             margin-bottom: 20px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            max-width: 80%;
-            margin-left: auto;
-            margin-right: auto;
+            color: #333;
         }
 
         .next-btn {
@@ -161,11 +167,13 @@
 </head>
 <body>
 
-    <h1 id="main-title">Make a Wish...</h1>
-    <p class="instruction" id="instruction-text">Close your eyes and tap the candles!</p>
+    <div class="dark-overlay" id="darkness"></div>
+
+    <h1 id="main-title" style="color: #fff;">Make a Wish...</h1>
+    <p class="instruction" id="instruction-text">Tap the candles to blow them out!</p>
 
     <div class="cake-container" onclick="blowCandles()">
-        <img src="cake.jpg" alt="Birthday Cake" class="cake-img">
+        <img src="cake.jpg" alt="Birthday Cake" class="cake-img" id="cake-photo">
         
         <div class="candle-flame f-one" id="flame1"></div>
         <div class="candle-flame f-nine" id="flame2"></div>
@@ -180,6 +188,8 @@
 
     <canvas id="confetti-canvas"></canvas>
 
+    <audio id="birthday-audio" src="hbd_music.mp3"></audio>
+
     <script>
         let candlesBlown = false;
 
@@ -187,19 +197,31 @@
             if (candlesBlown) return; 
             candlesBlown = true;
 
-            // 1. Hide Flames
+            // 1. Play Music!
+            var audio = document.getElementById("birthday-audio");
+            audio.play();
+
+            // 2. Turn on the Lights!
+            document.getElementById('darkness').classList.add('lights-on');
+            document.getElementById('cake-photo').style.filter = "brightness(1)";
+            
+            // 3. Extinguish Candles
             document.getElementById('flame1').classList.add('blown-out');
             document.getElementById('flame2').classList.add('blown-out');
 
-            // 2. Change Text
-            document.getElementById('main-title').innerText = "Happy Birthday!";
-            document.getElementById('main-title').style.color = "#ff4081";
-            document.getElementById('instruction-text').innerText = "YAY! 🎉";
+            // 4. Update Text
+            const title = document.getElementById('main-title');
+            title.innerText = "Happy Birthday!";
+            title.style.color = "#4facfe"; 
+            
+            const instr = document.getElementById('instruction-text');
+            instr.innerText = "YAY! 🎉";
+            instr.style.color = "#555"; 
 
-            // 3. Show Message
+            // 5. Show Message
             document.getElementById('message-area').classList.add('show-message');
 
-            // 4. Start Confetti
+            // 6. Start Confetti
             startConfetti();
         }
 
@@ -212,7 +234,7 @@
         const confettiParticles = [];
 
         function startConfetti() {
-            for (let i = 0; i < 100; i++) {
+            for (let i = 0; i < 150; i++) { 
                 confettiParticles.push({
                     x: Math.random() * canvas.width,
                     y: Math.random() * canvas.height - canvas.height,
