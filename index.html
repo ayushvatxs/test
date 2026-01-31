@@ -265,7 +265,8 @@ svg{width:100%;height:210px}
   position:fixed;
 }
 
-#musicBtn::after{
+/* MUSIC BUTTON SLASH (only when muted) */
+#musicBtn.muted::after{
   content:"";
   position:absolute;
   width:34px;
@@ -277,10 +278,6 @@ svg{width:100%;height:210px}
   border-radius:2px;
 }
 
-/* when music is unlocked */
-#musicBtn.unlocked::after{
-  display:none;
-}
 
 
 </style>
@@ -359,7 +356,7 @@ svg{width:100%;height:210px}
 </div>
 
   <!-- MUSIC TOGGLE -->
-<button id="musicBtn" style="
+<button id="musicBtn" class="muted" style="
   position:fixed;
   bottom:16px;
   right:16px;
@@ -389,15 +386,21 @@ let musicUnlocked = false;
 
 musicBtn.onclick = () => {
   loudMusic.volume = 1;
+
   loudMusic.play().then(() => {
     loudMusic.pause();
     loudMusic.currentTime = 0;
+
     musicUnlocked = true;
 
-    musicBtn.classList.add("unlocked"); // 🔥 removes slash
+    // ✅ REMOVE SLASH
+    musicBtn.classList.remove("muted");
+
+    // optional visual feedback
     musicBtn.textContent = "🔊";
-  }).catch(()=>{});
+  }).catch(() => {});
 };
+
 
 
 
