@@ -399,17 +399,27 @@ musicBtn.onclick = () => {
     musicUnlocked = true;
   }
 
-  // 🔁 TOGGLE STATE
-  if (loudMusic.paused) {
+  // ✅ USE OUR OWN STATE (NOT .paused)
+  if (isMuted) {
+    loudMusic.currentTime = 0;
     loudMusic.play().catch(()=>{});
-    musicBtn.classList.remove("muted"); // ❌ slash removed
+    musicBtn.classList.remove("muted");
     musicIcon.textContent = "🔊";
+    isMuted = false;
   } else {
     loudMusic.pause();
-    musicBtn.classList.add("muted");    // ✅ slash back
+    musicBtn.classList.add("muted");
     musicIcon.textContent = "🎵";
+    isMuted = true;
   }
 };
+
+loudMusic.onended = () => {
+  musicBtn.classList.add("muted");
+  musicIcon.textContent = "🎵";
+  isMuted = true;
+};
+
 
 
 /* PHOTO ROTATION */
