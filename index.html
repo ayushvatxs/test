@@ -387,23 +387,27 @@ loudMusic.loop = false;
 let musicUnlocked = false;
 
 musicBtn.onclick = () => {
-  loudMusic.volume = 1;
 
-  loudMusic.play().then(() => {
+  // FIRST USER INTERACTION → unlock audio
+  if (!musicUnlocked) {
+    loudMusic.volume = 1;
+    loudMusic.play().catch(()=>{});
     loudMusic.pause();
     loudMusic.currentTime = 0;
-
     musicUnlocked = true;
+  }
 
-    // ✅ REMOVE SLASH
-    musicBtn.classList.remove("muted");
-
-    // optional visual feedback
+  // 🔁 TOGGLE STATE
+  if (loudMusic.paused) {
+    loudMusic.play().catch(()=>{});
+    musicBtn.classList.remove("muted"); // ❌ slash removed
     musicIcon.textContent = "🔊";
-  }).catch(() => {});
+  } else {
+    loudMusic.pause();
+    musicBtn.classList.add("muted");    // ✅ slash back
+    musicIcon.textContent = "🎵";
+  }
 };
-
-
 
 
 /* PHOTO ROTATION */
