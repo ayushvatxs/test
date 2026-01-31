@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>19 Years of Magic</title>
+    <style>
+        body {
+            /* Matches your previous page's soft pink vibe */
+            background: linear-gradient(180deg, #ffe6ee 0%, #f8bbd0 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            color: #880e4f;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #4facfe; /* Blue color matching your "HAPPY BIRTHDAY" text */
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 0px #fff;
+        }
+
+        .sub-text {
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+
+        /* The Timer Container */
+        .timer-box {
+            background: rgba(255, 255, 255, 0.6);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+            width: 90%;
+            max-width: 400px;
+            border: 2px solid #fff;
+        }
+
+        .timer-title {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            color: #d81b60;
+        }
+
+        /* Grid for the time units */
+        .time-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .time-unit {
+            background: #fff;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #d81b60;
+            display: block;
+        }
+
+        .label {
+            font-size: 0.8rem;
+            color: #777;
+        }
+
+        /* Photo Area */
+        .photo-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 30px;
+        }
+
+        .photo-frame {
+            position: absolute;
+            width: 180px; /* Adjust size based on your images */
+            padding: 10px;
+            background: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border-radius: 4px;
+            transition: transform 0.3s;
+        }
+
+        /* Tilt the photos for a cute scrapbook look */
+        .photo1 {
+            left: 20px;
+            top: 20px;
+            transform: rotate(-10deg);
+            z-index: 1;
+        }
+
+        .photo2 {
+            right: 20px;
+            top: 60px;
+            transform: rotate(10deg);
+            z-index: 2;
+        }
+
+        .photo-frame img {
+            width: 100%;
+            border-radius: 2px;
+        }
+
+        .photo-frame:hover {
+            transform: scale(1.1) rotate(0deg); /* Zooms slightly when hovered */
+            z-index: 10;
+        }
+
+        .message {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            max-width: 350px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+
+        .next-btn {
+            font-size: 50px;
+            color: #333;
+            text-decoration: none;
+            transition: transform 0.2s;
+        }
+        
+        .next-btn:hover {
+            transform: translateX(10px);
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>OFFICIALLY 19! ✨</h1>
+    <p class="sub-text">The world got lucky on Feb 13, 2007</p>
+
+    <div class="timer-box">
+        <div class="timer-title">Time you've been loved</div>
+        <div class="time-grid" id="timer">
+            </div>
+    </div>
+
+    <div class="photo-container">
+        <div class="photo-frame photo1">
+            <img src="her_photo1.jpg" alt="Beautiful Moment 1">
+        </div>
+        
+        <div class="photo-frame photo2">
+            <img src="her_photo2.jpg" alt="Beautiful Moment 2">
+        </div>
+    </div>
+
+    <div class="message">
+        "We have been so lucky to have you for 19 years. Every second of this timer is a moment you made the world brighter." ❤️
+    </div>
+
+    <a href="#" class="next-btn" onclick="alert('Page 4 coming soon!')">&#10095;</a>
+
+    <script>
+        // --- CONFIGURATION ---
+        // Set her birth date here: Year, Month (0-11), Day, Hour, Minute
+        // Feb is month 1 (because Jan is 0)
+        const birthDate = new Date(2007, 1, 13, 14, 35, 0); 
+
+        function updateTimer() {
+            const now = new Date();
+            const diff = now - birthDate;
+
+            // Calculations
+            const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
+            const days = Math.floor((diff % (1000 * 60 * 60 * 24 * 365.25)) / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            // Display in the HTML
+            const timerContainer = document.getElementById('timer');
+            timerContainer.innerHTML = `
+                <div class="time-unit"><span class="number">${years}</span><span class="label">Years</span></div>
+                <div class="time-unit"><span class="number">${days}</span><span class="label">Days</span></div>
+                <div class="time-unit"><span class="number">${hours}</span><span class="label">Hours</span></div>
+                <div class="time-unit"><span class="number">${minutes}</span><span class="label">Mins</span></div>
+                <div class="time-unit"><span class="number">${seconds}</span><span class="label">Secs</span></div>
+            `;
+        }
+
+        // Update timer every second
+        setInterval(updateTimer, 1000);
+        updateTimer(); // Run immediately on load
+    </script>
+
+</body>
+</html>
