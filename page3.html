@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>19 Years of Magic</title>
-    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Fredoka:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
     
     <style>
         body {
@@ -16,16 +16,16 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center; /* Centers everything vertically */
-            padding: 20px 0;
+            justify-content: flex-start; /* Starts from top */
+            padding-top: 10px; /* Reduced top padding */
+            padding-bottom: 20px;
             margin: 0;
             box-sizing: border-box;
             overflow-x: hidden;
             position: relative;
-            gap: 15px; /* Adds consistent space between all items */
         }
 
-        /* --- FLOATING ANIMATION --- */
+        /* --- BACKGROUND PARTICLES --- */
         .floating-container {
             position: fixed;
             top: 0;
@@ -58,12 +58,11 @@
 
         /* --- HEADER --- */
         h1 {
-            font-family: 'Chewy', cursive;
+            font-family: 'Pacifico', cursive; /* Stylish handwritten font */
             color: #4facfe;
-            /* Reduced size significantly */
-            font-size: clamp(2.5rem, 6vw, 3.5rem); 
-            margin: 0;
-            line-height: 1.1;
+            font-size: clamp(2.2rem, 8vw, 3.5rem); 
+            margin: 5px 0 5px 0; /* Minimized margins */
+            line-height: 1.2;
             text-shadow: 2px 2px 0px #fff;
             white-space: nowrap;
             z-index: 10;
@@ -72,7 +71,7 @@
         .sub-text {
             font-size: 0.9rem;
             color: #555;
-            margin: 0;
+            margin: 0 0 10px 0;
             font-weight: 500;
             z-index: 10;
         }
@@ -85,18 +84,18 @@
             border-radius: 15px;
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
             width: 85%;
-            max-width: 350px; /* Made compact again */
+            max-width: 350px;
             border: 3px solid #fff;
             z-index: 10;
+            margin-bottom: 10px; /* Reduced space below timer */
         }
 
         .timer-title {
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
             color: #d81b60;
-            font-family: 'Fredoka', sans-serif;
         }
 
         .time-grid {
@@ -122,10 +121,9 @@
 
         .number {
             font-size: 1.2rem;
-            font-weight: bold;
+            font-weight: 600; /* Cleaner bold */
             color: #d81b60;
             display: block;
-            font-family: 'Chewy', cursive;
         }
 
         .label {
@@ -136,17 +134,17 @@
         /* --- PHOTOS --- */
         .photo-container {
             position: relative;
-            /* Reduced height to fit photos without wasting space */
-            height: 180px; 
+            /* CRITICAL FIX: Increased height so message box can't overlap */
+            height: 240px; 
             width: 100%;
             max-width: 400px;
             z-index: 10;
+            margin-top: 5px;
         }
 
         .photo-frame {
             position: absolute;
-            /* Made images smaller again */
-            width: 130px; 
+            width: 130px;
             padding: 6px;
             background: white;
             box-shadow: 0 8px 16px rgba(0,0,0,0.2);
@@ -155,15 +153,15 @@
         }
 
         .photo1 {
-            left: 15%; /* Centered them a bit more */
-            top: 10px;
+            left: 15%;
+            top: 0px; /* Moved up inside the container */
             transform: rotate(-8deg);
             z-index: 2;
         }
 
         .photo2 {
-            right: 15%; /* Centered them a bit more */
-            top: 40px;
+            right: 15%;
+            top: 40px; /* Moved up inside the container */
             transform: rotate(8deg);
             z-index: 3;
         }
@@ -175,21 +173,18 @@
         }
 
         /* --- MESSAGE & ARROW --- */
-        /* Removed footer-spacer pushing to bottom. Now it sits naturally. */
-        
         .message {
             background: rgba(255, 255, 255, 0.9);
-            padding: 12px 15px;
+            padding: 15px;
             border-radius: 12px;
             width: 90%;
             max-width: 500px;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             line-height: 1.4;
             font-style: italic;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
             z-index: 10;
-            /* Added margin top to ensure it never overlaps photos */
-            margin-top: 10px; 
+            /* No negative margins, sits naturally below the tall photo-container */
         }
 
         .next-btn {
@@ -198,6 +193,7 @@
             text-decoration: none;
             display: block;
             line-height: 1;
+            margin-top: 10px;
             animation: bounce 2s infinite;
             z-index: 10;
         }
