@@ -4,49 +4,91 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>19 Years of Magic</title>
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Fredoka:wght@400;500&display=swap" rel="stylesheet">
+    
     <style>
         body {
             background: linear-gradient(180deg, #ffe6ee 0%, #f8bbd0 100%);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Fredoka', sans-serif; /* Cute rounded text for body */
             text-align: center;
             color: #880e4f;
-            /* Ensures full height */
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px 0; /* Vertical padding */
+            padding: 20px 0;
             margin: 0;
             box-sizing: border-box;
+            overflow-x: hidden; /* Stops horizontal scroll */
+            position: relative;
         }
+
+        /* --- BACKGROUND FLOATING ANIMATION --- */
+        .floating-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Lets clicks pass through */
+            z-index: 0; /* Behind everything */
+            overflow: hidden;
+        }
+
+        .floater {
+            position: absolute;
+            bottom: -100px;
+            font-size: 30px;
+            animation: floatUp linear infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-110vh) rotate(20deg); opacity: 0; }
+        }
+
+        /* Randomizing floaters */
+        .f1 { left: 10%; animation-duration: 8s; animation-delay: 0s; font-size: 40px;}
+        .f2 { left: 30%; animation-duration: 12s; animation-delay: 2s; font-size: 30px;}
+        .f3 { left: 50%; animation-duration: 10s; animation-delay: 5s; font-size: 35px;}
+        .f4 { left: 70%; animation-duration: 15s; animation-delay: 1s; font-size: 25px;}
+        .f5 { left: 90%; animation-duration: 9s; animation-delay: 3s; font-size: 45px;}
+        .f6 { left: 20%; animation-duration: 11s; animation-delay: 7s; font-size: 30px;}
+
 
         /* --- HEADER --- */
         h1 {
+            font-family: 'Chewy', cursive; /* The new bubbly font */
             color: #4facfe;
-            font-size: clamp(2rem, 6vw, 3rem);
+            font-size: clamp(3rem, 10vw, 4.5rem); /* Bigger and bubblier */
             margin: 0;
-            line-height: 1.2;
-            text-shadow: 2px 2px 0px #fff;
+            line-height: 1.1;
+            text-shadow: 3px 3px 0px #fff;
             white-space: nowrap;
+            z-index: 10;
         }
 
         .sub-text {
-            font-size: 1rem;
+            font-size: 1.1rem;
             color: #555;
-            margin: 5px 0 20px 0;
+            margin: 0 0 20px 0;
             font-weight: 500;
+            z-index: 10;
         }
 
-        /* --- TIMER (Made Bigger) --- */
+        /* --- TIMER --- */
         .timer-box {
-            background: rgba(255, 255, 255, 0.6);
-            padding: 15px; /* More padding */
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(5px); /* Frosty glass effect */
+            padding: 15px;
             border-radius: 20px;
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
             width: 90%;
-            max-width: 450px; /* Increased from 320px to 450px for better size */
-            border: 2px solid #fff;
+            max-width: 450px;
+            border: 3px solid #fff;
             margin-bottom: 20px;
+            z-index: 10;
         }
 
         .timer-title {
@@ -55,12 +97,13 @@
             letter-spacing: 2px;
             margin-bottom: 10px;
             color: #d81b60;
+            font-family: 'Fredoka', sans-serif;
         }
 
         .time-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px; /* More space between boxes */
+            gap: 10px;
             justify-content: center;
         }
         
@@ -74,15 +117,16 @@
         .time-unit {
             background: #fff;
             padding: 10px;
-            border-radius: 12px;
-            min-width: 70px; /* Wider boxes */
+            border-radius: 15px;
+            min-width: 70px;
         }
 
         .number {
-            font-size: 1.4rem; /* Bigger numbers */
+            font-size: 1.5rem;
             font-weight: bold;
             color: #d81b60;
             display: block;
+            font-family: 'Chewy', cursive; /* Bubbly numbers */
         }
 
         .label {
@@ -90,54 +134,54 @@
             color: #777;
         }
 
-        /* --- PHOTOS (Made Bigger) --- */
+        /* --- PHOTOS --- */
         .photo-container {
             position: relative;
-            height: 220px; /* Increased height */
+            height: 220px;
             width: 100%;
             max-width: 400px;
             margin-bottom: 10px;
+            z-index: 10;
         }
 
         .photo-frame {
             position: absolute;
-            width: 170px; /* Increased width (was 140px) */
+            width: 170px;
             padding: 8px;
             background: white;
             box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-            border-radius: 6px;
+            border-radius: 10px;
             transition: transform 0.3s;
         }
 
         .photo1 {
-            left: 10%; /* Adjusted positioning */
+            left: 10%;
             top: 10px;
             transform: rotate(-8deg);
-            z-index: 1;
+            z-index: 2;
         }
 
         .photo2 {
-            right: 10%; /* Adjusted positioning */
+            right: 10%;
             top: 50px;
             transform: rotate(8deg);
-            z-index: 2;
+            z-index: 3;
         }
 
         .photo-frame img {
             width: 100%;
-            border-radius: 4px;
+            border-radius: 6px;
             display: block;
         }
 
-        /* --- FOOTER SECTION (Pushed to bottom) --- */
-        
-        /* This "margin-top: auto" pushes the message and arrow to the bottom */
+        /* --- FOOTER --- */
         .footer-spacer {
-            margin-top: auto; 
+            margin-top: auto;
             width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
+            z-index: 10;
         }
 
         .message {
@@ -145,13 +189,12 @@
             padding: 15px 20px;
             border-radius: 15px;
             width: 90%;
-            /* Fix for Laptop: Limits width so it doesn't stretch */
-            max-width: 600px; 
+            max-width: 600px;
             font-size: 1rem;
             line-height: 1.5;
             font-style: italic;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            margin-bottom: 15px; /* Space between message and arrow */
+            margin-bottom: 15px;
         }
 
         .next-btn {
@@ -160,8 +203,7 @@
             text-decoration: none;
             display: block;
             line-height: 1;
-            /* Ensures it stays just inside the screen */
-            padding-bottom: 10px; 
+            padding-bottom: 10px;
             animation: bounce 2s infinite;
         }
 
@@ -175,7 +217,16 @@
 </head>
 <body>
 
-    <h1>OFFICIALLY 19! ✨</h1>
+    <div class="floating-container">
+        <div class="floater f1">🎈</div>
+        <div class="floater f2">🎀</div>
+        <div class="floater f3">✨</div>
+        <div class="floater f4">🎈</div>
+        <div class="floater f5">🎀</div>
+        <div class="floater f6">✨</div>
+    </div>
+
+    <h1>OFFICIALLY 19! 🎀</h1>
     <p class="sub-text">The world got lucky on Feb 13, 2007</p>
 
     <div class="timer-box">
@@ -186,10 +237,10 @@
 
     <div class="photo-container">
         <div class="photo-frame photo1">
-            <img src="her_photo1.jpg" alt="Moment 1">
+            <img src="photo1.jpg" alt="Moment 1">
         </div>
         <div class="photo-frame photo2">
-            <img src="her_photo2.jpg" alt="Moment 2">
+            <img src="photo2.jpg" alt="Moment 2">
         </div>
     </div>
 
@@ -197,7 +248,6 @@
         <div class="message">
             "19 years of making the world brighter. Every second on this clock is a moment to be cherished." ❤️
         </div>
-
         <a href="page4.html" class="next-btn">&#10095;</a>
     </div>
 
