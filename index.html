@@ -336,6 +336,21 @@ svg{width:100%;height:210px}
 </div>
 <script>
 const TEST_MODE = true; // 👈 change to false for final version
+const musicBtn = document.getElementById("musicBtn");
+const loudMusic = document.getElementById("loudMusic");
+
+let musicUnlocked = false;
+
+musicBtn.onclick = () => {
+  loudMusic.volume = 1;
+  loudMusic.play().then(() => {
+    loudMusic.pause();
+    loudMusic.currentTime = 0;
+    musicUnlocked = true;
+    musicBtn.textContent = "🔊";
+  }).catch(()=>{});
+};
+
 
 /* PHOTO ROTATION */
 const photos=["photo1.jpg","photo2.jpg","photo3.jpg"];
@@ -360,6 +375,11 @@ const target = TEST_MODE
 const countdown=setInterval(()=>{
   const diff=target-new Date();
   if(diff<=0){
+    if (musicUnlocked) {
+  loudMusic.currentTime = 0;
+  loudMusic.play();
+}
+
     clearInterval(countdown);
     timer.style.display="none";
 
@@ -415,8 +435,11 @@ const gift = document.getElementById("gift");
 const bdayBtn = document.getElementById("bdayBtn");
 
 bdayBtn.onclick = () => {
+  loudMusic.pause();
+  loudMusic.currentTime = 0;
   window.location.href = "birthday.html";
 };
+
 
   
   //REPLACED LOGIC//
@@ -506,6 +529,27 @@ if (openedDate === todayKey()) {
 
 
 </script>
+
+  <!-- MUSIC TOGGLE -->
+<button id="musicBtn" style="
+  position:fixed;
+  bottom:16px;
+  right:16px;
+  z-index:30;
+  background:#fff;
+  border:none;
+  border-radius:50%;
+  width:52px;
+  height:52px;
+  font-size:22px;
+  box-shadow:0 10px 25px rgba(0,0,0,.2);
+  cursor:pointer;
+">
+🎵
+</button>
+
+<audio id="loudMusic" src="happy-birthday.mp3"></audio>
+
   
 </body>
 </html>
