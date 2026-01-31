@@ -221,26 +221,6 @@ body{
   .center-box{width:94%}
 }
 
- #musicBtn{
-  position:fixed;
-}
-
-/* diagonal line when muted */
-#musicBtn.muted::after{
-  content:"";
-  position:absolute;
-  width:34px;
-  height:3px;
-  background:#ff4f9a;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%) rotate(-45deg);
-  border-radius:2px;
-}
-  
-#musicIcon{
-  pointer-events:none;
-}
 
 
 </style>
@@ -298,59 +278,7 @@ body{
 
 </div>
   
-<audio id="bgMusic" src="soft-bg.mp3" loop></audio>
 
-
-
-<script>
-const musicBtn = document.getElementById("musicBtn");
-const bgMusic = document.getElementById("bgMusic");
-const musicIcon = document.getElementById("musicIcon");
-
-let musicUnlocked = false;
-
-musicBtn.onclick = () => {
-
-  // unlock audio on first interaction
-  if (!musicUnlocked) {
-    bgMusic.volume = 0.5;
-    bgMusic.play().catch(()=>{});
-    bgMusic.pause();
-    bgMusic.currentTime = 0;
-    musicUnlocked = true;
-  }
-
-  // toggle
-  if (bgMusic.paused) {
-    bgMusic.play().catch(()=>{});
-    musicBtn.classList.remove("muted"); // remove slash
-    musicIcon.textContent = "🔊";
-  } else {
-    bgMusic.pause();
-    musicBtn.classList.add("muted");    // add slash
-    musicIcon.textContent = "🎵";
-  }
-};
-
-</script>
-
-<!-- MUSIC TOGGLE -->
-<button id="musicBtn" class="muted" style="
-  position:fixed;
-  bottom:16px;
-  right:16px;
-  z-index:30;
-  background:#fff;
-  border:none;
-  border-radius:50%;
-  width:52px;
-  height:52px;
-  font-size:22px;
-  box-shadow:0 10px 25px rgba(0,0,0,.2);
-  cursor:pointer;
-">
-  <span id="musicIcon">🎵</span>
-</button>
 
 
 </body>
