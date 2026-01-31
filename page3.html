@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>19 Years of Magic</title>
     <style>
         body {
@@ -10,101 +10,100 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             text-align: center;
             color: #880e4f;
-            /* This ensures the page takes up exactly the full screen height */
-            height: 100vh;
+            min-height: 100vh; /* Allows scrolling if needed */
             display: flex;
             flex-direction: column;
-            justify-content: space-evenly; /* Distributes items evenly */
             align-items: center;
+            justify-content: flex-start; /* Starts items at the top */
+            padding-top: 20px; /* Small space at the very top */
+            padding-bottom: 20px;
             margin: 0;
-            padding: 10px;
             box-sizing: border-box;
-            overflow: hidden; /* Prevents scrolling */
+            /* overflow: hidden;  <-- REMOVED THIS so you can refresh! */
         }
 
-        /* Responsive Title: scales with screen width so emoji stays inline */
+        /* Responsive Title */
         h1 {
             color: #4facfe;
-            font-size: clamp(1.8rem, 5vw, 3rem); /* Smart sizing */
-            margin: 0;
-            line-height: 1.2;
+            font-size: clamp(1.8rem, 6vw, 2.5rem);
+            margin: 0 0 5px 0; /* Minimal bottom margin */
+            line-height: 1.1;
             text-shadow: 2px 2px 0px #fff;
-            white-space: nowrap; /* Forces text to stay on one line */
+            white-space: nowrap;
         }
 
         .sub-text {
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: #555;
-            margin: 5px 0;
+            margin: 0 0 15px 0; /* Reduced margin */
             font-weight: 500;
         }
 
         /* Compact Timer Box */
         .timer-box {
             background: rgba(255, 255, 255, 0.6);
-            padding: 15px;
+            padding: 10px;
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             width: 90%;
-            max-width: 350px;
+            max-width: 320px;
             border: 2px solid #fff;
+            margin-bottom: 15px; /* Pulls photos closer */
         }
 
         .timer-title {
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             color: #d81b60;
         }
 
         .time-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3 columns for top row */
-            gap: 8px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px; /* Tighter gap */
             justify-content: center;
         }
         
-        /* Special handling to center the bottom row (Mins/Secs) */
         .time-grid .bottom-row {
-            grid-column: span 3; /* Spans full width */
+            grid-column: span 3;
             display: flex;
             justify-content: center;
-            gap: 8px;
+            gap: 5px;
         }
 
         .time-unit {
             background: #fff;
-            padding: 8px;
+            padding: 5px;
             border-radius: 8px;
-            min-width: 60px;
+            min-width: 55px;
         }
 
         .number {
-            font-size: 1.2rem;
+            font-size: 1.1rem; /* Slightly smaller numbers */
             font-weight: bold;
             color: #d81b60;
             display: block;
         }
 
         .label {
-            font-size: 0.7rem;
+            font-size: 0.6rem;
             color: #777;
         }
 
-        /* Compact Photo Area */
+        /* Photo Area */
         .photo-container {
             position: relative;
-            /* Height is dynamic based on screen size, not fixed pixels */
-            height: 20vh; 
+            height: 180px; /* Fixed smaller height for mobile */
             width: 100%;
             max-width: 300px;
-            margin: 10px 0;
+            margin-bottom: 10px;
         }
 
         .photo-frame {
             position: absolute;
-            width: 45%; /* Relative width */
+            width: 140px; /* Fixed width prevents huge images */
             padding: 5px;
             background: white;
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
@@ -113,16 +112,16 @@
         }
 
         .photo1 {
-            left: 10%;
-            top: 10%;
-            transform: rotate(-10deg);
+            left: 20px;
+            top: 10px;
+            transform: rotate(-8deg);
             z-index: 1;
         }
 
         .photo2 {
-            right: 10%;
-            top: 30%;
-            transform: rotate(10deg);
+            right: 20px;
+            top: 40px;
+            transform: rotate(8deg);
             z-index: 2;
         }
 
@@ -134,19 +133,21 @@
 
         .message {
             background: rgba(255, 255, 255, 0.8);
-            padding: 10px 15px;
+            padding: 12px;
             border-radius: 10px;
-            max-width: 90%;
-            font-size: 0.9rem;
+            width: 85%;
+            font-size: 0.85rem;
             line-height: 1.4;
             font-style: italic;
+            margin-bottom: 15px;
         }
 
         .next-btn {
-            font-size: 2rem;
+            font-size: 2.5rem; /* Bigger arrow */
             color: #333;
             text-decoration: none;
-            margin-top: 5px;
+            display: block;
+            margin-bottom: 20px; /* Space at bottom */
             animation: bounce 2s infinite;
         }
 
@@ -160,10 +161,8 @@
 </head>
 <body>
 
-    <div>
-        <h1>OFFICIALLY 19! ✨</h1>
-        <p class="sub-text">The world got lucky on Feb 13, 2007</p>
-    </div>
+    <h1>OFFICIALLY 19! ✨</h1>
+    <p class="sub-text">The world got lucky on Feb 13, 2007</p>
 
     <div class="timer-box">
         <div class="timer-title">Time You've Been Loved</div>
