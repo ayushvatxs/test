@@ -4,20 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>19 Years of Magic</title>
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
     
     <style>
         body {
             background: linear-gradient(180deg, #ffe6ee 0%, #f8bbd0 100%);
-            font-family: 'Fredoka', sans-serif;
+            font-family: 'Fredoka', sans-serif; /* Applies rounded font everywhere */
             text-align: center;
             color: #880e4f;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start; /* Starts from top */
-            padding-top: 10px; /* Reduced top padding */
+            justify-content: flex-start;
+            padding-top: 15px;
             padding-bottom: 20px;
             margin: 0;
             box-sizing: border-box;
@@ -58,10 +58,12 @@
 
         /* --- HEADER --- */
         h1 {
-            font-family: 'Pacifico', cursive; /* Stylish handwritten font */
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 600; /* Bold and round */
             color: #4facfe;
-            font-size: clamp(2.2rem, 8vw, 3.5rem); 
-            margin: 5px 0 5px 0; /* Minimized margins */
+            /* Decreased size as requested */
+            font-size: clamp(2rem, 7vw, 2.8rem); 
+            margin: 5px 0 5px 0;
             line-height: 1.2;
             text-shadow: 2px 2px 0px #fff;
             white-space: nowrap;
@@ -71,37 +73,38 @@
         .sub-text {
             font-size: 0.9rem;
             color: #555;
-            margin: 0 0 10px 0;
+            margin: 0 0 15px 0;
             font-weight: 500;
             z-index: 10;
         }
 
-        /* --- TIMER --- */
+        /* --- TIMER (Increased Size) --- */
         .timer-box {
             background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(5px);
-            padding: 10px;
-            border-radius: 15px;
+            padding: 15px; /* More padding */
+            border-radius: 20px;
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            width: 85%;
-            max-width: 350px;
+            width: 90%;
+            /* Increased max-width for a bigger box */
+            max-width: 400px; 
             border: 3px solid #fff;
             z-index: 10;
-            margin-bottom: 10px; /* Reduced space below timer */
+            margin-bottom: 10px;
         }
 
         .timer-title {
-            font-size: 0.7rem;
+            font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
             color: #d81b60;
         }
 
         .time-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
+            gap: 10px; /* More space */
             justify-content: center;
         }
         
@@ -109,42 +112,42 @@
             grid-column: span 3;
             display: flex;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
         }
 
         .time-unit {
             background: #fff;
-            padding: 8px;
-            border-radius: 10px;
-            min-width: 60px;
+            padding: 10px; /* Bigger internal boxes */
+            border-radius: 12px;
+            min-width: 65px;
         }
 
         .number {
-            font-size: 1.2rem;
-            font-weight: 600; /* Cleaner bold */
+            font-size: 1.4rem; /* Bigger numbers */
+            font-weight: 600;
             color: #d81b60;
             display: block;
         }
 
         .label {
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             color: #777;
         }
 
         /* --- PHOTOS --- */
         .photo-container {
             position: relative;
-            /* CRITICAL FIX: Increased height so message box can't overlap */
-            height: 240px; 
+            /* Keeps safe distance so message doesn't overlap */
+            height: 250px; 
             width: 100%;
             max-width: 400px;
             z-index: 10;
-            margin-top: 5px;
+            margin-top: 10px;
         }
 
         .photo-frame {
             position: absolute;
-            width: 130px;
+            width: 140px;
             padding: 6px;
             background: white;
             box-shadow: 0 8px 16px rgba(0,0,0,0.2);
@@ -154,14 +157,14 @@
 
         .photo1 {
             left: 15%;
-            top: 0px; /* Moved up inside the container */
+            top: 10px;
             transform: rotate(-8deg);
             z-index: 2;
         }
 
         .photo2 {
             right: 15%;
-            top: 40px; /* Moved up inside the container */
+            top: 50px;
             transform: rotate(8deg);
             z-index: 3;
         }
@@ -176,7 +179,7 @@
         .message {
             background: rgba(255, 255, 255, 0.9);
             padding: 15px;
-            border-radius: 12px;
+            border-radius: 15px;
             width: 90%;
             max-width: 500px;
             font-size: 0.95rem;
@@ -184,7 +187,6 @@
             font-style: italic;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
             z-index: 10;
-            /* No negative margins, sits naturally below the tall photo-container */
         }
 
         .next-btn {
@@ -193,7 +195,7 @@
             text-decoration: none;
             display: block;
             line-height: 1;
-            margin-top: 10px;
+            margin-top: 15px;
             animation: bounce 2s infinite;
             z-index: 10;
         }
