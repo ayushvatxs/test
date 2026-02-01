@@ -7,12 +7,12 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <style>
-/* ================= ORIGINAL FOUNDATION ================= */
+/* ================= ORIGINAL FOUNDATION (PRE-BIRTHDAY) ================= */
 *{box-sizing:border-box}
 body{
   margin:0;
@@ -23,87 +23,148 @@ body{
   background:linear-gradient(180deg,#fff,#ffd6e8); /* ORIGINAL BACKGROUND */
   font-family:"Segoe UI",system-ui;
   overflow:hidden;
-  overflow-y:auto;
+  transition: background 1s ease; /* Smooth transition to pink */
+}
+
+/* Background Container for Floating Particles */
+#bg-decor {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+    display: none; /* Hidden until birthday */
+}
+
+/* Floating Animation */
+.float-item {
+    position: absolute;
+    bottom: -100px;
+    font-size: 2rem;
+    opacity: 0.7;
+    animation: floatUp linear infinite;
+}
+@keyframes floatUp {
+    0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.8; }
+    100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
 }
 
 /* CARD STYLE */
 .card{
   width:92%; max-width:420px; background:white; border-radius:22px; padding:18px 18px 20px; text-align:center; box-shadow:0 25px 70px rgba(255,120,170,.3); position:relative; z-index:2;
+  transition: transform 0.3s ease;
 }
 
-/* PHOTO */
-.photo{ width:135px;height:135px; margin:0 auto 12px; border-radius:50%; overflow:hidden; border:5px solid #ffd1e5; transition: border-color 0.5s; }
+/* PHOTO - Transitions to Gold */
+.photo{ 
+    width:135px; height:135px; margin:0 auto 12px; border-radius:50%; overflow:hidden; 
+    border:5px solid #ffd1e5; /* Original Border */
+    transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+}
 .photo img{ width:100%;height:100%; object-fit:cover; transition: opacity 0.5s; }
 
-/* TEXT */
+/* PRE-BIRTHDAY TEXT */
 h2 { margin-top: 0; font-size: 1.5em; }
 .sub{font-size:.95rem;color:#555}
 .date{margin:6px 0 6px;font-weight:600}
 .timer{margin:6px 0}
 .box{ background:#fff5fa; padding:10px 18px; border-radius:12px; font-weight:700; display:inline-block; }
 
-.actions{ margin-top:-18px; padding-bottom:8px; }
+/* ACTIONS */
+.actions{ margin-top:-18px; padding-bottom:8px; transition: margin 0.5s ease; }
 .bday{
   margin:6px auto 4px; padding:11px 24px; border-radius:22px; border:none; background:#eee; color:#999; cursor:not-allowed; margin-top: 22px; transition: all 0.3s ease;
 }
 
-/* ================= PREMIUM UPGRADES (Hidden until 00:00) ================= */
+/* ================= PREMIUM POST-BIRTHDAY STYLES ================= */
 
-/* 1. THE 3D TEXT CONTAINER */
+/* 1. BODY TURNS PASTEL PINK */
+body.party-mode {
+    background: #ffe0f0; /* Pastel Pink */
+}
+
+/* 2. PHOTO FRAME SHINY GOLD */
+.photo.gold-mode {
+    border: 6px solid #FFD700; /* Light Shiny Gold */
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.8); /* Glowing Aura */
+    transform: scale(1.05);
+}
+
+/* 3. "THE TIME HAS COME" TEXT */
+.time-come-text {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #444;
+    margin-bottom: 15px;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards;
+}
+
+/* 4. PREMIUM BUBBLY SKY BLUE TEXT */
 #premiumBirthday {
-  display: none; /* Hidden by default */
-  margin: 20px 0;
-  animation: bounceIn 1s ease forwards;
+    display: none;
+    margin: 20px 0;
 }
 
-/* 2. THE BOLD 3D TEXT STYLE */
-.super-text {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 900;
-  font-size: 3.2rem;
-  line-height: 1;
-  color: #fff;
-  text-transform: uppercase;
-  margin: 0;
-  
-  /* THE 3D LAYERS + NEON GLOW */
-  text-shadow: 
-      1px 1px 0px #ff0055,
-      2px 2px 0px #ff0055,
-      3px 3px 0px #ff0055,
-      4px 4px 0px #d60045,
-      0 0 15px rgba(255, 0, 85, 0.8), /* Outer Glow */
-      0 10px 20px rgba(0,0,0,0.3);
-      
-  transform: scale(0.9);
-  animation: heartbeat 1.5s infinite;
+.bubbly-text {
+    font-family: 'Fredoka', sans-serif; /* Bubbly Font */
+    font-size: 3.8rem;
+    line-height: 1;
+    color: #40E0D0; /* Sky Blue / Turquoise */
+    margin: 0;
+    
+    /* 3D Depth + Glow */
+    text-shadow: 
+        0px 2px 0px #00acc1,
+        0px 4px 0px #00acc1,
+        0px 6px 0px #00838f,
+        0px 8px 10px rgba(0,0,0,0.2), /* Drop shadow */
+        0px 0px 20px rgba(64, 224, 208, 0.6); /* Sky Blue Glow */
+        
+    /* Initial State for Animation */
+    transform: scale(0);
+    opacity: 0;
+    
+    /* Premium Animations */
+    animation: jellyBounce 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards, gentleFloat 3s ease-in-out infinite 1.2s;
 }
 
+/* The "Jelly" Appearance Animation */
+@keyframes jellyBounce {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.2); opacity: 1; } /* Overshoot */
+    70% { transform: scale(0.9); } /* Bounce back */
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* The "Premium Idle" Animation (Gentle Float) */
+@keyframes gentleFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* Subtext */
 .queen-sub {
-  font-size: 1rem; color: #d60045; font-weight: 700; margin-top: 10px; letter-spacing: 2px;
+    font-size: 1rem; color: #d81b60; font-weight: 700; margin-top: 15px; letter-spacing: 2px;
+    opacity: 0; animation: fadeUp 1s ease 0.5s forwards;
 }
-
-/* 3. THE CROWN */
-#queenCrown {
-  display: none; font-size: 4rem; margin-top: 10px;
-  filter: drop-shadow(0 0 15px gold);
-  animation: floatCrown 3s ease-in-out infinite;
-}
-
-/* ANIMATIONS */
-@keyframes bounceIn { from { opacity: 0; transform: scale(0.5); } to { opacity: 1; transform: scale(1); } }
-@keyframes heartbeat { 0% { transform: scale(0.95); } 50% { transform: scale(1.05); } 100% { transform: scale(0.95); } }
-@keyframes floatCrown { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@keyframes fadeUp { from {opacity:0; transform:translateY(10px);} to {opacity:1; transform:translateY(0);} }
 
 /* BUTTON ACTIVE STATE */
 .bday.active-party {
-  background: linear-gradient(45deg, #ff0055, #ff5588);
-  color: white; cursor: pointer;
-  box-shadow: 0 10px 25px rgba(255, 0, 85, 0.4);
+  background: linear-gradient(45deg, #ff4081, #ff80ab) !important;
+  color: white !important; cursor: pointer !important;
+  box-shadow: 0 10px 25px rgba(255, 64, 129, 0.4);
   transform: scale(1.1);
-  animation: wiggle 2s infinite;
+  animation: pulseBtn 2s infinite;
 }
-@keyframes wiggle { 0%, 100% { transform: scale(1.1) rotate(0deg); } 25% { transform: scale(1.1) rotate(-3deg); } 75% { transform: scale(1.1) rotate(3deg); } }
+@keyframes pulseBtn {
+  0% { transform: scale(1.1); box-shadow: 0 0 0 0 rgba(255, 64, 129, 0.7); }
+  70% { transform: scale(1.15); box-shadow: 0 0 0 15px rgba(255, 64, 129, 0); }
+  100% { transform: scale(1.1); box-shadow: 0 0 0 0 rgba(255, 64, 129, 0); }
+}
 
 /* GIFT & MODAL STYLES (Your Original Code) */
 .gift{ font-size:48px; cursor:pointer; margin-top:2px; animation: giftFloat 2.8s ease-in-out infinite; }
@@ -116,12 +177,12 @@ h2 { margin-top: 0; font-size: 1.5em; }
 .codeCard input { width:100%; padding:10px; margin:10px 0; }
 #closeModal, #closeMsg { position:absolute; top:10px; right:15px; cursor:pointer; font-size:1.2rem; }
 
-/* PHOTO GOLD BORDER MODE */
-.photo.party-mode { border-color: gold; box-shadow: 0 0 20px rgba(255,215,0,0.6); }
-
 </style>
 </head>
 <body>
+
+  <div id="bg-decor">
+     </div>
 
   <div class="card">
     
@@ -133,12 +194,14 @@ h2 { margin-top: 0; font-size: 1.5em; }
       <h2>💌 A Special Day Is Almost Here</h2>
       <div class="sub">Because the girl who means everything to me deserves to be celebrated by the world</div>
       <div class="date">13 February</div>
-      
       <div class="timer" id="timer"></div>
     </div>
 
     <div id="premiumBirthday">
-      <h1 class="super-text">HAPPY<br>BIRTHDAY</h1>
+      <div class="time-come-text">🎂 The Time has come</div>
+      
+      <h1 class="bubbly-text">HAPPY<br>BIRTHDAY</h1>
+      
       <div class="queen-sub">THE QUEEN HAS ARRIVED 👑</div>
     </div>
 
@@ -149,8 +212,8 @@ h2 { margin-top: 0; font-size: 1.5em; }
         <div class="gift" id="gift">🎁</div>
         <div id="giftText">Only for Violina 💗</div>
       </div>
-
-      <div id="queenCrown">👑</div>
+      
+      <div id="queenCrown" style="display:none; font-size:4rem; margin-top:10px; animation: giftFloat 3s infinite;">👑</div>
     </div>
 
   </div>
@@ -158,7 +221,7 @@ h2 { margin-top: 0; font-size: 1.5em; }
   <div id="codeModal"><div class="codeCard"><span id="closeModal">✖</span><h3>Secret Code 💕</h3><input type="password" id="secretInput" placeholder="Enter code"><button id="openGiftBtn">Open</button></div></div>
   <div id="messageBox"><div class="codeCard"><span id="closeMsg">✖</span><p style="text-align:left;color:#555;">Ayoo 😭 only a few days left and I genuinely don’t know how to act normal anymore. My brain is already in celebration mode and my heart is clearly ahead of schedule 🥰💖</p></div></div>
 
-  <button id="musicBtn" style="position:fixed;bottom:16px;right:16px;background:#fff;border:none;border-radius:50%;width:50px;height:50px;font-size:20px;box-shadow:0 5px 15px rgba(0,0,0,.2);">🎵</button>
+  <button id="musicBtn" class="muted" style="position:fixed;bottom:16px;right:16px;background:#fff;border:none;border-radius:50%;width:50px;height:50px;font-size:20px;box-shadow:0 5px 15px rgba(0,0,0,.2);">🎵</button>
   <audio id="loudMusic" src="happy-birthday.mp3"></audio>
 
 <script>
@@ -178,6 +241,7 @@ const crown = document.getElementById("queenCrown");
 const bdayBtn = document.getElementById("bdayBtn");
 const mainPhoto = document.getElementById("mainPhoto");
 const actionsArea = document.getElementById("actionsArea");
+const bgDecor = document.getElementById("bg-decor");
 
 // TIMER LOGIC
 const x = setInterval(function() {
@@ -188,32 +252,7 @@ const x = setInterval(function() {
 
   if (distance < 0) {
     clearInterval(x);
-    // === TRIGGER 00:00 MODE ===
-    
-    // 1. Hide Old Stuff
-    preLayer.style.display = "none";
-    giftLayer.style.display = "none";
-    
-    // 2. Show New Stuff
-    premiumLayer.style.display = "block";
-    crown.style.display = "block";
-    
-    // 3. Styling Upgrades
-    mainPhoto.classList.add("party-mode");
-    actionsArea.style.marginTop = "10px";
-    
-    // 4. Activate Button
-    bdayBtn.disabled = false;
-    bdayBtn.classList.add("active-party");
-    bdayBtn.innerHTML = "Enter World 🎂";
-    bdayBtn.onclick = () => window.location.href = "birthday.html";
-
-    // 5. Fire Confetti
-    fireConfetti();
-    
-    // 6. Play Music if unlocked
-    if(musicUnlocked) loudMusic.play();
-
+    launchPremiumMode();
   } else {
     // Normal Timer
     let days = Math.floor(distance / (1000 * 60 * 60 * 24));
@@ -224,11 +263,56 @@ const x = setInterval(function() {
   }
 }, 1000);
 
+function launchPremiumMode() {
+  // 1. Hide Pre-Birthday Elements
+  preLayer.style.display = "none";
+  giftLayer.style.display = "none";
+  
+  // 2. BACKGROUND TRANSFORMATION
+  document.body.classList.add("party-mode"); // Turns Pink
+  bgDecor.style.display = "block"; 
+  spawnFloatingElements(); // Start floating balloons/ribbons
+
+  // 3. PHOTO TRANSFORMATION
+  mainPhoto.classList.add("gold-mode"); // Shiny Gold Border
+  actionsArea.style.marginTop = "10px";
+
+  // 4. SHOW PREMIUM CONTENT
+  premiumLayer.style.display = "block";
+  crown.style.display = "block";
+  
+  // 5. ACTIVATE BUTTON
+  bdayBtn.disabled = false;
+  bdayBtn.classList.add("active-party");
+  bdayBtn.innerHTML = "Enter World 🎂";
+  bdayBtn.onclick = () => window.location.href = "birthday.html";
+
+  // 6. FIRE CONFETTI
+  fireConfetti();
+  
+  // 7. Play Music
+  if(musicUnlocked) loudMusic.play();
+}
+
+// --- FLOATING BACKGROUND PARTICLES (BALLOONS & RIBBONS) ---
+function spawnFloatingElements() {
+    const symbols = ['🎈', '🎀', '🎉', '✨', '🎂'];
+    for(let i=0; i<20; i++) {
+        const div = document.createElement('div');
+        div.classList.add('float-item');
+        div.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+        div.style.left = Math.random() * 100 + 'vw';
+        div.style.animationDuration = (Math.random() * 5 + 5) + 's'; // Random speed 5-10s
+        div.style.animationDelay = Math.random() * 5 + 's';
+        bgDecor.appendChild(div);
+    }
+}
+
 function fireConfetti() {
   var duration = 3 * 1000; var end = Date.now() + duration;
   (function frame() {
-    confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#ff0055', '#gold', '#fff'] });
-    confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#ff0055', '#gold', '#fff'] });
+    confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#40E0D0', '#FFD700', '#FF69B4'] });
+    confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#40E0D0', '#FFD700', '#FF69B4'] });
     if (Date.now() < end) { requestAnimationFrame(frame); }
   }());
 }
