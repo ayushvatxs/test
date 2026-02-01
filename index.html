@@ -7,12 +7,12 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <style>
-/* ================= ORIGINAL FOUNDATION (PRE-BIRTHDAY) ================= */
+/* ================= GLOBAL ================= */
 *{box-sizing:border-box}
 body{
   margin:0;
@@ -20,169 +20,156 @@ body{
   display:flex;
   justify-content:center;
   align-items:center;
-  background:linear-gradient(180deg,#fff,#ffd6e8); /* ORIGINAL BACKGROUND */
-  font-family:"Segoe UI",system-ui;
+  background:linear-gradient(180deg,#fff,#ffd6e8);
+  font-family: 'Outfit', sans-serif; /* Clean font like your screenshot */
   overflow:hidden;
-  transition: background 1s ease; /* Smooth transition to pink */
+  transition: background 1s ease;
 }
 
-/* Background Container for Floating Particles */
-#bg-decor {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    pointer-events: none;
-    z-index: 0;
-    overflow: hidden;
-    display: none; /* Hidden until birthday */
-}
-
-/* Floating Animation */
+/* BACKGROUND DECOR (Floating Items) */
+#bg-decor { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; display: none; }
 .float-item {
-    position: absolute;
-    bottom: -100px;
-    font-size: 2rem;
-    opacity: 0.7;
+    position: absolute; bottom: -100px; font-size: 2rem; opacity: 0.6;
     animation: floatUp linear infinite;
+    /* NO ROTATION as requested */
 }
 @keyframes floatUp {
-    0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+    0% { transform: translateY(0); opacity: 0; }
     10% { opacity: 0.8; }
-    100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+    100% { transform: translateY(-110vh); opacity: 0; }
 }
 
-/* CARD STYLE */
+/* CARD */
 .card{
-  width:92%; max-width:420px; background:white; border-radius:22px; padding:18px 18px 20px; text-align:center; box-shadow:0 25px 70px rgba(255,120,170,.3); position:relative; z-index:2;
-  transition: transform 0.3s ease;
+  width:92%; max-width:420px; background:white; border-radius:24px; padding:25px 20px 30px; 
+  text-align:center; box-shadow:0 25px 70px rgba(255,120,170,.2); position:relative; z-index:2;
+  transition: all 0.5s ease;
 }
 
-/* PHOTO - Transitions to Gold */
+/* PHOTO - ALWAYS PINK */
 .photo{ 
-    width:135px; height:135px; margin:0 auto 12px; border-radius:50%; overflow:hidden; 
-    border:5px solid #ffd1e5; /* Original Border */
-    transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+    width:130px; height:130px; margin:0 auto 15px; border-radius:50%; overflow:hidden; 
+    border: 5px solid #ffd1e5; /* Keeps Pink Border */
+    transition: transform 0.5s ease; 
 }
-.photo img{ width:100%;height:100%; object-fit:cover; transition: opacity 0.5s; }
+.photo img{ width:100%; height:100%; object-fit:cover; transition: opacity 0.5s; }
 
-/* PRE-BIRTHDAY TEXT */
-h2 { margin-top: 0; font-size: 1.5em; }
-.sub{font-size:.95rem;color:#555}
-.date{margin:6px 0 6px;font-weight:600}
-.timer{margin:6px 0}
-.box{ background:#fff5fa; padding:10px 18px; border-radius:12px; font-weight:700; display:inline-block; }
-
-/* ACTIONS */
-.actions{ margin-top:-18px; padding-bottom:8px; transition: margin 0.5s ease; }
-.bday{
-  margin:6px auto 4px; padding:11px 24px; border-radius:22px; border:none; background:#eee; color:#999; cursor:not-allowed; margin-top: 22px; transition: all 0.3s ease;
+/* TEXT STYLES (Matching your Screenshot) */
+h2 { 
+    margin: 10px 0 5px; 
+    font-size: 1.6rem; 
+    color: #111; 
+    font-weight: 800; /* Bold/Black weight */
+    letter-spacing: -0.5px;
 }
-
-/* ================= PREMIUM POST-BIRTHDAY STYLES ================= */
-
-/* 1. BODY TURNS PASTEL PINK */
-body.party-mode {
-    background: #ffe0f0; /* Pastel Pink */
+.sub { 
+    font-size: 0.95rem; 
+    color: #666; 
+    margin-bottom: 20px; 
+    font-weight: 400; 
+    line-height: 1.5; 
 }
-
-/* 2. PHOTO FRAME SHINY GOLD */
-.photo.gold-mode {
-    border: 6px solid #FFD700; /* Light Shiny Gold */
-    box-shadow: 0 0 25px rgba(255, 215, 0, 0.8); /* Glowing Aura */
-    transform: scale(1.05);
+.date { 
+    margin: 10px 0 20px; 
+    font-weight: 700; 
+    color: #333; 
 }
 
-/* 3. "THE TIME HAS COME" TEXT */
-.time-come-text {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700;
-    font-size: 1.1rem;
-    color: #444;
-    margin-bottom: 15px;
-    opacity: 0;
-    animation: fadeUp 1s ease forwards;
+/* TIMER */
+.timer { display:flex; justify-content:center; gap:12px; margin-bottom:25px; }
+.box { 
+    background:#fff0f6; /* Very light pink bg for boxes */
+    padding:12px 16px; border-radius:14px; font-weight:700; color: #333; 
+    min-width: 60px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);
 }
 
-/* 4. PREMIUM BUBBLY SKY BLUE TEXT */
-#premiumBirthday {
+/* ================= POST-BIRTHDAY STYLES ================= */
+
+/* 1. CURVY BUBBLY TEXT (SVG) */
+#curvyBirthdayWrap {
     display: none;
-    margin: 20px 0;
+    margin-top: 10px;
+    height: 180px; /* Space for the curve */
+    animation: jellyPop 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
 
-.bubbly-text {
-    font-family: 'Fredoka', sans-serif; /* Bubbly Font */
-    font-size: 3.8rem;
-    line-height: 1;
-    color: #40E0D0; /* Sky Blue / Turquoise */
-    margin: 0;
-    
-    /* 3D Depth + Glow */
-    text-shadow: 
-        0px 2px 0px #00acc1,
-        0px 4px 0px #00acc1,
-        0px 6px 0px #00838f,
-        0px 8px 10px rgba(0,0,0,0.2), /* Drop shadow */
-        0px 0px 20px rgba(64, 224, 208, 0.6); /* Sky Blue Glow */
-        
-    /* Initial State for Animation */
-    transform: scale(0);
-    opacity: 0;
-    
-    /* Premium Animations */
-    animation: jellyBounce 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards, gentleFloat 3s ease-in-out infinite 1.2s;
-}
-
-/* The "Jelly" Appearance Animation */
-@keyframes jellyBounce {
-    0% { transform: scale(0); opacity: 0; }
-    50% { transform: scale(1.2); opacity: 1; } /* Overshoot */
-    70% { transform: scale(0.9); } /* Bounce back */
+@keyframes jellyPop {
+    0% { transform: scale(0.5); opacity: 0; }
+    50% { transform: scale(1.1); }
     100% { transform: scale(1); opacity: 1; }
 }
 
-/* The "Premium Idle" Animation (Gentle Float) */
-@keyframes gentleFloat {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+svg { width: 100%; height: 100%; overflow: visible; }
+
+.curveText {
+    font-family: 'Fredoka', sans-serif; /* Bubbly font */
+    font-weight: 600;
+    font-size: 45px; 
+    fill: #40E0D0; /* Sky Blue */
+    stroke: #fff;
+    stroke-width: 4px;
+    paint-order: stroke fill;
+    filter: drop-shadow(0 4px 0px #2ebfb3) drop-shadow(0 0 10px rgba(64, 224, 208, 0.5)); /* 3D + Glow */
+    letter-spacing: 2px;
 }
 
-/* Subtext */
+/* 2. SUBTEXT "The time has come" */
+.time-msg {
+    font-size: 1.1rem; font-weight: 700; color: #444; margin-bottom: 5px;
+    display: none; animation: fadeIn 1s ease;
+}
+
 .queen-sub {
-    font-size: 1rem; color: #d81b60; font-weight: 700; margin-top: 15px; letter-spacing: 2px;
-    opacity: 0; animation: fadeUp 1s ease 0.5s forwards;
+    font-size: 0.9rem; color: #888; margin-top: -30px; margin-bottom: 20px;
+    display: none; animation: fadeIn 1s ease 0.5s forwards; opacity: 0;
 }
-@keyframes fadeUp { from {opacity:0; transform:translateY(10px);} to {opacity:1; transform:translateY(0);} }
+@keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
 
-/* BUTTON ACTIVE STATE */
+
+/* ACTIONS */
+.actions { transition: margin 0.5s ease; }
+
+.bday {
+  margin:10px auto; padding:14px 40px; border-radius:50px; border:none; 
+  background:#eee; color:#999; font-weight:700; font-size:1rem;
+  cursor:not-allowed; transition: all 0.3s ease;
+}
 .bday.active-party {
   background: linear-gradient(45deg, #ff4081, #ff80ab) !important;
   color: white !important; cursor: pointer !important;
   box-shadow: 0 10px 25px rgba(255, 64, 129, 0.4);
-  transform: scale(1.1);
-  animation: pulseBtn 2s infinite;
+  animation: bounceBtn 2s infinite;
 }
-@keyframes pulseBtn {
-  0% { transform: scale(1.1); box-shadow: 0 0 0 0 rgba(255, 64, 129, 0.7); }
-  70% { transform: scale(1.15); box-shadow: 0 0 0 15px rgba(255, 64, 129, 0); }
-  100% { transform: scale(1.1); box-shadow: 0 0 0 0 rgba(255, 64, 129, 0); }
+@keyframes bounceBtn { 
+    0%, 100% { transform: scale(1); } 
+    50% { transform: scale(1.05); } 
 }
 
-/* GIFT & MODAL STYLES (Your Original Code) */
-.gift{ font-size:48px; cursor:pointer; margin-top:2px; animation: giftFloat 2.8s ease-in-out infinite; }
-#giftText{ margin-top:4px; font-size:.95rem; color:#ff4f9a; font-weight:700; }
-@keyframes giftFloat { 0% { transform: translateY(0); } 50% { transform: translateY(-6px); } 100% { transform: translateY(0); } }
+/* GIFT & EMOJIS (System Default Style) */
+.gift { font-size:48px; cursor:pointer; margin-top:5px; animation: giftFloat 3s ease-in-out infinite; }
+#giftText { margin-top:5px; font-size:.9rem; color:#ff4f9a; font-weight:600; }
+@keyframes giftFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+/* CROWN */
+#queenCrown { 
+    display: none; font-size: 4rem; margin-top: 10px; 
+    animation: giftFloat 3s infinite reverse; 
+}
 
 /* MODALS */
 #codeModal, #messageBox { position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; z-index:20; }
 .codeCard { background:white; padding:22px; border-radius:18px; width:90%; max-width:320px; text-align:center; position:relative; }
-.codeCard input { width:100%; padding:10px; margin:10px 0; }
+.codeCard input { width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:8px; }
 #closeModal, #closeMsg { position:absolute; top:10px; right:15px; cursor:pointer; font-size:1.2rem; }
+
+/* BODY PINK MODE */
+body.party-mode { background: #ffe6f2; }
 
 </style>
 </head>
 <body>
 
-  <div id="bg-decor">
-     </div>
+  <div id="bg-decor"></div>
 
   <div class="card">
     
@@ -190,30 +177,40 @@ body.party-mode {
       <img id="photoImg" src="photo1.jpg">
     </div>
 
-    <div id="preBirthdayLayer">
-      <h2>💌 A Special Day Is Almost Here</h2>
-      <div class="sub">Because the girl who means everything to me deserves to be celebrated by the world</div>
-      <div class="date">13 February</div>
-      <div class="timer" id="timer"></div>
+    <div id="textContainer">
+        <div id="preText">
+            <h2>💌 A Special Day Is Almost Here</h2>
+            <div class="sub">Because the girl who means everything to me deserves to be celebrated by the world</div>
+            <div class="date">13 February</div>
+        </div>
+        
+        <div class="time-msg" id="timeMsg">🎂 The Time has come</div>
     </div>
 
-    <div id="premiumBirthday">
-      <div class="time-come-text">🎂 The Time has come</div>
-      
-      <h1 class="bubbly-text">HAPPY<br>BIRTHDAY</h1>
-      
-      <div class="queen-sub">THE QUEEN HAS ARRIVED 👑</div>
+    <div class="timer" id="timer"></div>
+
+    <div id="curvyBirthdayWrap">
+        <svg viewBox="0 0 350 180">
+          <path id="curvePath" d="M 40 120 Q 175 40 310 120" fill="transparent"/>
+          <text width="350">
+            <textPath href="#curvePath" startOffset="50%" text-anchor="middle" class="curveText">
+              HAPPY BIRTHDAY
+            </textPath>
+          </text>
+        </svg>
     </div>
+    
+    <div class="queen-sub" id="queenSub">The Queen has arrived 👑</div>
 
     <div class="actions" id="actionsArea">
       <button class="bday" id="bdayBtn" disabled>Happy Birthday 🎉</button>
-      
+
       <div id="giftLayer">
         <div class="gift" id="gift">🎁</div>
         <div id="giftText">Only for Violina 💗</div>
       </div>
       
-      <div id="queenCrown" style="display:none; font-size:4rem; margin-top:10px; animation: giftFloat 3s infinite;">👑</div>
+      <div id="queenCrown">👑</div>
     </div>
 
   </div>
@@ -221,26 +218,25 @@ body.party-mode {
   <div id="codeModal"><div class="codeCard"><span id="closeModal">✖</span><h3>Secret Code 💕</h3><input type="password" id="secretInput" placeholder="Enter code"><button id="openGiftBtn">Open</button></div></div>
   <div id="messageBox"><div class="codeCard"><span id="closeMsg">✖</span><p style="text-align:left;color:#555;">Ayoo 😭 only a few days left and I genuinely don’t know how to act normal anymore. My brain is already in celebration mode and my heart is clearly ahead of schedule 🥰💖</p></div></div>
 
-  <button id="musicBtn" class="muted" style="position:fixed;bottom:16px;right:16px;background:#fff;border:none;border-radius:50%;width:50px;height:50px;font-size:20px;box-shadow:0 5px 15px rgba(0,0,0,.2);">🎵</button>
-  <audio id="loudMusic" src="happy-birthday.mp3"></audio>
+  <button id="musicBtn" class="muted" style="position:fixed;bottom:16px;right:16px;background:#fff;border:none;border-radius:50%;width:50px;height:50px;font-size:20px;box-shadow:0 5px 15px rgba(0,0,0,.2); cursor:pointer;">🎵</button>
+  
+  <audio id="popSound" src="confetti-pop.mp3"></audio> <audio id="loudMusic" src="happy-birthday.mp3"></audio>
 
 <script>
 // ==========================================
-// 🟢 TEST MODE SWITCH 🟢
-// CHANGE to 'false' for real birthday
-// CHANGE to 'true' to see animation in 3 seconds
+// 🟢 TEST MODE: Set to 'true' to see changes instantly
 const TEST_MODE = true; 
 // ==========================================
 
 const birthdayDate = new Date("February 13, 2026 00:00:00").getTime();
 const timerEl = document.getElementById("timer");
-const preLayer = document.getElementById("preBirthdayLayer");
+const preText = document.getElementById("preText");
+const timeMsg = document.getElementById("timeMsg");
+const queenSub = document.getElementById("queenSub");
+const curvyWrap = document.getElementById("curvyBirthdayWrap");
 const giftLayer = document.getElementById("giftLayer");
-const premiumLayer = document.getElementById("premiumBirthday");
 const crown = document.getElementById("queenCrown");
 const bdayBtn = document.getElementById("bdayBtn");
-const mainPhoto = document.getElementById("mainPhoto");
-const actionsArea = document.getElementById("actionsArea");
 const bgDecor = document.getElementById("bg-decor");
 
 // TIMER LOGIC
@@ -248,13 +244,12 @@ const x = setInterval(function() {
   let now = new Date().getTime();
   let distance = birthdayDate - now;
 
-  if (TEST_MODE) { distance = -1; } // Force trigger if test mode is on
+  if (TEST_MODE) { distance = -1; }
 
   if (distance < 0) {
     clearInterval(x);
-    launchPremiumMode();
+    launchBirthday();
   } else {
-    // Normal Timer
     let days = Math.floor(distance / (1000 * 60 * 60 * 24));
     let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
@@ -263,46 +258,60 @@ const x = setInterval(function() {
   }
 }, 1000);
 
-function launchPremiumMode() {
-  // 1. Hide Pre-Birthday Elements
-  preLayer.style.display = "none";
+function launchBirthday() {
+  // 1. Hide Old Stuff
+  timerEl.style.display = "none";
+  preText.style.display = "none";
   giftLayer.style.display = "none";
+
+  // 2. Change Background & Photo Scale
+  document.body.classList.add("party-mode");
+  document.getElementById("mainPhoto").style.transform = "scale(1.05)";
+
+  // 3. Show New Text
+  timeMsg.style.display = "block"; // "The time has come"
+  curvyWrap.style.display = "block"; // Bubbly Sky Blue Text
+  queenSub.style.display = "block"; // "The Queen has arrived"
   
-  // 2. BACKGROUND TRANSFORMATION
-  document.body.classList.add("party-mode"); // Turns Pink
-  bgDecor.style.display = "block"; 
-  spawnFloatingElements(); // Start floating balloons/ribbons
-
-  // 3. PHOTO TRANSFORMATION
-  mainPhoto.classList.add("gold-mode"); // Shiny Gold Border
-  actionsArea.style.marginTop = "10px";
-
-  // 4. SHOW PREMIUM CONTENT
-  premiumLayer.style.display = "block";
+  // 4. Show Crown & Button
   crown.style.display = "block";
-  
-  // 5. ACTIVATE BUTTON
   bdayBtn.disabled = false;
   bdayBtn.classList.add("active-party");
   bdayBtn.innerHTML = "Enter World 🎂";
   bdayBtn.onclick = () => window.location.href = "birthday.html";
 
-  // 6. FIRE CONFETTI
-  fireConfetti();
+  // 5. Spawn Floating Particles (No rotation)
+  bgDecor.style.display = "block";
+  spawnParticles();
+
+  // 6. AUDIO SEQUENCE
+  const popAudio = document.getElementById("popSound");
+  const musicAudio = document.getElementById("loudMusic");
   
-  // 7. Play Music
-  if(musicUnlocked) loudMusic.play();
+  if(musicUnlocked) {
+      // Play Pop Sound Immediately
+      popAudio.play().catch(()=>{});
+      
+      // Fire Confetti
+      fireConfetti();
+      
+      // Wait 1.5 seconds, then play Happy Birthday song
+      setTimeout(() => {
+          musicAudio.play().catch(()=>{});
+      }, 1500);
+  } else {
+      fireConfetti();
+  }
 }
 
-// --- FLOATING BACKGROUND PARTICLES (BALLOONS & RIBBONS) ---
-function spawnFloatingElements() {
+function spawnParticles() {
     const symbols = ['🎈', '🎀', '🎉', '✨', '🎂'];
     for(let i=0; i<20; i++) {
         const div = document.createElement('div');
         div.classList.add('float-item');
         div.innerText = symbols[Math.floor(Math.random() * symbols.length)];
         div.style.left = Math.random() * 100 + 'vw';
-        div.style.animationDuration = (Math.random() * 5 + 5) + 's'; // Random speed 5-10s
+        div.style.animationDuration = (Math.random() * 5 + 5) + 's'; 
         div.style.animationDelay = Math.random() * 5 + 's';
         bgDecor.appendChild(div);
     }
@@ -317,7 +326,7 @@ function fireConfetti() {
   }());
 }
 
-// ORIGINAL GIFT & MUSIC LOGIC
+// GIFT & MODALS
 const gift = document.getElementById("gift");
 const codeModal = document.getElementById("codeModal");
 const secretInput = document.getElementById("secretInput");
@@ -325,23 +334,33 @@ const openGiftBtn = document.getElementById("openGiftBtn");
 const closeModal = document.getElementById("closeModal");
 const messageBox = document.getElementById("messageBox");
 const closeMsg = document.getElementById("closeMsg");
-const musicBtn = document.getElementById("musicBtn");
-const loudMusic = document.getElementById("loudMusic");
 
 gift.onclick = () => { codeModal.style.display = "flex"; };
 closeModal.onclick = () => { codeModal.style.display = "none"; };
 closeMsg.onclick = () => { messageBox.style.display = "none"; };
-
 openGiftBtn.onclick = () => {
   if (secretInput.value === "1313") {
     codeModal.style.display = "none"; messageBox.style.display = "flex"; gift.textContent = "🎊"; document.getElementById("giftText").innerHTML = "Opened 💗";
   } else { alert("Wrong code 💔"); }
 };
 
+// MUSIC
 let musicUnlocked = false;
+const musicBtn = document.getElementById("musicBtn");
+const loudMusic = document.getElementById("loudMusic");
 musicBtn.onclick = () => {
-  if (loudMusic.paused) { loudMusic.play(); musicUnlocked = true; musicBtn.style.opacity = "1"; }
-  else { loudMusic.pause(); musicBtn.style.opacity = "0.6"; }
+    if(!musicUnlocked) {
+        loudMusic.play().then(() => {
+            loudMusic.pause();
+            loudMusic.currentTime = 0;
+            musicUnlocked = true;
+            musicBtn.style.opacity = "1";
+        });
+    } else {
+        // Toggle if already unlocked and playing manually
+        if(loudMusic.paused) loudMusic.play();
+        else loudMusic.pause();
+    }
 };
 
 // PHOTO SLIDESHOW
