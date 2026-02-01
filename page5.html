@@ -6,194 +6,210 @@
     <title>19 Golden Reasons</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Lato:wght@400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lato:wght@400&display=swap" rel="stylesheet">
+    
     <style>
-        /* --- PREMIUM CSS STYLES --- */
-
         body {
             margin: 0;
             padding: 0;
-            /* A deep, rich background to make the gold pop */
-            background: radial-gradient(ellipse at center, #1e1e2f 0%, #0a0a12 100%);
+            /* Premium dark charcoal background */
+            background: #111; 
             font-family: 'Lato', sans-serif;
             color: #f0e6d2;
             min-height: 100vh;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            overflow-x: hidden; /* Prevent horizontal scroll */
         }
 
         .container {
             padding: 40px 20px;
-            text-align: center;
-            max-width: 1200px;
             width: 100%;
+            max-width: 800px;
+            box-sizing: border-box;
+            padding-bottom: 100px;
         }
 
         .page-title {
-            font-family: 'Cinzel Decorative', serif;
-            font-size: 3em;
-            color: #d4af37; /* Gold text */
-            /* A subtle shadow for a 3D text effect */
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5), 0 0 10px rgba(212, 175, 55, 0.3);
-            margin-bottom: 50px;
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            color: #d4af37;
+            text-align: center;
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+            margin-bottom: 40px;
             letter-spacing: 2px;
         }
 
-        /* Grid for the 19 cards */
-        .card-grid {
-            display: grid;
-            /* Responsive grid: adjusts columns based on screen width */
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-        }
-
-        /* --- GOLDEN CARD STYLING --- */
+        /* --- THE CARD STYLES --- */
         .gold-card {
             position: relative;
-            /* Rich golden gradient background */
-            background: linear-gradient(135deg, #bf9b30 0%, #e6c15a 50%, #bf9b30 100%);
-            height: 160px;
-            padding: 25px 30px 25px 40px; /* Extra left padding for the shape */
+            background: linear-gradient(135deg, #b8860b 0%, #ffd700 50%, #b8860b 100%);
+            margin-bottom: 25px;
+            padding: 20px 40px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            /* Initial State: Closed */
+            height: 60px;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            align-items: flex-start;
-            text-align: left;
-            /* Realistic shadow for depth */
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.4);
-            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-            /* Create the pointed banner shape from your sketch */
-            clip-path: polygon(0% 0%, 90% 0%, 100% 50%, 90% 100%, 0% 100%);
             overflow: hidden;
-            cursor: default;
         }
 
-        /* Add a subtle brushed metal texture */
-        .gold-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            /* A subtle noise pattern for texture */
-            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABcEuYgAAAAG3RSTlNAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA3Y5bAAAAXklEQVR4Ae3MQQ6AMAgFQS2I/f9/tQe9aGKSGbeg780AI0WJ5J6L1F67o09vuc9o95sYvW9i2t/EpF/E/C9i8Rcxe4tYeoUs3CImbxEjt4h5X8S0X8T8L2LxF3HuBa4ZBDjT9x8AAAAASUVORK5CYII=');
-            opacity: 0.08;
-            mix-blend-mode: overlay;
-            pointer-events: none;
+        /* --- ZIG-ZAG SHAPES (Alternating) --- */
+        
+        /* Odd Cards (1, 3, 5...): Point RIGHT */
+        .gold-card:nth-child(odd) {
+            clip-path: polygon(0% 0%, 90% 0%, 100% 50%, 90% 100%, 0% 100%);
+            padding-right: 50px; 
+            text-align: left;
+            margin-right: 10px;
         }
 
-        /* Add a metallic sheen reflection effect */
-        .gold-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                to right,
-                transparent 0%,
-                rgba(255, 255, 255, 0.3) 50%,
-                transparent 100%
-            );
-            transform: skewX(-25deg);
-            transition: all 0.7s;
+        /* Even Cards (2, 4, 6...): Point LEFT */
+        .gold-card:nth-child(even) {
+            clip-path: polygon(10% 0%, 100% 0%, 100% 100%, 10% 100%, 0% 50%);
+            padding-left: 50px; 
+            text-align: right; 
+            align-items: flex-end; 
+            margin-left: 10px;
         }
 
-        /* Premium Hover Effect: Lift, brighten, and shine */
+        /* --- HOVER / ACTIVE STATE --- */
         .gold-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.6);
             filter: brightness(1.1);
+            transform: scale(1.02);
         }
 
-        .gold-card:hover::after {
-            left: 100%; /* Move the shine across the card */
+        /* When Clicked (Revealed) */
+        .gold-card.revealed {
+            height: auto;
+            min-height: 140px;
+            padding-top: 30px;
+            padding-bottom: 30px;
+            background: linear-gradient(135deg, #d4af37 0%, #f7ef8a 50%, #d4af37 100%);
         }
 
-        /* Card Content Styling */
+        /* --- TEXT STYLES --- */
         .card-number {
-            font-family: 'Cinzel Decorative', serif;
-            font-size: 1.3em;
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
             font-weight: bold;
-            color: #5c4615; /* A dark, rich gold/brown for contrast */
-            margin-bottom: 8px;
-            position: relative;
-            z-index: 1;
+            color: #3e2723;
             text-transform: uppercase;
             letter-spacing: 1px;
+            transition: margin 0.3s;
         }
 
+        /* HIDDEN TEXT (The Reason) */
         .card-reason {
-            font-size: 1.1em;
+            font-family: 'Lato', sans-serif;
+            font-size: 1.1rem;
+            color: #2c1b12;
+            margin-top: 15px;
             line-height: 1.5;
-            color: #3d3112; /* A dark, legible color */
-            position: relative;
-            z-index: 1;
-            font-weight: 500;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.5s ease;
+            display: none;
+            font-weight: 600;
         }
+
+        /* Show text when revealed */
+        .gold-card.revealed .card-reason {
+            opacity: 1;
+            transform: translateY(0);
+            display: block;
+        }
+
+        /* --- NEXT BUTTON --- */
+        .next-btn {
+            font-size: 3rem;
+            color: #d4af37;
+            text-decoration: none;
+            display: block;
+            margin-top: 30px;
+            text-align: center; /* Ensures arrow is centered */
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-10px);}
+            60% {transform: translateY(-5px);}
+        }
+
+        /* --- MOBILE TWEAKS --- */
+        @media (max-width: 600px) {
+            .gold-card:nth-child(odd) {
+                clip-path: polygon(0% 0%, 95% 0%, 100% 50%, 95% 100%, 0% 100%);
+                padding-right: 30px;
+            }
+            .gold-card:nth-child(even) {
+                clip-path: polygon(5% 0%, 100% 0%, 100% 100%, 5% 100%, 0% 50%);
+                padding-left: 30px;
+            }
+        }
+
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1 class="page-title">19 Golden Reasons Why</h1>
-        <div class="card-grid" id="card-grid">
+        <h1 class="page-title">19 Golden Reasons</h1>
+        
+        <div id="cards-wrapper">
             </div>
+
+        <a href="page6.html" class="next-btn">&#10095;</a>
     </div>
 
     <script>
-        // --- JAVASCRIPT FOR GENERATING CARDS ---
-
-        // PASTE YOUR 19 REASONS HERE
-        // Replace each string with one of your personal reasons.
+        // --- YOUR REASONS ---
+        // REPLACE THESE SENTENCES WITH YOUR OWN!
         const reasons = [
-            "Reason 1: Your smile lights up my world.",
-            "Reason 2: You have the kindest heart I know.",
-            "Reason 3: You inspire me every single day.",
-            "Reason 4: Your laughter is my favorite sound.",
-            "Reason 5: You are incredibly smart and talented.",
-            "Reason 6: I love your sense of adventure.",
-            "Reason 7: You give the best hugs.",
-            "Reason 8: You are my best friend.",
-            "Reason 9: The way you care for others is beautiful.",
-            "Reason 10: We have the most fun together.",
-            "Reason 11: You are strong and resilient.",
-            "Reason 12: You make me a better person.",
-            "Reason 13: I can be my true self around you.",
-            "Reason 14: Your passion is contagious.",
-            "Reason 15: You are absolutely gorgeous, inside and out.",
-            "Reason 16: Every moment with you is a treasure.",
-            "Reason 17: You have a unique and amazing perspective.",
-            "Reason 18: You are my dream come true.",
-            "Reason 19: Simply because I love you, always."
+            "Your smile is my favorite thing in the world.",
+            "You are working so hard for your doctor dreams.",
+            "You have the kindest heart.",
+            "I love your laugh.",
+            "You inspire me every day.",
+            "You are beautiful inside and out.",
+            "I love our late night talks.",
+            "You are stronger than you know.",
+            "Your style is amazing.",
+            "You give the best hugs.",
+            "I can be myself around you.",
+            "You always cheer me up.",
+            "Your kindness changes the world.",
+            "We have the best memories.",
+            "I love watching movies with you.",
+            "You are incredibly smart.",
+            "I love your eyes.",
+            "Every day with you is a gift.",
+            "I can't imagine life without you."
         ];
 
-        // Get the container for the cards
-        const cardGrid = document.getElementById('card-grid');
+        const wrapper = document.getElementById('cards-wrapper');
 
-        // Loop through the reasons and create a card for each one
         reasons.forEach((reason, index) => {
-            // 1. Create the main card element
+            // Create Card
             const card = document.createElement('div');
             card.classList.add('gold-card');
+            
+            // Add Click Event to Reveal
+            card.onclick = function() {
+                this.classList.toggle('revealed');
+            };
 
-            // 2. Create the "Reason #X" title
-            const number = document.createElement('div');
-            number.classList.add('card-number');
-            number.textContent = `Reason #${index + 1}`;
+            // HTML Content
+            card.innerHTML = `
+                <div class="card-number">Reason #${index + 1}</div>
+                <div class="card-reason">${reason}</div>
+            `;
 
-            // 3. Create the text for the reason itself
-            const text = document.createElement('div');
-            text.classList.add('card-reason');
-            text.textContent = reason;
-
-            // 4. Assemble the card and add it to the grid
-            card.appendChild(number);
-            card.appendChild(text);
-            cardGrid.appendChild(card);
+            wrapper.appendChild(card);
         });
     </script>
 
