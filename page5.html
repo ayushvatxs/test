@@ -24,35 +24,45 @@
             position: relative;
         }
 
-        /* --- 1. TITLE STYLING --- */
+        /* --- 1. TITLE ANIMATION (Restored) --- */
         .page-title {
+            position: fixed; /* Starts in the middle of screen */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
             font-family: 'Cinzel', serif;
-            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-size: clamp(2rem, 5vw, 4rem);
             color: #d4af37;
             text-align: center;
-            text-shadow: 0 2px 10px rgba(212, 175, 55, 0.4);
-            margin-top: 50px;
-            margin-bottom: 50px;
-            letter-spacing: 2px;
-            
-            /* Title Animation */
-            opacity: 0;
-            animation: fadeInDown 1s ease-out forwards;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.8);
+            z-index: 10;
+            margin: 0;
+            transition: all 1.5s ease-in-out; /* Smooth movement to top */
         }
 
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* --- 2. CONTAINER --- */
+        /* --- 2. CONTAINER (Starts Hidden) --- */
         .container {
-            padding: 0 20px 80px 20px;
+            padding: 150px 20px 80px 20px; /* Top padding for when title moves up */
             width: 100%;
             max-width: 1000px; 
             box-sizing: border-box;
-            position: relative;
-            z-index: 2;
+            opacity: 0; /* Hidden initially */
+            transform: translateY(50px);
+            transition: all 1s ease 0.5s; /* Fades in after title moves */
+        }
+
+        /* --- STATE: WHEN ANIMATION IS DONE --- */
+        body.loaded .page-title {
+            top: 60px; /* Moves to top */
+            transform: translate(-50%, 0);
+            font-size: clamp(2rem, 5vw, 3rem); /* Shrinks slightly */
+            position: absolute; /* Becomes part of the page flow */
+        }
+
+        body.loaded .container {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         /* --- 3. GRID SYSTEM --- */
@@ -63,7 +73,7 @@
             width: 100%;
         }
 
-        /* --- 4. GOLD CARD STYLES --- */
+        /* --- 4. CARD STYLES --- */
         .gold-card {
             position: relative;
             background: linear-gradient(135deg, #b8860b 0%, #e6c15a 50%, #b8860b 100%);
@@ -78,10 +88,9 @@
             overflow: hidden;
             z-index: 1;
 
-            /* Start Hidden for Animation */
+            /* Hidden for slide animation */
             opacity: 0;
             transform: translateY(40px);
-            /* Animation applied in JS */
         }
 
         /* Texture */
@@ -91,7 +100,6 @@
             opacity: 0.1; mix-blend-mode: overlay; pointer-events: none; z-index: -1;
         }
 
-        /* Zig-Zag Shapes */
         .gold-card:nth-child(odd) {
             clip-path: polygon(0% 0%, 93% 0%, 100% 50%, 93% 100%, 0% 100%);
             padding-right: 40px; text-align: left;
@@ -108,7 +116,6 @@
             background: linear-gradient(135deg, #d4af37 0%, #f7ef8a 50%, #d4af37 100%);
         }
 
-        /* Text Styles */
         .card-number {
             font-family: 'Cinzel', serif; font-size: 1.2rem; font-weight: 700; color: #3e2723;
         }
@@ -119,26 +126,25 @@
         .gold-card.revealed .card-reason { display: block; animation: textFadeIn 0.5s; }
 
         @keyframes textFadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
-
-        /* --- 5. ENTRANCE ANIMATION KEYFRAMES --- */
+        
+        /* Entrance Keyframes */
         @keyframes slideInUp {
             from { opacity: 0; transform: translateY(40px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- 6. NEXT BUTTON --- */
+        /* --- 5. NEXT BUTTON --- */
         .next-btn {
             font-size: 3rem; color: #d4af37; text-decoration: none;
             display: block; margin-top: 40px; text-align: center; 
-            
-            opacity: 0; /* Hidden initially */
-            /* Appears after all cards are done (approx 6 seconds) */
-            animation: bounce 2s infinite, fadeInBtn 1s ease 6s forwards; 
+            opacity: 0; 
+            /* Appears after ~8 seconds (2s title + 6s cards) */
+            animation: bounce 2s infinite, fadeInBtn 1s ease 8s forwards; 
         }
         @keyframes fadeInBtn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} 60% {transform: translateY(-5px);} }
 
-        /* --- 7. PARTICLES (Background) --- */
+        /* --- 6. BACKGROUND PARTICLES --- */
         .particle-container {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; z-index: 0;
@@ -154,14 +160,12 @@
             85% { opacity: 0.8; }
             100% { opacity: 0; transform: translateY(-120vh); }
         }
-        /* Particle Config */
         .p1 { left: 10%; width: 4px; height: 4px; animation-duration: 15s; }
         .p2 { left: 20%; width: 6px; height: 6px; animation-duration: 20s; animation-delay: 2s; }
         .p3 { left: 50%; width: 3px; height: 3px; animation-duration: 12s; animation-delay: 1s; }
         .p4 { left: 80%; width: 5px; height: 5px; animation-duration: 18s; animation-delay: 3s; }
         .p5 { left: 90%; width: 4px; height: 4px; animation-duration: 14s; }
 
-        /* Mobile Adjustments */
         @media (max-width: 768px) {
             #cards-wrapper { grid-template-columns: 1fr; max-width: 500px; margin: 0 auto; gap: 20px; }
             .gold-card:nth-child(odd) { margin-right: 20px; }
@@ -178,9 +182,9 @@
         <div class="particle p2"></div><div class="particle p3"></div>
     </div>
 
+    <h1 class="page-title">19 Golden Promises</h1>
+
     <div class="container">
-        <h1 class="page-title">19 Golden Promises</h1>
-        
         <div id="cards-wrapper">
             </div>
 
@@ -188,6 +192,15 @@
     </div>
 
     <script>
+        // --- 1. INTRO ANIMATION TRIGGER ---
+        // Wait 2 seconds with title in center, then move it up
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.body.classList.add('loaded');
+            }, 2000); 
+        });
+
+        // --- 2. PROMISES DATA ---
         const promises = [
             "To believe in you, especially when you doubt yourself.",
             "To support your dream of becoming a Doctor, always.",
@@ -216,10 +229,11 @@
             const card = document.createElement('div');
             card.classList.add('gold-card');
             
-            // --- UPDATED ANIMATION SPEED ---
-            // 0.8s slide duration (smoother)
-            // 0.3s delay multiplier (slower stagger)
-            card.style.animation = `slideInUp 0.8s ease-out forwards ${index * 0.3}s`;
+            // --- 3. DELAY UPDATE ---
+            // 0.3s delay between each card. 
+            // We add 2s (initial wait) to the delay so they start AFTER title moves
+            const totalDelay = 2.5 + (index * 0.3); 
+            card.style.animation = `slideInUp 0.8s ease-out forwards ${totalDelay}s`;
 
             card.onclick = function() {
                 this.classList.toggle('revealed');
