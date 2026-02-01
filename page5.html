@@ -24,77 +24,38 @@
             position: relative;
         }
 
-        /* --- 1. THE VIDEO VFX (The Pro Trick) --- */
-        #vfx-video {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100%;
-            max-width: 600px; /* Size of the heart */
-            z-index: 20; /* On top of everything initially */
-            
-            /* THIS IS THE MAGIC */
-            mix-blend-mode: screen; /* Removes black bg, keeps the glow! */
-            
-            transition: all 1.5s ease-in-out;
-            pointer-events: none;
-        }
-
-        /* --- 2. TITLE ANIMATION --- */
+        /* --- 1. TITLE STYLING --- */
         .page-title {
-            position: fixed; /* Starts fixed in center */
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100%;
             font-family: 'Cinzel', serif;
             font-size: clamp(2rem, 5vw, 3.5rem);
             color: #d4af37;
             text-align: center;
-            text-shadow: 0 0 20px rgba(212, 175, 55, 0.8);
-            z-index: 25; /* Above the video initially */
-            margin: 0;
-            transition: all 1.5s ease-in-out;
+            text-shadow: 0 2px 10px rgba(212, 175, 55, 0.4);
+            margin-top: 50px;
+            margin-bottom: 50px;
+            letter-spacing: 2px;
+            
+            /* Title Animation */
+            opacity: 0;
+            animation: fadeInDown 1s ease-out forwards;
         }
 
-        /* --- 3. CONTENT AREA (Hidden Initially) --- */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- 2. CONTAINER --- */
         .container {
-            padding: 120px 20px 80px 20px; /* Space for top bar */
+            padding: 0 20px 80px 20px;
             width: 100%;
             max-width: 1000px; 
             box-sizing: border-box;
-            opacity: 0; /* Hidden start */
-            transform: translateY(50px);
-            transition: all 1s ease 1s; /* Delays appearance */
-        }
-
-        /* --- STATE: WHEN ANIMATION IS DONE --- */
-        /* This class is added by JS after 3 seconds */
-        body.loaded #vfx-video {
-            top: 50%; 
-            width: 800px; /* Make it bigger for background */
-            opacity: 0.3; /* Fade it out to be a watermark */
-            z-index: 0; /* Move to back */
-            filter: blur(5px); /* Optional: blur it slightly for depth */
-        }
-
-        body.loaded .page-title {
-            top: 60px; /* Moves to top */
-            transform: translate(-50%, 0);
-            font-size: clamp(1.8rem, 4vw, 2.5rem); /* Shrinks slightly */
-            position: absolute; 
-        }
-
-        body.loaded .container {
-            opacity: 1;
-            transform: translateY(0);
             position: relative;
-            z-index: 10; /* Above the video watermark */
+            z-index: 2;
         }
 
-
-        /* --- 4. GRID SYSTEM --- */
+        /* --- 3. GRID SYSTEM --- */
         #cards-wrapper {
             display: grid;
             grid-template-columns: 1fr 1fr; 
@@ -102,29 +63,7 @@
             width: 100%;
         }
 
-        /* --- GOLDEN PARTICLES (CSS) --- */
-        /* Kept these for extra detail */
-        .particle-container {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 0;
-        }
-        .particle {
-            position: absolute; border-radius: 50%;
-            background: #ffd700; box-shadow: 0 0 5px #d4af37;
-            opacity: 0; bottom: -20px; animation: rise linear infinite;
-        }
-        @keyframes rise {
-            0% { opacity: 0; transform: translateY(0); }
-            15% { opacity: 0.8; }
-            85% { opacity: 0.8; }
-            100% { opacity: 0; transform: translateY(-120vh); }
-        }
-        .p1 { left: 10%; width: 4px; height: 4px; animation-duration: 15s; }
-        .p2 { left: 20%; width: 6px; height: 6px; animation-duration: 20s; animation-delay: 2s; }
-        .p3 { left: 50%; width: 3px; height: 3px; animation-duration: 12s; animation-delay: 1s; }
-        .p4 { left: 80%; width: 5px; height: 5px; animation-duration: 18s; animation-delay: 3s; }
-
-        /* --- CARD STYLES --- */
+        /* --- 4. GOLD CARD STYLES --- */
         .gold-card {
             position: relative;
             background: linear-gradient(135deg, #b8860b 0%, #e6c15a 50%, #b8860b 100%);
@@ -137,15 +76,22 @@
             flex-direction: column;
             justify-content: center;
             overflow: hidden;
-            z-index: 2;
+            z-index: 1;
+
+            /* Start Hidden for Animation */
+            opacity: 0;
+            transform: translateY(40px);
+            /* Animation applied in JS */
         }
 
+        /* Texture */
         .gold-card::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABcEuYgAAAAG3RSTlNAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA3Y5bAAAAXklEQVR4Ae3MQQ6AMAgFQS2I/f9/tQe9aGKSGbeg780AI0WJ5J6L1F67o09vuc9o95sYvW9i2t/EpF/E/C9i8Rcxe4tYeoUs3CImbxEjt4h5X8S0X8T8L2LxF3HuBa4ZBDjT9x8AAAAASUVORK5CYII=');
             opacity: 0.1; mix-blend-mode: overlay; pointer-events: none; z-index: -1;
         }
 
+        /* Zig-Zag Shapes */
         .gold-card:nth-child(odd) {
             clip-path: polygon(0% 0%, 93% 0%, 100% 50%, 93% 100%, 0% 100%);
             padding-right: 40px; text-align: left;
@@ -162,6 +108,7 @@
             background: linear-gradient(135deg, #d4af37 0%, #f7ef8a 50%, #d4af37 100%);
         }
 
+        /* Text Styles */
         .card-number {
             font-family: 'Cinzel', serif; font-size: 1.2rem; font-weight: 700; color: #3e2723;
         }
@@ -169,17 +116,54 @@
             font-family: 'Lato', sans-serif; font-size: 1rem; color: #2c1b12;
             margin-top: 10px; display: none; font-weight: 700;
         }
-        .gold-card.revealed .card-reason { display: block; animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+        .gold-card.revealed .card-reason { display: block; animation: textFadeIn 0.5s; }
 
+        @keyframes textFadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+        /* --- 5. ENTRANCE ANIMATION KEYFRAMES --- */
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- 6. NEXT BUTTON --- */
         .next-btn {
             font-size: 3rem; color: #d4af37; text-decoration: none;
-            display: block; margin-top: 40px; text-align: center; animation: bounce 2s infinite;
+            display: block; margin-top: 40px; text-align: center; 
+            
+            opacity: 0; /* Hidden initially */
+            /* Appears after all cards are done (approx 6 seconds) */
+            animation: bounce 2s infinite, fadeInBtn 1s ease 6s forwards; 
         }
+        @keyframes fadeInBtn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} 60% {transform: translateY(-5px);} }
 
+        /* --- 7. PARTICLES (Background) --- */
+        .particle-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+        }
+        .particle {
+            position: absolute; border-radius: 50%;
+            background: #ffd700; box-shadow: 0 0 5px #d4af37;
+            opacity: 0; bottom: -20px; animation: rise linear infinite;
+        }
+        @keyframes rise {
+            0% { opacity: 0; transform: translateY(0); }
+            15% { opacity: 0.8; }
+            85% { opacity: 0.8; }
+            100% { opacity: 0; transform: translateY(-120vh); }
+        }
+        /* Particle Config */
+        .p1 { left: 10%; width: 4px; height: 4px; animation-duration: 15s; }
+        .p2 { left: 20%; width: 6px; height: 6px; animation-duration: 20s; animation-delay: 2s; }
+        .p3 { left: 50%; width: 3px; height: 3px; animation-duration: 12s; animation-delay: 1s; }
+        .p4 { left: 80%; width: 5px; height: 5px; animation-duration: 18s; animation-delay: 3s; }
+        .p5 { left: 90%; width: 4px; height: 4px; animation-duration: 14s; }
+
+        /* Mobile Adjustments */
         @media (max-width: 768px) {
-            #cards-wrapper { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; gap: 15px; }
+            #cards-wrapper { grid-template-columns: 1fr; max-width: 500px; margin: 0 auto; gap: 20px; }
             .gold-card:nth-child(odd) { margin-right: 20px; }
             .gold-card:nth-child(even) { margin-left: 20px; }
         }
@@ -187,33 +171,23 @@
 </head>
 <body>
 
-    <video autoplay muted loop playsinline id="vfx-video">
-        <source src="heart.mp4" type="video/mp4">
-    </video>
-
     <div class="particle-container">
         <div class="particle p1"></div><div class="particle p2"></div>
         <div class="particle p3"></div><div class="particle p4"></div>
-        <div class="particle p1"></div><div class="particle p2"></div>
+        <div class="particle p5"></div><div class="particle p1"></div>
+        <div class="particle p2"></div><div class="particle p3"></div>
     </div>
 
-    <h1 class="page-title">19 Golden Promises</h1>
-
     <div class="container">
-        <div id="cards-wrapper"></div>
+        <h1 class="page-title">19 Golden Promises</h1>
+        
+        <div id="cards-wrapper">
+            </div>
+
         <a href="page6.html" class="next-btn">&#10095;</a>
     </div>
 
     <script>
-        // --- ANIMATION SEQUENCE ---
-        // Wait 3 seconds to let the video play in center, then move it
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                document.body.classList.add('loaded');
-            }, 3000); 
-        });
-
-        // --- 19 PROMISES ---
         const promises = [
             "To believe in you, especially when you doubt yourself.",
             "To support your dream of becoming a Doctor, always.",
@@ -242,6 +216,11 @@
             const card = document.createElement('div');
             card.classList.add('gold-card');
             
+            // --- UPDATED ANIMATION SPEED ---
+            // 0.8s slide duration (smoother)
+            // 0.3s delay multiplier (slower stagger)
+            card.style.animation = `slideInUp 0.8s ease-out forwards ${index * 0.3}s`;
+
             card.onclick = function() {
                 this.classList.toggle('revealed');
             };
