@@ -21,46 +21,58 @@
             flex-direction: column;
             align-items: center;
             overflow-x: hidden;
-            position: relative;
+            position: relative; /* Needed for particles */
         }
 
         /* --- GOLDEN HEART PARTICLES --- */
         .particle-container {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             overflow: hidden;
-            pointer-events: none;
-            z-index: 0;
+            pointer-events: none; /* Ensures clicks go through to the cards */
+            z-index: 0; /* Sits behind the main content */
         }
 
-        .heart-particle {
+        .particle {
             position: absolute;
-            color: #ffd700; /* Gold */
-            text-shadow: 0 0 5px #d4af37;
+            color: #ffd700; /* Gold Color */
+            text-shadow: 0 0 5px #d4af37; /* Golden Glow */
+            font-size: 20px;
             opacity: 0;
-            bottom: -30px;
+            bottom: -30px; /* Start below screen */
             animation: rise linear infinite;
         }
 
-        /* Smooth upward movement */
+        /* Animation: Move from Bottom to Top */
         @keyframes rise {
-            0% { opacity: 0; transform: translateY(0) scale(0.8); }
-            20% { opacity: 0.8; }
-            80% { opacity: 0.8; }
-            100% { opacity: 0; transform: translateY(-120vh) scale(1); }
+            0% {
+                opacity: 0;
+                transform: translateY(0) scale(0.5);
+            }
+            20% { opacity: 0.8; } /* Fade in */
+            80% { opacity: 0.8; } /* Stay visible */
+            100% {
+                opacity: 0;
+                transform: translateY(-120vh) scale(1); /* Move way up */
+            }
         }
 
-        /* Particle Variations */
-        .p1 { left: 10%; font-size: 20px; animation-duration: 15s; animation-delay: 0s; }
-        .p2 { left: 25%; font-size: 25px; animation-duration: 18s; animation-delay: 2s; }
-        .p3 { left: 40%; font-size: 18px; animation-duration: 12s; animation-delay: 4s; }
-        .p4 { left: 55%; font-size: 22px; animation-duration: 16s; animation-delay: 1s; }
-        .p5 { left: 70%; font-size: 28px; animation-duration: 20s; animation-delay: 3s; }
-        .p6 { left: 85%; font-size: 15px; animation-duration: 14s; animation-delay: 5s; }
-        .p7 { left: 15%; font-size: 24px; animation-duration: 17s; animation-delay: 7s; }
-        .p8 { left: 60%; font-size: 20px; animation-duration: 19s; animation-delay: 6s; }
+        /* Random Variations for Natural Look */
+        .p1 { left: 10%; animation-duration: 15s; animation-delay: 0s; font-size: 15px; }
+        .p2 { left: 20%; animation-duration: 18s; animation-delay: 4s; font-size: 25px; }
+        .p3 { left: 35%; animation-duration: 12s; animation-delay: 2s; font-size: 20px; }
+        .p4 { left: 50%; animation-duration: 16s; animation-delay: 7s; font-size: 18px; }
+        .p5 { left: 65%; animation-duration: 14s; animation-delay: 1s; font-size: 22px; }
+        .p6 { left: 80%; animation-duration: 20s; animation-delay: 5s; font-size: 28px; }
+        .p7 { left: 90%; animation-duration: 13s; animation-delay: 3s; font-size: 16px; }
+        .p8 { left: 5%;  animation-duration: 19s; animation-delay: 8s; font-size: 24px; }
+        .p9 { left: 30%; animation-duration: 17s; animation-delay: 6s; font-size: 19px; }
+        .p10 { left: 45%; animation-duration: 22s; animation-delay: 9s; font-size: 14px; }
 
-        /* --- MAIN CONTENT --- */
+        /* --- MAIN CONTENT CONTAINER --- */
         .container {
             padding: 40px 20px;
             width: 100%;
@@ -68,7 +80,7 @@
             box-sizing: border-box;
             padding-bottom: 80px;
             position: relative;
-            z-index: 2;
+            z-index: 2; /* Ensures content is above particles */
         }
 
         .page-title {
@@ -84,7 +96,7 @@
         /* --- GRID SYSTEM --- */
         #cards-wrapper {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr; /* 2 Columns */
             gap: 25px 40px; 
             width: 100%;
         }
@@ -105,6 +117,7 @@
             z-index: 1;
         }
 
+        /* Texture */
         .gold-card::before {
             content: '';
             position: absolute;
@@ -117,13 +130,20 @@
         }
 
         /* --- ZIG-ZAG ARROWS --- */
+        
+        /* Left Column -> Points RIGHT */
         .gold-card:nth-child(odd) {
             clip-path: polygon(0% 0%, 93% 0%, 100% 50%, 93% 100%, 0% 100%);
-            padding-right: 40px; text-align: left;
+            padding-right: 40px; 
+            text-align: left;
         }
+
+        /* Right Column <- Points LEFT */
         .gold-card:nth-child(even) {
             clip-path: polygon(7% 0%, 100% 0%, 100% 100%, 7% 100%, 0% 50%);
-            padding-left: 40px; text-align: right; align-items: flex-end; 
+            padding-left: 40px; 
+            text-align: right; 
+            align-items: flex-end; 
         }
 
         /* --- HOVER & REVEAL --- */
@@ -139,7 +159,7 @@
             background: linear-gradient(135deg, #d4af37 0%, #f7ef8a 50%, #d4af37 100%);
         }
 
-        /* --- TEXT STYLES & VFX --- */
+        /* --- TEXT STYLES --- */
         .card-number {
             font-family: 'Cinzel', serif;
             font-size: 1.2rem;
@@ -147,28 +167,24 @@
             color: #3e2723;
             text-transform: uppercase;
             letter-spacing: 1px;
-            display: flex; align-items: center; gap: 5px;
         }
 
-        /* ENHANCED TEXT REVEAL ANIMATION (Bounce/Pop effect) */
         .card-reason {
             font-family: 'Lato', sans-serif;
             font-size: 1rem;
             color: #2c1b12;
-            margin-top: 15px;
-            line-height: 1.5;
+            margin-top: 10px;
+            line-height: 1.4;
             opacity: 0;
-            /* Start lower and smaller for a "pop up" effect */
-            transform: translateY(20px) scale(0.9);
-            /* Bouncy transition */
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: translateY(10px);
+            transition: all 0.4s ease;
             display: none;
             font-weight: 700;
         }
 
         .gold-card.revealed .card-reason {
             opacity: 1;
-            transform: translateY(0) scale(1);
+            transform: translateY(0);
             display: block;
         }
 
@@ -213,18 +229,19 @@
 <body>
 
     <div class="particle-container">
-        <div class="heart-particle p1">❤</div>
-        <div class="heart-particle p2">❤</div>
-        <div class="heart-particle p3">❤</div>
-        <div class="heart-particle p4">❤</div>
-        <div class="heart-particle p5">❤</div>
-        <div class="heart-particle p6">❤</div>
-        <div class="heart-particle p7">❤</div>
-        <div class="heart-particle p8">❤</div>
-        <div class="heart-particle p1" style="animation-delay: 8s;">❤</div>
-        <div class="heart-particle p3" style="animation-delay: 10s;">❤</div>
-        <div class="heart-particle p5" style="animation-delay: 12s;">❤</div>
-        <div class="heart-particle p7" style="animation-delay: 14s;">❤</div>
+        <div class="particle p1">❤</div>
+        <div class="particle p2">❤</div>
+        <div class="particle p3">❤</div>
+        <div class="particle p4">❤</div>
+        <div class="particle p5">❤</div>
+        <div class="particle p6">❤</div>
+        <div class="particle p7">❤</div>
+        <div class="particle p8">❤</div>
+        <div class="particle p9">❤</div>
+        <div class="particle p10">❤</div>
+        <div class="particle p1" style="animation-delay: 8s;">❤</div>
+        <div class="particle p3" style="animation-delay: 5s;">❤</div>
+        <div class="particle p5" style="animation-delay: 10s;">❤</div>
     </div>
 
     <div class="container">
@@ -238,6 +255,7 @@
 
     <script>
         // --- 19 PROMISES ---
+        // I wrote these to be supportive of her dreams and your bond.
         const promises = [
             "To believe in you, especially when you doubt yourself.",
             "To support your dream of becoming a Doctor, always.",
@@ -262,7 +280,7 @@
 
         const wrapper = document.getElementById('cards-wrapper');
 
-        reasons.forEach((promise, index) => { // Note: Changed variable name in loop for clarity
+        promises.forEach((promise, index) => {
             const card = document.createElement('div');
             card.classList.add('gold-card');
             
@@ -270,9 +288,9 @@
                 this.classList.toggle('revealed');
             };
 
-            // ADDED HEART EMBLEM TO TITLE
+            // Label changed to PROMISE
             card.innerHTML = `
-                <div class="card-number">Promise #${index + 1} <span style="font-size:0.8em; color:#5c401a;">❤</span></div>
+                <div class="card-number">Promise #${index + 1}</div>
                 <div class="card-reason">${promise}</div>
             `;
 
