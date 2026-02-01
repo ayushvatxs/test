@@ -12,7 +12,8 @@
         body {
             margin: 0;
             padding: 0;
-            background: #111;
+            /* RESTORED PREMIUM BLUE BACKGROUND */
+            background: radial-gradient(ellipse at center, #1e1e2f 0%, #0a0a12 100%);
             font-family: 'Lato', sans-serif;
             color: #f0e6d2;
             min-height: 100vh;
@@ -25,7 +26,6 @@
         .container {
             padding: 40px 20px;
             width: 100%;
-            /* Wide container for Premium Grid feel */
             max-width: 1000px; 
             box-sizing: border-box;
             padding-bottom: 80px;
@@ -44,9 +44,8 @@
         /* --- GRID SYSTEM --- */
         #cards-wrapper {
             display: grid;
-            /* 2 Columns on Laptop, 1 on Phone */
-            grid-template-columns: 1fr 1fr; 
-            gap: 20px; /* Space between cards */
+            grid-template-columns: 1fr 1fr; /* 2 Columns */
+            gap: 25px 40px; /* Gap between rows and columns */
             width: 100%;
         }
 
@@ -58,7 +57,6 @@
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 5px 15px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.4);
-            /* Stubbier/Chunky height */
             height: 60px; 
             display: flex;
             flex-direction: column;
@@ -67,7 +65,7 @@
             z-index: 1;
         }
 
-        /* Texture */
+        /* Texture Effect */
         .gold-card::before {
             content: '';
             position: absolute;
@@ -79,16 +77,16 @@
             z-index: -1;
         }
 
-        /* --- SHAPES & DIRECTIONS (Desktop) --- */
+        /* --- ZIG-ZAG SHAPES (Desktop) --- */
         
-        /* Left Column Items (Odd numbers: 1, 3, 5...) -> Point RIGHT */
+        /* Left Column (Odd: 1, 3, 5...) -> Point RIGHT */
         .gold-card:nth-child(odd) {
             clip-path: polygon(0% 0%, 93% 0%, 100% 50%, 93% 100%, 0% 100%);
             padding-right: 40px; 
             text-align: left;
         }
 
-        /* Right Column Items (Even numbers: 2, 4, 6...) <- Point LEFT */
+        /* Right Column (Even: 2, 4, 6...) <- Point LEFT */
         .gold-card:nth-child(even) {
             clip-path: polygon(7% 0%, 100% 0%, 100% 100%, 7% 100%, 0% 50%);
             padding-left: 40px; 
@@ -100,7 +98,7 @@
         .gold-card:hover {
             transform: scale(1.02);
             filter: brightness(1.1);
-            z-index: 10; /* Bring to front on hover */
+            z-index: 10;
         }
 
         .gold-card.revealed {
@@ -155,27 +153,31 @@
             60% {transform: translateY(-5px);}
         }
 
-        /* --- MOBILE LAYOUT (Stack them) --- */
+        /* --- MOBILE LAYOUT (Zig-Zag Stack) --- */
         @media (max-width: 768px) {
             #cards-wrapper {
-                grid-template-columns: 1fr; /* 1 Column */
-                max-width: 400px; /* Limit width so arrows aren't huge */
+                grid-template-columns: 1fr; /* 1 Column stack */
+                max-width: 500px;
                 margin: 0 auto;
+                gap: 20px;
             }
 
-            /* On Mobile: Zig-Zag Alternating */
+            /* Odd -> Point RIGHT */
             .gold-card:nth-child(odd) {
                 clip-path: polygon(0% 0%, 93% 0%, 100% 50%, 93% 100%, 0% 100%);
                 text-align: left;
                 align-items: flex-start;
-                padding-left: 20px;
+                padding-left: 20px; padding-right: 40px;
+                margin-right: 20px; /* Offset for zigzag */
             }
 
+            /* Even <- Point LEFT */
             .gold-card:nth-child(even) {
                 clip-path: polygon(7% 0%, 100% 0%, 100% 100%, 7% 100%, 0% 50%);
                 text-align: right;
                 align-items: flex-end;
-                padding-right: 20px;
+                padding-left: 40px; padding-right: 20px;
+                margin-left: 20px; /* Offset for zigzag */
             }
         }
     </style>
