@@ -6,118 +6,134 @@
     <title>19 Golden Reasons</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lato:wght@400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
         body {
             margin: 0;
             padding: 0;
-            /* Premium dark charcoal background */
-            background: #111; 
+            /* Deep premium background */
+            background: radial-gradient(ellipse at center, #1e1e2f 0%, #0a0a12 100%);
             font-family: 'Lato', sans-serif;
             color: #f0e6d2;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            overflow-x: hidden; /* Prevent horizontal scroll */
+            overflow-x: hidden;
         }
 
         .container {
             padding: 40px 20px;
             width: 100%;
-            max-width: 800px;
+            /* Reduced max-width to make cards shorter in length */
+            max-width: 650px; 
             box-sizing: border-box;
-            padding-bottom: 100px;
+            padding-bottom: 80px;
         }
 
         .page-title {
             font-family: 'Cinzel', serif;
-            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-size: clamp(1.8rem, 5vw, 3rem);
             color: #d4af37;
             text-align: center;
-            text-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
-            margin-bottom: 40px;
-            letter-spacing: 2px;
+            text-shadow: 0 2px 10px rgba(212, 175, 55, 0.4);
+            margin-bottom: 35px;
+            letter-spacing: 1px;
         }
 
-        /* --- THE CARD STYLES --- */
+        /* --- PREMIUM GOLD CARD STYLES --- */
         .gold-card {
             position: relative;
-            background: linear-gradient(135deg, #b8860b 0%, #ffd700 50%, #b8860b 100%);
-            margin-bottom: 25px;
-            padding: 20px 40px;
+            /* The Softer, richer gradient from before */
+            background: linear-gradient(135deg, #bf9b30 0%, #e6c15a 50%, #bf9b30 100%);
+            margin-bottom: 20px;
+            /* Reduced padding for smaller size */
+            padding: 12px 30px; 
             cursor: pointer;
-            transition: all 0.4s ease;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-            /* Initial State: Closed */
-            height: 60px;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.4);
+            /* Reduced initial height */
+            height: 45px; 
             display: flex;
             flex-direction: column;
             justify-content: center;
             overflow: hidden;
+             /* Ensures texture stays inside the unique shapes */
+            z-index: 1;
         }
 
-        /* --- ZIG-ZAG SHAPES (Alternating) --- */
-        
-        /* Odd Cards (1, 3, 5...): Point RIGHT */
+        /* Adding back the premium "Brushed Metal" texture */
+        .gold-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABcEuYgAAAAG3RSTlNAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA3Y5bAAAAXklEQVR4Ae3MQQ6AMAgFQS2I/f9/tQe9aGKSGbeg780AI0WJ5J6L1F67o09vuc9o95sYvW9i2t/EpF/E/C9i8Rcxe4tYeoUs3CImbxEjt4h5X8S0X8T8L2LxF3HuBa4ZBDjT9x8AAAAASUVORK5CYII=');
+            opacity: 0.08;
+            mix-blend-mode: overlay;
+            pointer-events: none;
+            z-index: -1; /* Behind text */
+        }
+
+        /* --- ZIG-ZAG SHAPES --- */
+        /* Odd Cards: Point RIGHT */
         .gold-card:nth-child(odd) {
-            clip-path: polygon(0% 0%, 90% 0%, 100% 50%, 90% 100%, 0% 100%);
-            padding-right: 50px; 
+            clip-path: polygon(0% 0%, 92% 0%, 100% 50%, 92% 100%, 0% 100%);
+            padding-right: 45px; 
             text-align: left;
-            margin-right: 10px;
+            margin-right: 15px;
         }
 
-        /* Even Cards (2, 4, 6...): Point LEFT */
+        /* Even Cards: Point LEFT */
         .gold-card:nth-child(even) {
-            clip-path: polygon(10% 0%, 100% 0%, 100% 100%, 10% 100%, 0% 50%);
-            padding-left: 50px; 
+            clip-path: polygon(8% 0%, 100% 0%, 100% 100%, 8% 100%, 0% 50%);
+            padding-left: 45px; 
             text-align: right; 
             align-items: flex-end; 
-            margin-left: 10px;
+            margin-left: 15px;
         }
 
-        /* --- HOVER / ACTIVE STATE --- */
+        /* --- HOVER & REVEAL --- */
         .gold-card:hover {
-            filter: brightness(1.1);
-            transform: scale(1.02);
+            transform: translateY(-3px) scale(1.01);
+            filter: brightness(1.05);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
         }
 
-        /* When Clicked (Revealed) */
         .gold-card.revealed {
             height: auto;
-            min-height: 140px;
-            padding-top: 30px;
-            padding-bottom: 30px;
+            /* Reduced revealed height */
+            min-height: 110px; 
+            padding-top: 25px;
+            padding-bottom: 25px;
+            /* Brighter gradient when opened */
             background: linear-gradient(135deg, #d4af37 0%, #f7ef8a 50%, #d4af37 100%);
         }
 
         /* --- TEXT STYLES --- */
         .card-number {
             font-family: 'Cinzel', serif;
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: #3e2723;
+            font-size: 1.2rem; /* Slightly smaller font */
+            font-weight: 700;
+            color: #3d2c0f; /* Rich dark gold/brown */
             text-transform: uppercase;
             letter-spacing: 1px;
-            transition: margin 0.3s;
+            text-shadow: 0 1px 1px rgba(255,255,255,0.3);
         }
 
-        /* HIDDEN TEXT (The Reason) */
         .card-reason {
             font-family: 'Lato', sans-serif;
-            font-size: 1.1rem;
-            color: #2c1b12;
-            margin-top: 15px;
-            line-height: 1.5;
+            font-size: 1rem; /* Slightly smaller font */
+            color: #2a1e0a;
+            margin-top: 12px;
+            line-height: 1.4;
             opacity: 0;
-            transform: translateY(10px);
-            transition: all 0.5s ease;
+            transform: translateY(15px);
+            transition: all 0.5s ease-out;
             display: none;
-            font-weight: 600;
+            font-weight: 700;
         }
 
-        /* Show text when revealed */
         .gold-card.revealed .card-reason {
             opacity: 1;
             transform: translateY(0);
@@ -126,13 +142,14 @@
 
         /* --- NEXT BUTTON --- */
         .next-btn {
-            font-size: 3rem;
+            font-size: 2.5rem;
             color: #d4af37;
             text-decoration: none;
             display: block;
             margin-top: 30px;
-            text-align: center; /* Ensures arrow is centered */
+            text-align: center;
             animation: bounce 2s infinite;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
         }
 
         @keyframes bounce {
@@ -144,31 +161,29 @@
         /* --- MOBILE TWEAKS --- */
         @media (max-width: 600px) {
             .gold-card:nth-child(odd) {
-                clip-path: polygon(0% 0%, 95% 0%, 100% 50%, 95% 100%, 0% 100%);
-                padding-right: 30px;
+                 /* Sharper points on mobile */
+                clip-path: polygon(0% 0%, 94% 0%, 100% 50%, 94% 100%, 0% 100%);
+                padding-right: 35px; margin-right: 5px;
             }
             .gold-card:nth-child(even) {
-                clip-path: polygon(5% 0%, 100% 0%, 100% 100%, 5% 100%, 0% 50%);
-                padding-left: 30px;
+                clip-path: polygon(6% 0%, 100% 0%, 100% 100%, 6% 100%, 0% 50%);
+                padding-left: 35px; margin-left: 5px;
             }
         }
-
     </style>
 </head>
 <body>
 
     <div class="container">
         <h1 class="page-title">19 Golden Reasons</h1>
-        
         <div id="cards-wrapper">
             </div>
-
         <a href="page6.html" class="next-btn">&#10095;</a>
     </div>
 
     <script>
         // --- YOUR REASONS ---
-        // REPLACE THESE SENTENCES WITH YOUR OWN!
+        // Don't forget to put your real reasons here!
         const reasons = [
             "Your smile is my favorite thing in the world.",
             "You are working so hard for your doctor dreams.",
@@ -194,16 +209,13 @@
         const wrapper = document.getElementById('cards-wrapper');
 
         reasons.forEach((reason, index) => {
-            // Create Card
             const card = document.createElement('div');
             card.classList.add('gold-card');
             
-            // Add Click Event to Reveal
             card.onclick = function() {
                 this.classList.toggle('revealed');
             };
 
-            // HTML Content
             card.innerHTML = `
                 <div class="card-number">Reason #${index + 1}</div>
                 <div class="card-reason">${reason}</div>
