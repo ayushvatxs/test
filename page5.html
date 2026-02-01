@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>19 Golden Reasons</title>
+    <title>19 Golden Promises</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
@@ -12,7 +12,7 @@
         body {
             margin: 0;
             padding: 0;
-            /* PREMIUM ROYAL BLUE BACKGROUND */
+            /* Premium Royal Blue Background */
             background: radial-gradient(ellipse at center, #1e1e2f 0%, #0a0a12 100%);
             font-family: 'Lato', sans-serif;
             color: #f0e6d2;
@@ -24,10 +24,9 @@
         }
 
         .container {
-            padding: 40px 10px;
+            padding: 40px 20px;
             width: 100%;
-            /* Constrain the whole container to keep cards close */
-            max-width: 800px; 
+            max-width: 1000px; 
             box-sizing: border-box;
             padding-bottom: 80px;
         }
@@ -46,91 +45,89 @@
         #cards-wrapper {
             display: grid;
             grid-template-columns: 1fr 1fr; /* 2 Columns */
-            gap: 20px 30px; /* Vertical Gap, Horizontal Gap */
+            gap: 25px 40px; 
             width: 100%;
-            justify-items: center; /* Centers the cards in their columns */
         }
 
         /* --- PREMIUM GOLD CARD STYLES --- */
         .gold-card {
             position: relative;
             background: linear-gradient(135deg, #b8860b 0%, #e6c15a 50%, #b8860b 100%);
-            padding: 15px 20px;
+            padding: 15px 35px;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            min-height: 60px;
-            width: 100%; 
-            /* THIS FIXES THE LENGTH: Limits width to make them stubby tags */
-            max-width: 280px; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.4);
+            height: 60px; 
             display: flex;
             flex-direction: column;
             justify-content: center;
-            align-items: center; 
             overflow: hidden;
             z-index: 1;
         }
 
-        /* --- THE ARROW SHAPES (Pointing Inwards) --- */
-        
-        /* Left Column (Odd): Points RIGHT -> */
-        .gold-card:nth-child(odd) {
-            /* Shape: Flat Left, Point Right */
-            clip-path: polygon(0% 0%, 85% 0%, 100% 50%, 85% 100%, 0% 100%);
-            padding-right: 35px; /* Space for tip */
-            padding-left: 15px;
-            justify-self: end; /* Aligns to the right side of its column */
-            text-align: left;
-            align-items: flex-start;
+        /* Texture */
+        .gold-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABcEuYgAAAAG3RSTlNAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA3Y5bAAAAXklEQVR4Ae3MQQ6AMAgFQS2I/f9/tQe9aGKSGbeg780AI0WJ5J6L1F67o09vuc9o95sYvW9i2t/EpF/E/C9i8Rcxe4tYeoUs3CImbxEjt4h5X8S0X8T8L2LxF3HuBa4ZBDjT9x8AAAAASUVORK5CYII=');
+            opacity: 0.1;
+            mix-blend-mode: overlay;
+            pointer-events: none;
+            z-index: -1;
         }
 
-        /* Right Column (Even): Points LEFT <- */
+        /* --- ZIG-ZAG ARROWS --- */
+        
+        /* Left Column -> Points RIGHT */
+        .gold-card:nth-child(odd) {
+            clip-path: polygon(0% 0%, 93% 0%, 100% 50%, 93% 100%, 0% 100%);
+            padding-right: 40px; 
+            text-align: left;
+        }
+
+        /* Right Column <- Points LEFT */
         .gold-card:nth-child(even) {
-            /* Shape: Point Left, Flat Right */
-            clip-path: polygon(15% 0%, 100% 0%, 100% 100%, 15% 100%, 0% 50%);
-            padding-left: 35px; /* Space for tip */
-            padding-right: 15px;
-            justify-self: start; /* Aligns to the left side of its column */
-            text-align: right;
-            align-items: flex-end;
+            clip-path: polygon(7% 0%, 100% 0%, 100% 100%, 7% 100%, 0% 50%);
+            padding-left: 40px; 
+            text-align: right; 
+            align-items: flex-end; 
         }
 
         /* --- HOVER & REVEAL --- */
         .gold-card:hover {
+            transform: scale(1.02);
             filter: brightness(1.1);
-            transform: scale(1.03);
             z-index: 10;
         }
 
         .gold-card.revealed {
             height: auto;
-            min-height: 100px;
+            min-height: 120px;
             background: linear-gradient(135deg, #d4af37 0%, #f7ef8a 50%, #d4af37 100%);
         }
 
         /* --- TEXT STYLES --- */
         .card-number {
             font-family: 'Cinzel', serif;
-            font-size: 1rem; /* Compact font */
+            font-size: 1.2rem;
             font-weight: 700;
             color: #3e2723;
             text-transform: uppercase;
             letter-spacing: 1px;
-            width: 100%;
         }
 
         .card-reason {
             font-family: 'Lato', sans-serif;
-            font-size: 0.9rem;
+            font-size: 1rem;
             color: #2c1b12;
-            margin-top: 8px;
+            margin-top: 10px;
             line-height: 1.4;
             opacity: 0;
-            transform: translateY(5px);
+            transform: translateY(10px);
             transition: all 0.4s ease;
             display: none;
             font-weight: 700;
-            width: 100%;
         }
 
         .gold-card.revealed .card-reason {
@@ -156,24 +153,23 @@
             60% {transform: translateY(-5px);}
         }
 
-        /* --- MOBILE ADJUSTMENTS --- */
-        @media (max-width: 600px) {
+        /* --- MOBILE LAYOUT --- */
+        @media (max-width: 768px) {
             #cards-wrapper {
-                grid-template-columns: 1fr; /* Stack vertically */
-                gap: 15px;
+                grid-template-columns: 1fr;
+                max-width: 500px;
+                margin: 0 auto;
+                gap: 20px;
             }
-            
-            .gold-card {
-                max-width: 260px; /* Even smaller on phone */
-                justify-self: center !important; /* Center everything */
-            }
-
-            /* Maintain the Zig-Zag look even on phone */
             .gold-card:nth-child(odd) {
-                clip-path: polygon(0% 0%, 90% 0%, 100% 50%, 90% 100%, 0% 100%);
+                clip-path: polygon(0% 0%, 93% 0%, 100% 50%, 93% 100%, 0% 100%);
+                text-align: left; align-items: flex-start;
+                padding-left: 20px; padding-right: 40px; margin-right: 20px;
             }
             .gold-card:nth-child(even) {
-                clip-path: polygon(10% 0%, 100% 0%, 100% 100%, 10% 100%, 0% 50%);
+                clip-path: polygon(7% 0%, 100% 0%, 100% 100%, 7% 100%, 0% 50%);
+                text-align: right; align-items: flex-end;
+                padding-left: 40px; padding-right: 20px; margin-left: 20px;
             }
         }
     </style>
@@ -181,7 +177,7 @@
 <body>
 
     <div class="container">
-        <h1 class="page-title">19 Golden Reasons</h1>
+        <h1 class="page-title">19 Golden Promises</h1>
         
         <div id="cards-wrapper">
             </div>
@@ -190,32 +186,33 @@
     </div>
 
     <script>
-        // --- YOUR REASONS ---
-        const reasons = [
-            "Your smile is my favorite thing.",
-            "You work hard for your dreams.",
-            "You have the kindest heart.",
-            "I love your laugh.",
-            "You inspire me every day.",
-            "You are beautiful inside and out.",
-            "I love our late night talks.",
-            "You are stronger than you know.",
-            "Your style is amazing.",
-            "You give the best hugs.",
-            "I can be myself around you.",
-            "You always cheer me up.",
-            "Your kindness changes the world.",
-            "We have the best memories.",
-            "I love watching movies with you.",
-            "You are incredibly smart.",
-            "I love your eyes.",
-            "Every day with you is a gift.",
-            "I can't imagine life without you."
+        // --- 19 PROMISES ---
+        // I wrote these to be supportive of her dreams and your bond.
+        const promises = [
+            "To believe in you, especially when you doubt yourself.",
+            "To support your dream of becoming a Doctor, always.",
+            "To be your calm when the world feels chaotic.",
+            "To listen to you, really listen, whenever you need to talk.",
+            "To never let you face your battles alone.",
+            "To celebrate your smallest wins just as much as the big ones.",
+            "To remind you of how smart and capable you are.",
+            "To be patient with you during stressful study days.",
+            "To be your biggest cheerleader, loud and proud.",
+            "To respect your space when you need to focus.",
+            "To love you unconditionally, without needing a reason.",
+            "To make you laugh when you are feeling stressed.",
+            "To always be honest and true to you.",
+            "To hold your hand through the hard times.",
+            "To bring you coffee (or tea) when you're working late.",
+            "To keep our memories safe and make millions more.",
+            "To motivate you to keep going, even when it gets tough.",
+            "To trust you completely.",
+            "To stay by your side, forever."
         ];
 
         const wrapper = document.getElementById('cards-wrapper');
 
-        reasons.forEach((reason, index) => {
+        promises.forEach((promise, index) => {
             const card = document.createElement('div');
             card.classList.add('gold-card');
             
@@ -223,9 +220,10 @@
                 this.classList.toggle('revealed');
             };
 
+            // Label changed to PROMISE
             card.innerHTML = `
-                <div class="card-number">Reason #${index + 1}</div>
-                <div class="card-reason">${reason}</div>
+                <div class="card-number">Promise #${index + 1}</div>
+                <div class="card-reason">${promise}</div>
             `;
 
             wrapper.appendChild(card);
