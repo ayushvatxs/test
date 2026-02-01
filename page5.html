@@ -12,7 +12,8 @@
         body {
             margin: 0;
             padding: 0;
-            background: radial-gradient(ellipse at center, #1e1e2f 0%, #000000 100%);
+            /* Deep Space Background for Pop */
+            background: radial-gradient(ellipse at center, #1a1a2e 0%, #000000 100%);
             font-family: 'Lato', sans-serif;
             color: #f0e6d2;
             min-height: 100vh;
@@ -22,126 +23,149 @@
             overflow-x: hidden;
         }
 
-        /* --- THE CINEMATIC INTRO ELEMENTS --- */
-
-        /* The Title (Starts Center, Moves Up) */
-        .page-title {
+        /* --- THE CINEMATIC INTRO --- */
+        
+        /* The Wrapper that centers everything initially */
+        #intro-wrapper {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-family: 'Cinzel', serif;
-            font-size: clamp(2.5rem, 6vw, 4.5rem); /* Slightly larger */
-            color: #d4af37;
-            text-align: center;
-            text-shadow: 0 0 20px rgba(212, 175, 55, 0.8), 0 0 40px rgba(212, 175, 55, 0.4);
-            width: 100%;
-            z-index: 50;
-            transition: all 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-        }
-
-        /* The Title's position AFTER animation - FIXED OVERLAP */
-        .page-title.move-up {
-            top: 40px; /* Moved higher up */
-            transform: translate(-50%, 0) scale(0.7);
-        }
-
-        /* --- NEW GOLDEN HEART BEAM VFX --- */
-        .heart-vfx-container {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 600px; /* Adjust size here */
-            height: 600px;
-            z-index: 40;
-            pointer-events: none;
-            transition: all 2s ease-in-out;
-        }
-
-        /* The main glowing heart shape */
-        .heart-glow-beam {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at center, rgba(255, 223, 0, 0.8) 0%, rgba(212, 175, 55, 0.2) 60%, transparent 70%);
-            /* Heart shape mask */
-            -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 29.6"><path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2c6.1-9.3,16-11.8,16-21.2C32,3.8,28.2,0,23.6,0z"/></svg>') no-repeat center / contain;
-            mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 29.6"><path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2c6.1-9.3,16-11.8,16-21.2C32,3.8,28.2,0,23.6,0z"/></svg>') no-repeat center / contain;
-            
-            filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.9)) drop-shadow(0 0 60px rgba(255, 215, 0, 0.6));
-            animation: pulseBeam 2s ease-in-out infinite;
-        }
-
-        /* Brighter core for the beam */
-        .heart-glow-beam::before {
-            content: '';
-            position: absolute;
-            top: 10%; left: 10%; right: 10%; bottom: 10%;
-            background: radial-gradient(circle at center, #fff 0%, #ffd700 50%, transparent 80%);
-            -webkit-mask: inherit;
-            mask: inherit;
-            opacity: 0.7;
-            filter: blur(10px);
-        }
-
-        /* Sparkle particles */
-        .sparkles {
-            position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-image: 
-                radial-gradient(circle, #fff 1px, transparent 1px),
-                radial-gradient(circle, #ffd700 1px, transparent 1px);
-            background-size: 50px 50px, 30px 30px;
-            background-position: 0 0, 25px 25px;
-            -webkit-mask: inherit;
-            mask: inherit;
-            animation: sparkleMove 3s linear infinite;
-            opacity: 0.6;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            transition: all 1.5s cubic-bezier(0.7, 0, 0.3, 1);
         }
 
-        @keyframes pulseBeam {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.05); opacity: 0.8; }
+        /* State when intro is done: Move to top of document */
+        body.intro-done #intro-wrapper {
+            position: relative;
+            height: auto;
+            padding: 40px 0 20px 0;
+            top: auto; left: auto;
+            transform: none;
         }
 
-        @keyframes sparkleMove {
-            0% { background-position: 0 0, 25px 25px; }
-            100% { background-position: 50px 50px, 75px 75px; }
+        /* --- THE TITLE --- */
+        .page-title {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2rem, 5vw, 4rem);
+            color: #ffd700; /* Pure Gold */
+            text-align: center;
+            text-shadow: 
+                0 0 10px rgba(255, 215, 0, 0.8),
+                0 0 20px rgba(255, 215, 0, 0.5),
+                0 0 40px rgba(255, 215, 0, 0.2);
+            margin: 0;
+            z-index: 110;
+            transition: transform 1.5s;
         }
 
-        /* The Heart's position AFTER animation (Background Watermark) */
-        .heart-vfx-container.move-to-bg {
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(3); /* Make HUGE */
-            opacity: 0.1; /* Fade out to be subtle background */
+        /* --- THE MAGICAL HEART BEAM VFX --- */
+        .heart-vfx-container {
+            position: absolute; /* Relative to intro-wrapper */
+            width: 400px;
+            height: 400px;
+            z-index: 90;
             pointer-events: none;
+            transition: all 1.5s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* State when intro is done: Move to background & fade */
+        body.intro-done .heart-vfx-container {
+            position: fixed; /* Lock to background */
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(3);
+            opacity: 0.15; /* Subtle watermark */
+            filter: blur(2px);
+        }
+
+        /* 1. Spinning God Rays (The Beams) */
+        .god-rays {
+            position: absolute;
+            width: 100%; height: 100%;
+            background: conic-gradient(
+                from 0deg, 
+                transparent 0%, 
+                rgba(255, 215, 0, 0.4) 10%, 
+                transparent 20%, 
+                rgba(255, 215, 0, 0.6) 30%, 
+                transparent 40%, 
+                rgba(255, 215, 0, 0.4) 50%, 
+                transparent 60%, 
+                rgba(255, 215, 0, 0.6) 70%, 
+                transparent 80%, 
+                rgba(255, 215, 0, 0.4) 90%, 
+                transparent 100%
+            );
+            mask: radial-gradient(circle, black 30%, transparent 70%);
+            -webkit-mask: radial-gradient(circle, black 30%, transparent 70%);
+            animation: spinRays 10s linear infinite;
+            opacity: 0;
+            transition: opacity 1s;
         }
         
-        /* --- MAIN CONTENT --- */
+        /* Show rays only during intro */
+        body:not(.intro-done) .god-rays { opacity: 1; }
+
+        /* 2. The Glowing Heart Outline (Like your image) */
+        .glowing-heart-shape {
+            width: 150px;
+            animation: heartBeat 2s infinite ease-in-out;
+        }
+        
+        .glowing-heart-shape path {
+            fill: none;
+            stroke: #ffd700;
+            stroke-width: 3;
+            stroke-linecap: round;
+            filter: drop-shadow(0 0 10px #ffea00) drop-shadow(0 0 20px #ffae00);
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawHeart 2.5s forwards ease-in-out;
+        }
+
+        /* 3. Inner Glow Core */
+        .heart-core {
+            position: absolute;
+            width: 50px; height: 50px;
+            background: radial-gradient(circle, #fff 0%, #ffd700 50%, transparent 80%);
+            filter: blur(15px);
+            animation: pulseCore 2s infinite;
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes spinRays { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes drawHeart { to { stroke-dashoffset: 0; } }
+        @keyframes heartBeat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes pulseCore { 0%, 100% { opacity: 0.6; transform: scale(1); } 50% { opacity: 1; transform: scale(1.5); } }
+
+
+        /* --- MAIN CONTENT (CARDS) --- */
         .container {
-            padding: 40px 20px;
+            padding: 20px;
             width: 100%;
-            max-width: 1000px; 
+            max-width: 1000px;
             box-sizing: border-box;
             padding-bottom: 80px;
-            opacity: 0; /* Hidden at start */
+            opacity: 0; /* Hidden initially */
             transition: opacity 1s ease;
             position: relative;
-            z-index: 10;
-            /* ADDED MARGIN TO FIX OVERLAP */
-            margin-top: 120px; 
+            z-index: 20; /* Above the background heart */
         }
 
         /* --- GRID SYSTEM --- */
         #cards-wrapper {
             display: grid;
-            grid-template-columns: 1fr 1fr; /* 2 Columns */
+            grid-template-columns: 1fr 1fr;
             gap: 25px 40px; 
             width: 100%;
         }
 
-        /* --- GOLD CARD STYLES --- */
+        /* --- PREMIUM GOLD CARD STYLES --- */
         .gold-card {
             position: relative;
             background: linear-gradient(135deg, #b8860b 0%, #e6c15a 50%, #b8860b 100%);
@@ -155,10 +179,8 @@
             justify-content: center;
             overflow: hidden;
             z-index: 10;
-            
-            /* Loading State */
-            opacity: 0;
-            transform: translateY(50px);
+            opacity: 0; /* Wait for JS load */
+            transform: translateY(30px);
         }
 
         .gold-card.show-card {
@@ -166,16 +188,13 @@
             transform: translateY(0);
         }
 
+        .gold-card:hover { transform: scale(1.02); z-index: 30; filter: brightness(1.1); }
+        
         /* Texture */
         .gold-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABcEuYgAAAAG3RSTlNAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA3Y5bAAAAXklEQVR4Ae3MQQ6AMAgFQS2I/f9/tQe9aGKSGbeg780AI0WJ5J6L1F67o09vuc9o95sYvW9i2t/EpF/E/C9i8Rcxe4tYeoUs3CImbxEjt4h5X8S0X8T8L2LxF3HuBa4ZBDjT9x8AAAAASUVORK5CYII=');
-            opacity: 0.1;
-            mix-blend-mode: overlay;
-            pointer-events: none;
-            z-index: -1;
+            opacity: 0.1; mix-blend-mode: overlay; pointer-events: none; z-index: -1;
         }
 
         /* --- ZIG ZAG ARROWS --- */
@@ -195,7 +214,6 @@
             background: linear-gradient(135deg, #d4af37 0%, #f7ef8a 50%, #d4af37 100%);
         }
 
-        .gold-card:hover { transform: scale(1.02); z-index: 20; }
         .card-number { font-family: 'Cinzel', serif; font-size: 1.2rem; font-weight: 700; color: #3e2723; text-transform: uppercase; }
         .card-reason { font-family: 'Lato', sans-serif; font-size: 1rem; color: #2c1b12; margin-top: 10px; display: none; font-weight: 700; }
         .gold-card.revealed .card-reason { display: block; animation: fadeIn 0.5s; }
@@ -203,17 +221,12 @@
 
         /* NEXT BUTTON */
         .next-btn {
-            font-size: 3rem;
-            color: #d4af37;
-            text-decoration: none;
-            display: block;
-            margin-top: 40px;
-            text-align: center;
-            animation: bounce 2s infinite;
-            opacity: 0; /* Hidden initially */
-            transition: opacity 1s;
+            font-size: 3rem; color: #d4af37; text-decoration: none; display: block;
+            margin-top: 40px; text-align: center; animation: bounce 2s infinite;
+            opacity: 0; transition: opacity 1s;
         }
         .next-btn.show { opacity: 1; }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} 60% {transform: translateY(-5px);} }
 
         @media (max-width: 768px) {
             #cards-wrapper { grid-template-columns: 1fr; max-width: 500px; gap: 20px; }
@@ -224,12 +237,17 @@
 </head>
 <body>
 
-    <div class="heart-vfx-container" id="hero-heart">
-        <div class="heart-glow-beam"></div>
-        <div class="sparkles"></div>
+    <div id="intro-wrapper">
+        <div class="heart-vfx-container">
+            <div class="god-rays"></div>
+            <div class="heart-core"></div>
+            <svg class="glowing-heart-shape" viewBox="0 0 32 29.6">
+                <path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2
+                c6.1-9.3,16-11.8,16-21.2C32,3.8,28.2,0,23.6,0z"/>
+            </svg>
+        </div>
+        <h1 class="page-title">19 Golden Promises</h1>
     </div>
-
-    <h1 class="page-title" id="hero-title">19 Golden Promises</h1>
 
     <div class="container" id="main-content">
         <div id="cards-wrapper">
@@ -238,7 +256,6 @@
     </div>
 
     <script>
-        // 19 PROMISES DATA
         const promises = [
             "To believe in you, especially when you doubt yourself.",
             "To support your dream of becoming a Doctor, always.",
@@ -263,45 +280,38 @@
 
         const wrapper = document.getElementById('cards-wrapper');
 
-        // GENERATE CARDS
         promises.forEach((promise, index) => {
             const card = document.createElement('div');
             card.classList.add('gold-card');
             card.onclick = function() { this.classList.toggle('revealed'); };
-            // Use 'Promise #X' as the label
             card.innerHTML = `<div class="card-number">Promise #${index + 1}</div><div class="card-reason">${promise}</div>`;
             wrapper.appendChild(card);
         });
 
-        // --- ANIMATION SEQUENCE ---
         window.onload = function() {
-            
-            // Step 1: Wait 3 seconds (Let her admire the new heart beam)
+            // STEP 1: Let the Heart Beam and Title shine for 3 seconds
             setTimeout(() => {
                 
-                // Move Heart to Background
-                document.getElementById('hero-heart').classList.add('move-to-bg');
+                // STEP 2: Move Title to Top (using CSS class)
+                document.body.classList.add('intro-done');
                 
-                // Move Title to Top
-                document.getElementById('hero-title').classList.add('move-up');
-
-                // Show Container
+                // STEP 3: Show Cards Grid
                 document.getElementById('main-content').style.opacity = '1';
 
-                // Step 2: Trigger Cards loading one by one
+                // STEP 4: Cascade fade-in for cards
                 const cards = document.querySelectorAll('.gold-card');
                 cards.forEach((card, index) => {
                     setTimeout(() => {
                         card.classList.add('show-card');
-                    }, index * 200); // 200ms delay between each card
+                    }, 500 + (index * 150)); 
                 });
 
-                // Step 3: Show Next Arrow at the end
+                // STEP 5: Show Arrow
                 setTimeout(() => {
                     document.getElementById('next-arrow').classList.add('show');
-                }, promises.length * 200 + 500);
+                }, promises.length * 150 + 1000);
 
-            }, 3000); // Increased wait time slightly for the new VFX
+            }, 3000); 
         };
     </script>
 
