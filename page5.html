@@ -40,45 +40,34 @@
             pointer-events: none; /* Allows scrolling after it moves */
         }
 
-        /* The Solid Glowing Heart */
-        .solid-heart {
-            width: 180px;
-            height: 180px;
-            /* Golden Gradient Fill */
-            background: linear-gradient(to bottom right, #ffd700, #ff8c00);
-            /* Create Heart Shape using CSS */
-            transform: rotate(-45deg);
-            position: relative;
-            box-shadow: 0 0 40px rgba(255, 215, 0, 0.6); /* Outer Glow */
-            animation: heartbeat 1.5s infinite;
+        /* The SVG Container */
+        .heart-svg-container {
+            width: 200px;
+            height: 200px;
+            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8)); /* Base Glow */
+            animation: heartbeat 1.5s infinite ease-in-out;
+            transition: all 1.5s ease-in-out;
         }
 
-        .solid-heart::before,
-        .solid-heart::after {
-            content: "";
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
-            background: inherit;
-            position: absolute;
-            box-shadow: 0 0 40px rgba(255, 215, 0, 0.6);
+        /* The Heart Path Itself */
+        .heart-path {
+            fill: url(#goldGradient); /* Uses the gradient defined in HTML */
+            stroke: #ffd700;
+            stroke-width: 2;
         }
-
-        .solid-heart::before { top: -90px; left: 0; }
-        .solid-heart::after { top: 0; left: 90px; }
 
         @keyframes heartbeat {
-            0% { transform: rotate(-45deg) scale(1); filter: drop-shadow(0 0 20px gold); }
-            50% { transform: rotate(-45deg) scale(1.1); filter: drop-shadow(0 0 50px orange); }
-            100% { transform: rotate(-45deg) scale(1); filter: drop-shadow(0 0 20px gold); }
+            0% { transform: scale(1); filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8)); }
+            50% { transform: scale(1.15); filter: drop-shadow(0 0 40px rgba(255, 215, 0, 1)); }
+            100% { transform: scale(1); filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8)); }
         }
 
         /* Intro Text */
         .intro-text {
             font-family: 'Cinzel', serif;
-            font-size: 3rem;
+            font-size: clamp(2rem, 5vw, 3.5rem);
             color: #ffd700;
-            margin-top: 100px; /* Space from heart */
+            margin-top: 40px; 
             text-shadow: 0 0 20px #b8860b;
             opacity: 1;
             transition: opacity 1s;
@@ -86,18 +75,32 @@
 
         /* --- 2. TRANSITION STATE (After 3 Seconds) --- */
         body.active .intro-overlay {
-            /* Move Heart to Background */
-            opacity: 0.15; /* Watermark effect */
-            transform: scale(3); /* Make huge */
-            z-index: 0; /* Send to back */
-            position: fixed; /* Keep fixed as background */
+            z-index: 0; /* Move to back */
+        }
+
+        body.active .heart-svg-container {
+            /* Move Heart to Background as Watermark */
+            transform: scale(3) translateY(-10%); /* Make Huge */
+            opacity: 0.1; /* Fade out */
         }
 
         body.active .intro-text {
-            opacity: 0; /* Hide intro text to avoid overlap */
+            opacity: 0; /* Hide intro text completely */
         }
 
         /* --- 3. MAIN PAGE CONTENT --- */
+        .content-wrapper {
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 80px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Static Header that appears at top */
         .page-header {
             font-family: 'Cinzel', serif;
             font-size: clamp(2rem, 5vw, 3.5rem);
@@ -109,20 +112,15 @@
             opacity: 0;
             transform: translateY(-20px);
             transition: all 1s ease 1s; /* Delay appearance */
-            position: relative;
-            z-index: 10;
         }
 
         .cards-container {
             width: 100%;
-            max-width: 1000px;
-            padding: 0 20px 80px 20px;
+            padding: 0 20px;
             box-sizing: border-box;
             opacity: 0;
             transform: translateY(50px);
             transition: all 1s ease 1.2s; /* Delay appearance */
-            position: relative;
-            z-index: 10;
         }
 
         /* Show content when active */
@@ -221,9 +219,6 @@
             #cards-wrapper { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; gap: 15px; }
             .gold-card:nth-child(odd) { margin-right: 20px; }
             .gold-card:nth-child(even) { margin-left: 20px; }
-            .solid-heart, .solid-heart::before, .solid-heart::after { width: 120px; height: 120px; }
-            .solid-heart::before { top: -60px; } .solid-heart::after { left: 60px; }
-            .intro-text { font-size: 2rem; margin-top: 80px; }
         }
     </style>
 </head>
@@ -236,16 +231,32 @@
     </div>
 
     <div class="intro-overlay">
-        <div class="solid-heart"></div>
+        <svg width="0" height="0">
+            <defs>
+                <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#ffd700;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#ff8c00;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+        </svg>
+
+        <div class="heart-svg-container">
+            <svg viewBox="0 0 512 512" width="100%" height="100%">
+                <path class="heart-path" d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/>
+            </svg>
+        </div>
+        
         <h1 class="intro-text">19 Golden Promises</h1>
     </div>
 
-    <h1 class="page-header">19 Golden Promises</h1>
-    
-    <div class="cards-container">
-        <div id="cards-wrapper">
-            </div>
-        <a href="page6.html" class="next-btn">&#10095;</a>
+    <div class="content-wrapper">
+        <h1 class="page-header">19 Golden Promises</h1>
+        
+        <div class="cards-container">
+            <div id="cards-wrapper">
+                </div>
+            <a href="page6.html" class="next-btn">&#10095;</a>
+        </div>
     </div>
 
     <script>
