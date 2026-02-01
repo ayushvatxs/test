@@ -12,8 +12,8 @@
         body {
             margin: 0;
             padding: 0;
-            /* Deep premium background */
-            background: radial-gradient(ellipse at center, #1e1e2f 0%, #0a0a12 100%);
+            /* Premium dark charcoal background */
+            background: #111;
             font-family: 'Lato', sans-serif;
             color: #f0e6d2;
             min-height: 100vh;
@@ -24,112 +24,107 @@
         }
 
         .container {
-            padding: 40px 20px;
+            padding: 40px 15px;
             width: 100%;
-            /* Reduced max-width to make cards shorter in length */
-            max-width: 650px; 
+            /* DRASTICALLY REDUCED WIDTH -> Makes cards look like short ribbons */
+            max-width: 400px; 
             box-sizing: border-box;
             padding-bottom: 80px;
         }
 
         .page-title {
             font-family: 'Cinzel', serif;
-            font-size: clamp(1.8rem, 5vw, 3rem);
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
             color: #d4af37;
             text-align: center;
             text-shadow: 0 2px 10px rgba(212, 175, 55, 0.4);
-            margin-bottom: 35px;
+            margin-bottom: 30px;
             letter-spacing: 1px;
         }
 
         /* --- PREMIUM GOLD CARD STYLES --- */
         .gold-card {
             position: relative;
-            /* The Softer, richer gradient from before */
-            background: linear-gradient(135deg, #bf9b30 0%, #e6c15a 50%, #bf9b30 100%);
-            margin-bottom: 20px;
-            /* Reduced padding for smaller size */
-            padding: 12px 30px; 
+            /* Richer, darker gold gradient */
+            background: linear-gradient(135deg, #b8860b 0%, #e6c15a 50%, #b8860b 100%);
+            margin-bottom: 15px; /* Tighter vertical spacing */
+            padding: 10px 25px; 
             cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.4);
-            /* Reduced initial height */
-            height: 45px; 
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.4);
+            /* Very compact height */
+            height: 40px; 
             display: flex;
             flex-direction: column;
             justify-content: center;
             overflow: hidden;
-             /* Ensures texture stays inside the unique shapes */
             z-index: 1;
         }
 
-        /* Adding back the premium "Brushed Metal" texture */
+        /* Textured Finish */
         .gold-card::before {
             content: '';
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABcEuYgAAAAG3RSTlNAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA3Y5bAAAAXklEQVR4Ae3MQQ6AMAgFQS2I/f9/tQe9aGKSGbeg780AI0WJ5J6L1F67o09vuc9o95sYvW9i2t/EpF/E/C9i8Rcxe4tYeoUs3CImbxEjt4h5X8S0X8T8L2LxF3HuBa4ZBDjT9x8AAAAASUVORK5CYII=');
-            opacity: 0.08;
+            opacity: 0.1;
             mix-blend-mode: overlay;
             pointer-events: none;
-            z-index: -1; /* Behind text */
+            z-index: -1;
         }
 
         /* --- ZIG-ZAG SHAPES --- */
-        /* Odd Cards: Point RIGHT */
+        
+        /* ODD: Point Right -> */
         .gold-card:nth-child(odd) {
-            clip-path: polygon(0% 0%, 92% 0%, 100% 50%, 92% 100%, 0% 100%);
-            padding-right: 45px; 
+            clip-path: polygon(0% 0%, 90% 0%, 100% 50%, 90% 100%, 0% 100%);
+            padding-right: 40px; 
             text-align: left;
-            margin-right: 15px;
+            margin-right: 15px; /* Pushes it slightly left */
         }
 
-        /* Even Cards: Point LEFT */
+        /* EVEN: Point Left <- */
         .gold-card:nth-child(even) {
-            clip-path: polygon(8% 0%, 100% 0%, 100% 100%, 8% 100%, 0% 50%);
-            padding-left: 45px; 
+            clip-path: polygon(10% 0%, 100% 0%, 100% 100%, 10% 100%, 0% 50%);
+            padding-left: 40px; 
             text-align: right; 
             align-items: flex-end; 
-            margin-left: 15px;
+            margin-left: 15px; /* Pushes it slightly right */
         }
 
         /* --- HOVER & REVEAL --- */
         .gold-card:hover {
-            transform: translateY(-3px) scale(1.01);
-            filter: brightness(1.05);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+            transform: scale(1.02);
+            filter: brightness(1.1);
         }
 
         .gold-card.revealed {
             height: auto;
-            /* Reduced revealed height */
-            min-height: 110px; 
-            padding-top: 25px;
-            padding-bottom: 25px;
-            /* Brighter gradient when opened */
+            min-height: 100px; /* Expands when clicked */
+            padding-top: 20px;
+            padding-bottom: 20px;
             background: linear-gradient(135deg, #d4af37 0%, #f7ef8a 50%, #d4af37 100%);
         }
 
         /* --- TEXT STYLES --- */
         .card-number {
             font-family: 'Cinzel', serif;
-            font-size: 1.2rem; /* Slightly smaller font */
+            font-size: 1.1rem;
             font-weight: 700;
-            color: #3d2c0f; /* Rich dark gold/brown */
+            color: #3e2723; /* Dark brown for readability */
             text-transform: uppercase;
             letter-spacing: 1px;
-            text-shadow: 0 1px 1px rgba(255,255,255,0.3);
         }
 
         .card-reason {
             font-family: 'Lato', sans-serif;
-            font-size: 1rem; /* Slightly smaller font */
-            color: #2a1e0a;
-            margin-top: 12px;
+            font-size: 0.95rem;
+            color: #2c1b12;
+            margin-top: 10px;
             line-height: 1.4;
             opacity: 0;
-            transform: translateY(15px);
-            transition: all 0.5s ease-out;
+            transform: translateY(10px);
+            transition: all 0.4s ease;
             display: none;
             font-weight: 700;
         }
@@ -146,10 +141,9 @@
             color: #d4af37;
             text-decoration: none;
             display: block;
-            margin-top: 30px;
+            margin-top: 20px;
             text-align: center;
             animation: bounce 2s infinite;
-            text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
         }
 
         @keyframes bounce {
@@ -157,33 +151,23 @@
             40% {transform: translateY(-10px);}
             60% {transform: translateY(-5px);}
         }
-
-        /* --- MOBILE TWEAKS --- */
-        @media (max-width: 600px) {
-            .gold-card:nth-child(odd) {
-                 /* Sharper points on mobile */
-                clip-path: polygon(0% 0%, 94% 0%, 100% 50%, 94% 100%, 0% 100%);
-                padding-right: 35px; margin-right: 5px;
-            }
-            .gold-card:nth-child(even) {
-                clip-path: polygon(6% 0%, 100% 0%, 100% 100%, 6% 100%, 0% 50%);
-                padding-left: 35px; margin-left: 5px;
-            }
-        }
+        
     </style>
 </head>
 <body>
 
     <div class="container">
         <h1 class="page-title">19 Golden Reasons</h1>
+        
         <div id="cards-wrapper">
             </div>
+
         <a href="page6.html" class="next-btn">&#10095;</a>
     </div>
 
     <script>
         // --- YOUR REASONS ---
-        // Don't forget to put your real reasons here!
+        // Add your personal reasons here!
         const reasons = [
             "Your smile is my favorite thing in the world.",
             "You are working so hard for your doctor dreams.",
