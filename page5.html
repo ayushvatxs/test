@@ -24,7 +24,7 @@
             position: relative;
         }
 
-        /* --- 1. TITLE ANIMATION (Restored) --- */
+        /* --- 1. TITLE ANIMATION --- */
         .page-title {
             position: fixed; /* Starts in the middle of screen */
             top: 50%;
@@ -192,10 +192,13 @@
     </div>
 
     <script>
-        // --- 1. INTRO ANIMATION TRIGGER ---
-        // Wait 2 seconds with title in center, then move it up
+        // --- 1. INTRO ANIMATION TRIGGER & SCROLL FIX ---
         window.addEventListener('load', () => {
             setTimeout(() => {
+                // 1. Force screen to scroll to top smoothly
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                // 2. Start the animation class
                 document.body.classList.add('loaded');
             }, 2000); 
         });
@@ -231,7 +234,7 @@
             
             // --- 3. DELAY UPDATE ---
             // 0.3s delay between each card. 
-            // We add 2s (initial wait) to the delay so they start AFTER title moves
+            // We add 2.5s (initial wait + fade in) to the delay so they start AFTER title moves
             const totalDelay = 2.5 + (index * 0.3); 
             card.style.animation = `slideInUp 0.8s ease-out forwards ${totalDelay}s`;
 
