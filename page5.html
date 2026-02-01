@@ -12,7 +12,6 @@
         body {
             margin: 0;
             padding: 0;
-            /* Premium dark charcoal background */
             background: #111;
             font-family: 'Lato', sans-serif;
             color: #f0e6d2;
@@ -24,36 +23,43 @@
         }
 
         .container {
-            padding: 40px 15px;
+            padding: 40px 20px;
             width: 100%;
-            /* DRASTICALLY REDUCED WIDTH -> Makes cards look like short ribbons */
-            max-width: 400px; 
+            /* Wide container for Premium Grid feel */
+            max-width: 1000px; 
             box-sizing: border-box;
             padding-bottom: 80px;
         }
 
         .page-title {
             font-family: 'Cinzel', serif;
-            font-size: clamp(1.8rem, 5vw, 2.5rem);
+            font-size: clamp(2rem, 5vw, 3.5rem);
             color: #d4af37;
             text-align: center;
             text-shadow: 0 2px 10px rgba(212, 175, 55, 0.4);
-            margin-bottom: 30px;
-            letter-spacing: 1px;
+            margin-bottom: 50px;
+            letter-spacing: 2px;
+        }
+
+        /* --- GRID SYSTEM --- */
+        #cards-wrapper {
+            display: grid;
+            /* 2 Columns on Laptop, 1 on Phone */
+            grid-template-columns: 1fr 1fr; 
+            gap: 20px; /* Space between cards */
+            width: 100%;
         }
 
         /* --- PREMIUM GOLD CARD STYLES --- */
         .gold-card {
             position: relative;
-            /* Richer, darker gold gradient */
             background: linear-gradient(135deg, #b8860b 0%, #e6c15a 50%, #b8860b 100%);
-            margin-bottom: 15px; /* Tighter vertical spacing */
-            padding: 10px 25px; 
+            padding: 15px 35px;
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 5px 15px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.4);
-            /* Very compact height */
-            height: 40px; 
+            /* Stubbier/Chunky height */
+            height: 60px; 
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -61,7 +67,7 @@
             z-index: 1;
         }
 
-        /* Textured Finish */
+        /* Texture */
         .gold-card::before {
             content: '';
             position: absolute;
@@ -73,52 +79,49 @@
             z-index: -1;
         }
 
-        /* --- ZIG-ZAG SHAPES --- */
+        /* --- SHAPES & DIRECTIONS (Desktop) --- */
         
-        /* ODD: Point Right -> */
+        /* Left Column Items (Odd numbers: 1, 3, 5...) -> Point RIGHT */
         .gold-card:nth-child(odd) {
-            clip-path: polygon(0% 0%, 90% 0%, 100% 50%, 90% 100%, 0% 100%);
+            clip-path: polygon(0% 0%, 93% 0%, 100% 50%, 93% 100%, 0% 100%);
             padding-right: 40px; 
             text-align: left;
-            margin-right: 15px; /* Pushes it slightly left */
         }
 
-        /* EVEN: Point Left <- */
+        /* Right Column Items (Even numbers: 2, 4, 6...) <- Point LEFT */
         .gold-card:nth-child(even) {
-            clip-path: polygon(10% 0%, 100% 0%, 100% 100%, 10% 100%, 0% 50%);
+            clip-path: polygon(7% 0%, 100% 0%, 100% 100%, 7% 100%, 0% 50%);
             padding-left: 40px; 
             text-align: right; 
             align-items: flex-end; 
-            margin-left: 15px; /* Pushes it slightly right */
         }
 
         /* --- HOVER & REVEAL --- */
         .gold-card:hover {
             transform: scale(1.02);
             filter: brightness(1.1);
+            z-index: 10; /* Bring to front on hover */
         }
 
         .gold-card.revealed {
             height: auto;
-            min-height: 100px; /* Expands when clicked */
-            padding-top: 20px;
-            padding-bottom: 20px;
+            min-height: 120px;
             background: linear-gradient(135deg, #d4af37 0%, #f7ef8a 50%, #d4af37 100%);
         }
 
         /* --- TEXT STYLES --- */
         .card-number {
             font-family: 'Cinzel', serif;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             font-weight: 700;
-            color: #3e2723; /* Dark brown for readability */
+            color: #3e2723;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
         .card-reason {
             font-family: 'Lato', sans-serif;
-            font-size: 0.95rem;
+            font-size: 1rem;
             color: #2c1b12;
             margin-top: 10px;
             line-height: 1.4;
@@ -137,11 +140,11 @@
 
         /* --- NEXT BUTTON --- */
         .next-btn {
-            font-size: 2.5rem;
+            font-size: 3rem;
             color: #d4af37;
             text-decoration: none;
             display: block;
-            margin-top: 20px;
+            margin-top: 40px;
             text-align: center;
             animation: bounce 2s infinite;
         }
@@ -151,7 +154,30 @@
             40% {transform: translateY(-10px);}
             60% {transform: translateY(-5px);}
         }
-        
+
+        /* --- MOBILE LAYOUT (Stack them) --- */
+        @media (max-width: 768px) {
+            #cards-wrapper {
+                grid-template-columns: 1fr; /* 1 Column */
+                max-width: 400px; /* Limit width so arrows aren't huge */
+                margin: 0 auto;
+            }
+
+            /* On Mobile: Zig-Zag Alternating */
+            .gold-card:nth-child(odd) {
+                clip-path: polygon(0% 0%, 93% 0%, 100% 50%, 93% 100%, 0% 100%);
+                text-align: left;
+                align-items: flex-start;
+                padding-left: 20px;
+            }
+
+            .gold-card:nth-child(even) {
+                clip-path: polygon(7% 0%, 100% 0%, 100% 100%, 7% 100%, 0% 50%);
+                text-align: right;
+                align-items: flex-end;
+                padding-right: 20px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -167,7 +193,6 @@
 
     <script>
         // --- YOUR REASONS ---
-        // Add your personal reasons here!
         const reasons = [
             "Your smile is my favorite thing in the world.",
             "You are working so hard for your doctor dreams.",
