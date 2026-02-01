@@ -7,202 +7,133 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;600;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <style>
-/* ================= GLOBAL & BACKGROUND ================= */
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  /* PREMIUM ANIMATED GRADIENT BACKGROUND */
-  background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #ffd1ff, #fbc2eb);
-  background-size: 400% 400%;
-  animation: gradientBG 15s ease infinite;
-  font-family: 'Montserrat', sans-serif;
-  overflow: hidden;
+/* ================= YOUR ORIGINAL STYLES (RESTORED EXACTLY) ================= */
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(180deg,#fff,#ffd6e8);
+  font-family:"Segoe UI",system-ui;
+  overflow:hidden;
+  overflow-y:auto;
 }
+/* ... (Your original keyframes and modals styles kept here for consistency) ... */
+@keyframes pop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+#codeModal{ position:fixed; inset:0; background:rgba(0,0,0,.35); display:none; align-items:center; justify-content:center; z-index:20; }
+.codeCard{ background:white; padding:22px; border-radius:18px; width:90%; max-width:320px; text-align:center; position:relative; box-shadow:0 25px 60px rgba(0,0,0,.25); }
+.codeCard input{ width:100%; padding:10px; margin:12px 0; }
+.codeCard button{ padding:8px 18px; cursor:pointer; }
+#closeModal,#closeMsg{ position:absolute; top:10px; right:12px; cursor:pointer; }
+#messageBox{ position:fixed; inset:0; background:#ffe6f2; display:none; align-items:center; justify-content:center; z-index:15; }
+#messageBox p{ background:white; padding:24px; border-radius:20px; max-width:320px; max-height:70vh; overflow-y:auto; box-shadow:0 25px 60px rgba(255,120,170,.4); }
+#effects{ position:fixed; inset:0; pointer-events:none; z-index:5; }
+.particle{ position:absolute; font-size:22px; animation:rise linear forwards; }
+@keyframes rise{ from{transform:translateY(80px) scale(.6);opacity:0} 20%{opacity:1} to{transform:translateY(-120vh) scale(1.2);opacity:0} }
 
-@keyframes gradientBG {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+/* --- YOUR CARD STYLES (RESTORED) --- */
+.card{
+  width:92%; max-width:420px; background:white; border-radius:22px; padding:18px 18px 20px; text-align:center; box-shadow:0 25px 70px rgba(255,120,170,.3); position:relative; z-index:2;
 }
+.photo{ width:135px;height:135px; margin:0 auto 12px; border-radius:50%; overflow:hidden; border:5px solid #ffd1e5; transition: all 0.5s ease; }
+.photo img{ width:100%;height:100%; object-fit:cover; opacity:1; transition:opacity .7s ease; }
+h2 { margin-top: 0; }
+.sub{font-size:.95rem;color:#555}
+.date{margin:6px 0 6px;font-weight:600}
+.timer{margin:6px 0}
+.box{ background:#fff5fa; padding:10px 18px; border-radius:12px; font-weight:700; display:inline-block; }
 
-/* ================= THE GLASS CARD (Pro Frosted Effect) ================= */
-.card {
-  position: relative;
-  width: 90%;
-  max-width: 420px;
-  /* Glassmorphism Logic */
-  background: rgba(255, 255, 255, 0.65); /* Semi-transparent white */
-  backdrop-filter: blur(20px);           /* The Blur Magic */
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.8); /* Subtle border */
-  border-radius: 24px;
-  padding: 40px 20px;
-  text-align: center;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15); /* Soft, deep shadow */
-  z-index: 10;
-  transition: transform 0.3s ease;
+.actions{ margin-top:-18px; padding-bottom:8px; transition: margin 0.5s ease; }
+.bday{
+  margin:6px auto 4px; padding:11px 24px; border-radius:22px; border:none; background:#eee; color:#999; cursor:not-allowed; margin-top: 22px; transition: all 0.3s ease;
 }
+/* Gift styles */
+.gift{ font-size:48px; cursor:pointer; margin-top:2px; animation: giftFloat 2.8s ease-in-out infinite; }
+#giftText{ margin-top:4px; font-size:.95rem; color:#ff4f9a; font-weight:700; }
+@keyframes giftFloat { 0% { transform: translateY(0); } 50% { transform: translateY(-6px); } 100% { transform: translateY(0); } }
+#musicBtn{ position:fixed; position:relative; }
+#musicBtn.muted::after{ content:""; position:absolute; width:34px; height:3px; background:#ff4f9a; top:50%; left:50%; transform:translate(-50%,-50%) rotate(-45deg); border-radius:2px; }
 
-/* ================= ORIGINAL ELEMENTS (PRE-BIRTHDAY) ================= */
-.photo-container {
-  width: 140px; height: 140px; margin: 0 auto 15px;
-  border-radius: 50%; padding: 4px; background: white;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-}
-.photo img {
-  width: 100%; height: 100%; object-fit: cover; border-radius: 50%;
-  transition: opacity 0.5s;
-}
+/* ================= NEW PREMIUM UPGRADES (Hidden until 00:00) ================= */
 
-h2.headline {
-  font-family: 'Playfair Display', serif;
-  color: #333; font-size: 1.5rem; margin: 10px 0;
-}
-.sub { font-size: 0.9rem; color: #666; margin-bottom: 20px; font-weight: 300; }
-.date { font-weight: 700; color: #d81b60; margin-bottom: 20px; letter-spacing: 1px; }
-
-/* TIMER */
-.timer { display: flex; justify-content: center; gap: 10px; margin-bottom: 25px; }
-.box {
-  background: #fff; padding: 10px; border-radius: 12px; min-width: 55px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05); font-weight: 700; color: #d81b60;
-}
-
-/* GIFT BOX (Pre-Birthday) */
-.gift-container { cursor: pointer; margin-top: 10px; animation: float 3s ease-in-out infinite; }
-.gift-emoji { font-size: 3.5rem; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.1)); }
-.gift-text { font-size: 0.8rem; color: #888; margin-top: 5px; }
-
-@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-
-/* BUTTON */
-.actions { margin-top: 25px; }
-.bday {
-  padding: 14px 35px; border-radius: 50px; border: none;
-  background: #e0e0e0; color: #999; font-weight: 600; font-size: 1rem;
-  cursor: not-allowed; transition: all 0.4s ease;
-  text-decoration: none; display: inline-block;
-}
-
-/* ================= 👑 POST-BIRTHDAY PREMIUM UPGRADES ================= */
-
-/* 1. TRUE 3D TEXT (Rose Gold) */
+/* 1. NEW BOLD 3D GLOWING TEXT */
 #premiumBirthday {
-  display: none; /* Hidden until timer 0 */
-  opacity: 0;
-  margin: 15px 0;
-  transform: scale(0.8);
-  transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: none; /* Hidden initially */
+  margin-top: 30px;
+  margin-bottom: 30px;
 }
 
-.threed-text {
-  font-family: 'Great Vibes', cursive;
-  font-size: 4.2rem;
-  line-height: 1.1;
-  color: #d4af37; /* Fallback */
+.super-3d-text {
+  font-family: 'Montserrat', sans-serif; /* BOLD font */
+  font-weight: 900;
+  font-size: 3.5rem;
+  line-height: 1;
+  color: #fff; /* White face */
+  text-transform: uppercase;
   margin: 0;
+  transform: scale(0); /* Start invisible for animation */
+  /* Bouncy entrance animation */
+  animation: popUpGlow 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
   
-  /* The Rose Gold Gradient Fill */
-  background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  
-  /* The 3D Layering Effect */
+  /* THE 3D GLOW EFFECT */
   text-shadow: 
-    0px 1px 0px #c7a45b,
-    0px 2px 0px #b69246,
-    0px 3px 0px #a58032,
-    0px 4px 0px #946e1e,
-    0px 5px 0px #835f15,
-    0px 6px 4px rgba(0,0,0,0.1),
-    0px 10px 20px rgba(0,0,0,0.3); /* Big soft shadow */
-    
-  animation: shine 4s linear infinite;
+      1px 1px 0px #ff4081,
+      2px 2px 0px #ff4081,
+      3px 3px 0px #ff4081,
+      4px 4px 0px #d81b60,
+      5px 5px 0px #d81b60, /* 3D layers */
+      0 0 20px rgba(255, 64, 129, 1), /* Bright inner glow */
+      0 0 50px rgba(255, 64, 129, 0.6), /* Wide outer glow */
+      0 20px 30px rgba(0,0,0,0.2); /* Shadow for depth */
 }
 
-@keyframes shine {
-  from { filter: brightness(100%); }
-  50% { filter: brightness(130%); }
-  to { filter: brightness(100%); }
+/* AMAZING APPEARANCE ANIMATION */
+@keyframes popUpGlow {
+  0% { transform: scale(0) translateY(50px); opacity: 0; filter: brightness(0.5); }
+  60% { transform: scale(1.1) translateY(0); opacity: 1; filter: brightness(2); } /* Flash bright */
+  100% { transform: scale(1) translateY(0); opacity: 1; filter: brightness(1); }
 }
+
+.queen-sub { font-size: 1rem; color: #d81b60; font-weight: 700; margin-top: 15px; letter-spacing: 2px; opacity: 0; animation: fadeIn 1s ease 0.8s forwards; }
+@keyframes fadeIn { to { opacity: 1; } }
 
 /* 2. THE CROWN (Replaces Gift) */
-#queenCrown {
-  display: none; /* Hidden until timer 0 */
-  font-size: 4.5rem;
-  margin-top: 20px;
-  filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.6));
-  animation: crownFloat 3s ease-in-out infinite alternate;
-}
-
-@keyframes crownFloat {
-  from { transform: translateY(0) scale(1); filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.4)); }
-  to { transform: translateY(-15px) scale(1.1); filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.8)); }
-}
-
-.queen-text {
-  font-size: 0.9rem; color: #d4af37; letter-spacing: 2px; text-transform: uppercase; margin-top: 10px; font-weight: bold;
-}
+#queenCrown { display: none; font-size: 4.5rem; margin-top: 20px; filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.6)); animation: crownFloat 3s ease-in-out infinite alternate; }
+@keyframes crownFloat { from { transform: translateY(0) scale(1); } to { transform: translateY(-10px) scale(1.1); } }
 
 /* 3. ACTIVE BUTTON STYLE */
 .bday.active-party {
-  background: linear-gradient(135deg, #ff4081, #ff80ab);
-  color: white;
-  cursor: pointer;
-  box-shadow: 0 10px 30px rgba(255, 64, 129, 0.4);
-  transform: scale(1.05);
-  animation: pulseBtn 2s infinite;
+  background: linear-gradient(45deg, #ff4081, #ff80ab) !important; color: white !important; cursor: pointer !important; box-shadow: 0 10px 25px rgba(255, 64, 129, 0.4); transform: scale(1.1); animation: bounceBtn 2s infinite;
+}
+@keyframes bounceBtn { 0%, 20%, 50%, 80%, 100% {transform: scale(1.1) translateY(0);} 40% {transform: scale(1.1) translateY(-10px);} 60% {transform: scale(1.1) translateY(-5px);} }
+
+/* 4. POST-BIRTHDAY PHOTO BORDER */
+.photo.party-mode {
+    border-color: #d4af37; /* Gold border */
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
+    transform: scale(1.1);
 }
 
-@keyframes pulseBtn {
-  0% { transform: scale(1.05); box-shadow: 0 0 0 0 rgba(255, 64, 129, 0.7); }
-  70% { transform: scale(1.1); box-shadow: 0 0 0 15px rgba(255, 64, 129, 0); }
-  100% { transform: scale(1.05); box-shadow: 0 0 0 0 rgba(255, 64, 129, 0); }
-}
-
-/* ================= MODALS & UTILS ================= */
-#codeModal, #messageBox {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px);
-  display: none; align-items: center; justify-content: center; z-index: 50;
-}
-.modalCard {
-  background: white; padding: 25px; border-radius: 20px; width: 90%; max-width: 320px; text-align: center;
-  box-shadow: 0 25px 60px rgba(0,0,0,0.3); animation: pop 0.3s ease;
-}
-@keyframes pop { from {transform: scale(0.8); opacity:0;} to {transform: scale(1); opacity:1;} }
-.modalCard input { width: 100%; padding: 10px; margin: 15px 0; border: 1px solid #ddd; border-radius: 8px; }
-.modalCard button { padding: 10px 20px; background: #d81b60; color: white; border: none; border-radius: 8px; cursor: pointer; }
-.close { position: absolute; top: 15px; right: 15px; cursor: pointer; color: #aaa; }
-
-/* MUSIC BTN */
-#musicBtn {
-  position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px; background: white; border-radius: 50%; border: none; box-shadow: 0 5px 15px rgba(0,0,0,0.1); font-size: 20px; cursor: pointer; z-index: 40;
-}
-#musicBtn.muted { opacity: 0.6; }
 </style>
 </head>
 <body>
 
-  <div id="effects" style="position:fixed; inset:0; pointer-events:none; z-index:1;"></div>
+  <div id="effects"></div>
 
   <div class="card">
-    <div class="photo-container">
-      <div class="photo"><img id="photoImg" src="photo1.jpg"></div>
+    <div class="photo" id="mainPhoto">
+      <img id="photoImg" src="photo1.jpg">
     </div>
 
     <div id="preHeadings">
-      <h2 class="headline">💌 A Special Day Is Almost Here</h2>
+      <h2>💌 A Special Day Is Almost Here</h2>
       <div class="sub">Because the girl who means everything to me deserves to be celebrated by the world</div>
       <div class="date">13 February</div>
     </div>
@@ -210,46 +141,29 @@ h2.headline {
     <div class="timer" id="timer"></div>
 
     <div id="premiumBirthday">
-      <h1 class="threed-text">Happy<br>Birthday!</h1>
-      <div class="sub" style="margin-top:10px;">The Queen has arrived 👑</div>
+      <h1 class="super-3d-text">HAPPY<br>BIRTHDAY</h1>
+      <div class="queen-sub">THE QUEEN HAS ARRIVED 👑</div>
     </div>
 
-    <div class="actions">
+    <div class="actions" id="actionsDiv">
       <button class="bday" id="bdayBtn" disabled>Happy Birthday 🎉</button>
 
-      <div class="gift-container" id="giftBox" onclick="openGiftModal()">
-        <div class="gift-emoji" id="giftIcon">🎁</div>
-        <div class="gift-text" id="giftLabel">Only for Violina 💗</div>
+      <div id="giftWrap">
+        <div class="gift" id="gift">🎁</div>
+        <div id="giftText">Only for Violina 💗</div>
       </div>
 
       <div id="queenCrown">
         👑
-        <div class="queen-text">For the Birthday Queen</div>
       </div>
     </div>
   </div>
 
-  <div id="codeModal">
-    <div class="modalCard">
-      <span class="close" onclick="closeAllModals()">✖</span>
-      <h3>Secret Code 💕</h3>
-      <input type="password" id="secretInput" placeholder="Enter code">
-      <button onclick="checkPasscode()">Unlock</button>
-    </div>
-  </div>
+  <div id="codeModal"><div class="codeCard"><span id="closeModal">✖</span><h3>Secret Code 💕</h3><input type="password" id="secretInput" placeholder="Enter code"><button id="openGiftBtn">Unlock</button></div></div>
+  <div id="messageBox"><div class="codeCard"><span id="closeMsg">✖</span><p style="text-align:left;line-height:1.6;color:#555;">Ayoo 😭 only a few days left and I genuinely don’t know how to act normal anymore. My brain is already in celebration mode and my heart is clearly ahead of schedule 🥰💖<br><br>Thinking of you feels like pressing pause on the world 💗</p></div></div>
 
-  <div id="messageBox">
-    <div class="modalCard">
-      <span class="close" onclick="closeAllModals()">✖</span>
-      <p style="text-align:left; line-height:1.6; color:#555;">
-        Ayoo 😭 only a few days left and I genuinely don’t know how to act normal anymore. My brain is already in celebration mode and my heart is clearly ahead of schedule 🥰💖<br><br>
-        Thinking of you feels like pressing pause on the world 💗
-      </p>
-    </div>
-  </div>
-
-  <button id="musicBtn" class="muted" onclick="toggleMusic()">🎵</button>
-  <audio id="bgMusic" src="happy-birthday.mp3"></audio>
+  <button id="musicBtn" class="muted" style="position:fixed;bottom:16px;right:16px;z-index:30;background:#fff;border:none;border-radius:50%;width:52px;height:52px;font-size:22px;box-shadow:0 10px 25px rgba(0,0,0,.2);cursor:pointer;"><span id="musicIcon">🎵</span></button>
+  <audio id="loudMusic" src="happy-birthday.mp3"></audio>
 
 <script>
 // ==========================================
@@ -262,9 +176,11 @@ const birthdayDate = new Date("February 13, 2026 00:00:00").getTime();
 const timerEl = document.getElementById("timer");
 const bdayBtn = document.getElementById("bdayBtn");
 const preHeadings = document.getElementById("preHeadings");
-const giftBox = document.getElementById("giftBox");
+const giftWrap = document.getElementById("giftWrap");
 const premiumBirthday = document.getElementById("premiumBirthday");
 const queenCrown = document.getElementById("queenCrown");
+const mainPhoto = document.getElementById("mainPhoto");
+const actionsDiv = document.getElementById("actionsDiv");
 
 // TIMER LOGIC
 const x = setInterval(function() {
@@ -284,47 +200,38 @@ const x = setInterval(function() {
     let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
     let seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-    timerEl.innerHTML = `
-      <div class="box">${days}d</div>
-      <div class="box">${hours}h</div>
-      <div class="box">${minutes}m</div>
-      <div class="box">${seconds}s</div>
-    `;
+    timerEl.innerHTML = `<div class="box">${days}d</div><div class="box">${hours}h</div><div class="box">${minutes}m</div><div class="box">${seconds}s</div>`;
   }
 }, 1000);
 
 function launchPremiumMode() {
   // 1. Hide Pre-Birthday Elements
   timerEl.style.display = "none";
-  giftBox.style.display = "none"; // Hide the old gift
+  giftWrap.style.display = "none"; // Hide old gift
   preHeadings.style.display = "none"; // Hide old title
+  
+  // Adjust spacing
+  actionsDiv.style.marginTop = "10px";
 
   // 2. Show Premium Elements
   premiumBirthday.style.display = "block";
-  queenCrown.style.display = "block"; // Show the CROWN
-  
-  // Animation delay
-  setTimeout(() => {
-    premiumBirthday.style.opacity = "1";
-    premiumBirthday.style.transform = "scale(1)";
-  }, 100);
+  queenCrown.style.display = "block";
+  mainPhoto.classList.add("party-mode"); // Gold border and scale
 
   // 3. Activate Button
   bdayBtn.disabled = false;
   bdayBtn.classList.add("active-party");
-  bdayBtn.innerHTML = "Enter World 🎂";
   bdayBtn.onclick = () => window.location.href = "birthday.html";
 
   // 4. Fire Confetti
   fireConfetti();
   
   // 5. Play Music
-  if(musicUnlocked) { document.getElementById("bgMusic").play(); }
+  if(musicUnlocked) { loudMusic.play(); }
 }
 
 function fireConfetti() {
-  var duration = 3 * 1000;
-  var end = Date.now() + duration;
+  var duration = 3 * 1000; var end = Date.now() + duration;
   (function frame() {
     confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#ff4081', '#d4af37', '#ffffff'] });
     confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#ff4081', '#d4af37', '#ffffff'] });
@@ -332,53 +239,38 @@ function fireConfetti() {
   }());
 }
 
-// --- MODALS & GIFT LOGIC (Unchanged) ---
+// --- YOUR ORIGINAL GIFT & MUSIC LOGIC ---
+const gift = document.getElementById("gift");
+const giftText = document.getElementById("giftText");
 const codeModal = document.getElementById("codeModal");
-const messageBox = document.getElementById("messageBox");
 const secretInput = document.getElementById("secretInput");
+const openGiftBtn = document.getElementById("openGiftBtn");
+const closeModal = document.getElementById("closeModal");
+const messageBox = document.getElementById("messageBox");
+const closeMsg = document.getElementById("closeMsg");
+const musicBtn = document.getElementById("musicBtn");
+const loudMusic = document.getElementById("loudMusic");
+const musicIcon = document.getElementById("musicIcon");
 
-function openGiftModal() {
-  if (localStorage.getItem("giftOpened") === new Date().toDateString()) {
-    alert("Opened for today! Come back tomorrow."); return;
-  }
-  codeModal.style.display = "flex";
-}
-function closeAllModals() {
-  codeModal.style.display = "none"; messageBox.style.display = "none";
-}
-function checkPasscode() {
+gift.onclick = () => { codeModal.style.display = "flex"; };
+closeModal.onclick = () => { codeModal.style.display = "none"; };
+closeMsg.onclick = () => { messageBox.style.display = "none"; };
+openGiftBtn.onclick = () => {
   if (secretInput.value === "1313") {
-    localStorage.setItem("giftOpened", new Date().toDateString());
-    closeAllModals();
-    messageBox.style.display = "flex";
-    document.getElementById("giftIcon").textContent = "🎊";
-    document.getElementById("giftLabel").textContent = "Opened Today";
-    confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
-  } else {
-    alert("Wrong code 💔");
-  }
-}
+    codeModal.style.display = "none"; messageBox.style.display = "flex"; gift.textContent = "🎊"; giftText.innerHTML = "Opened 💗";
+  } else { alert("Wrong code 💔"); }
+};
 
-// MUSIC
-let musicUnlocked = false;
-const bgMusic = document.getElementById("bgMusic");
-function toggleMusic() {
-  if (bgMusic.paused) {
-    bgMusic.play(); musicUnlocked = true; document.getElementById("musicBtn").classList.remove("muted");
-  } else {
-    bgMusic.pause(); document.getElementById("musicBtn").classList.add("muted");
-  }
-}
+loudMusic.loop = false; let musicUnlocked = false; let isMuted = true;
+musicBtn.onclick = () => {
+  if (!musicUnlocked) { loudMusic.volume = 1; loudMusic.play().catch(()=>{}); loudMusic.pause(); loudMusic.currentTime = 0; musicUnlocked = true; }
+  if (isMuted) { loudMusic.currentTime = 0; loudMusic.play().catch(()=>{}); musicBtn.classList.remove("muted"); musicIcon.textContent = "🔊"; isMuted = false; } else { loudMusic.pause(); musicBtn.classList.add("muted"); musicIcon.textContent = "🎵"; isMuted = true; }
+};
+loudMusic.onended = () => { musicBtn.classList.add("muted"); musicIcon.textContent = "🎵"; isMuted = true; };
 
 // PHOTO SLIDESHOW
-const photos = ["photo1.jpg", "photo2.jpg", "photo3.jpg"];
-let p = 0;
-const img = document.getElementById("photoImg");
-setInterval(() => {
-  img.style.opacity = 0;
-  setTimeout(() => { p = (p + 1) % photos.length; img.src = photos[p]; img.style.opacity = 1; }, 500);
-}, 4000);
-
+const photos=["photo1.jpg","photo2.jpg","photo3.jpg"]; let p=0; const img=document.getElementById("photoImg");
+setInterval(()=>{ img.style.opacity=0; setTimeout(()=>{ p=(p+1)%photos.length; img.src=photos[p]; img.style.opacity=1; },350); },4000);
 </script>
 </body>
 </html>
