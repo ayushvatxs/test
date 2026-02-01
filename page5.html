@@ -12,8 +12,8 @@
         body {
             margin: 0;
             padding: 0;
-            /* Deep Space Blue Background */
-            background: radial-gradient(circle at center, #1a1a2e 0%, #0f0c29 100%);
+            /* Premium Royal Blue Background */
+            background: radial-gradient(ellipse at center, #1e1e2f 0%, #0a0a12 100%);
             font-family: 'Lato', sans-serif;
             color: #f0e6d2;
             min-height: 100vh;
@@ -24,113 +24,115 @@
             position: relative;
         }
 
-        /* --- 1. THE MAGICAL HEART CONTAINER --- */
-        .intro-wrapper {
+        /* --- 1. THE INTRO OVERLAY (Heart + Text) --- */
+        .intro-overlay {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 50;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            z-index: 100; /* Stays on top initially */
             transition: all 1.5s ease-in-out;
-            width: 100%;
-            pointer-events: none; /* Let clicks pass through later */
+            pointer-events: none; /* Allows scrolling after it moves */
         }
 
-        /* The Heart VFX Layering */
-        .heart-visual {
+        /* The Solid Glowing Heart */
+        .solid-heart {
+            width: 180px;
+            height: 180px;
+            /* Golden Gradient Fill */
+            background: linear-gradient(to bottom right, #ffd700, #ff8c00);
+            /* Create Heart Shape using CSS */
+            transform: rotate(-45deg);
             position: relative;
-            width: 200px;
-            height: 200px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: all 1.5s ease-in-out;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.6); /* Outer Glow */
+            animation: heartbeat 1.5s infinite;
         }
 
-        /* Layer 1: The Core Glow */
-        .heart-core {
-            fill: #ffd700;
-            filter: drop-shadow(0 0 10px #ffcc00) drop-shadow(0 0 20px #ff8800) drop-shadow(0 0 40px #ff0000);
-            animation: pulse 2s infinite ease-in-out;
-            width: 100%;
-        }
-
-        /* Layer 2: The Sparkles around it */
-        .heart-sparkle {
-            position: absolute;
-            background: white;
+        .solid-heart::before,
+        .solid-heart::after {
+            content: "";
+            width: 180px;
+            height: 180px;
             border-radius: 50%;
-            box-shadow: 0 0 10px gold;
-            opacity: 0;
-            animation: sparkle-anim 2s infinite;
+            background: inherit;
+            position: absolute;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.6);
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); filter: drop-shadow(0 0 10px #ffcc00) drop-shadow(0 0 20px #ff8800); }
-            50% { transform: scale(1.1); filter: drop-shadow(0 0 20px #ffcc00) drop-shadow(0 0 40px #ff4500); }
-            100% { transform: scale(1); filter: drop-shadow(0 0 10px #ffcc00) drop-shadow(0 0 20px #ff8800); }
+        .solid-heart::before { top: -90px; left: 0; }
+        .solid-heart::after { top: 0; left: 90px; }
+
+        @keyframes heartbeat {
+            0% { transform: rotate(-45deg) scale(1); filter: drop-shadow(0 0 20px gold); }
+            50% { transform: rotate(-45deg) scale(1.1); filter: drop-shadow(0 0 50px orange); }
+            100% { transform: rotate(-45deg) scale(1); filter: drop-shadow(0 0 20px gold); }
         }
 
-        /* Title inside the intro */
-        .main-title {
+        /* Intro Text */
+        .intro-text {
             font-family: 'Cinzel', serif;
-            font-size: clamp(2rem, 5vw, 4rem);
+            font-size: 3rem;
             color: #ffd700;
-            margin-top: 20px;
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
-            transition: all 1.5s ease-in-out;
+            margin-top: 100px; /* Space from heart */
+            text-shadow: 0 0 20px #b8860b;
+            opacity: 1;
+            transition: opacity 1s;
+        }
+
+        /* --- 2. TRANSITION STATE (After 3 Seconds) --- */
+        body.active .intro-overlay {
+            /* Move Heart to Background */
+            opacity: 0.15; /* Watermark effect */
+            transform: scale(3); /* Make huge */
+            z-index: 0; /* Send to back */
+            position: fixed; /* Keep fixed as background */
+        }
+
+        body.active .intro-text {
+            opacity: 0; /* Hide intro text to avoid overlap */
+        }
+
+        /* --- 3. MAIN PAGE CONTENT --- */
+        .page-header {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            color: #d4af37;
             text-align: center;
-            white-space: nowrap;
+            text-shadow: 0 2px 10px rgba(212, 175, 55, 0.4);
+            margin-top: 50px;
+            margin-bottom: 50px;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 1s ease 1s; /* Delay appearance */
+            position: relative;
+            z-index: 10;
         }
 
-        /* --- 2. TRANSITION STATE (After Animation) --- */
-        body.active .intro-wrapper {
-            top: 0; /* Move container to top */
-            transform: translate(-50%, 0);
-            height: 200px; /* Constrain height */
-        }
-
-        body.active .heart-visual {
-            /* Move Heart to Background & Fade */
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(3); /* Huge Background Watermark */
-            opacity: 0.05; /* Very subtle */
-            z-index: -1;
-        }
-
-        body.active .main-title {
-            /* Title stays at top, gets slightly smaller */
-            margin-top: 40px;
-            font-size: clamp(1.8rem, 4vw, 3rem);
-        }
-
-        /* --- 3. CARDS CONTENT --- */
-        .content-area {
+        .cards-container {
             width: 100%;
             max-width: 1000px;
             padding: 0 20px 80px 20px;
             box-sizing: border-box;
-            
-            /* CRITICAL: Space for the title so they don't overlap */
-            margin-top: 180px; 
-
             opacity: 0;
             transform: translateY(50px);
-            transition: all 1s ease 1s; /* Delay appearance */
+            transition: all 1s ease 1.2s; /* Delay appearance */
+            position: relative;
+            z-index: 10;
         }
 
-        body.active .content-area {
+        /* Show content when active */
+        body.active .page-header,
+        body.active .cards-container {
             opacity: 1;
             transform: translateY(0);
         }
 
-        /* --- GRID (ZigZag) --- */
+        /* --- GRID SYSTEM (Zig-Zag) --- */
         #cards-wrapper {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -178,7 +180,7 @@
             background: linear-gradient(135deg, #d4af37 0%, #f7ef8a 50%, #d4af37 100%);
         }
 
-        /* Text */
+        /* Text Styles */
         .card-number {
             font-family: 'Cinzel', serif; font-size: 1.1rem; font-weight: 700; color: #3e2723;
         }
@@ -197,10 +199,7 @@
         @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} 60% {transform: translateY(-5px);} }
 
         /* PARTICLES */
-        .particle-container {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 0;
-        }
+        .particle-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
         .particle {
             position: absolute; border-radius: 50%;
             background: #ffd700; box-shadow: 0 0 5px #d4af37;
@@ -222,7 +221,9 @@
             #cards-wrapper { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; gap: 15px; }
             .gold-card:nth-child(odd) { margin-right: 20px; }
             .gold-card:nth-child(even) { margin-left: 20px; }
-            .content-area { margin-top: 140px; } /* Adjust for mobile */
+            .solid-heart, .solid-heart::before, .solid-heart::after { width: 120px; height: 120px; }
+            .solid-heart::before { top: -60px; } .solid-heart::after { left: 60px; }
+            .intro-text { font-size: 2rem; margin-top: 80px; }
         }
     </style>
 </head>
@@ -234,16 +235,14 @@
         <div class="particle p5"></div><div class="particle p1"></div>
     </div>
 
-    <div class="intro-wrapper">
-        <div class="heart-visual">
-            <svg viewBox="0 0 512 512" class="heart-core">
-                <path d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/>
-            </svg>
-        </div>
-        <h1 class="main-title">19 Golden Promises</h1>
+    <div class="intro-overlay">
+        <div class="solid-heart"></div>
+        <h1 class="intro-text">19 Golden Promises</h1>
     </div>
 
-    <div class="content-area">
+    <h1 class="page-header">19 Golden Promises</h1>
+    
+    <div class="cards-container">
         <div id="cards-wrapper">
             </div>
         <a href="page6.html" class="next-btn">&#10095;</a>
@@ -254,10 +253,9 @@
         window.addEventListener('load', () => {
             setTimeout(() => {
                 document.body.classList.add('active');
-            }, 2500); // 2.5s delay
+            }, 3000); // 3 seconds viewing the heart
         });
 
-        // Promises Data
         const promises = [
             "To believe in you, especially when you doubt yourself.",
             "To support your dream of becoming a Doctor, always.",
