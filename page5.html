@@ -12,8 +12,8 @@
         body {
             margin: 0;
             padding: 0;
-            /* Premium Royal Blue Background */
-            background: radial-gradient(ellipse at center, #1e1e2f 0%, #0a0a12 100%);
+            /* Premium Background */
+            background: radial-gradient(ellipse at center, #1e1e2f 0%, #000000 100%);
             font-family: 'Lato', sans-serif;
             color: #f0e6d2;
             min-height: 100vh;
@@ -23,22 +23,103 @@
             overflow-x: hidden;
         }
 
+        /* --- THE CINEMATIC INTRO ELEMENTS --- */
+
+        /* The Container for the Grid (Hidden Initially) */
         .container {
             padding: 40px 20px;
             width: 100%;
             max-width: 1000px; 
             box-sizing: border-box;
             padding-bottom: 80px;
+            opacity: 0; /* Hidden at start */
+            transition: opacity 1s ease;
+            position: relative;
+            z-index: 10;
         }
 
+        /* The Title (Starts Center, Moves Up) */
         .page-title {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             font-family: 'Cinzel', serif;
-            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-size: clamp(2rem, 5vw, 4rem);
             color: #d4af37;
             text-align: center;
-            text-shadow: 0 2px 10px rgba(212, 175, 55, 0.4);
-            margin-bottom: 50px;
-            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.8), 0 0 40px rgba(212, 175, 55, 0.4);
+            width: 100%;
+            z-index: 50;
+            transition: all 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        /* The Title's position AFTER animation */
+        .page-title.move-up {
+            top: 60px; /* Final top position */
+            transform: translate(-50%, 0) scale(0.8); /* Shrink slightly */
+        }
+
+        /* The Golden Heart (Starts Center, Moves to BG) */
+        .heart-visual {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150px;
+            height: 150px;
+            z-index: 40;
+            transition: all 2s ease-in-out;
+        }
+
+        .heart-svg {
+            width: 100%;
+            height: 100%;
+            fill: url(#gold-gradient);
+            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));
+            animation: heartBeat 1.5s infinite;
+        }
+
+        /* The "Beam" Effect behind the heart */
+        .heart-beam {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.4) 0%, transparent 70%);
+            z-index: 39;
+            opacity: 1;
+            animation: beamPulse 2s infinite;
+        }
+
+        /* The Heart's position AFTER animation (Background Watermark) */
+        .heart-visual.move-to-bg {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(5); /* Make HUGE */
+            opacity: 0.05; /* Fade out to be subtle background */
+            pointer-events: none;
+        }
+        
+        /* Hide beam after transition */
+        .heart-visual.move-to-bg .heart-beam {
+            opacity: 0;
+            transition: opacity 1s;
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes heartBeat {
+            0% { transform: scale(1); filter: drop-shadow(0 0 15px gold); }
+            50% { transform: scale(1.1); filter: drop-shadow(0 0 30px gold); }
+            100% { transform: scale(1); filter: drop-shadow(0 0 15px gold); }
+        }
+
+        @keyframes beamPulse {
+            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.3; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.6; }
+            100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.3; }
         }
 
         /* --- GRID SYSTEM --- */
@@ -47,9 +128,10 @@
             grid-template-columns: 1fr 1fr; /* 2 Columns */
             gap: 25px 40px; 
             width: 100%;
+            margin-top: 100px; /* Space for the title */
         }
 
-        /* --- PREMIUM GOLD CARD STYLES --- */
+        /* --- GOLD CARD STYLES --- */
         .gold-card {
             position: relative;
             background: linear-gradient(135deg, #b8860b 0%, #e6c15a 50%, #b8860b 100%);
@@ -62,7 +144,17 @@
             flex-direction: column;
             justify-content: center;
             overflow: hidden;
-            z-index: 1;
+            z-index: 10;
+            
+            /* Loading State */
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        /* The Class added by JS to show card */
+        .gold-card.show-card {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         /* Texture */
@@ -77,66 +169,30 @@
             z-index: -1;
         }
 
-        /* --- ZIG-ZAG ARROWS --- */
-        
-        /* Left Column -> Points RIGHT */
+        /* --- ZIG ZAG ARROWS --- */
         .gold-card:nth-child(odd) {
             clip-path: polygon(0% 0%, 93% 0%, 100% 50%, 93% 100%, 0% 100%);
-            padding-right: 40px; 
-            text-align: left;
+            padding-right: 40px; text-align: left;
         }
-
-        /* Right Column <- Points LEFT */
         .gold-card:nth-child(even) {
             clip-path: polygon(7% 0%, 100% 0%, 100% 100%, 7% 100%, 0% 50%);
-            padding-left: 40px; 
-            text-align: right; 
-            align-items: flex-end; 
+            padding-left: 40px; text-align: right; align-items: flex-end; 
         }
 
-        /* --- HOVER & REVEAL --- */
-        .gold-card:hover {
-            transform: scale(1.02);
-            filter: brightness(1.1);
-            z-index: 10;
-        }
-
+        /* Reveal */
         .gold-card.revealed {
             height: auto;
             min-height: 120px;
             background: linear-gradient(135deg, #d4af37 0%, #f7ef8a 50%, #d4af37 100%);
         }
 
-        /* --- TEXT STYLES --- */
-        .card-number {
-            font-family: 'Cinzel', serif;
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #3e2723;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+        .gold-card:hover { transform: scale(1.02); z-index: 20; }
+        .card-number { font-family: 'Cinzel', serif; font-size: 1.2rem; font-weight: 700; color: #3e2723; text-transform: uppercase; }
+        .card-reason { font-family: 'Lato', sans-serif; font-size: 1rem; color: #2c1b12; margin-top: 10px; display: none; font-weight: 700; }
+        .gold-card.revealed .card-reason { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .card-reason {
-            font-family: 'Lato', sans-serif;
-            font-size: 1rem;
-            color: #2c1b12;
-            margin-top: 10px;
-            line-height: 1.4;
-            opacity: 0;
-            transform: translateY(10px);
-            transition: all 0.4s ease;
-            display: none;
-            font-weight: 700;
-        }
-
-        .gold-card.revealed .card-reason {
-            opacity: 1;
-            transform: translateY(0);
-            display: block;
-        }
-
-        /* --- NEXT BUTTON --- */
+        /* NEXT BUTTON */
         .next-btn {
             font-size: 3rem;
             color: #d4af37;
@@ -145,49 +201,44 @@
             margin-top: 40px;
             text-align: center;
             animation: bounce 2s infinite;
+            opacity: 0; /* Hidden initially */
+            transition: opacity 1s;
         }
+        .next-btn.show { opacity: 1; }
 
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-            40% {transform: translateY(-10px);}
-            60% {transform: translateY(-5px);}
-        }
-
-        /* --- MOBILE LAYOUT --- */
         @media (max-width: 768px) {
-            #cards-wrapper {
-                grid-template-columns: 1fr;
-                max-width: 500px;
-                margin: 0 auto;
-                gap: 20px;
-            }
-            .gold-card:nth-child(odd) {
-                clip-path: polygon(0% 0%, 93% 0%, 100% 50%, 93% 100%, 0% 100%);
-                text-align: left; align-items: flex-start;
-                padding-left: 20px; padding-right: 40px; margin-right: 20px;
-            }
-            .gold-card:nth-child(even) {
-                clip-path: polygon(7% 0%, 100% 0%, 100% 100%, 7% 100%, 0% 50%);
-                text-align: right; align-items: flex-end;
-                padding-left: 40px; padding-right: 20px; margin-left: 20px;
-            }
+            #cards-wrapper { grid-template-columns: 1fr; max-width: 500px; gap: 20px; }
+            .gold-card:nth-child(odd) { clip-path: polygon(0% 0%, 93% 0%, 100% 50%, 93% 100%, 0% 100%); padding-left: 20px; }
+            .gold-card:nth-child(even) { clip-path: polygon(7% 0%, 100% 0%, 100% 100%, 7% 100%, 0% 50%); padding-right: 20px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1 class="page-title">19 Golden Promises</h1>
-        
+    <div class="heart-visual" id="hero-heart">
+        <div class="heart-beam"></div>
+        <svg class="heart-svg" viewBox="0 0 32 29.6">
+            <defs>
+                <linearGradient id="gold-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#ffd700;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#b8860b;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2
+            c6.1-9.3,16-11.8,16-21.2C32,3.8,28.2,0,23.6,0z"/>
+        </svg>
+    </div>
+
+    <h1 class="page-title" id="hero-title">19 Golden Promises</h1>
+
+    <div class="container" id="main-content">
         <div id="cards-wrapper">
             </div>
-
-        <a href="page6.html" class="next-btn">&#10095;</a>
+        <a href="page6.html" class="next-btn" id="next-arrow">&#10095;</a>
     </div>
 
     <script>
-        // --- 19 PROMISES ---
-        // I wrote these to be supportive of her dreams and your bond.
+        // 19 PROMISES DATA
         const promises = [
             "To believe in you, especially when you doubt yourself.",
             "To support your dream of becoming a Doctor, always.",
@@ -212,22 +263,45 @@
 
         const wrapper = document.getElementById('cards-wrapper');
 
+        // GENERATE CARDS
         promises.forEach((promise, index) => {
             const card = document.createElement('div');
             card.classList.add('gold-card');
-            
-            card.onclick = function() {
-                this.classList.toggle('revealed');
-            };
-
-            // Label changed to PROMISE
-            card.innerHTML = `
-                <div class="card-number">Promise #${index + 1}</div>
-                <div class="card-reason">${promise}</div>
-            `;
-
+            card.onclick = function() { this.classList.toggle('revealed'); };
+            card.innerHTML = `<div class="card-number">Promise #${index + 1}</div><div class="card-reason">${promise}</div>`;
             wrapper.appendChild(card);
         });
+
+        // --- ANIMATION SEQUENCE ---
+        window.onload = function() {
+            
+            // Step 1: Wait 2.5 seconds (Let her see the heart beaming)
+            setTimeout(() => {
+                
+                // Move Heart to Background
+                document.getElementById('hero-heart').classList.add('move-to-bg');
+                
+                // Move Title to Top
+                document.getElementById('hero-title').classList.add('move-up');
+
+                // Show Container
+                document.getElementById('main-content').style.opacity = '1';
+
+                // Step 2: Trigger Cards loading one by one
+                const cards = document.querySelectorAll('.gold-card');
+                cards.forEach((card, index) => {
+                    setTimeout(() => {
+                        card.classList.add('show-card');
+                    }, index * 200); // 200ms delay between each card
+                });
+
+                // Step 3: Show Next Arrow at the end
+                setTimeout(() => {
+                    document.getElementById('next-arrow').classList.add('show');
+                }, promises.length * 200 + 500);
+
+            }, 2500);
+        };
     </script>
 
 </body>
