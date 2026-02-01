@@ -12,7 +12,6 @@
         body {
             margin: 0;
             padding: 0;
-            /* Premium Background */
             background: radial-gradient(ellipse at center, #1e1e2f 0%, #000000 100%);
             font-family: 'Lato', sans-serif;
             color: #f0e6d2;
@@ -25,7 +24,101 @@
 
         /* --- THE CINEMATIC INTRO ELEMENTS --- */
 
-        /* The Container for the Grid (Hidden Initially) */
+        /* The Title (Starts Center, Moves Up) */
+        .page-title {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2.5rem, 6vw, 4.5rem); /* Slightly larger */
+            color: #d4af37;
+            text-align: center;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.8), 0 0 40px rgba(212, 175, 55, 0.4);
+            width: 100%;
+            z-index: 50;
+            transition: all 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        /* The Title's position AFTER animation - FIXED OVERLAP */
+        .page-title.move-up {
+            top: 40px; /* Moved higher up */
+            transform: translate(-50%, 0) scale(0.7);
+        }
+
+        /* --- NEW GOLDEN HEART BEAM VFX --- */
+        .heart-vfx-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px; /* Adjust size here */
+            height: 600px;
+            z-index: 40;
+            pointer-events: none;
+            transition: all 2s ease-in-out;
+        }
+
+        /* The main glowing heart shape */
+        .heart-glow-beam {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at center, rgba(255, 223, 0, 0.8) 0%, rgba(212, 175, 55, 0.2) 60%, transparent 70%);
+            /* Heart shape mask */
+            -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 29.6"><path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2c6.1-9.3,16-11.8,16-21.2C32,3.8,28.2,0,23.6,0z"/></svg>') no-repeat center / contain;
+            mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 29.6"><path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2c6.1-9.3,16-11.8,16-21.2C32,3.8,28.2,0,23.6,0z"/></svg>') no-repeat center / contain;
+            
+            filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.9)) drop-shadow(0 0 60px rgba(255, 215, 0, 0.6));
+            animation: pulseBeam 2s ease-in-out infinite;
+        }
+
+        /* Brighter core for the beam */
+        .heart-glow-beam::before {
+            content: '';
+            position: absolute;
+            top: 10%; left: 10%; right: 10%; bottom: 10%;
+            background: radial-gradient(circle at center, #fff 0%, #ffd700 50%, transparent 80%);
+            -webkit-mask: inherit;
+            mask: inherit;
+            opacity: 0.7;
+            filter: blur(10px);
+        }
+
+        /* Sparkle particles */
+        .sparkles {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                radial-gradient(circle, #fff 1px, transparent 1px),
+                radial-gradient(circle, #ffd700 1px, transparent 1px);
+            background-size: 50px 50px, 30px 30px;
+            background-position: 0 0, 25px 25px;
+            -webkit-mask: inherit;
+            mask: inherit;
+            animation: sparkleMove 3s linear infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes pulseBeam {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+
+        @keyframes sparkleMove {
+            0% { background-position: 0 0, 25px 25px; }
+            100% { background-position: 50px 50px, 75px 75px; }
+        }
+
+        /* The Heart's position AFTER animation (Background Watermark) */
+        .heart-vfx-container.move-to-bg {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(3); /* Make HUGE */
+            opacity: 0.1; /* Fade out to be subtle background */
+            pointer-events: none;
+        }
+        
+        /* --- MAIN CONTENT --- */
         .container {
             padding: 40px 20px;
             width: 100%;
@@ -36,90 +129,8 @@
             transition: opacity 1s ease;
             position: relative;
             z-index: 10;
-        }
-
-        /* The Title (Starts Center, Moves Up) */
-        .page-title {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-family: 'Cinzel', serif;
-            font-size: clamp(2rem, 5vw, 4rem);
-            color: #d4af37;
-            text-align: center;
-            text-shadow: 0 0 20px rgba(212, 175, 55, 0.8), 0 0 40px rgba(212, 175, 55, 0.4);
-            width: 100%;
-            z-index: 50;
-            transition: all 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-        }
-
-        /* The Title's position AFTER animation */
-        .page-title.move-up {
-            top: 60px; /* Final top position */
-            transform: translate(-50%, 0) scale(0.8); /* Shrink slightly */
-        }
-
-        /* The Golden Heart (Starts Center, Moves to BG) */
-        .heart-visual {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 150px;
-            height: 150px;
-            z-index: 40;
-            transition: all 2s ease-in-out;
-        }
-
-        .heart-svg {
-            width: 100%;
-            height: 100%;
-            fill: url(#gold-gradient);
-            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));
-            animation: heartBeat 1.5s infinite;
-        }
-
-        /* The "Beam" Effect behind the heart */
-        .heart-beam {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(212, 175, 55, 0.4) 0%, transparent 70%);
-            z-index: 39;
-            opacity: 1;
-            animation: beamPulse 2s infinite;
-        }
-
-        /* The Heart's position AFTER animation (Background Watermark) */
-        .heart-visual.move-to-bg {
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(5); /* Make HUGE */
-            opacity: 0.05; /* Fade out to be subtle background */
-            pointer-events: none;
-        }
-        
-        /* Hide beam after transition */
-        .heart-visual.move-to-bg .heart-beam {
-            opacity: 0;
-            transition: opacity 1s;
-        }
-
-        /* --- ANIMATIONS --- */
-        @keyframes heartBeat {
-            0% { transform: scale(1); filter: drop-shadow(0 0 15px gold); }
-            50% { transform: scale(1.1); filter: drop-shadow(0 0 30px gold); }
-            100% { transform: scale(1); filter: drop-shadow(0 0 15px gold); }
-        }
-
-        @keyframes beamPulse {
-            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.3; }
-            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.6; }
-            100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.3; }
+            /* ADDED MARGIN TO FIX OVERLAP */
+            margin-top: 120px; 
         }
 
         /* --- GRID SYSTEM --- */
@@ -128,7 +139,6 @@
             grid-template-columns: 1fr 1fr; /* 2 Columns */
             gap: 25px 40px; 
             width: 100%;
-            margin-top: 100px; /* Space for the title */
         }
 
         /* --- GOLD CARD STYLES --- */
@@ -151,7 +161,6 @@
             transform: translateY(50px);
         }
 
-        /* The Class added by JS to show card */
         .gold-card.show-card {
             opacity: 1;
             transform: translateY(0);
@@ -215,18 +224,9 @@
 </head>
 <body>
 
-    <div class="heart-visual" id="hero-heart">
-        <div class="heart-beam"></div>
-        <svg class="heart-svg" viewBox="0 0 32 29.6">
-            <defs>
-                <linearGradient id="gold-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style="stop-color:#ffd700;stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:#b8860b;stop-opacity:1" />
-                </linearGradient>
-            </defs>
-            <path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2
-            c6.1-9.3,16-11.8,16-21.2C32,3.8,28.2,0,23.6,0z"/>
-        </svg>
+    <div class="heart-vfx-container" id="hero-heart">
+        <div class="heart-glow-beam"></div>
+        <div class="sparkles"></div>
     </div>
 
     <h1 class="page-title" id="hero-title">19 Golden Promises</h1>
@@ -268,6 +268,7 @@
             const card = document.createElement('div');
             card.classList.add('gold-card');
             card.onclick = function() { this.classList.toggle('revealed'); };
+            // Use 'Promise #X' as the label
             card.innerHTML = `<div class="card-number">Promise #${index + 1}</div><div class="card-reason">${promise}</div>`;
             wrapper.appendChild(card);
         });
@@ -275,7 +276,7 @@
         // --- ANIMATION SEQUENCE ---
         window.onload = function() {
             
-            // Step 1: Wait 2.5 seconds (Let her see the heart beaming)
+            // Step 1: Wait 3 seconds (Let her admire the new heart beam)
             setTimeout(() => {
                 
                 // Move Heart to Background
@@ -300,7 +301,7 @@
                     document.getElementById('next-arrow').classList.add('show');
                 }, promises.length * 200 + 500);
 
-            }, 2500);
+            }, 3000); // Increased wait time slightly for the new VFX
         };
     </script>
 
