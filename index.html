@@ -1,606 +1,321 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>For Violina 💗</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waiting for the Queen...</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-<style>
-*{box-sizing:border-box}
-body{
-  margin:0;
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:linear-gradient(180deg,#fff,#ffd6e8);
-  font-family:"Segoe UI",system-ui;
-  overflow:hidden;
-  overflow-y:auto;
-}
-@keyframes pop {
-  from { transform: scale(.6); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-/* MODAL BACKGROUND */
-#codeModal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.35);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:20;
-}
+    <style>
+        /* --- 1. GLOBAL PREMIUM STYLES --- */
+        :root {
+            --glass: rgba(255, 255, 255, 0.85);
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            --primary: #d81b60;
+            --gold: #d4af37;
+        }
 
-/* PASSCODE CARD */
-.codeCard{
-  background:white;
-  padding:22px;
-  border-radius:18px;
-  width:90%;
-  max-width:320px;
-  text-align:center;
-  position:relative;
-  box-shadow:0 25px 60px rgba(0,0,0,.25);
-}
-.codeCard input{
-  width:100%;
-  padding:10px;
-  margin:12px 0;
-}
-.codeCard button{
-  padding:8px 18px;
-  cursor:pointer;
-}
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Soft Luxury Animated Gradient */
+            background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #fbc2eb, #a18cd1);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden;
+        }
 
-/* CLOSE */
-#closeModal,#closeMsg{
-  position:absolute;
-  top:10px;
-  right:12px;
-  cursor:pointer;
-}
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
 
-/* MESSAGE BOX */
-#messageBox{
-  position:fixed;
-  inset:0;
-  background:#ffe6f2;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:15;
-}
-#messageBox p{
-  background:white;
-  padding:24px;
-  border-radius:20px;
-  max-width:320px;
-  max-height:70vh;
-  overflow-y:auto;
-  box-shadow:0 25px 60px rgba(255,120,170,.4);
-}
+        /* --- 2. GLASS CARD CONTAINER --- */
+        .card {
+            background: var(--glass);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            padding: 40px 30px;
+            text-align: center;
+            max-width: 420px;
+            width: 90%;
+            position: relative;
+            transition: all 0.5s ease;
+        }
 
-/* ===== PARTICLES (ABOVE EVERYTHING) ===== */
-#effects{
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  z-index:5;
-}
-  #boxEffects{
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  z-index:2;
-}
+        /* Profile Image */
+        .profile-img {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid white;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            transition: border-color 0.5s;
+        }
 
-#messageBox p{
-  position:relative;
-  z-index:3;
-}
+        /* --- 3. TYPOGRAPHY --- */
+        h1.headline {
+            font-family: 'Playfair Display', serif;
+            color: #333;
+            font-size: 1.6rem;
+            margin: 10px 0;
+            line-height: 1.3;
+        }
 
-.particle{
-  position:absolute;
-  font-size:22px;
-  animation:rise linear forwards;
-}
-@keyframes rise{
-  from{transform:translateY(80px) scale(.6);opacity:0}
-  20%{opacity:1}
-  to{transform:translateY(-120vh) scale(1.2);opacity:0}
-}
+        p.subtitle {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 300;
+            margin-bottom: 25px;
+        }
 
-/* ===== CARD ===== */
-.card{
-  width:92%;
-  max-width:420px;
-  background:white;
-  border-radius:22px;
-  padding:18px 18px 20px;
-  text-align:center;
-  box-shadow:0 25px 70px rgba(255,120,170,.3);
-  position:relative;
-  z-index:2;
-}
+        /* --- 4. TIMER STYLES --- */
+        #timer-box {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+        
+        .time-box {
+            background: #fff;
+            padding: 10px;
+            border-radius: 12px;
+            min-width: 55px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .time-val { font-weight: 700; font-size: 1.3rem; color: var(--primary); display: block; }
+        .time-label { font-size: 0.65rem; text-transform: uppercase; color: #888; letter-spacing: 1px; }
 
-/* PHOTO */
-.photo{
-  width:135px;height:135px;
-  margin:0 auto 12px;
-  border-radius:50%;
-  overflow:hidden;
-  border:5px solid #ffd1e5;
-}
-.photo img{
-  width:100%;height:100%;
-  object-fit:cover;
-  opacity:1;
-  transition:opacity .7s ease;
-}
+        /* --- 5. BUTTON STYLES (Disabled & Enabled) --- */
+        .main-btn {
+            background: #e0e0e0;
+            color: #999;
+            border: none;
+            padding: 15px 40px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            border-radius: 50px;
+            cursor: not-allowed;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-decoration: none; /* For <a> tag */
+            display: inline-block;
+            box-shadow: none;
+        }
 
-/* TEXT */
-.sub{font-size:.95rem;color:#555}
-.date{margin:6px 0 6px;font-weight:600}
+        /* The "Active" State (Added via JS) */
+        .main-btn.active {
+            background: linear-gradient(45deg, #ff4081, #ff80ab);
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(255, 64, 129, 0.4);
+            transform: scale(1.1);
+            animation: bounceBtn 2s infinite;
+        }
 
-/* TIMER */
-.timer{margin:6px 0}
-.box{
-  background:#fff5fa;
-  padding:10px 18px;
-  border-radius:12px;
-  font-weight:700;
-  display:inline-block;
-}
+        @keyframes bounceBtn {
+            0%, 20%, 50%, 80%, 100% {transform: scale(1.1) translateY(0);}
+            40% {transform: scale(1.1) translateY(-10px);}
+            60% {transform: scale(1.1) translateY(-5px);}
+        }
 
-/* ===== CURVED TEXT ===== */
-#birthdayWrap{
-  display:none;
-  margin-top:14px;
-  margin-bottom:-40px; /* KEY: removes SVG dead space */
-  animation:float 3.5s ease-in-out infinite;
-}
+        /* --- 6. GIFT BOX (Pre-Birthday) --- */
+        #gift-section {
+            margin-top: 30px;
+            transition: opacity 0.5s;
+        }
+        .gift-icon { font-size: 3.5rem; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.1)); }
+        .gift-hint { font-size: 0.8rem; color: #888; margin-top: 5px; }
 
-.actions{
-  margin-top:-28px; /* pulls button + gift UP */
-  padding-bottom:8px;
-}
+        /* --- 7. POST-BIRTHDAY STYLES (Hidden Initially) --- */
+        #birthday-content {
+            display: none; /* Hidden by default */
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s ease;
+        }
 
-@keyframes float{
-  50%{transform:translateY(-8px)}
-}
-svg{width:100%;height:210px}
+        /* The Premium "Happy Birthday" Text */
+        .premium-hb {
+            font-family: 'Great Vibes', cursive;
+            font-size: 4rem;
+            line-height: 1.1;
+            margin: 10px 0 20px 0;
+            background: linear-gradient(to right, #d4af37, #ff4081, #d4af37);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shine 3s linear infinite;
+        }
 
-.curveText{
-  fill:#00cfff;
-  font-size:40px;
-  font-weight:900;
-  letter-spacing:5px;
-  filter:drop-shadow(0 0 6px rgba(0,200,255,.45));
-  opacity:0;
-  transform:scale(.6);
-  transform-origin:center;
-  transition:opacity .8s ease, transform .8s ease;
-}
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
 
-  svg{
-  overflow:visible;
-}
+        .celebration-msg {
+            color: #444;
+            font-size: 1rem;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
 
-/* CLICK HINT */
-#hint{
-  display:none;
-  font-size:.85rem;
-  margin:-25px 0 6px; /* 🔼 THIS moves both text + arrow UP */
-}
-.arrow{
-  display:block;
-  font-size:20px;
-  animation:bounce 1.3s infinite;
-}
-@keyframes bounce{
-  50%{transform:translateY(6px)}
-}
+        /* Utility to hide things */
+        .hidden { display: none !important; }
 
-/* ACTIONS — PULLED UP */
-.actions{
-  margin-top:-18px;
-}
-
-/* BUTTON */
-.bday{
-  margin:6px auto 4px;
-  padding:11px 24px;
-  border-radius:22px;
-  border:none;
-  background:#eee;
-  color:#999;
-  cursor:not-allowed;
-  margin-top: 22px;   /* 👈 THIS MOVES BUTTON DOWN */
-}
-/* STEP 3 – SECRET BOX / MODAL STYLES */
-.secretOverlay{
-  position:fixed;
-  inset:0;
-  background:rgba(255,210,230,.85);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:10;
-}
-
-.secretBox{
-  background:#fff;
-  padding:22px;
-  border-radius:18px;
-  width:90%;
-  max-width:360px;
-  box-shadow:0 20px 50px rgba(255,120,170,.35);
-  animation:pop .5s ease forwards;
-}
-
-/* GIFT */
-.gift{
-  font-size:48px;
-  cursor:pointer;
-  margin-top:2px;
- animation: giftFloat 2.8s ease-in-out infinite;
-}
-#giftText{
-  margin-top:4px;
-  font-size:.95rem;
-  color:#ff4f9a;
-  font-weight:700;
-}
-
-  @keyframes giftFloat {
-  0%   { transform: translateY(0); }
-  50%  { transform: translateY(-6px); }
-  100% { transform: translateY(0); }
-}
-
-  /* MUSIC BUTTON SLASH */
-#musicBtn{
-  position:fixed;
-  position:relative; /* 🔥 THIS IS THE FIX */
-}
-
-/* MUSIC BUTTON SLASH (only when muted) */
-#musicBtn.muted::after{
-  content:"";
-  position:absolute;
-  width:34px;
-  height:3px;
-  background:#ff4f9a;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%) rotate(-45deg);
-  border-radius:2px;
-}
-
-
-
-</style>
+    </style>
 </head>
-
 <body>
 
-<div id="effects"></div>
+    <div class="card">
+        
+        <img src="https://via.placeholder.com/150" alt="Violina" class="profile-img" id="main-photo">
 
-<div class="card">
-  <div class="photo">
-    <img id="photoImg" src="photo1.jpg">
-  </div>
+        <div id="pre-birthday-section">
+            <h1 class="headline" id="main-headline">A Special Day Is Almost Here</h1>
+            <p class="subtitle">Counting down the moments until the Queen arrives.</p>
 
-  <h2>💌 A Special Day Is Almost Here</h2>
-  <div class="sub">Because the girl who means everything to me deserves to be celebrated by the world</div>
-  <div class="date">13 February</div>
+            <div id="timer-box">
+                <div class="time-box"><span class="time-val" id="d">00</span><span class="time-label">Days</span></div>
+                <div class="time-box"><span class="time-val" id="h">00</span><span class="time-label">Hrs</span></div>
+                <div class="time-box"><span class="time-val" id="m">00</span><span class="time-label">Min</span></div>
+                <div class="time-box"><span class="time-val" id="s">00</span><span class="time-label">Sec</span></div>
+            </div>
 
-  <div class="timer" id="timer"></div>
+            <div id="gift-section" onclick="openGift()">
+                <div class="gift-icon">🎁</div>
+                <div class="gift-hint">Only for Violina (Click to Open)</div>
+            </div>
+        </div>
 
-  <!-- HAPPY BIRTHDAY -->
-  <div id="birthdayWrap">
-    <svg viewBox="0 0 400 210">
-      <path id="arcHappy" d="M 60 170 A 140 140 0 0 1 340 170" fill="none"/>
-      <text class="curveText" id="happy">
-        <textPath href="#arcHappy" startOffset="50%" text-anchor="middle">
-          HAPPY
-        </textPath>
-      </text>
+        <div id="birthday-content">
+            <div class="premium-hb">Happy<br>Birthday!</div>
+            <p class="celebration-msg">The wait is finally over. Your magic awaits inside. ✨</p>
+        </div>
 
-      <path id="arcBirthday" d="M 70 210 A 130 130 0 0 1 330 210" fill="none"/>
-      <text class="curveText" id="birthday">
-        <textPath href="#arcBirthday" startOffset="50%" text-anchor="middle">
-          BIRTHDAY
-        </textPath>
-      </text>
-    </svg>
-  </div>
+        <div style="margin-top: 30px;">
+            <a id="party-btn" class="main-btn">Happy Birthday 🎉</a>
+        </div>
 
-  <div id="hint">
-    ↓ click here ↓
-    <span class="arrow">⬇</span>
-  </div>
+        <div style="margin-top: 20px; font-size: 0.7rem; color: #aaa;">Only for Violina ❤️</div>
 
-  <div class="actions">
-    <button class="bday" id="bdayBtn" disabled>Happy Birthday 🎉</button>
-    <div class="gift" id="gift">🎁</div>
-    <div id="giftText">Only for Violina 💗</div>
-  </div>
-</div>
+    </div>
 
-  
-<!-- PASSCODE MODAL -->
-<div id="codeModal">
-  <div class="codeCard">
-    <span id="closeModal">✖</span>
-    <h3>Secret Code 💕</h3>
-    <input type="password" id="secretInput" placeholder="Enter secret code">
-    <button id="openGift">Open</button>
-  </div>
-</div>
+    <script>
+        // --- 1. SET THE DATE ---
+        // MAKE SURE THIS IS CORRECT! (Year, Month, Day)
+        const birthdayDate = new Date("Feb 13, 2026 00:00:00").getTime();
 
-<!-- MESSAGE BOX -->
-<div id="messageBox">
-  <span id="closeMsg">✖</span>
-  <div id="boxEffects"></div>
-  <p>
-    Ayoo 😭 only 16 days left for your birthday and I genuinely don’t know how
-    to act normal anymore. My brain is already in celebration mode and my heart
-    is clearly ahead of schedule 🥰💖  
-    <br><br>
-    You don’t just make my days better, you make them easier ✨  
-    <br><br>
-    Thinking of you feels like pressing pause on the world 💗
-  </p>
-</div>
+        // --- 2. COUNTDOWN LOGIC ---
+        const x = setInterval(function() {
+            let now = new Date().getTime();
+            let distance = birthdayDate - now;
 
-  <!-- MUSIC TOGGLE -->
-<button id="musicBtn" class="muted" style="
-  position:fixed;
-  bottom:16px;
-  right:16px;
-  z-index:30;
-  background:#fff;
-  border:none;
-  border-radius:50%;
-  width:52px;
-  height:52px;
-  font-size:22px;
-  box-shadow:0 10px 25px rgba(0,0,0,.2);
-  cursor:pointer;
-">
-<span id="musicIcon">🎵</span>
-</button>
+            // *** DEV TOOL: Uncomment next line to simulate Birthday NOW ***
+            // distance = -1; 
 
-<audio id="loudMusic" src="happy-birthday.mp3"></audio>
+            // Time Math
+            let days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            let seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-<script>
-const TEST_MODE = true; // 👈 change to false for final version
-const musicBtn = document.getElementById("musicBtn");
-const loudMusic = document.getElementById("loudMusic");
-const musicIcon = document.getElementById("musicIcon");
+            // Display Time
+            document.getElementById("d").innerText = days;
+            document.getElementById("h").innerText = hours;
+            document.getElementById("m").innerText = minutes;
+            document.getElementById("s").innerText = seconds;
 
-loudMusic.loop = false;
+            // --- 3. THE MAGIC SWITCH (When Timer Hits 0) ---
+            if (distance < 0) {
+                clearInterval(x);
+                activateBirthdayMode();
+            }
+        }, 1000);
 
-let musicUnlocked = false;
-let isMuted = true;
+        function activateBirthdayMode() {
+            // A. Hide the Pre-Birthday Stuff (Timer, Headline, GIFT)
+            document.getElementById("pre-birthday-section").classList.add("hidden");
+            
+            // B. Visual Upgrades
+            const photo = document.getElementById("main-photo");
+            photo.style.borderColor = "#d4af37"; // Change border to Gold
+            photo.style.transform = "scale(1.1)"; // Slight zoom
 
+            // C. Show the Premium Birthday Text
+            const partyContent = document.getElementById("birthday-content");
+            partyContent.style.display = "block";
+            // Small timeout to allow display:block to apply before opacity transition
+            setTimeout(() => {
+                partyContent.style.opacity = "1";
+                partyContent.style.transform = "translateY(0)";
+            }, 50);
 
-musicBtn.onclick = () => {
+            // D. Activate the Button
+            const btn = document.getElementById("party-btn");
+            btn.classList.add("active"); // Turns pink and bouncy
+            btn.innerHTML = "Enter World 🎂"; // Change text
+            btn.href = "birthday.html"; // Link to next page
 
-  // FIRST USER INTERACTION → unlock audio
-  if (!musicUnlocked) {
-    loudMusic.volume = 1;
-    loudMusic.play().catch(()=>{});
-    loudMusic.pause();
-    loudMusic.currentTime = 0;
-    musicUnlocked = true;
-  }
+            // E. LAUNCH CONFETTI (The "Cornflatties")
+            launchPremiumConfetti();
+        }
 
-  // ✅ USE OUR OWN STATE (NOT .paused)
-  if (isMuted) {
-    loudMusic.currentTime = 0;
-    loudMusic.play().catch(()=>{});
-    musicBtn.classList.remove("muted");
-    musicIcon.textContent = "🔊";
-    isMuted = false;
-  } else {
-    loudMusic.pause();
-    musicBtn.classList.add("muted");
-    musicIcon.textContent = "🎵";
-    isMuted = true;
-  }
-};
+        function launchPremiumConfetti() {
+            var duration = 3 * 1000;
+            var end = Date.now() + duration;
 
-loudMusic.onended = () => {
-  musicBtn.classList.add("muted");
-  musicIcon.textContent = "🎵";
-  isMuted = true;
-};
+            (function frame() {
+                // Shoot from Left
+                confetti({
+                    particleCount: 7,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#ff4081', '#d4af37', '#ffffff'] // Pink, Gold, White
+                });
+                // Shoot from Right
+                confetti({
+                    particleCount: 7,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#ff4081', '#d4af37', '#ffffff']
+                });
 
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+        }
 
+        // --- PRE-BIRTHDAY GIFT LOGIC (Keep your password logic here) ---
+        function openGift() {
+            // PASTE YOUR PASSWORD LOGIC HERE
+            var pass = prompt("Enter the magic word:");
+            if(pass == "1234") { // Change this
+                alert("Here is your secret message...");
+            } else {
+                alert("Wrong password!");
+            }
+        }
 
-/* PHOTO ROTATION */
-const photos=["photo1.jpg","photo2.jpg","photo3.jpg"];
-let p=0;
-const img=document.getElementById("photoImg");
-setInterval(()=>{
-  img.style.opacity=0;
-  setTimeout(()=>{
-    p=(p+1)%photos.length;
-    img.src=photos[p];
-    img.style.opacity=1;
-  },350);
-},4000);
-
-/* TIMER */
-const timer=document.getElementById("timer");
-const target = TEST_MODE
-  ? new Date(Date.now() + 3000) // 3 seconds test timer
-  : new Date("February 13, 2026 00:00:00");
-
-
-const countdown=setInterval(()=>{
-  const diff=target-new Date();
-  if(diff<=0){
-    if (musicUnlocked) {
-  loudMusic.currentTime = 0;
-  loudMusic.play();
-}
-
-    clearInterval(countdown);
-    timer.style.display="none";
-
-    birthdayWrap.style.display="block";
-    setTimeout(()=>{happy.style.opacity=1;happy.style.transform="scale(1)"},300);
-    setTimeout(()=>{birthday.style.opacity=1;birthday.style.transform="scale(1)"},900);
-
-    bdayBtn.disabled=false;
-    bdayBtn.style.background="#ff8fbe";
-    bdayBtn.style.color="#fff";
-    bdayBtn.style.cursor="pointer";
-
-    hint.style.display="block";
-    startParticles();
-  }else{
-  const totalSeconds = Math.floor(diff / 1000);
-
-  const days = Math.floor(totalSeconds / (24 * 60 * 60));
-  const hours = Math.floor((totalSeconds % (24 * 60 * 60)) / (60 * 60));
-  const minutes = Math.floor((totalSeconds % (60 * 60)) / 60);
-  const seconds = totalSeconds % 60;
-
-  timer.innerHTML = `
-    <div class="box">${days}d</div>
-    <div class="box">${hours}h</div>
-    <div class="box">${minutes}m</div>
-    <div class="box">${seconds}s</div>
-  `;
-}
-
-},1000);
-
-/* PARTICLES */
-const effects=document.getElementById("effects");
-const icons=["💖","🎉","✨","💫","🎊"];
-function startParticles(){
-  const burst=setInterval(()=>{
-    for(let i=0;i<2;i++){
-      const p=document.createElement("div");
-      p.className="particle";
-      p.textContent=icons[Math.floor(Math.random()*icons.length)];
-      p.style.left=Math.random()*100+"vw";
-      p.style.bottom="-40px";
-      p.style.animationDuration=5+Math.random()*3+"s";
-      effects.appendChild(p);
-      setTimeout(()=>p.remove(),9000);
-    }
-  },420);
-  setTimeout(()=>clearInterval(burst),10000);
-}
-
-const gift = document.getElementById("gift");
-const bdayBtn = document.getElementById("bdayBtn");
-
-bdayBtn.onclick = () => {
-  loudMusic.pause();
-  loudMusic.currentTime = 0;
-  window.location.href = "birthday.html";
-};
-
-
-  
-  //REPLACED LOGIC//
-const codeModal = document.getElementById("codeModal");
-const secretInput = document.getElementById("secretInput");
-const openGiftBtn = document.getElementById("openGift");
-const closeModal = document.getElementById("closeModal");
-
-const messageBox = document.getElementById("messageBox");
-const closeMsg = document.getElementById("closeMsg");
-
-function todayKey(){
-  const d = new Date();
-  return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();
-}
-
-gift.onclick = () => {
-  const openedDate = localStorage.getItem("giftOpenedDate");
-  const today = todayKey();
-
-  // already opened today
-  if (openedDate === today) {
-    gift.textContent = "🎊";
-    giftText.innerHTML = "Opened 💗<br><small>Come back tomorrow</small>";
-    return;
-  }
-
-  // animate gift + open modal
-  gift.style.transform = "scale(1.2)";
-  setTimeout(() => gift.style.transform = "scale(1)", 200);
-  codeModal.style.display = "flex";
-};
-
-
-closeModal.onclick = () => {
-  codeModal.style.display = "none";
-};
-
-closeMsg.onclick = () => {
-  messageBox.style.display = "none";
-};
-
-openGiftBtn.onclick = () => {
-  if (secretInput.value === "1313") {
-    const today = todayKey();
-    localStorage.setItem("giftOpenedDate", today);
-
-    codeModal.style.display = "none";
-    messageBox.style.display = "flex";
-
-    gift.textContent = "🎊";
-    giftText.innerHTML = "Opened 💗<br><small>Come back tomorrow</small>";
-    gift.style.animation = "none";
-
-    startBoxParticles();
-  } else {
-    alert("Wrong passcode 💔");
-  }
-};
-
-  function startBoxParticles(){
-  const box = document.getElementById("boxEffects");
-  const icons = ["💖","✨","💫"];
-
-  const burst = setInterval(()=>{
-    for(let i=0;i<2;i++){
-      const p = document.createElement("div");
-      p.className = "particle";
-      p.textContent = icons[Math.floor(Math.random()*icons.length)];
-      p.style.left = Math.random()*100 + "%";
-      p.style.bottom = "-20px";
-      p.style.animationDuration = 4 + Math.random()*2 + "s";
-      box.appendChild(p);
-      setTimeout(()=>p.remove(),7000);
-    }
-  },400);
-
-  setTimeout(()=>clearInterval(burst),6000);
-}
-
-const openedDate = localStorage.getItem("giftOpenedDate");
-if (openedDate === todayKey()) {
-  gift.textContent = "🎊";
-  giftText.innerHTML = "Opened 💗<br><small>Come back tomorrow</small>";
-}
-
-
-
-</script>
-
-
-  
+    </script>
 </body>
 </html>
