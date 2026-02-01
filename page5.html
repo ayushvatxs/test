@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>19 Reasons Why</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            background: linear-gradient(180deg, #ffe6ee 0%, #f8bbd0 100%);
+            font-family: 'Fredoka', sans-serif;
+            text-align: center;
+            color: #880e4f;
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden; /* Allow vertical scroll if balloons go high */
+            position: relative;
+            touch-action: manipulation; /* Improves touch response */
+        }
+
+        h1 {
+            font-family: 'Pacifico', cursive;
+            color: #4facfe;
+            font-size: clamp(2rem, 6vw, 3rem);
+            margin: 20px 0 5px 0;
+            text-shadow: 2px 2px 0px #fff;
+            z-index: 10;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        /* --- BALLOON CONTAINER --- */
+        #balloon-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            padding-bottom: 100px; /* Space for bottom card */
+        }
+
+        /* --- THE BALLOON STYLE --- */
+        .balloon {
+            width: 60px;
+            height: 70px;
+            background-color: #ff4081;
+            border-radius: 50%;
+            position: relative;
+            cursor: pointer;
+            box-shadow: inset -5px -5px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s, opacity 0.3s;
+            animation: float 3s ease-in-out infinite alternate;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            user-select: none;
+        }
+
+        /* The little string on the balloon */
+        .balloon::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            width: 2px;
+            height: 15px;
+            background: #555;
+            transform: translateX(-50%);
+        }
+
+        /* Random animations for natural feel */
+        @keyframes float {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-10px); }
+        }
+
+        /* When popped */
+        .popped {
+            transform: scale(1.5);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* --- THE REASON CARD (MODAL) --- */
+        .reason-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5); /* Dim background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 100;
+        }
+
+        .reason-card {
+            background: white;
+            width: 80%;
+            max-width: 400px;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transform: scale(0.8);
+            transition: transform 0.3s;
+            text-align: center;
+        }
+
+        .modal-show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-show .reason-card {
+            transform: scale(1);
+        }
+
+        .reason-text {
+            font-size: 1.2rem;
+            color: #d81b60;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .close-btn {
+            background: #4facfe;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        /* --- NEXT BUTTON (Hidden initially) --- */
+        .next-area {
+            position: fixed;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            pointer-events: none; /* Can't click until visible */
+            opacity: 0;
+            transition: opacity 1s;
+        }
+
+        .show-next {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .next-btn-link {
+            font-size: 3rem;
+            color: #333;
+            text-decoration: none;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-10px);}
+            60% {transform: translateY(-5px);}
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>Pop the Balloons! 🎈</h1>
+    <p class="subtitle">Find all 19 reasons why I love you.</p>
+
+    <div id="balloon-container"></div>
+
+    <div class="reason-modal" id="modal">
+        <div class="reason-card">
+            <h2 style="color:#4facfe; margin-top:0;">Reason #<span id="r-num"></span></h2>
+            <p class="reason-text" id="r-text">...</p>
+            <button class="close-btn" onclick="closeModal()">So Sweet! ❤️</button>
+        </div>
+    </div>
+
+    <div class="next-area" id="next-page-area">
+        <p style="font-weight: bold; color: #d81b60;">You found them all!</p>
+        <a href="page6.html" class="next-btn-link">&#10095;</a>
+    </div>
+
+    <script>
+        // --- YOUR 19 REASONS GO HERE ---
+        // Edit these sentences to be specific to her!
+        const reasons = [
+            "Your smile lights up my darkest days.",
+            "You make the best coffee/tea (change this to fit her).",
+            "The way you care for others is inspiring.",
+            "You have the cutest laugh.",
+            "You support my dreams no matter what.",
+            "You are beautiful inside and out.",
+            "I love our late-night conversations.",
+            "You are stronger than you know.",
+            "Your sense of style is amazing.",
+            "You give the best hugs.",
+            "I can be my true self around you.",
+            "You always know how to cheer me up.",
+            "Your kindness makes the world better.",
+            "We have the best inside jokes.",
+            "I love watching movies with you.",
+            "You are incredibly smart.",
+            "I love your eyes.",
+            "Every day with you is a gift.",
+            "I simply can't imagine my life without you."
+        ];
+
+        const container = document.getElementById('balloon-container');
+        const colors = ['#ff4081', '#4facfe', '#ffeb3b', '#b388ff', '#ff80ab', '#69f0ae'];
+        let poppedCount = 0;
+        const totalBalloons = reasons.length;
+
+        // Create Balloons
+        reasons.forEach((reason, index) => {
+            const balloon = document.createElement('div');
+            balloon.classList.add('balloon');
+            balloon.style.backgroundColor = colors[index % colors.length]; // Cycle through colors
+            balloon.style.animationDelay = Math.random() + 's'; // Random float start
+            balloon.innerText = index + 1; // Number on balloon
+            
+            // Interaction
+            balloon.onclick = function() {
+                popBalloon(this, index);
+            };
+
+            container.appendChild(balloon);
+        });
+
+        function popBalloon(element, index) {
+            if(element.classList.contains('popped')) return; // Already popped
+
+            // 1. Play Sound (if available)
+            // document.getElementById('pop-sound').play();
+
+            // 2. Visual Pop
+            element.style.transform = "scale(1.2)";
+            setTimeout(() => {
+                element.style.opacity = "0";
+                element.style.transform = "scale(0.1)";
+                element.classList.add('popped');
+            }, 100);
+
+            // 3. Show Modal with Reason
+            setTimeout(() => {
+                showReason(index);
+            }, 300);
+
+            // 4. Check if all popped
+            poppedCount++;
+            if(poppedCount === totalBalloons) {
+                document.getElementById('next-page-area').classList.add('show-next');
+            }
+        }
+
+        function showReason(index) {
+            document.getElementById('r-num').innerText = index + 1;
+            document.getElementById('r-text').innerText = reasons[index];
+            document.getElementById('modal').classList.add('modal-show');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('modal-show');
+        }
+    </script>
+
+</body>
+</html>
