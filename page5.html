@@ -26,7 +26,8 @@
         .container {
             padding: 40px 10px;
             width: 100%;
-            max-width: 1000px; 
+            /* Constrain the whole container to keep cards close */
+            max-width: 800px; 
             box-sizing: border-box;
             padding-bottom: 80px;
         }
@@ -45,68 +46,72 @@
         #cards-wrapper {
             display: grid;
             grid-template-columns: 1fr 1fr; /* 2 Columns */
-            gap: 20px 40px; /* Vertical Gap, Horizontal Gap */
+            gap: 20px 30px; /* Vertical Gap, Horizontal Gap */
             width: 100%;
-            padding: 0 10px;
+            justify-items: center; /* Centers the cards in their columns */
         }
 
         /* --- PREMIUM GOLD CARD STYLES --- */
         .gold-card {
             position: relative;
             background: linear-gradient(135deg, #b8860b 0%, #e6c15a 50%, #b8860b 100%);
-            padding: 15px 10px; /* Reduced side padding to fit text */
+            padding: 15px 20px;
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            min-height: 60px; /* Fixed height for header */
+            min-height: 60px;
+            width: 100%; 
+            /* THIS FIXES THE LENGTH: Limits width to make them stubby tags */
+            max-width: 280px; 
             display: flex;
             flex-direction: column;
             justify-content: center;
-            /* IMPORTANT: We use a wrapper inside for text so it doesn't get clipped by the arrow tip */
             align-items: center; 
             overflow: hidden;
             z-index: 1;
         }
 
-        /* --- THE ARROW SHAPES (EXACTLY LIKE YOUR SKETCH) --- */
+        /* --- THE ARROW SHAPES (Pointing Inwards) --- */
         
-        /* Left Column (Odd): Flat Left, Point Right */
+        /* Left Column (Odd): Points RIGHT -> */
         .gold-card:nth-child(odd) {
-            /* 0% 0% (TL) -> 85% 0% (Top Flat) -> 100% 50% (TIP) -> 85% 100% (Bottom Flat) -> 0% 100% (BL) */
-            clip-path: polygon(0% 0%, 88% 0%, 100% 50%, 88% 100%, 0% 100%);
-            padding-right: 40px; /* Push text away from the tip */
-            padding-left: 20px;
+            /* Shape: Flat Left, Point Right */
+            clip-path: polygon(0% 0%, 85% 0%, 100% 50%, 85% 100%, 0% 100%);
+            padding-right: 35px; /* Space for tip */
+            padding-left: 15px;
+            justify-self: end; /* Aligns to the right side of its column */
             text-align: left;
-            align-items: flex-start; /* Align text left */
+            align-items: flex-start;
         }
 
-        /* Right Column (Even): Point Left, Flat Right */
+        /* Right Column (Even): Points LEFT <- */
         .gold-card:nth-child(even) {
-            /* 15% 0% (Top Flat) -> 100% 0% (TR) -> 100% 100% (BR) -> 15% 100% (Bottom Flat) -> 0% 50% (TIP) */
-            clip-path: polygon(12% 0%, 100% 0%, 100% 100%, 12% 100%, 0% 50%);
-            padding-left: 40px; /* Push text away from the tip */
-            padding-right: 20px;
+            /* Shape: Point Left, Flat Right */
+            clip-path: polygon(15% 0%, 100% 0%, 100% 100%, 15% 100%, 0% 50%);
+            padding-left: 35px; /* Space for tip */
+            padding-right: 15px;
+            justify-self: start; /* Aligns to the left side of its column */
             text-align: right;
-            align-items: flex-end; /* Align text right */
+            align-items: flex-end;
         }
 
         /* --- HOVER & REVEAL --- */
         .gold-card:hover {
             filter: brightness(1.1);
-            transform: scale(1.02);
+            transform: scale(1.03);
             z-index: 10;
         }
 
         .gold-card.revealed {
             height: auto;
-            min-height: 120px;
+            min-height: 100px;
             background: linear-gradient(135deg, #d4af37 0%, #f7ef8a 50%, #d4af37 100%);
         }
 
         /* --- TEXT STYLES --- */
         .card-number {
             font-family: 'Cinzel', serif;
-            font-size: 1.1rem;
+            font-size: 1rem; /* Compact font */
             font-weight: 700;
             color: #3e2723;
             text-transform: uppercase;
@@ -116,12 +121,12 @@
 
         .card-reason {
             font-family: 'Lato', sans-serif;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: #2c1b12;
-            margin-top: 10px;
+            margin-top: 8px;
             line-height: 1.4;
             opacity: 0;
-            transform: translateY(10px);
+            transform: translateY(5px);
             transition: all 0.4s ease;
             display: none;
             font-weight: 700;
@@ -154,12 +159,16 @@
         /* --- MOBILE ADJUSTMENTS --- */
         @media (max-width: 600px) {
             #cards-wrapper {
-                grid-template-columns: 1fr; /* Stack vertically on small phones */
-                max-width: 350px;
-                margin: 0 auto;
+                grid-template-columns: 1fr; /* Stack vertically */
+                gap: 15px;
             }
             
-            /* On mobile, keep the zig-zag arrows! */
+            .gold-card {
+                max-width: 260px; /* Even smaller on phone */
+                justify-self: center !important; /* Center everything */
+            }
+
+            /* Maintain the Zig-Zag look even on phone */
             .gold-card:nth-child(odd) {
                 clip-path: polygon(0% 0%, 90% 0%, 100% 50%, 90% 100%, 0% 100%);
             }
@@ -183,8 +192,8 @@
     <script>
         // --- YOUR REASONS ---
         const reasons = [
-            "Your smile is my favorite thing in the world.",
-            "You are working so hard for your doctor dreams.",
+            "Your smile is my favorite thing.",
+            "You work hard for your dreams.",
             "You have the kindest heart.",
             "I love your laugh.",
             "You inspire me every day.",
