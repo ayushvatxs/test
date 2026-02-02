@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>The Divine Recipe | Violina</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Sacramento&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- GLOBAL STYLES --- */
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #fff0f3 0%, #ffe3e8 100%);
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            color: #4a4a4a;
+        }
+
+        /* --- HEADER SECTION --- */
+        .header {
+            text-align: center;
+            margin-top: 40px;
+            animation: fadeInDown 1s ease;
+        }
+
+        .title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #ff4d6d;
+            margin: 0;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: #888;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        /* --- MAIN PHOTO CONTAINER --- */
+        .photo-container {
+            margin: 30px 0;
+            position: relative;
+            width: 160px;
+            height: 160px;
+            animation: zoomIn 1s ease;
+        }
+
+        .main-photo {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #fff;
+            box-shadow: 0 10px 25px rgba(255, 77, 109, 0.2);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Glowing Ring Effect */
+        .photo-ring {
+            position: absolute;
+            top: -10px; left: -10px; right: -10px; bottom: -10px;
+            border-radius: 50%;
+            border: 2px dashed #ff4d6d;
+            animation: spin 15s linear infinite;
+            opacity: 0.5;
+            z-index: 1;
+        }
+
+        /* --- INGREDIENTS LIST --- */
+        .ingredients-list {
+            width: 90%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding-bottom: 80px; /* Space for footer */
+        }
+
+        /* --- THE FLIP CARD --- */
+        .ingredient-card {
+            background-color: transparent;
+            width: 100%;
+            height: 120px; /* Fixed height for consistency */
+            perspective: 1000px; /* Essential for 3D flip */
+            cursor: pointer;
+            opacity: 0; /* For entry animation */
+            animation: slideUp 0.8s ease forwards;
+        }
+
+        /* Staggered Animation Delays */
+        .ingredient-card:nth-child(1) { animation-delay: 0.2s; }
+        .ingredient-card:nth-child(2) { animation-delay: 0.4s; }
+        .ingredient-card:nth-child(3) { animation-delay: 0.6s; }
+        .ingredient-card:nth-child(4) { animation-delay: 0.8s; }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+        }
+
+        /* Flip Action */
+        .ingredient-card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        /* --- FRONT & BACK STYLES --- */
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+
+        /* Front Style: Glassmorphism */
+        .card-front {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+        }
+
+        .percent {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ff4d6d;
+            line-height: 1;
+        }
+
+        .label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+            margin-top: 5px;
+        }
+
+        .tap-hint {
+            font-size: 0.7rem;
+            color: #999;
+            margin-top: 8px;
+            animation: pulse 1.5s infinite;
+        }
+
+        /* Back Style: The Note */
+        .card-back {
+            background: #fff;
+            transform: rotateY(180deg);
+            border: 1px solid #ffccd5;
+        }
+
+        .note-text {
+            font-size: 0.85rem;
+            color: #555;
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        /* --- FOOTER NOTE --- */
+        .math-joke {
+            font-size: 0.75rem;
+            color: #888;
+            text-align: center;
+            width: 80%;
+            margin-top: 10px;
+            font-style: italic;
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeIn 1s ease 1.5s forwards;
+        }
+
+        /* --- NEXT BUTTON --- */
+        .next-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #ff4d6d;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            text-decoration: none;
+            box-shadow: 0 5px 15px rgba(255, 77, 109, 0.4);
+            transition: transform 0.2s;
+            z-index: 100;
+            border: none;
+        }
+        
+        .next-btn:active { transform: scale(0.9); }
+
+        /* --- ANIMATIONS --- */
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes zoomIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1 class="title">The Ingredients</h1>
+        <p class="subtitle">What makes Violina, Violina?</p>
+    </div>
+
+    <div class="photo-container">
+        <div class="photo-ring"></div>
+        <img src="p_ingredients.jpg" alt="Violina" class="main-photo"> 
+    </div>
+
+    <div class="ingredients-list">
+        
+        <div class="ingredient-card" onclick="this.classList.toggle('flipped')">
+            <div class="card-inner">
+                <div class="card-front">
+                    <div class="percent">20%</div>
+                    <div class="label">Unfiltered Playfulness 🎈</div>
+                    <div class="tap-hint">please open this 🥹</div>
+                </div>
+                <div class="card-back">
+                    <p class="note-text">
+                        The side of you that turns into a complete child in front of me. I love taking care of this little one, and I promise to do it for the rest of my life. 💖
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="ingredient-card" onclick="this.classList.toggle('flipped')">
+            <div class="card-inner">
+                <div class="card-front">
+                    <div class="percent">20%</div>
+                    <div class="label">Hidden Softness 🌸</div>
+                    <div class="tap-hint">please open this 🥹</div>
+                </div>
+                <div class="card-back">
+                    <p class="note-text">
+                        The side which only I get to see 😋. I feel so incredibly lucky that out of the whole world, I'm the one who gets this version of you.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="ingredient-card" onclick="this.classList.toggle('flipped')">
+            <div class="card-inner">
+                <div class="card-front">
+                    <div class="percent">20%</div>
+                    <div class="label">Pure Chaos 🌪️</div>
+                    <div class="tap-hint">please open this 🥹</div>
+                </div>
+                <div class="card-back">
+                    <p class="note-text">
+                        The thing you love to do most 😭. But honestly? It’s responsible for making our bond stronger and stronger every single day 🥹.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="ingredient-card" onclick="this.classList.toggle('flipped')">
+            <div class="card-inner">
+                <div class="card-front">
+                    <div class="percent">40%</div>
+                    <div class="label">Sheer Talent ✨</div>
+                    <div class="tap-hint">please open this 🥹</div>
+                </div>
+                <div class="card-back">
+                    <p class="note-text">
+                        Award-winning dancer 💃, soulful singer 🎤, and a brilliant topper. You ace everything! And next year? I'm already celebrating you walking into AIIMS, Doctor Sahiba 🩺✨.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="math-joke">
+            (I wanted to give ♾️% in everything but I only had 100 in the total 😭)
+        </div>
+
+    </div>
+
+    <a href="page4_2.html" class="next-btn">&#10095;</a>
+
+</body>
+</html>
