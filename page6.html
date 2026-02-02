@@ -15,11 +15,13 @@
             margin: 0;
             background: #111;
             font-family: 'Montserrat', sans-serif;
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh; /* Allow content to dictate height */
+            overflow-y: auto; /* ENABLE SCROLLING & REFRESH */
+            overflow-x: hidden; /* Prevent side-scrolling */
             display: flex;
             flex-direction: column;
             justify-content: center;
+            padding-bottom: 80px; /* Space for the bottom arrow */
         }
 
         /* The Grain Overlay */
@@ -37,18 +39,19 @@
             text-align: center;
             color: #e0c097; /* Vintage Gold */
             font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
-            margin-bottom: 20px;
+            font-size: 2rem;
+            margin: 40px 0 30px; /* Added spacing */
             font-style: italic;
-            text-shadow: 0 0 10px rgba(224, 192, 151, 0.3);
+            text-shadow: 0 0 15px rgba(224, 192, 151, 0.4);
             z-index: 2;
+            position: relative;
         }
 
         /* --- FILM STRIP CONTAINER --- */
         .strip-container {
             width: 100%;
             overflow: hidden;
-            padding: 10px 0;
+            padding: 15px 0;
             position: relative;
             z-index: 2;
         }
@@ -58,16 +61,15 @@
             display: flex;
             gap: 20px;
             width: max-content;
-            /* Animation applied in specific classes below */
         }
 
         /* FILM FRAME STYLE */
         .film-frame {
             position: relative;
-            width: 280px;  /* Desktop Size */
+            width: 280px;  
             height: 180px;
             background: #000;
-            padding: 15px 5px; /* Top/Bottom padding mimics sprocket holes */
+            padding: 15px 5px; 
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             border: 2px solid #333;
             cursor: pointer;
@@ -89,7 +91,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            filter: sepia(30%) contrast(1.1); /* Vintage look */
+            filter: sepia(30%) contrast(1.1); 
             transition: filter 0.3s;
         }
         .film-frame:hover img { filter: sepia(0%) contrast(1); }
@@ -98,21 +100,12 @@
         .scroll-left { animation: scrollL 25s linear infinite; }
         .scroll-right { animation: scrollR 25s linear infinite; }
 
-        /* Pause on Hover (Optional, removed to rely on click) */
-        /* .film-track:hover { animation-play-state: paused; } */
-
-        @keyframes scrollL { 
-            0% { transform: translateX(0); } 
-            100% { transform: translateX(-50%); } 
-        }
-        @keyframes scrollR { 
-            0% { transform: translateX(-50%); } 
-            100% { transform: translateX(0); } 
-        }
+        @keyframes scrollL { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        @keyframes scrollR { 0% { transform: translateX(-50%); } 100% { transform: translateX(0); } }
 
         /* --- EXPANDED MODAL --- */
         .overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
             display: none; align-items: center; justify-content: center;
             z-index: 50; backdrop-filter: blur(8px);
         }
@@ -123,17 +116,15 @@
             width: 90%; max-width: 500px;
             background: #000;
             padding: 10px;
-            border: 1px solid #d81b60; /* Rose Gold/Pink Border */
-            box-shadow: 0 0 30px rgba(216, 27, 96, 0.4);
+            border: 1px solid #e0c097; /* Matching Gold Border */
+            box-shadow: 0 0 40px rgba(224, 192, 151, 0.2);
             animation: zoomIn 0.4s ease;
         }
         @keyframes zoomIn { from {transform:scale(0.8); opacity:0;} to {transform:scale(1); opacity:1;} }
 
-        .expanded-card img {
-            width: 100%; height: auto; display: block;
-        }
+        .expanded-card img { width: 100%; height: auto; display: block; }
 
-        /* --- MUSIC VISUALIZER (Corner Animation) --- */
+        /* --- MUSIC VISUALIZER --- */
         .music-corner {
             position: absolute;
             bottom: 20px; right: 20px;
@@ -143,37 +134,65 @@
             padding: 8px; border-radius: 8px;
         }
         .bar {
-            width: 4px; background: #d81b60;
+            width: 4px; background: #e0c097; /* Gold bars */
             animation: bounce 0.5s infinite ease-in-out;
         }
         .bar:nth-child(1) { height: 10px; animation-delay: 0s; }
         .bar:nth-child(2) { height: 18px; animation-delay: 0.1s; }
         .bar:nth-child(3) { height: 12px; animation-delay: 0.2s; }
-        .music-icon { color: white; margin-right: 5px; font-size: 14px; }
+        .music-icon { color: #e0c097; margin-right: 5px; font-size: 14px; }
 
-        @keyframes bounce { 
-            0%, 100% { height: 5px; } 50% { height: 20px; } 
-        }
+        @keyframes bounce { 0%, 100% { height: 5px; } 50% { height: 20px; } }
 
         /* --- CAPTION IN MODAL --- */
         .modal-caption {
-            color: #fff; text-align: center; margin-top: 15px;
+            color: #e0c097; text-align: center; margin-top: 15px;
             font-family: 'Playfair Display', serif; font-size: 1.4rem; font-style: italic;
         }
 
-        /* --- NEXT BUTTON --- */
+        /* --- NEW VINTAGE ARROW (Gold Style) --- */
         .next-btn {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            color: #d81b60; font-size: 2.5rem; text-decoration: none; z-index: 100;
-            background: rgba(255,255,255,0.1); border-radius: 50%; width: 50px; height: 50px;
-            display: flex; align-items: center; justify-content: center;
-            border: 1px solid #d81b60;
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            text-decoration: none;
+            
+            /* Cinema Style Button */
+            width: 60px;
+            height: 60px;
+            border: 2px solid #e0c097; /* Vintage Gold Border */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.6); /* Semi-transparent black */
+            color: #e0c097;
+            font-size: 1.8rem;
+            
+            /* Glow Effect */
+            box-shadow: 0 0 15px rgba(224, 192, 151, 0.3), inset 0 0 10px rgba(224, 192, 151, 0.1);
+            transition: all 0.3s ease;
+            animation: pulseGold 2s infinite;
+        }
+
+        .next-btn:active {
+            transform: translateX(-50%) scale(0.95);
+            background: #e0c097;
+            color: #000;
+        }
+
+        @keyframes pulseGold {
+            0% { box-shadow: 0 0 10px rgba(224, 192, 151, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(224, 192, 151, 0.6); }
+            100% { box-shadow: 0 0 10px rgba(224, 192, 151, 0.3); }
         }
 
         /* Mobile Adjustments */
         @media (max-width: 600px) {
             .film-frame { width: 200px; height: 140px; }
-            .cinema-header { font-size: 1.4rem; }
+            .cinema-header { font-size: 1.6rem; }
         }
     </style>
 </head>
@@ -181,18 +200,16 @@
 
     <div class="film-grain"></div>
 
-    <div class="cinema-header">The Movie of Us 🎬</div>
+    <div class="cinema-header">A Musical Portrait 🎬</div>
 
     <div class="strip-container">
-        <div class="film-track scroll-left" id="track1">
-            </div>
+        <div class="film-track scroll-left" id="track1"></div>
     </div>
 
     <div style="height: 20px;"></div>
 
     <div class="strip-container">
-        <div class="film-track scroll-right" id="track2">
-            </div>
+        <div class="film-track scroll-right" id="track2"></div>
     </div>
 
     <div class="overlay" id="overlay" onclick="closeModal()">
@@ -213,8 +230,7 @@
     <a href="page7.html" class="next-btn">&#10095;</a>
 
     <script>
-        // --- 8 PHOTOS CONFIGURATION ---
-        // Ensure you have p1.jpg to p8.jpg AND m1.mp3 to m8.mp3
+        // --- 8 PHOTOS CONFIGURATION (UNCHANGED) ---
         const photos = [
             { id: 1, caption: "Scene One: The Beginning" },
             { id: 2, caption: "Scene Two: That Smile" },
@@ -234,10 +250,7 @@
         let currentAudio = null;
 
         // --- GENERATE STRIPS ---
-        // We duplicate photos to create an infinite loop effect
-        // Top Strip: Photos 1-4 (Doubled)
         const topSet = [...photos.slice(0, 4), ...photos.slice(0, 4)];
-        // Bottom Strip: Photos 5-8 (Doubled)
         const bottomSet = [...photos.slice(4, 8), ...photos.slice(4, 8)];
 
         function createFrame(data) {
@@ -253,30 +266,23 @@
 
         // --- INTERACTION LOGIC ---
         function openModal(data) {
-            // 1. Pause Strips
             track1.style.animationPlayState = 'paused';
             track2.style.animationPlayState = 'paused';
 
-            // 2. Show Modal
             modalImg.src = `p${data.id}.jpg`;
             modalCaption.innerText = data.caption;
             overlay.classList.add('active');
 
-            // 3. Play Music
             if(currentAudio) currentAudio.pause();
             currentAudio = new Audio(`m${data.id}.mp3`);
             currentAudio.play().catch(e => console.log("Audio play failed"));
         }
 
         function closeModal() {
-            // 1. Hide Modal
             overlay.classList.remove('active');
-
-            // 2. Resume Strips
             track1.style.animationPlayState = 'running';
             track2.style.animationPlayState = 'running';
 
-            // 3. Stop Music
             if(currentAudio) {
                 currentAudio.pause();
                 currentAudio.currentTime = 0;
