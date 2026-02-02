@@ -21,26 +21,44 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
+            /* Allow vertical scroll/refresh, hide horizontal */
+            overflow-y: auto; 
+            overflow-x: hidden;
             color: white;
+            position: relative;
         }
 
         /* Ambient "Fireflies" Background */
         .firefly {
             position: absolute;
-            width: 4px;
-            height: 4px;
+            width: 5px; /* Made slightly bigger */
+            height: 5px;
             background: #ff4d6d;
             border-radius: 50%;
             box-shadow: 0 0 10px #ff4d6d, 0 0 20px #ff4d6d;
-            animation: fly 10s infinite alternate;
-            opacity: 0;
+            animation: fly 8s infinite alternate;
+            opacity: 0.7;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Custom animation paths for each firefly to make them distinct */
+        .firefly:nth-child(1) { top: 15%; left: 15%; animation-duration: 7s; animation-delay: 0s; }
+        .firefly:nth-child(2) { top: 25%; right: 15%; animation-duration: 9s; animation-delay: 1s; }
+        .firefly:nth-child(3) { bottom: 20%; left: 20%; animation-duration: 8s; animation-delay: 2s; }
+        .firefly:nth-child(4) { bottom: 30%; right: 20%; animation-duration: 10s; animation-delay: 0.5s; }
+        .firefly:nth-child(5) { top: 50%; left: 50%; animation-duration: 12s; animation-delay: 3s; }
+
+        @keyframes fly {
+            0% { transform: translate(0, 0) scale(1); opacity: 0.4; }
+            50% { opacity: 1; transform: translate(20px, -20px) scale(1.2); }
+            100% { transform: translate(-20px, 20px) scale(1); opacity: 0.4; }
         }
 
         /* --- HEADER --- */
         .header {
             position: absolute;
-            top: 50px;
+            top: 40px;
             text-align: center;
             z-index: 10;
             width: 100%;
@@ -67,11 +85,12 @@
         /* --- THE REALISTIC GLASS JAR --- */
         .jar-wrapper {
             position: relative;
-            width: 220px; /* Slightly wider for better pile effect */
+            width: 220px;
             height: 320px;
             cursor: pointer;
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             z-index: 5;
+            margin-top: 20px; /* Space from header */
         }
 
         .jar-wrapper:hover { transform: scale(1.02); }
@@ -149,7 +168,6 @@
             align-content: flex-end;
             padding: 0 15px;
             box-sizing: border-box;
-            /* Allow overlap */
             gap: 0; 
         }
 
@@ -158,13 +176,12 @@
             height: 25px;
             background: #fff;
             box-shadow: 1px 2px 4px rgba(0,0,0,0.2);
-            margin: -5px; /* Overlap them */
+            margin: -5px; 
             border-radius: 2px;
             opacity: 0.9;
             transition: transform 0.2s;
         }
 
-        /* Randomizing the chits to look like a pile */
         .folded-chit:nth-child(odd) { background: #ffccd5; transform: rotate(15deg); }
         .folded-chit:nth-child(even) { background: #fff0f3; transform: rotate(-10deg); z-index: 1;}
         .folded-chit:nth-child(3n) { background: #ffe6e6; transform: rotate(25deg); height: 30px; margin-bottom: -8px;}
@@ -240,12 +257,6 @@
         }
 
         /* --- ANIMATIONS --- */
-        @keyframes fly {
-            0% { transform: translate(0, 0); opacity: 0; }
-            50% { opacity: 0.8; }
-            100% { transform: translate(100px, -100px); opacity: 0; }
-        }
-
         .shake-jar {
             animation: wobble 0.6s ease-in-out;
         }
@@ -286,10 +297,11 @@
 </head>
 <body>
 
-    <div class="firefly" style="top: 20%; left: 10%; animation-duration: 8s;"></div>
-    <div class="firefly" style="top: 60%; left: 80%; animation-duration: 12s;"></div>
-    <div class="firefly" style="top: 80%; left: 30%; animation-duration: 6s;"></div>
-    <div class="firefly" style="top: 10%; left: 70%; animation-duration: 15s;"></div>
+    <div class="firefly"></div>
+    <div class="firefly"></div>
+    <div class="firefly"></div>
+    <div class="firefly"></div>
+    <div class="firefly"></div>
 
     <div class="header">
         <h1 class="title">The Wish Jar</h1>
@@ -307,9 +319,6 @@
                 <div class="folded-chit"></div><div class="folded-chit"></div><div class="folded-chit"></div>
                 <div class="folded-chit"></div><div class="folded-chit"></div><div class="folded-chit"></div>
                 <div class="folded-chit"></div><div class="folded-chit"></div><div class="folded-chit"></div>
-                <div class="folded-chit"></div><div class="folded-chit"></div><div class="folded-chit"></div>
-                <div class="folded-chit"></div><div class="folded-chit"></div><div class="folded-chit"></div>
-                 <div class="folded-chit"></div><div class="folded-chit"></div><div class="folded-chit"></div>
             </div>
         </div>
     </div>
