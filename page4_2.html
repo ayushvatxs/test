@@ -7,261 +7,332 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Playfair+Display:ital,wght@0,600;1,600&family=Poppins:wght@300;500&display=swap" rel="stylesheet">
     
     <style>
-        /* --- GLOBAL STYLES --- */
+        /* --- GLOBAL & ATMOSPHERE --- */
         body {
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #fff0f3 0%, #ffe3e8 100%);
+            /* Deep, premium gradient background */
+            background: radial-gradient(circle at center, #2e1c2b 0%, #0a0a0a 100%);
             font-family: 'Poppins', sans-serif;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            overflow: hidden; /* Stop scrolling so focus is on the jar */
+            justify-content: center;
+            overflow: hidden;
+            color: white;
         }
 
+        /* Ambient "Fireflies" Background */
+        .firefly {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #ff4d6d;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #ff4d6d, 0 0 20px #ff4d6d;
+            animation: fly 10s infinite alternate;
+            opacity: 0;
+        }
+
+        /* --- HEADER --- */
         .header {
+            position: absolute;
+            top: 50px;
             text-align: center;
-            margin-top: 50px;
             z-index: 10;
+            width: 100%;
         }
 
         .title {
-            color: #ff4d6d;
-            font-size: 1.8rem;
-            margin-bottom: 5px;
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: #ffe6e6;
+            margin: 0;
+            text-shadow: 0 0 20px rgba(255, 77, 109, 0.5);
+            letter-spacing: 1px;
         }
 
         .subtitle {
-            color: #888;
             font-size: 0.9rem;
+            color: #ffccd5;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 10px;
+            opacity: 0.8;
         }
 
-        /* --- THE JAR CONTAINER --- */
-        .jar-container {
+        /* --- THE REALISTIC GLASS JAR --- */
+        .jar-wrapper {
             position: relative;
-            margin-top: 80px;
+            width: 200px;
+            height: 300px;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 5;
         }
 
-        .jar-container:active {
+        .jar-wrapper:hover {
+            transform: scale(1.02);
+        }
+
+        .jar-wrapper:active {
             transform: scale(0.95);
         }
 
-        /* CSS Glass Jar */
-        .jar {
-            width: 160px;
-            height: 220px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 4px solid rgba(255, 255, 255, 0.6);
+        /* The Glass Body */
+        .glass-jar {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
             border-radius: 40px;
-            border-top-left-radius: 15px;
-            border-top-right-radius: 15px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-bottom: 5px solid rgba(255,255,255,0.2);
             box-shadow: 
-                0 20px 40px rgba(255, 77, 109, 0.2),
-                inset 0 0 20px rgba(255, 255, 255, 0.4);
+                0 0 30px rgba(255, 77, 109, 0.1), /* Glow */
+                inset 0 0 20px rgba(255,255,255,0.1), /* Inner reflection */
+                inset 10px 10px 20px rgba(255,255,255,0.1); /* Highlight */
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
             position: relative;
             overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            backdrop-filter: blur(5px);
+            z-index: 2;
         }
 
-        /* Jar Lid */
-        .lid {
-            width: 170px;
-            height: 25px;
-            background: #ffb3c1;
+        /* Realistic Reflections (Highlights) */
+        .glass-jar::before {
+            content: '';
             position: absolute;
-            top: -25px;
-            left: -5px;
+            top: 20px; right: 20px;
+            width: 30px; height: 150px;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.4), transparent);
+            border-radius: 50px;
+            transform: rotate(10deg);
+        }
+
+        /* The Lid */
+        .jar-lid {
+            position: absolute;
+            top: -20px; left: -5%;
+            width: 110%;
+            height: 40px;
+            background: linear-gradient(to right, #d4a5a5, #ffccd5, #d4a5a5);
             border-radius: 10px;
-            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            z-index: 3;
+            border-bottom: 2px solid rgba(0,0,0,0.1);
+            transition: transform 0.4s ease;
         }
 
-        /* Papers inside the jar */
-        .paper-fill {
+        /* Label */
+        .label-sticker {
             position: absolute;
-            bottom: 0;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff0f3;
+            padding: 10px 25px;
+            border: 2px solid #ff4d6d; /* Replaced dashed border with solid gold-pink */
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            font-family: 'Caveat', cursive;
+            font-size: 1.8rem;
+            color: #d6336c;
+            transform: translate(-50%, -50%) rotate(-5deg);
+            z-index: 4;
+            text-align: center;
+        }
+
+        /* GLOWING CONTENTS (Origami Stars) */
+        .star-content {
+            position: absolute;
+            bottom: 10px;
             width: 100%;
-            height: 70%;
+            height: 180px;
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             align-content: flex-end;
-            gap: 5px;
             padding: 10px;
             box-sizing: border-box;
-            opacity: 0.8;
+            gap: 8px;
         }
 
-        .chit {
-            width: 20px;
-            height: 20px;
-            background: #fff;
-            border-radius: 4px;
-            transform: rotate(15deg);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        .origami-star {
+            width: 25px; height: 25px;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            box-shadow: 0 0 10px rgba(255, 77, 109, 0.6);
+            animation: floatInJar 3s infinite ease-in-out;
+            opacity: 0.9;
         }
 
-        /* Different colors for chits */
-        .chit:nth-child(odd) { background: #ffccd5; transform: rotate(-10deg); }
-        .chit:nth-child(3n) { background: #ffe6e6; transform: rotate(25deg); }
-        .chit:nth-child(4n) { background: #fff0f3; transform: rotate(-5deg); }
+        /* Random animations for stars inside */
+        .origami-star:nth-child(odd) { animation-duration: 4s; background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); }
+        .origami-star:nth-child(even) { animation-duration: 5s; transform: scale(0.8); }
 
-        /* Label on Jar */
-        .label-tag {
-            position: absolute;
-            top: 40%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: #fff;
-            padding: 5px 15px;
-            border-radius: 5px;
-            font-family: 'Caveat', cursive;
-            font-size: 1.5rem;
-            color: #ff4d6d;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            pointer-events: none;
-        }
-
-        /* --- THE POPUP NOTE (Hidden by default) --- */
-        .note-overlay {
+        /* --- THE PAPER NOTE REVEAL --- */
+        .note-container {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.4);
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            z-index: 100;
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 100;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.3s;
+            transition: opacity 0.5s;
         }
 
-        .note-overlay.visible {
+        .note-container.active {
             opacity: 1;
             pointer-events: auto;
         }
 
-        .paper-note {
-            width: 300px;
-            min-height: 200px;
-            background: #fff9c4; /* Post-it yellow color */
-            padding: 30px;
-            box-sizing: border-box;
+        .paper {
+            width: 85%;
+            max-width: 350px;
+            background: #fff;
+            padding: 40px 30px;
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.2);
+            transform: scale(0.5) translateY(50px);
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); /* Elastic bounce */
+            position: relative;
+            background-image: 
+                linear-gradient(#f0f0f0 1px, transparent 1px),
+                linear-gradient(90deg, #f0f0f0 1px, transparent 1px);
+            background-size: 20px 20px;
+            border-radius: 2px;
+        }
+
+        .note-container.active .paper {
+            transform: scale(1) translateY(0) rotate(-2deg);
+        }
+
+        /* Washi Tape Effect */
+        .washi-tape {
+            position: absolute;
+            top: -15px; left: 50%;
+            transform: translateX(-50%);
+            width: 120px; height: 35px;
+            background: rgba(255, 255, 255, 0.4);
+            border-left: 2px solid rgba(255,255,255,0.2);
+            border-right: 2px solid rgba(255,255,255,0.2);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .handwritten-text {
             font-family: 'Caveat', cursive;
             font-size: 1.8rem;
             color: #333;
-            transform: scale(0.5) rotate(-10deg);
-            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            position: relative;
+            line-height: 1.4;
             text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            background-image: linear-gradient(#e6e6e6 1px, transparent 1px);
-            background-size: 100% 30px; /* Lined paper effect */
-        }
-
-        .note-overlay.visible .paper-note {
-            transform: scale(1) rotate(0deg);
-        }
-
-        /* Tape on top of note */
-        .tape {
-            position: absolute;
-            top: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 30px;
-            background: rgba(255, 255, 255, 0.5);
-            border: 1px solid rgba(255,255,255,0.2);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin: 10px 0;
         }
 
         .close-hint {
+            text-align: center;
             margin-top: 20px;
-            font-family: 'Poppins', sans-serif;
             font-size: 0.8rem;
-            color: #888;
-            opacity: 0.7;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        /* --- NEXT BUTTON --- */
-        .next-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: #ff4d6d;
-            color: white;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            text-decoration: none;
-            box-shadow: 0 5px 15px rgba(255, 77, 109, 0.4);
-            z-index: 50;
+        /* --- ANIMATIONS --- */
+        @keyframes fly {
+            0% { transform: translate(0, 0); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translate(100px, -100px); opacity: 0; }
         }
 
-        /* Animation for Shake */
-        @keyframes shake {
-            0% { transform: rotate(0deg); }
-            25% { transform: rotate(5deg); }
-            50% { transform: rotate(-5deg); }
-            75% { transform: rotate(5deg); }
-            100% { transform: rotate(0deg); }
+        @keyframes floatInJar {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
         }
 
         .shake-jar {
-            animation: shake 0.5s ease;
+            animation: wobble 0.6s ease-in-out;
         }
+
+        @keyframes wobble {
+            0%, 100% { transform: rotate(0); }
+            15% { transform: rotate(-5deg); }
+            30% { transform: rotate(3deg); }
+            45% { transform: rotate(-3deg); }
+            60% { transform: rotate(2deg); }
+            75% { transform: rotate(-1deg); }
+        }
+
+        .pop-lid {
+            transform: translateY(-60px) rotate(10deg) !important;
+        }
+
+        /* Next Button */
+        .next-btn {
+            position: fixed;
+            bottom: 30px;
+            width: 100%;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .arrow-link {
+            color: #fff;
+            font-size: 2rem;
+            text-decoration: none;
+            opacity: 0.7;
+            animation: pulseArrow 2s infinite;
+        }
+
+        @keyframes pulseArrow { 0% { opacity: 0.4; transform: translateY(0); } 50% { opacity: 1; transform: translateY(5px); } 100% { opacity: 0.4; transform: translateY(0); } }
 
     </style>
 </head>
 <body>
 
+    <div class="firefly" style="top: 20%; left: 10%; animation-duration: 8s;"></div>
+    <div class="firefly" style="top: 60%; left: 80%; animation-duration: 12s;"></div>
+    <div class="firefly" style="top: 80%; left: 30%; animation-duration: 6s;"></div>
+    <div class="firefly" style="top: 10%; left: 70%; animation-duration: 15s;"></div>
+
     <div class="header">
         <h1 class="title">The Wish Jar</h1>
-        <p class="subtitle">Tap to make a wish ✨</p>
+        <p class="subtitle">A lifetime of wishes, just for you</p>
     </div>
 
-    <div class="jar-container" id="jarContainer" onclick="openJar()">
-        <div class="lid"></div>
-        <div class="jar">
-            <div class="label-tag">Violina's Wishes</div>
-            <div class="paper-fill">
-                <div class="chit"></div><div class="chit"></div><div class="chit"></div>
-                <div class="chit"></div><div class="chit"></div><div class="chit"></div>
-                <div class="chit"></div><div class="chit"></div><div class="chit"></div>
-                <div class="chit"></div><div class="chit"></div><div class="chit"></div>
+    <div class="jar-wrapper" id="jar" onclick="openJar()">
+        <div class="jar-lid" id="lid"></div>
+        <div class="glass-jar">
+            <div class="label-sticker">Violina's<br>Wishes</div>
+            <div class="star-content">
+                <div class="origami-star"></div><div class="origami-star"></div>
+                <div class="origami-star"></div><div class="origami-star"></div>
+                <div class="origami-star"></div><div class="origami-star"></div>
+                <div class="origami-star"></div><div class="origami-star"></div>
+                <div class="origami-star"></div><div class="origami-star"></div>
+                <div class="origami-star"></div><div class="origami-star"></div>
             </div>
         </div>
     </div>
 
-    <div class="note-overlay" id="noteOverlay" onclick="closeNote()">
-        <div class="paper-note" onclick="event.stopPropagation()"> <div class="tape"></div>
-            <p id="wishText">Loading...</p>
-            <div class="close-hint">(Tap outside to close)</div>
+    <div class="note-container" id="noteOverlay" onclick="closeNote()">
+        <div class="paper" onclick="event.stopPropagation()">
+            <div class="washi-tape"></div>
+            <p class="handwritten-text" id="wishText">Loading magic...</p>
+            <div class="close-hint">Tap anywhere to close</div>
         </div>
     </div>
 
-    <a href="page4_3.html" class="next-btn">&#10095;</a>
+    <div class="next-btn">
+        <a href="page4_3.html" class="arrow-link">&#10095;</a>
+    </div>
 
     <script>
-        // --- YOUR WISH LIST STARTS HERE ---
-        // You can add as many as you want. Just follow the format "Message",
+        // --- WISH DATABASE (Add more here!) ---
         const wishes = [
             "I wish I could teleport to you right this second. 🚀",
             "Good luck for AIIMS, Doctor Sahiba! 🩺✨",
@@ -272,33 +343,37 @@
             "I wish you'd share your fries with me (just once). 🍟",
             "Remember that 2 AM call? I wish for a million more. 🌙",
             "You are my favorite notification. 📱",
-            "I wish all your dreams come true, just like you made mine come true. ✨"
+            "I wish all your dreams come true. ✨"
         ];
-        // --- END OF WISH LIST ---
 
-        const jarContainer = document.getElementById('jarContainer');
-        const noteOverlay = document.getElementById('noteOverlay');
-        const wishText = document.getElementById('wishText');
+        const jar = document.getElementById('jar');
+        const lid = document.getElementById('lid');
+        const overlay = document.getElementById('noteOverlay');
+        const text = document.getElementById('wishText');
 
         function openJar() {
-            // 1. Shake the jar
-            jarContainer.classList.add('shake-jar');
+            // 1. Shake Jar
+            jar.classList.add('shake-jar');
 
-            // 2. Wait for shake to finish, then open note
+            // 2. Pop Lid & Show Note
             setTimeout(() => {
-                jarContainer.classList.remove('shake-jar');
+                jar.classList.remove('shake-jar');
+                lid.classList.add('pop-lid'); // Lid flies off
                 
-                // Pick a random wish
+                // Pick random wish
                 const randomWish = wishes[Math.floor(Math.random() * wishes.length)];
-                wishText.innerText = randomWish;
+                text.innerText = randomWish;
 
-                // Show the note
-                noteOverlay.classList.add('visible');
+                setTimeout(() => {
+                    overlay.classList.add('active'); // Show note with fade in
+                }, 300);
+
             }, 500);
         }
 
         function closeNote() {
-            noteOverlay.classList.remove('visible');
+            overlay.classList.remove('active');
+            lid.classList.remove('pop-lid'); // Close lid
         }
     </script>
 </body>
