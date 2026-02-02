@@ -15,13 +15,13 @@
             margin: 0;
             background: #111;
             font-family: 'Montserrat', sans-serif;
-            min-height: 100vh; /* Allow content to dictate height */
-            overflow-y: auto; /* ENABLE SCROLLING & REFRESH */
-            overflow-x: hidden; /* Prevent side-scrolling */
+            min-height: 100vh;
+            overflow-y: auto; /* SCROLLING ENABLED */
+            overflow-x: hidden;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            padding-bottom: 80px; /* Space for the bottom arrow */
+            align-items: center; /* Centers content horizontally */
+            padding-bottom: 50px;
         }
 
         /* The Grain Overlay */
@@ -40,7 +40,7 @@
             color: #e0c097; /* Vintage Gold */
             font-family: 'Playfair Display', serif;
             font-size: 2rem;
-            margin: 40px 0 30px; /* Added spacing */
+            margin: 50px 0 40px; /* Top spacing */
             font-style: italic;
             text-shadow: 0 0 15px rgba(224, 192, 151, 0.4);
             z-index: 2;
@@ -150,24 +150,22 @@
             font-family: 'Playfair Display', serif; font-size: 1.4rem; font-style: italic;
         }
 
-        /* --- NEW VINTAGE ARROW (Gold Style) --- */
+        /* --- VINTAGE ARROW (SCROLLABLE VERSION) --- */
         .next-btn {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
+            position: relative; /* Scrolls with page now! */
+            margin: 50px auto 20px; /* Space above and below */
             z-index: 100;
             text-decoration: none;
             
             /* Cinema Style Button */
             width: 60px;
             height: 60px;
-            border: 2px solid #e0c097; /* Vintage Gold Border */
+            border: 2px solid #e0c097; 
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(0,0,0,0.6); /* Semi-transparent black */
+            background: rgba(0,0,0,0.6); 
             color: #e0c097;
             font-size: 1.8rem;
             
@@ -178,7 +176,7 @@
         }
 
         .next-btn:active {
-            transform: translateX(-50%) scale(0.95);
+            transform: scale(0.95);
             background: #e0c097;
             color: #000;
         }
@@ -230,7 +228,7 @@
     <a href="page7.html" class="next-btn">&#10095;</a>
 
     <script>
-        // --- 8 PHOTOS CONFIGURATION (UNCHANGED) ---
+        // --- 8 PHOTOS CONFIGURATION ---
         const photos = [
             { id: 1, caption: "Scene One: The Beginning" },
             { id: 2, caption: "Scene Two: That Smile" },
