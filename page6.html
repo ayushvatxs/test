@@ -3,253 +3,283 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>The Soundtrack of You</title>
+    <title>Our Cinematic Story</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,600&family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,500&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
-        /* --- GLOBAL STYLES --- */
+        /* --- GLOBAL & VINTAGE FILM EFFECT --- */
         body {
             margin: 0;
-            padding: 20px 10px;
-            /* Pastel Pink Gradient */
-            background: linear-gradient(180deg, #fff0f6 0%, #ffd6e8 100%);
+            background: #111;
             font-family: 'Montserrat', sans-serif;
-            min-height: 100vh;
-            box-sizing: border-box;
-            overflow-x: hidden;
-            padding-bottom: 100px; /* Space for bottom arrow */
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* The Grain Overlay */
+        .film-grain {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 10;
+            opacity: 0.15;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
         }
 
         /* --- TITLE --- */
-        .page-header {
+        .cinema-header {
             text-align: center;
-            color: #d81b60;
-            font-size: 1.8rem;
-            margin-bottom: 30px;
+            color: #e0c097; /* Vintage Gold */
             font-family: 'Playfair Display', serif;
-            font-weight: 700;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
             font-style: italic;
-            text-shadow: 0 2px 5px rgba(216, 27, 96, 0.1);
+            text-shadow: 0 0 10px rgba(224, 192, 151, 0.3);
+            z-index: 2;
         }
 
-        /* --- THE WALL (12 Photos) --- */
-        .wall-container {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr); /* 2 cols on mobile */
-            gap: 20px 15px;
-            max-width: 900px;
-            margin: 0 auto;
+        /* --- FILM STRIP CONTAINER --- */
+        .strip-container {
+            width: 100%;
+            overflow: hidden;
+            padding: 10px 0;
             position: relative;
             z-index: 2;
         }
 
-        /* --- POLAROID STYLES --- */
-        .polaroid {
-            background: white;
-            padding: 8px 8px 30px 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            cursor: pointer;
-            transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+        /* The Moving Track */
+        .film-track {
+            display: flex;
+            gap: 20px;
+            width: max-content;
+            /* Animation applied in specific classes below */
+        }
+
+        /* FILM FRAME STYLE */
+        .film-frame {
             position: relative;
-            z-index: 1;
-            transform: rotate(var(--r));
-        }
-
-        .polaroid img {
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            object-fit: cover;
-            display: block;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .caption {
-            font-family: 'Montserrat', sans-serif;
-            color: #444;
-            font-size: 0.75rem;
-            text-align: center;
-            margin-top: 10px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* --- ACTIVE STATE (Popped Out) --- */
-        .polaroid.active {
-            position: fixed;
-            top: 50% !important;
-            left: 50% !important;
-            transform: translate(-50%, -50%) scale(1) rotate(0deg) !important;
-            z-index: 100;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.4);
-            width: 85vw;
-            max-width: 400px;
-            margin: 0;
-            border-radius: 4px;
+            width: 280px;  /* Desktop Size */
+            height: 180px;
+            background: #000;
+            padding: 15px 5px; /* Top/Bottom padding mimics sprocket holes */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            border: 2px solid #333;
+            cursor: pointer;
+            transition: transform 0.3s;
         }
         
-        .polaroid.active .caption {
-            font-size: 1rem;
-            color: #d81b60;
+        /* Sprocket Holes Effect */
+        .film-frame::before, .film-frame::after {
+            content: "";
+            position: absolute;
+            left: 0; right: 0;
+            height: 10px;
+            background-image: repeating-linear-gradient(90deg, transparent 0, transparent 10px, #222 10px, #222 20px);
+        }
+        .film-frame::before { top: 2px; }
+        .film-frame::after { bottom: 2px; }
+
+        .film-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: sepia(30%) contrast(1.1); /* Vintage look */
+            transition: filter 0.3s;
+        }
+        .film-frame:hover img { filter: sepia(0%) contrast(1); }
+
+        /* --- ANIMATIONS --- */
+        .scroll-left { animation: scrollL 25s linear infinite; }
+        .scroll-right { animation: scrollR 25s linear infinite; }
+
+        /* Pause on Hover (Optional, removed to rely on click) */
+        /* .film-track:hover { animation-play-state: paused; } */
+
+        @keyframes scrollL { 
+            0% { transform: translateX(0); } 
+            100% { transform: translateX(-50%); } 
+        }
+        @keyframes scrollR { 
+            0% { transform: translateX(-50%); } 
+            100% { transform: translateX(0); } 
         }
 
-        /* --- NEW LYRICS STYLE (Elegant & Cinematic) --- */
-        #lyrics-display {
-            position: fixed;
-            bottom: 20%;
-            width: 90%;
-            left: 5%;
-            text-align: center;
-            
-            /* Typography */
-            font-family: 'Playfair Display', serif;
-            font-weight: 600;
-            font-style: italic;
-            font-size: 1.6rem;
-            line-height: 1.4;
-            
-            /* Color: Rose Gold Gradient Text */
-            background: linear-gradient(45deg, #d81b60, #ff8fbe, #d81b60);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            
-            /* Glow/Shadow for readability */
-            filter: drop-shadow(0px 2px 2px rgba(255,255,255,0.8));
-            
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.8s ease;
-            pointer-events: none;
-            z-index: 110;
-        }
-        #lyrics-display.show { opacity: 1; transform: translateY(0); }
-
-        /* --- DIMMER --- */
+        /* --- EXPANDED MODAL --- */
         .overlay {
-            position: fixed; inset: 0; background: rgba(255, 240, 246, 0.85); /* Pinkish tint */
-            opacity: 0; visibility: hidden; transition: all 0.5s; z-index: 50;
-            backdrop-filter: blur(5px);
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            display: none; align-items: center; justify-content: center;
+            z-index: 50; backdrop-filter: blur(8px);
         }
-        .overlay.show { opacity: 1; visibility: visible; }
+        .overlay.active { display: flex; }
 
-        /* --- NEXT ARROW (Bottom Center & Animated) --- */
+        .expanded-card {
+            position: relative;
+            width: 90%; max-width: 500px;
+            background: #000;
+            padding: 10px;
+            border: 1px solid #d81b60; /* Rose Gold/Pink Border */
+            box-shadow: 0 0 30px rgba(216, 27, 96, 0.4);
+            animation: zoomIn 0.4s ease;
+        }
+        @keyframes zoomIn { from {transform:scale(0.8); opacity:0;} to {transform:scale(1); opacity:1;} }
+
+        .expanded-card img {
+            width: 100%; height: auto; display: block;
+        }
+
+        /* --- MUSIC VISUALIZER (Corner Animation) --- */
+        .music-corner {
+            position: absolute;
+            bottom: 20px; right: 20px;
+            display: flex; gap: 4px;
+            align-items: flex-end;
+            background: rgba(0,0,0,0.6);
+            padding: 8px; border-radius: 8px;
+        }
+        .bar {
+            width: 4px; background: #d81b60;
+            animation: bounce 0.5s infinite ease-in-out;
+        }
+        .bar:nth-child(1) { height: 10px; animation-delay: 0s; }
+        .bar:nth-child(2) { height: 18px; animation-delay: 0.1s; }
+        .bar:nth-child(3) { height: 12px; animation-delay: 0.2s; }
+        .music-icon { color: white; margin-right: 5px; font-size: 14px; }
+
+        @keyframes bounce { 
+            0%, 100% { height: 5px; } 50% { height: 20px; } 
+        }
+
+        /* --- CAPTION IN MODAL --- */
+        .modal-caption {
+            color: #fff; text-align: center; margin-top: 15px;
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; font-style: italic;
+        }
+
+        /* --- NEXT BUTTON --- */
         .next-btn {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%); /* Centers it */
-            font-size: 2.5rem;
-            color: #d81b60;
-            text-decoration: none;
-            z-index: 200;
-            background: white;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 5px 20px rgba(216, 27, 96, 0.3);
-            animation: bounceArrow 2s infinite;
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            color: #d81b60; font-size: 2.5rem; text-decoration: none; z-index: 100;
+            background: rgba(255,255,255,0.1); border-radius: 50%; width: 50px; height: 50px;
+            display: flex; align-items: center; justify-content: center;
+            border: 1px solid #d81b60;
         }
 
-        @keyframes bounceArrow {
-            0%, 20%, 50%, 80%, 100% {transform: translateX(-50%) translateY(0);}
-            40% {transform: translateX(-50%) translateY(-10px);}
-            60% {transform: translateX(-50%) translateY(-5px);}
-        }
-
-        /* Desktop Grid adjustment */
-        @media (min-width: 768px) {
-            .wall-container { grid-template-columns: repeat(4, 1fr); gap: 30px; }
-            #lyrics-display { font-size: 2.5rem; bottom: 12%; }
+        /* Mobile Adjustments */
+        @media (max-width: 600px) {
+            .film-frame { width: 200px; height: 140px; }
+            .cinema-header { font-size: 1.4rem; }
         }
     </style>
 </head>
 <body>
 
-    <div class="overlay" id="dimmer" onclick="closePhoto()"></div>
-    <div id="lyrics-display"></div>
+    <div class="film-grain"></div>
 
-    <div class="page-header">The Soundtrack of You 🎵</div>
+    <div class="cinema-header">The Movie of Us 🎬</div>
 
-    <div class="wall-container" id="wall">
+    <div class="strip-container">
+        <div class="film-track scroll-left" id="track1">
+            </div>
+    </div>
+
+    <div style="height: 20px;"></div>
+
+    <div class="strip-container">
+        <div class="film-track scroll-right" id="track2">
+            </div>
+    </div>
+
+    <div class="overlay" id="overlay" onclick="closeModal()">
+        <div class="expanded-card" onclick="event.stopPropagation()">
+            <img id="modalImg" src="">
+            
+            <div class="music-corner">
+                <span class="music-icon">🎵</span>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+
+            <div class="modal-caption" id="modalCaption"></div>
         </div>
+    </div>
 
     <a href="page7.html" class="next-btn">&#10095;</a>
 
     <script>
-        // --- DATA FOR 12 PHOTOS ---
-        // Naming: p1.jpg -> m1.mp3
-        const memories = [
-            { id: 1, lyric: "You're my golden hour...", caption: "Golden Hour ✨" },
-            { id: 2, lyric: "I have loved you for a thousand years", caption: "Timeless Beauty" },
-            { id: 3, lyric: "Every little thing she does is magic", caption: "Pure Magic" },
-            { id: 4, lyric: "At last, my love has come along", caption: "The One" },
-            { id: 5, lyric: "Wise men say only fools rush in", caption: "My Heart" },
-            { id: 6, lyric: "Just the way you are...", caption: "Perfection" },
-            { id: 7, lyric: "Take my hand, take my whole life too", caption: "My Future" },
-            { id: 8, lyric: "Something in the way she moves...", caption: "Elegance" },
-            { id: 9, lyric: "You are the reason...", caption: "My Why" },
-            { id: 10, lyric: "How sweet it is to be loved by you", caption: "Sweetest Soul" },
-            { id: 11, lyric: "She's a rainbow...", caption: "My Colors" },
-            { id: 12, lyric: "Isn't she lovely...", caption: "Lovely" }
+        // --- 8 PHOTOS CONFIGURATION ---
+        // Ensure you have p1.jpg to p8.jpg AND m1.mp3 to m8.mp3
+        const photos = [
+            { id: 1, caption: "Scene One: The Beginning" },
+            { id: 2, caption: "Scene Two: That Smile" },
+            { id: 3, caption: "Scene Three: Adventures" },
+            { id: 4, caption: "Scene Four: Magic" },
+            { id: 5, caption: "Scene Five: Elegance" },
+            { id: 6, caption: "Scene Six: My Heart" },
+            { id: 7, caption: "Scene Seven: Dreams" },
+            { id: 8, caption: "Scene Eight: Forever" }
         ];
 
-        const wall = document.getElementById('wall');
-        const dimmer = document.getElementById('dimmer');
-        const lyricsDisplay = document.getElementById('lyrics-display');
+        const track1 = document.getElementById('track1');
+        const track2 = document.getElementById('track2');
+        const overlay = document.getElementById('overlay');
+        const modalImg = document.getElementById('modalImg');
+        const modalCaption = document.getElementById('modalCaption');
         let currentAudio = null;
 
-        // Generate 12 Polaroids
-        memories.forEach((m) => {
-            const card = document.createElement('div');
-            card.classList.add('polaroid');
-            
-            // Random rotation (-5 to +5 deg) for messy look
-            const randomRotate = Math.floor(Math.random() * 10) - 5;
-            card.style.setProperty('--r', `${randomRotate}deg`);
+        // --- GENERATE STRIPS ---
+        // We duplicate photos to create an infinite loop effect
+        // Top Strip: Photos 1-4 (Doubled)
+        const topSet = [...photos.slice(0, 4), ...photos.slice(0, 4)];
+        // Bottom Strip: Photos 5-8 (Doubled)
+        const bottomSet = [...photos.slice(4, 8), ...photos.slice(4, 8)];
 
-            card.innerHTML = `
-                <img src="p${m.id}.jpg">
-                <div class="caption">${m.caption}</div>
-            `;
-
-            card.onclick = () => openPhoto(card, m.lyric, `m${m.id}.mp3`);
-            wall.appendChild(card);
-        });
-
-        function openPhoto(card, lyricText, musicFile) {
-            closePhoto(); 
-
-            // Activate
-            card.classList.add('active');
-            dimmer.classList.add('show');
-
-            // Audio
-            currentAudio = new Audio(musicFile);
-            currentAudio.play().catch(e => console.log("Audio play blocked"));
-
-            // Lyrics
-            lyricsDisplay.innerText = lyricText;
-            lyricsDisplay.classList.add('show');
+        function createFrame(data) {
+            const div = document.createElement('div');
+            div.className = 'film-frame';
+            div.innerHTML = `<img src="p${data.id}.jpg">`;
+            div.onclick = () => openModal(data);
+            return div;
         }
 
-        function closePhoto() {
-            const active = document.querySelector('.polaroid.active');
-            if (active) {
-                active.classList.remove('active');
-                dimmer.classList.remove('show');
-                lyricsDisplay.classList.remove('show');
-                
-                if(currentAudio) {
-                    currentAudio.pause();
-                    currentAudio.currentTime = 0;
-                    currentAudio = null;
-                }
+        topSet.forEach(data => track1.appendChild(createFrame(data)));
+        bottomSet.forEach(data => track2.appendChild(createFrame(data)));
+
+        // --- INTERACTION LOGIC ---
+        function openModal(data) {
+            // 1. Pause Strips
+            track1.style.animationPlayState = 'paused';
+            track2.style.animationPlayState = 'paused';
+
+            // 2. Show Modal
+            modalImg.src = `p${data.id}.jpg`;
+            modalCaption.innerText = data.caption;
+            overlay.classList.add('active');
+
+            // 3. Play Music
+            if(currentAudio) currentAudio.pause();
+            currentAudio = new Audio(`m${data.id}.mp3`);
+            currentAudio.play().catch(e => console.log("Audio play failed"));
+        }
+
+        function closeModal() {
+            // 1. Hide Modal
+            overlay.classList.remove('active');
+
+            // 2. Resume Strips
+            track1.style.animationPlayState = 'running';
+            track2.style.animationPlayState = 'running';
+
+            // 3. Stop Music
+            if(currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
             }
         }
     </script>
