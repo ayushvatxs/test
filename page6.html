@@ -124,16 +124,15 @@
 
         .expanded-card img { width: 100%; height: auto; display: block; }
 
-        /* This moves the bars to the bottom-right corner of the image frame */
-  .music-bar-container { /* or your specific class name */
-    position: absolute;
-    bottom: 15px;      /* Distance from the bottom */
-    right: 15px;       /* Distance from the right corner */
-    display: flex;
-    align-items: flex-end;
-    gap: 2px;
-    z-index: 10;       /* Keeps it above the image */
-}
+        /* --- MUSIC VISUALIZER --- */
+        .music-corner {
+            position: absolute;
+            bottom: 20px; right: 20px;
+            display: flex; gap: 4px;
+            align-items: flex-end;
+            background: rgba(0,0,0,0.6);
+            padding: 8px; border-radius: 8px;
+        }
         .bar {
             width: 4px; background: #e0c097; /* Gold bars */
             animation: bounce 0.5s infinite ease-in-out;
@@ -216,6 +215,7 @@
             <img id="modalImg" src="">
             
             <div class="music-corner">
+                <span class="music-icon">🎵</span>
                 <div class="bar"></div>
                 <div class="bar"></div>
                 <div class="bar"></div>
@@ -230,11 +230,11 @@
     <script>
         // --- 8 PHOTOS CONFIGURATION ---
         const photos = [
-            { id: 1, caption: "Scene One: The Golden Prelude" },
-            { id: 2, caption: "Scene Two: In Her Thoughts" },
-            { id: 3, caption: "Scene Three: Starlight Smile" },
-            { id: 4, caption: "Scene Four: The Beloved" },
-            { id: 5, caption: "Scene Five: The Gaze" },
+            { id: 1, caption: "Scene One: The Beginning" },
+            { id: 2, caption: "Scene Two: That Smile" },
+            { id: 3, caption: "Scene Three: Adventures" },
+            { id: 4, caption: "Scene Four: Magic" },
+            { id: 5, caption: "Scene Five: Elegance" },
             { id: 6, caption: "Scene Six: My Heart" },
             { id: 7, caption: "Scene Seven: Dreams" },
             { id: 8, caption: "Scene Eight: Forever" }
