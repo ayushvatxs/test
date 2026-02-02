@@ -124,15 +124,16 @@
 
         .expanded-card img { width: 100%; height: auto; display: block; }
 
-        /* --- MUSIC VISUALIZER --- */
-        .music-corner {
-            position: absolute;
-            bottom: 20px; right: 20px;
-            display: flex; gap: 4px;
-            align-items: flex-end;
-            background: rgba(0,0,0,0.6);
-            padding: 8px; border-radius: 8px;
-        }
+        /* This moves the bars to the bottom-right corner of the image frame */
+  .music-bar-container { /* or your specific class name */
+    position: absolute;
+    bottom: 15px;      /* Distance from the bottom */
+    right: 15px;       /* Distance from the right corner */
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    z-index: 10;       /* Keeps it above the image */
+}
         .bar {
             width: 4px; background: #e0c097; /* Gold bars */
             animation: bounce 0.5s infinite ease-in-out;
@@ -215,7 +216,6 @@
             <img id="modalImg" src="">
             
             <div class="music-corner">
-                <span class="music-icon">🎵</span>
                 <div class="bar"></div>
                 <div class="bar"></div>
                 <div class="bar"></div>
