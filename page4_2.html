@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>The Wish Jar | Violina</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- GLOBAL STYLES --- */
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #fff0f3 0%, #ffe3e8 100%);
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden; /* Stop scrolling so focus is on the jar */
+        }
+
+        .header {
+            text-align: center;
+            margin-top: 50px;
+            z-index: 10;
+        }
+
+        .title {
+            color: #ff4d6d;
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        /* --- THE JAR CONTAINER --- */
+        .jar-container {
+            position: relative;
+            margin-top: 80px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .jar-container:active {
+            transform: scale(0.95);
+        }
+
+        /* CSS Glass Jar */
+        .jar {
+            width: 160px;
+            height: 220px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 4px solid rgba(255, 255, 255, 0.6);
+            border-radius: 40px;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            box-shadow: 
+                0 20px 40px rgba(255, 77, 109, 0.2),
+                inset 0 0 20px rgba(255, 255, 255, 0.4);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Jar Lid */
+        .lid {
+            width: 170px;
+            height: 25px;
+            background: #ffb3c1;
+            position: absolute;
+            top: -25px;
+            left: -5px;
+            border-radius: 10px;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        /* Papers inside the jar */
+        .paper-fill {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 70%;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: flex-end;
+            gap: 5px;
+            padding: 10px;
+            box-sizing: border-box;
+            opacity: 0.8;
+        }
+
+        .chit {
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 4px;
+            transform: rotate(15deg);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* Different colors for chits */
+        .chit:nth-child(odd) { background: #ffccd5; transform: rotate(-10deg); }
+        .chit:nth-child(3n) { background: #ffe6e6; transform: rotate(25deg); }
+        .chit:nth-child(4n) { background: #fff0f3; transform: rotate(-5deg); }
+
+        /* Label on Jar */
+        .label-tag {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            padding: 5px 15px;
+            border-radius: 5px;
+            font-family: 'Caveat', cursive;
+            font-size: 1.5rem;
+            color: #ff4d6d;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            pointer-events: none;
+        }
+
+        /* --- THE POPUP NOTE (Hidden by default) --- */
+        .note-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .note-overlay.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .paper-note {
+            width: 300px;
+            min-height: 200px;
+            background: #fff9c4; /* Post-it yellow color */
+            padding: 30px;
+            box-sizing: border-box;
+            font-family: 'Caveat', cursive;
+            font-size: 1.8rem;
+            color: #333;
+            transform: scale(0.5) rotate(-10deg);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background-image: linear-gradient(#e6e6e6 1px, transparent 1px);
+            background-size: 100% 30px; /* Lined paper effect */
+        }
+
+        .note-overlay.visible .paper-note {
+            transform: scale(1) rotate(0deg);
+        }
+
+        /* Tape on top of note */
+        .tape {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .close-hint {
+            margin-top: 20px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.8rem;
+            color: #888;
+            opacity: 0.7;
+        }
+
+        /* --- NEXT BUTTON --- */
+        .next-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #ff4d6d;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            text-decoration: none;
+            box-shadow: 0 5px 15px rgba(255, 77, 109, 0.4);
+            z-index: 50;
+        }
+
+        /* Animation for Shake */
+        @keyframes shake {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(5deg); }
+            50% { transform: rotate(-5deg); }
+            75% { transform: rotate(5deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        .shake-jar {
+            animation: shake 0.5s ease;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1 class="title">The Wish Jar</h1>
+        <p class="subtitle">Tap to make a wish ✨</p>
+    </div>
+
+    <div class="jar-container" id="jarContainer" onclick="openJar()">
+        <div class="lid"></div>
+        <div class="jar">
+            <div class="label-tag">Violina's Wishes</div>
+            <div class="paper-fill">
+                <div class="chit"></div><div class="chit"></div><div class="chit"></div>
+                <div class="chit"></div><div class="chit"></div><div class="chit"></div>
+                <div class="chit"></div><div class="chit"></div><div class="chit"></div>
+                <div class="chit"></div><div class="chit"></div><div class="chit"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="note-overlay" id="noteOverlay" onclick="closeNote()">
+        <div class="paper-note" onclick="event.stopPropagation()"> <div class="tape"></div>
+            <p id="wishText">Loading...</p>
+            <div class="close-hint">(Tap outside to close)</div>
+        </div>
+    </div>
+
+    <a href="page4_3.html" class="next-btn">&#10095;</a>
+
+    <script>
+        // --- YOUR WISH LIST STARTS HERE ---
+        // You can add as many as you want. Just follow the format "Message",
+        const wishes = [
+            "I wish I could teleport to you right this second. 🚀",
+            "Good luck for AIIMS, Doctor Sahiba! 🩺✨",
+            "I wish for your smile to stay this bright forever. 😊",
+            "Note to self: You look really pretty right now. ❤️",
+            "I wish for 100 more birthdays with you. 🎂",
+            "Sending you a virtual hug... Loading... 100% 🫂",
+            "I wish you'd share your fries with me (just once). 🍟",
+            "Remember that 2 AM call? I wish for a million more. 🌙",
+            "You are my favorite notification. 📱",
+            "I wish all your dreams come true, just like you made mine come true. ✨"
+        ];
+        // --- END OF WISH LIST ---
+
+        const jarContainer = document.getElementById('jarContainer');
+        const noteOverlay = document.getElementById('noteOverlay');
+        const wishText = document.getElementById('wishText');
+
+        function openJar() {
+            // 1. Shake the jar
+            jarContainer.classList.add('shake-jar');
+
+            // 2. Wait for shake to finish, then open note
+            setTimeout(() => {
+                jarContainer.classList.remove('shake-jar');
+                
+                // Pick a random wish
+                const randomWish = wishes[Math.floor(Math.random() * wishes.length)];
+                wishText.innerText = randomWish;
+
+                // Show the note
+                noteOverlay.classList.add('visible');
+            }, 500);
+        }
+
+        function closeNote() {
+            noteOverlay.classList.remove('visible');
+        }
+    </script>
+</body>
+</html>
