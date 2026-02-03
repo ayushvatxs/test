@@ -21,7 +21,7 @@
             color: #fff;
             user-select: none;
             -webkit-user-select: none;
-            perspective: 1000px; /* 3D Depth */
+            perspective: 1000px;
         }
 
         /* --- BACKGROUND VIDEO (Main Server) --- */
@@ -47,7 +47,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            /* Hexagon Mesh Background */
             background-image: 
                 radial-gradient(circle at center, transparent 0%, #000 100%),
                 linear-gradient(rgba(255, 0, 0, 0.05) 1px, transparent 1px),
@@ -78,7 +77,7 @@
             text-shadow: 0 0 10px #ff4d6d;
         }
 
-        /* --- 2. ULTRA-REAL INTRO OVERLAY --- */
+        /* --- 2. INTRO OVERLAY --- */
         .intro-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -90,131 +89,140 @@
             overflow: hidden;
         }
 
-        /* --- 3D ENVIRONMENT (The "Tunnel") --- */
+        /* --- 3D ENVIRONMENT --- */
         .cyber-tunnel {
             position: absolute;
             width: 100%; height: 100%;
-            perspective: 500px;
+            perspective: 600px;
             overflow: hidden;
             pointer-events: none;
         }
 
+        /* Moving Grid Floor */
         .tunnel-grid {
             position: absolute;
             top: -50%; left: -50%; width: 200%; height: 200%;
             background: 
-                linear-gradient(rgba(255, 0, 0, 0.15) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 0, 0, 0.15) 1px, transparent 1px);
-            background-size: 100px 100px;
+                linear-gradient(rgba(255, 0, 0, 0.2) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.2) 1px, transparent 1px);
+            background-size: 80px 80px;
             transform: rotateX(80deg);
             animation: tunnelMove 3s linear infinite;
         }
-        
-        .tunnel-grid.top {
-            top: auto; bottom: 200px; /* Ceiling grid */
-            transform: rotateX(-80deg);
-            opacity: 0.3;
-        }
 
-        /* FLOATING CODE PARTICLES */
-        .code-particle {
+        /* Top Code Stream */
+        .top-code-stream {
             position: absolute;
-            color: rgba(255, 0, 0, 0.4);
-            font-size: 0.8rem;
-            animation: floatZ 6s linear infinite;
-            text-shadow: 0 0 5px red;
-        }
-
-        /* --- THE "REAL" GLASS HUD --- */
-        .hud-glass-panel {
-            position: relative;
-            width: 90%; max-width: 500px;
-            padding: 50px 30px;
-            /* Glassmorphism Ultra */
-            background: rgba(10, 0, 0, 0.7);
-            border: 1px solid rgba(255, 77, 109, 0.3);
-            box-shadow: 
-                0 0 50px rgba(255, 0, 0, 0.2), 
-                inset 0 0 100px rgba(0, 0, 0, 0.9);
-            backdrop-filter: blur(12px);
-            z-index: 50;
-            transform-style: preserve-3d;
-            /* Corner Cuts */
-            clip-path: polygon(
-                20px 0, 100% 0, 
-                100% calc(100% - 20px), calc(100% - 20px) 100%, 
-                0 100%, 0 20px
-            );
-        }
-
-        /* Scanline Overlay on HUD */
-        .hud-glass-panel::after {
-            content: '';
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: repeating-linear-gradient(
-                0deg,
-                rgba(0, 0, 0, 0.1),
-                rgba(0, 0, 0, 0.1) 1px,
-                transparent 1px,
-                transparent 2px
-            );
-            pointer-events: none;
+            top: 0; left: 0; width: 100%; height: 150px;
+            background: linear-gradient(to bottom, rgba(255,0,0,0.1), transparent);
+            z-index: 10;
+            display: flex;
+            justify-content: space-around;
+            overflow: hidden;
             opacity: 0.5;
         }
+        .code-col {
+            font-size: 10px;
+            color: #ff4d6d;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            animation: rainDown 5s linear infinite;
+        }
 
-        /* Glitchy Text Effect */
-        .glitch-text {
+        /* Floating 3D Shapes */
+        .shape-container {
+            position: absolute;
+            transform-style: preserve-3d;
+            animation: floatSpin 10s infinite linear;
+        }
+        .s1 { top: 20%; left: 10%; animation-duration: 12s; }
+        .s2 { bottom: 20%; right: 10%; animation-duration: 15s; }
+        .s3 { top: 15%; right: 25%; animation-duration: 9s; transform: scale(0.5); }
+
+        .wireframe-box {
+            width: 60px; height: 60px;
+            border: 1px solid rgba(255, 77, 109, 0.6);
+            transform: rotateX(45deg) rotateY(45deg);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+        }
+
+        /* --- THE GLASS HUD --- */
+        .hud-glass-panel {
             position: relative;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 900;
-            font-size: 1.5rem;
-            color: #fff;
-            text-shadow: 2px 0 #ff0000, -2px 0 #00ffff;
-            animation: glitch 3s infinite;
+            width: 90%; max-width: 550px;
+            min-height: 300px;
+            padding: 40px;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            /* Glass Look */
+            background: rgba(15, 0, 0, 0.75);
+            border: 1px solid rgba(255, 77, 109, 0.4);
+            box-shadow: 
+                0 0 60px rgba(255, 0, 0, 0.2), 
+                inset 0 0 50px rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 50;
+            transform-style: preserve-3d;
+            clip-path: polygon(
+                30px 0, 100% 0, 
+                100% calc(100% - 30px), calc(100% - 30px) 100%, 
+                0 100%, 0 30px
+            );
         }
 
-        .status-sub {
-            font-family: 'Share Tech Mono', monospace;
-            color: #ffb3c1;
-            font-size: 0.9rem;
-            margin-top: 10px;
-            letter-spacing: 1px;
-            opacity: 0.8;
-        }
-
-        /* Loading Bar */
-        .load-bar-container {
-            width: 100%; height: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            margin-top: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-        .load-bar-fill {
-            position: absolute; top: 0; left: 0; height: 100%; width: 0%;
-            background: #ff4d6d;
+        /* HUD Corners */
+        .corner {
+            position: absolute; width: 40px; height: 40px;
+            border: 3px solid #ff4d6d;
             box-shadow: 0 0 10px #ff4d6d;
-            transition: width 0.3s ease;
+        }
+        .c-tl { top: 0; left: 0; border-right: 0; border-bottom: 0; }
+        .c-tr { top: 0; right: 0; border-left: 0; border-bottom: 0; }
+        .c-bl { bottom: 0; left: 0; border-right: 0; border-top: 0; }
+        .c-br { bottom: 0; right: 0; border-left: 0; border-top: 0; }
+
+        /* PHASE 1: TEXT SEQUENCE (Centered & Bold) */
+        .big-status-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fff;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(255, 77, 109, 0.8);
+            animation: glitchText 3s infinite;
+        }
+        
+        .sub-status {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #ff99aa;
+            opacity: 0.8;
+            font-family: 'Share Tech Mono';
         }
 
-        /* PHASE 2: ALERT */
+        /* PHASE 2: ALERT (Red Box) */
         .alert-wrap {
             border: 2px solid red;
             background: rgba(50, 0, 0, 0.6);
-            padding: 20px;
+            padding: 30px;
+            text-align: center;
+            width: 100%;
             animation: shake 0.5s infinite;
         }
-        .alert-big { color: red; font-size: 2.2rem; font-family: 'Orbitron'; font-weight: 900; text-shadow: 0 0 20px red; }
+        .alert-header { font-size: 2.5rem; color: red; font-family: 'Orbitron'; font-weight: 900; text-shadow: 0 0 30px red; margin-bottom: 15px; }
+        .alert-detail { font-size: 1rem; color: #fff; letter-spacing: 1px; margin-bottom: 5px; }
 
         /* PHASE 3: SCANNER */
-        .scanner-wrapper { width: 100px; height: 130px; margin: 0 auto; position: relative; }
-        .fingerprint { width: 100%; height: 100%; border: 2px solid rgba(255, 77, 109, 0.5); border-radius: 30px; background: url('https://img.icons8.com/ios/100/ff4d6d/fingerprint.png') no-repeat center center; background-size: 70%; position: relative; overflow: hidden; background-color: rgba(30, 0, 0, 0.4); box-shadow: 0 0 30px rgba(255,0,0,0.2); transition: all 0.2s; cursor: pointer; }
+        .scanner-wrapper { width: 110px; height: 140px; margin: 0 auto; position: relative; }
+        .fingerprint { width: 100%; height: 100%; border: 2px solid rgba(255, 77, 109, 0.5); border-radius: 35px; background: url('https://img.icons8.com/ios/100/ff4d6d/fingerprint.png') no-repeat center center; background-size: 70%; position: relative; overflow: hidden; background-color: rgba(30, 0, 0, 0.4); box-shadow: 0 0 30px rgba(255,0,0,0.2); transition: all 0.2s; cursor: pointer; }
         .scan-fill { position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background: rgba(255, 77, 109, 0.6); transition: height 0.05s linear; box-shadow: 0 0 40px rgba(255, 77, 109, 0.9); }
-        .instruction { margin-top: 25px; color: #ff4d6d; font-size: 0.9rem; animation: pulse 1s infinite; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; }
+        .scan-laser { position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: #00ff00; box-shadow: 0 0 20px #00ff00; display: none; }
+        .instruction { margin-top: 25px; color: #ff4d6d; font-size: 1rem; animation: pulse 1s infinite; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; }
 
         /* --- MAIN CONTENT (Server) --- */
         #mainContent { display: none; width: 100%; opacity: 0; transition: opacity 2s ease; position: relative; z-index: 10; }
-        /* Keep existing terminal styles exactly same */
+        /* Keep existing terminal styles */
         .server-header { padding: 40px 20px; border-bottom: 1px solid #ff4d6d; background: rgba(0, 0, 0, 0.8); margin-bottom: 20px; }
         .sys-title { font-family: 'Orbitron', sans-serif; font-size: 1.8rem; color: #fff; margin-top: 5px; }
         .log-container { padding: 10px 20px; max-width: 600px; margin: 0 auto; padding-bottom: 100px; background: rgba(0,0,0,0.6); border-radius: 10px; }
@@ -230,9 +238,10 @@
 
         /* ANIMATIONS */
         @keyframes tunnelMove { 0% { transform: rotateX(80deg) translateY(0); } 100% { transform: rotateX(80deg) translateY(100px); } }
-        @keyframes floatZ { 0% { transform: scale(0.5) translateY(0); opacity: 0; } 50% { opacity: 1; } 100% { transform: scale(1.5) translateY(200px); opacity: 0; } }
-        @keyframes glitch { 0% { transform: translate(0); } 20% { transform: translate(-2px, 2px); } 40% { transform: translate(-2px, -2px); } 60% { transform: translate(2px, 2px); } 80% { transform: translate(2px, -2px); } 100% { transform: translate(0); } }
-        @keyframes shake { 0% { transform: translate(1px, 1px) rotate(0deg); } 10% { transform: translate(-1px, -2px) rotate(-1deg); } 20% { transform: translate(-3px, 0px) rotate(1deg); } 30% { transform: translate(3px, 2px) rotate(0deg); } 40% { transform: translate(1px, -1px) rotate(1deg); } 50% { transform: translate(-1px, 2px) rotate(-1deg); } 60% { transform: translate(-3px, 1px) rotate(0deg); } 70% { transform: translate(3px, 1px) rotate(-1deg); } 80% { transform: translate(-1px, -1px) rotate(1deg); } 90% { transform: translate(1px, 2px) rotate(0deg); } 100% { transform: translate(1px, -2px) rotate(-1deg); } }
+        @keyframes rainDown { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
+        @keyframes floatSpin { 0% { transform: rotateX(0) rotateY(0) translateY(0); } 100% { transform: rotateX(360deg) rotateY(360deg) translateY(50px); } }
+        @keyframes glitchText { 0% { transform: translate(0); } 2% { transform: translate(-2px, 2px); } 4% { transform: translate(2px, -2px); } 6% { transform: translate(0); } }
+        @keyframes shake { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -2px); } 100% { transform: translate(1px, -1px); } }
         @keyframes pulse { 0% { opacity: 0.5; } 100% { opacity: 1; } }
 
     </style>
@@ -255,25 +264,36 @@
         
         <div class="cyber-tunnel">
             <div class="tunnel-grid"></div>
-            <div class="tunnel-grid top"></div>
-            <div id="particles"></div>
+            
+            <div class="top-code-stream">
+                <div class="code-col">01010101010101</div>
+                <div class="code-col">AF0934BBA3948</div>
+                <div class="code-col">SYSTEM_ROOT</div>
+                <div class="code-col">010010001011</div>
+                <div class="code-col">ENCRYPTION_KEY</div>
+            </div>
+
+            <div class="shape-container s1"><div class="wireframe-box"></div></div>
+            <div class="shape-container s2"><div class="wireframe-box"></div></div>
+            <div class="shape-container s3"><div class="wireframe-box"></div></div>
         </div>
 
         <div class="hud-glass-panel">
-            
+            <div class="corner c-tl"></div><div class="corner c-tr"></div>
+            <div class="corner c-bl"></div><div class="corner c-br"></div>
+
             <div id="phase1">
-                <div class="glitch-text" id="loadTitle">SYSTEM BOOT</div>
-                <div class="load-bar-container">
-                    <div class="load-bar-fill" id="loadBar"></div>
+                <div class="big-status-text" id="mainStatus">SYSTEM STARTUP</div>
+                <div style="text-align:center;">
+                    <div class="loading-ring" style="width:40px; height:40px; margin-top:20px; border-width:3px;"></div>
                 </div>
-                <div class="status-sub" id="loadStatus">Initializing Kernel...</div>
             </div>
 
             <div id="phase2" style="display:none;">
                 <div class="alert-wrap">
-                    <div class="alert-big">🚫 SECURITY BREACH</div>
-                    <div style="margin-top:10px; font-weight:bold; color:#ffcccc;">UNAUTHORIZED ACCESS DETECTED</div>
-                    <div style="font-size:0.8rem; margin-top:5px; color:#ff6666;">SERVER LOCKDOWN INITIATED</div>
+                    <div class="alert-header">🚫 ACCESS DENIED</div>
+                    <div class="alert-detail" style="font-weight:bold;">SERVER PROTECTED BY AYUSH</div>
+                    <div class="alert-detail" style="color:#ff9999; margin-top:10px;">BIOMETRICS NEEDED</div>
                 </div>
             </div>
 
@@ -281,6 +301,7 @@
                 <div class="scanner-wrapper">
                     <div class="fingerprint" id="fingerBtn">
                         <div class="scan-fill" id="scanFill"></div>
+                        <div class="scan-laser" id="scanLaser"></div>
                     </div>
                 </div>
                 <div class="instruction" id="scanText">HOLD THUMB TO VERIFY</div>
@@ -362,25 +383,18 @@
 
     <script>
         // --- SCRIPT ---
-        const startScreen = document.getElementById('startScreen');
+        const mainStatus = document.getElementById('mainStatus');
+        const phase1 = document.getElementById('phase1');
+        const phase2 = document.getElementById('phase2');
+        const phase3 = document.getElementById('phase3');
         const overlay = document.getElementById('overlay');
-        const bgVideo = document.getElementById('bgVideo');
+        const startScreen = document.getElementById('startScreen');
         const mainContent = document.getElementById('mainContent');
+        const bgVideo = document.getElementById('bgVideo');
+
         const soundAlert = document.getElementById('soundAlert');
         const soundScan = document.getElementById('soundScan');
         const soundGrant = document.getElementById('soundGrant');
-
-        // PARTICLES GENERATOR
-        const particlesContainer = document.getElementById('particles');
-        for(let i=0; i<30; i++) {
-            let p = document.createElement('div');
-            p.className = 'code-particle';
-            p.innerText = Math.random() > 0.5 ? '1' : '0';
-            p.style.left = Math.random() * 100 + '%';
-            p.style.top = Math.random() * 100 + '%';
-            p.style.animationDuration = (Math.random() * 3 + 2) + 's';
-            particlesContainer.appendChild(p);
-        }
 
         function unlockAudio() {
             soundAlert.play(); soundAlert.pause();
@@ -392,41 +406,39 @@
             unlockAudio();
             startScreen.style.display = 'none'; 
             overlay.style.display = 'flex';     
-            runLoadingSequence();
+            runTextSequence();
         }
 
-        // --- RESTORED DETAILED LOADING ---
-        const loadTitle = document.getElementById('loadTitle');
-        const loadStatus = document.getElementById('loadStatus');
-        const loadBar = document.getElementById('loadBar');
+        // --- SPECIFIC TEXT SEQUENCE LOGIC ---
+        function runTextSequence() {
+            const steps = [
+                { text: "SYSTEM STARTUP", delay: 1000 },
+                { text: "LOADING...", delay: 2500 },
+                { text: "DECRYPTING SERVER DATA", delay: 4000 },
+                { text: "BYPASSING FIREWALL", delay: 6000 },
+                { text: "TRYING TO CONNECT...", delay: 8000 }
+            ];
 
-        function runLoadingSequence() {
-            // Step 1: Kernel
-            setTimeout(() => { loadBar.style.width = "20%"; loadStatus.innerText = "Loading Biometric Drivers..."; }, 500);
-            
-            // Step 2: Encryption
-            setTimeout(() => { loadBar.style.width = "40%"; loadStatus.innerText = "Encrypting Data Stream..."; }, 1500);
+            // Run the text updates
+            steps.forEach(step => {
+                setTimeout(() => {
+                    mainStatus.innerText = step.text;
+                }, step.delay);
+            });
 
-            // Step 3: Server
-            setTimeout(() => { loadBar.style.width = "60%"; loadStatus.innerText = "Connecting to Secure Server..."; }, 2500);
-
-            // Step 4: Firewall
-            setTimeout(() => { loadBar.style.width = "80%"; loadStatus.innerText = "Bypassing Firewall Protocol..."; }, 3500);
-
-            // Step 5: ALERT (Breach)
+            // Trigger Alert after texts
             setTimeout(() => {
-                loadBar.style.width = "100%";
-                document.getElementById('phase1').style.display = 'none';
-                document.getElementById('phase2').style.display = 'block';
+                phase1.style.display = 'none';
+                phase2.style.display = 'block';
                 soundAlert.currentTime = 0;
-                soundAlert.play();
-            }, 5000);
+                soundAlert.play().catch(e => console.log(e));
+            }, 10000);
 
-            // Step 6: Scanner Unlock (After Alert)
+            // Trigger Scanner after Alert
             setTimeout(() => {
-                document.getElementById('phase2').style.display = 'none';
-                document.getElementById('phase3').style.display = 'block';
-            }, 9000);
+                phase2.style.display = 'none';
+                phase3.style.display = 'block';
+            }, 14000);
         }
 
         // --- HOLD TO SCAN LOGIC ---
@@ -469,6 +481,7 @@
             soundGrant.play();
 
             scanText.innerText = "IDENTITY CONFIRMED";
+            document.getElementById('scanLaser').style.display = 'block';
             
             fingerBtn.onmousedown = null;
             fingerBtn.ontouchstart = null;
