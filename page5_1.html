@@ -21,18 +21,18 @@
             color: #fff;
         }
 
-        /* --- BACKGROUND VIDEO (The Cool Red HUD) --- */
+        /* --- BACKGROUND VIDEO --- */
         #bgVideo {
             position: fixed;
             right: 0; bottom: 0;
             min-width: 100%; min-height: 100%;
             width: auto; height: auto;
             z-index: -1;
-            opacity: 0.6; /* Dim slightly so text pops */
-            filter: contrast(1.2) brightness(0.8);
+            /* Visibility increased: Less dimming */
+            filter: contrast(1.1) brightness(0.9);
         }
 
-        /* --- THE CINEMATIC OVERLAY CONTAINER --- */
+        /* --- CINEMATIC OVERLAY --- */
         .intro-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -41,19 +41,24 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background: rgba(0,0,0,0.8); /* Dark tint */
-            backdrop-filter: blur(5px);
+            /* Visibility Increased: Much more transparent background */
+            background: rgba(0,0,0,0.4); 
+            backdrop-filter: blur(3px); /* Slight blur to make text pop */
             transition: opacity 1s ease;
         }
 
-        /* STAGE 1: LOADING */
+        /* STAGE 1: LOADING TEXTS */
+        .loading-container {
+            text-align: center;
+        }
+
         .loading-ring {
             width: 60px; height: 60px;
             border: 4px solid rgba(255, 77, 109, 0.3);
             border-top: 4px solid #ff4d6d;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin-bottom: 20px;
+            margin: 0 auto 20px auto;
         }
 
         .status-text {
@@ -61,35 +66,47 @@
             font-size: 1.2rem;
             letter-spacing: 2px;
             text-transform: uppercase;
-            text-shadow: 0 0 10px rgba(255, 77, 109, 0.8);
+            text-shadow: 0 0 10px rgba(255, 77, 109, 1); /* Strong shadow for readability */
+            font-weight: 700;
         }
 
-        /* STAGE 2: SECURITY ALERT (Red Flashing) */
+        .sub-status {
+            font-size: 0.8rem;
+            color: #ffb3c1;
+            margin-top: 5px;
+            opacity: 0.8;
+        }
+
+        /* STAGE 2: SECURITY ALERT */
         .alert-box {
-            border: 2px solid red;
-            background: rgba(50, 0, 0, 0.9);
-            padding: 20px 40px;
+            border: 3px solid #ff0000;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 30px 50px;
             text-align: center;
-            display: none; /* Hidden initially */
-            animation: flashBorder 0.5s infinite alternate;
-            box-shadow: 0 0 30px red;
+            display: none;
+            animation: flashBorder 0.4s infinite alternate;
+            box-shadow: 0 0 50px rgba(255, 0, 0, 0.5);
+            max-width: 90%;
         }
 
         .alert-title {
-            color: red;
-            font-size: 2rem;
+            color: #ff0000;
+            font-size: 2.2rem;
             font-weight: 900;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+            font-family: 'Orbitron', sans-serif;
         }
 
         .alert-sub {
             color: #fff;
-            font-size: 0.9rem;
+            font-size: 1rem;
+            letter-spacing: 1px;
         }
 
-        /* STAGE 3: THUMBPRINT SCANNER */
+        /* STAGE 3: SCANNER */
         .scanner-container {
-            display: none; /* Hidden initially */
+            display: none;
             flex-direction: column;
             align-items: center;
         }
@@ -101,59 +118,65 @@
             position: relative;
             background: url('https://img.icons8.com/ios/100/ff4d6d/fingerprint.png') no-repeat center center;
             background-size: 70%;
-            box-shadow: 0 0 20px rgba(255, 77, 109, 0.2);
+            box-shadow: 0 0 30px rgba(255, 77, 109, 0.3);
             overflow: hidden;
             cursor: pointer;
             transition: transform 0.2s;
+            background-color: rgba(0,0,0,0.5);
         }
         
         .fingerprint:active { transform: scale(0.95); }
 
-        /* The scanning laser beam */
         .scan-line {
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 2px;
+            top: 0; left: 0; width: 100%; height: 3px;
             background: #ff4d6d;
-            box-shadow: 0 0 10px #ff4d6d;
+            box-shadow: 0 0 15px #ff4d6d;
             animation: scanMove 1.5s linear infinite;
-            opacity: 0.8;
         }
 
         .instruction {
-            margin-top: 20px;
-            font-size: 0.8rem;
+            margin-top: 25px;
+            font-size: 0.9rem;
             color: #ff4d6d;
             animation: pulse 1s infinite;
+            font-weight: bold;
+            background: rgba(0,0,0,0.6);
+            padding: 5px 10px;
+            border-radius: 4px;
         }
 
-        /* --- THE MAIN CONTENT (Hidden until unlocked) --- */
+        /* --- MAIN CONTENT --- */
         #mainContent {
             display: none;
             width: 100%;
             opacity: 0;
             transition: opacity 2s ease;
+            position: relative;
+            z-index: 10;
         }
 
-        /* (Paste the CSS from the previous "Memory Server" code here for the table styles) */
-        .server-header { padding: 30px 20px; border-bottom: 1px solid #ff4d6d; background: rgba(255, 77, 109, 0.05); margin-bottom: 20px; }
+        /* TERMINAL STYLES (From previous step) */
+        .server-header { padding: 40px 20px; border-bottom: 1px solid #ff4d6d; background: rgba(0, 0, 0, 0.8); margin-bottom: 20px; }
         .sys-title { font-family: 'Orbitron', sans-serif; font-size: 1.8rem; color: #fff; margin-top: 5px; }
-        .log-container { padding: 10px 20px; max-width: 600px; margin: 0 auto; padding-bottom: 100px;}
-        .sector-title { color: #fff; background: #ff4d6d; display: inline-block; padding: 2px 10px; margin-top: 40px; margin-bottom: 15px; transform: skew(-10deg); }
-        .data-line { margin-bottom: 12px; font-size: 0.95rem; line-height: 1.4; opacity: 0; transform: translateX(-10px); transition: all 0.5s ease; }
+        .log-container { padding: 10px 20px; max-width: 600px; margin: 0 auto; padding-bottom: 100px; background: rgba(0,0,0,0.6); border-radius: 10px; }
+        .sector-title { color: #fff; background: #ff4d6d; display: inline-block; padding: 5px 15px; margin-top: 40px; margin-bottom: 20px; transform: skew(-10deg); letter-spacing: 1px; font-weight: bold; }
+        .data-line { margin-bottom: 14px; font-size: 1rem; line-height: 1.5; opacity: 0; transform: translateX(-10px); transition: all 0.5s ease; border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: 4px; }
         .data-line.visible { opacity: 1; transform: translateX(0); }
-        .label { color: #ff8fa3; margin-right: 10px; }
+        .label { color: #ff8fa3; margin-right: 10px; font-weight: bold; }
         .value { color: #fff0f3; text-shadow: 0 0 5px rgba(255, 255, 255, 0.3); }
-        .highlight { color: #ffd700; font-weight: bold; }
-        .error { color: #ff3333; }
-        .next-btn-container { text-align: center; margin-top: 60px; }
-        .tech-btn { border: 1px solid #ff4d6d; color: #ff4d6d; padding: 15px 30px; font-family: 'Orbitron', sans-serif; text-decoration: none; text-transform: uppercase; transition: 0.3s; }
+        .highlight { color: #ffd700; font-weight: bold; text-shadow: 0 0 8px rgba(255, 215, 0, 0.4); }
+        .error { color: #ff3333; font-weight: bold; }
+        
+        .next-btn-container { text-align: center; margin-top: 60px; padding-bottom: 50px; }
+        .tech-btn { border: 1px solid #ff4d6d; color: #ff4d6d; padding: 15px 30px; font-family: 'Orbitron', sans-serif; text-decoration: none; text-transform: uppercase; transition: 0.3s; background: rgba(0,0,0,0.7); }
         .tech-btn:hover { background: #ff4d6d; color: #000; box-shadow: 0 0 20px rgba(255, 77, 109, 0.6); }
 
         /* ANIMATIONS */
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes flashBorder { 0% { border-color: red; box-shadow: 0 0 10px red; } 100% { border-color: darkred; box-shadow: 0 0 0 transparent; } }
+        @keyframes flashBorder { 0% { border-color: red; } 100% { border-color: #500000; } }
         @keyframes scanMove { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
-        @keyframes pulse { 0% { opacity: 0.5; } 100% { opacity: 1; } }
+        @keyframes pulse { 0% { opacity: 0.6; } 100% { opacity: 1; } }
 
     </style>
 </head>
@@ -164,56 +187,101 @@
     </video>
 
     <audio id="soundAlert" src="alert.mp3"></audio>
-    <audio id="soundScan" src="scan.mp3" loop></audio> <audio id="soundGrant" src="granted.mp3"></audio>
+    <audio id="soundScan" src="scan.mp3" loop></audio>
+    <audio id="soundGrant" src="granted.mp3"></audio>
 
     <div class="intro-overlay" id="overlay">
         
-        <div id="phase1" style="text-align: center;">
+        <div id="phase1" class="loading-container">
             <div class="loading-ring"></div>
-            <div class="status-text" id="statusText">CONNECTING...</div>
+            <div class="status-text" id="mainStatus">INITIALIZING...</div>
+            <div class="sub-status" id="subStatus">Est. Time: 10s</div>
         </div>
 
         <div id="phase2" class="alert-box">
             <div class="alert-title">🚫 ACCESS DENIED</div>
-            <div class="alert-sub">SERVER PROTECTED BY AYUSH</div>
-            <div class="alert-sub" style="margin-top:10px; font-size:0.7rem;">BIOMETRIC VERIFICATION REQUIRED</div>
+            <div class="alert-sub" style="font-weight: bold; margin-bottom: 10px;">SERVER PROTECTED BY AYUSH</div>
+            <div class="alert-sub" style="font-size:0.8rem; opacity: 0.8;">UNAUTHORIZED ENTRY DETECTED</div>
         </div>
 
         <div id="phase3" class="scanner-container">
             <div class="fingerprint" id="fingerBtn" onclick="startScan()">
                 <div class="scan-line"></div>
             </div>
-            <div class="instruction">TAP & HOLD THUMB TO SCAN</div>
+            <div class="instruction">BIOMETRIC SCAN REQUIRED</div>
         </div>
 
     </div>
 
     <div id="mainContent">
         <div class="server-header">
-            <div style="font-size: 0.8rem; opacity: 0.7;">SYSTEM ID: V.I.O.L.I.N.A v19.0</div>
+            <div style="font-size: 0.8rem; opacity: 0.7; color: #ff8fa3;">SYSTEM ID: V.I.O.L.I.N.A v19.0</div>
             <div class="sys-title">MEMORY SERVER</div>
-            <div style="font-size: 0.7rem; color: #888; margin-top: 5px;">> ACCESS GRANTED</div>
+            <div style="font-size: 0.7rem; color: #00ff00; margin-top: 5px;">> ACCESS GRANTED</div>
         </div>
 
         <div class="log-container">
-            <div class="sector-title">SECTOR 1: IDENTITY</div>
-            <div class="data-line"><span class="label">> SUBJECT:</span> <span class="value highlight">Violina Sharma</span></div>
+
+            <div class="sector-title">SECTOR 1: IDENTITY PROTOCOLS</div>
+            <div class="data-line"><span class="label">> SUBJECT NAME:</span> <span class="value highlight">Violina Sharma</span></div>
             <div class="data-line"><span class="label">> ORIGIN DATE:</span> <span class="value">13 FEB 20XX [CLASSIFIED]</span></div>
             <div class="data-line"><span class="label">> CONSTELLATION:</span> <span class="value">Taurus ♉</span></div>
-            
+            <div class="data-line"><span class="label">> OPTICS (EYES):</span> <span class="value">Deep Espresso Brown</span></div>
+            <div class="data-line"><span class="label">> HAIR COLOR:</span> <span class="value">Black</span></div>
+            <div class="data-line"><span class="label">> SHOE SIZE:</span> <span class="value">7 (Tiny Feet)</span></div>
+            <div class="data-line"><span class="label">> MARKING:</span> <span class="value">Mole, Forehead (Right Side)</span></div>
+            <div class="data-line"><span class="label">> VISUAL AID:</span> <span class="value">Glasses: YES (Intellectual Mode)</span></div>
+            <div class="data-line"><span class="label">> HANDEDNESS:</span> <span class="value">Right</span></div>
+
             <div class="sector-title">SECTOR 2: CONNECTION LOGS</div>
             <div class="data-line"><span class="label">> FIRST CONTACT:</span> <span class="value">11 April 2025</span></div>
+            <div class="data-line"><span class="label">> FIRST IMPRESSION:</span> <span class="value">Gorgeous & Talented</span></div>
             <div class="data-line"><span class="label">> DISTANCE:</span> <span class="value error">611 KM (Too Far)</span></div>
-            <div class="data-line"><span class="label">> MAX CALL:</span> <span class="value highlight">06 HOURS 00 MINS</span></div>
+            <div class="data-line"><span class="label">> LONGEST CALL:</span> <span class="value highlight">6 HOURS 00 MINS</span></div>
+            <div class="data-line"><span class="label">> DATA STORED:</span> <span class="value">489 Photos Encrypted</span></div>
+            <div class="data-line"><span class="label">> FIRST SCREENING:</span> <span class="value">Crime Patrol</span></div>
 
-            <div class="sector-title">SECTOR 3: BEHAVIOR</div>
+            <div class="sector-title">SECTOR 3: USER PREFERENCES</div>
+            <div class="data-line"><span class="label">> FAVORITE COLOR:</span> <span class="value">Black</span></div>
+            <div class="data-line"><span class="label">> FLORA:</span> <span class="value">Roses</span></div>
+            <div class="data-line"><span class="label">> CUISINE:</span> <span class="value">Brinjal, Chole Chawal, Duck</span></div>
+            <div class="data-line"><span class="label">> JUNK FOOD:</span> <span class="value error">ERROR 404 (Health Conscious)</span></div>
+            <div class="data-line"><span class="label">> BEVERAGE:</span> <span class="value">Red Tea</span></div>
+            <div class="data-line"><span class="label">> SWEETENER:</span> <span class="value">Kinder Joy & Chocolate Ice Cream</span></div>
+            <div class="data-line"><span class="label">> WEATHER PREF:</span> <span class="value">Winter / Snow</span></div>
+            <div class="data-line"><span class="label">> MEDIA:</span> <span class="value">Crime Thrillers & Crime Patrol</span></div>
+            <div class="data-line"><span class="label">> ARTIST:</span> <span class="value">Taylor Swift</span></div>
+            <div class="data-line"><span class="label">> FAV PLACE:</span> <span class="value highlight">Sleeping on my lap</span></div>
+            <div class="data-line"><span class="label">> SLEEP CONFIG:</span> <span class="value">2 Pillows (Head) + 1 Pillow (Hands)</span></div>
+            <div class="data-line"><span class="label">> DREAM VACATION:</span> <span class="value">Switzerland</span></div>
+            <div class="data-line"><span class="label">> DREAM CAR:</span> <span class="value">None (Practical Mindset)</span></div>
+
+            <div class="sector-title">SECTOR 4: BEHAVIORAL ANALYSIS</div>
+            <div class="data-line"><span class="label">> HAPPY STATE:</span> <span class="value">Dance (Award Winning)</span></div>
             <div class="data-line"><span class="label">> ANGRY STATE:</span> <span class="value error">Scolding Mode ("Baad me baat krte h")</span></div>
+            <div class="data-line"><span class="label">> ANGER FIX:</span> <span class="value">Listen > Agree > Apologize > Make Laugh</span></div>
+            <div class="data-line"><span class="label">> SAD STATE:</span> <span class="value">Sleep / Low Verbal Output</span></div>
             <div class="data-line"><span class="label">> COMFORT FIX:</span> <span class="value">Treat like a kid (100% Success)</span></div>
+            <div class="data-line"><span class="label">> LAUGHTER TRIGGER:</span> <span class="value">My weird faces & Roasting me</span></div>
+            <div class="data-line"><span class="label">> STRESS RESPONSE:</span> <span class="value">Sleep & Talk to me</span></div>
 
-            <div class="sector-title">SECTOR 4: MICRO-OBSERVATIONS</div>
+            <div class="sector-title">SECTOR 5: MICRO-OBSERVATIONS</div>
             <div class="data-line"><span class="label">> SNEEZE TYPE:</span> <span class="value">Kitten 🐱</span></div>
+            <div class="data-line"><span class="label">> LAUGH SOUND:</span> <span class="value">Giggle</span></div>
+            <div class="data-line"><span class="label">> CUTE ERROR:</span> <span class="value">Says "Thank uuuu" uniquely</span></div>
+            <div class="data-line"><span class="label">> WALKING SPEED:</span> <span class="value">Fast</span></div>
+            <div class="data-line"><span class="label">> TEXT STYLE:</span> <span class="value">Typoz Queen</span></div>
+            <div class="data-line"><span class="label">> SPICE TOLERANCE:</span> <span class="value">Moderate</span></div>
+            <div class="data-line"><span class="label">> CHRONOTYPE:</span> <span class="value">Morning Person (Night = Sleep)</span></div>
+            <div class="data-line"><span class="label">> COOKING SKILL:</span> <span class="value">10/10 (Rare Event / Studious Mode)</span></div>
             <div class="data-line"><span class="label">> DRIVING SKILL:</span> <span class="value error">SCARY. DO NOT ENTER VEHICLE.</span></div>
             <div class="data-line"><span class="label">> HYDRATION:</span> <span class="value">Summer: Queen | Winter: Cactus 🌵</span></div>
+            <div class="data-line"><span class="label">> PARANORMAL:</span> <span class="value">Skeptic (But fears like a kid)</span></div>
+            <div class="data-line"><span class="label">> HIDDEN TALENT:</span> <span class="value highlight">Amazing Singer (Private Show Only)</span></div>
+            <div class="data-line"><span class="label">> WANT FACE:</span> <span class="value">Cute like a small kid 🥺</span></div>
+            <div class="data-line"><span class="label">> CONFUSED FACE:</span> <span class="value">Forehead stretched, eyes looking top-right</span></div>
+            <div class="data-line"><span class="label">> MOST USED SLANG:</span> <span class="value">"Seriously"</span></div>
+            <div class="data-line"><span class="label">> FOCUS FACE:</span> <span class="value">Studying Mode</span></div>
 
         </div>
 
@@ -223,9 +291,10 @@
     </div>
 
     <script>
-        // --- THE MOVIE SCRIPT ---
+        // --- THE EXTENDED DIRECTOR'S CUT SCRIPT ---
         
-        const statusText = document.getElementById('statusText');
+        const mainStatus = document.getElementById('mainStatus');
+        const subStatus = document.getElementById('subStatus');
         const phase1 = document.getElementById('phase1');
         const phase2 = document.getElementById('phase2');
         const phase3 = document.getElementById('phase3');
@@ -236,43 +305,52 @@
         const soundScan = document.getElementById('soundScan');
         const soundGrant = document.getElementById('soundGrant');
 
-        // Step 1: Loading Sequence (Auto start)
+        // SEQUENCE START
         window.onload = function() {
+            // Step 1: 0s - 3s
             setTimeout(() => {
-                statusText.innerText = "SEARCHING SERVER...";
+                mainStatus.innerText = "ESTABLISHING CONNECTION...";
+                subStatus.innerText = "Encrypting Data Stream...";
             }, 2000);
 
+            // Step 2: 3s - 6s
             setTimeout(() => {
-                // Transition to Alert
+                mainStatus.innerText = "LOADING MEMORY MODULES...";
+                subStatus.innerText = "Fetching Sector 1-5...";
+            }, 4500);
+
+            // Step 3: 6s - 8s
+            setTimeout(() => {
+                mainStatus.innerText = "BYPASSING FIREWALL...";
+                subStatus.innerText = "Requesting Admin Privileges...";
+            }, 7000);
+
+            // Step 4: 8s - 12s (THE ALERT)
+            setTimeout(() => {
                 phase1.style.display = 'none';
                 phase2.style.display = 'block';
-                soundAlert.play().catch(e => console.log("Click to play sound")); // Browsers might block auto-audio
-            }, 5000);
+                soundAlert.play().catch(e => console.log("Audio blocked"));
+            }, 9000); // Intro lasts 9 seconds now
 
+            // Step 5: 12s+ (THE SCANNER)
             setTimeout(() => {
-                // Transition to Scanner
                 phase2.style.display = 'none';
                 phase3.style.display = 'flex';
-                // Stop alert sound if looping
-            }, 9000); // 4 seconds of alert
+            }, 13000); // Alert lasts 4 seconds
         };
 
-        // Step 2: Handle Thumb Scan
-        let scanTimer;
-        
+        // HANDLE SCAN
         function startScan() {
             const fingerBtn = document.getElementById('fingerBtn');
             const instruction = document.querySelector('.instruction');
             
-            // Visual feedback
-            fingerBtn.style.borderColor = "#00ff00"; // Turn green start
-            instruction.innerText = "VERIFYING BIOMETRICS...";
+            fingerBtn.style.borderColor = "#00ff00"; 
+            instruction.innerText = "VERIFYING...";
             instruction.style.color = "#00ff00";
             
-            // Audio
             soundScan.play();
 
-            // Wait 3 seconds for "Scanning" effect
+            // Scan lasts 3 seconds
             setTimeout(() => {
                 finishScan();
             }, 3000);
@@ -280,24 +358,18 @@
 
         function finishScan() {
             soundScan.pause();
-            soundGrant.play(); // SUCCESS CHIME!
+            soundGrant.play();
 
-            // Unlock Visuals
             document.querySelector('.fingerprint').style.boxShadow = "0 0 50px #00ff00";
             document.querySelector('.instruction').innerText = "ACCESS GRANTED";
             
             setTimeout(() => {
-                // Fade out overlay
                 overlay.style.opacity = '0';
                 setTimeout(() => {
                     overlay.style.display = 'none';
-                    // Reveal Main Content
                     mainContent.style.display = 'block';
-                    
-                    // Allow scroll again
                     document.body.style.overflow = 'auto';
                     
-                    // Trigger fade-in
                     setTimeout(() => {
                         mainContent.style.opacity = '1';
                         triggerDataScroll();
@@ -306,7 +378,6 @@
             }, 1500);
         }
 
-        // --- DATA SCROLL EFFECT ---
         function triggerDataScroll() {
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
