@@ -74,7 +74,7 @@
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: 100;
             display: none; 
-            background: #000; /* Darker BG for contrast */
+            background: #000;
             overflow: hidden;
         }
 
@@ -86,7 +86,6 @@
             overflow: hidden;
         }
 
-        /* Moving Grids */
         .tunnel-grid {
             position: absolute;
             left: -50%; width: 200%; height: 200%;
@@ -100,7 +99,6 @@
         .floor { bottom: -80px; transform: rotateX(80deg); }
         .ceiling { top: -80px; transform: rotateX(-80deg); }
 
-        /* Floating Tunnel Objects (Walls) */
         .tunnel-obj {
             position: absolute;
             top: 50%; left: 50%;
@@ -122,8 +120,8 @@
             width: 95%; max-width: 1100px;
             height: 600px;
             display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 20px;
+            grid-template-columns: 320px 1fr; /* Slightly wider left for shapes */
+            gap: 30px;
             pointer-events: none;
             z-index: 50;
             padding: 20px;
@@ -143,17 +141,46 @@
         .hc-bl { bottom: 0; left: 0; border-right: none; border-top: none; clip-path: polygon(0 0, 20% 0, 20% 80%, 100% 80%, 100% 100%, 0 100%); }
         .hc-br { bottom: 0; right: 0; border-left: none; border-top: none; clip-path: polygon(80% 0, 100% 0, 100% 100%, 0 100%, 0 80%, 80% 80%); }
 
-        /* LEFT PANEL (Clean Data) */
-        .hud-left {
-            background: rgba(10, 0, 0, 0.5);
-            border: 1px solid rgba(255, 77, 109, 0.2);
-            padding: 20px;
-            display: flex; flex-direction: column; gap: 20px;
+        /* --- LEFT PANEL (RESTORED GEOMETRY) --- */
+        .hud-left-container {
+            position: relative;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
-        .data-header { font-family: 'Orbitron'; color: #ff4d6d; font-size: 0.9rem; margin-bottom: 5px; border-bottom: 1px solid #ff4d6d; display: inline-block; padding-bottom: 2px; }
-        .data-text { font-family: 'Share Tech Mono'; font-size: 0.7rem; color: #ffb3c1; line-height: 1.6; opacity: 0.9; }
-        .graph-box { height: 80px; border: 1px solid rgba(255, 77, 109, 0.3); position: relative; overflow: hidden; background: rgba(0,0,0,0.3); }
-        .graph-line { position: absolute; bottom: 0; left: 0; width: 100%; height: 50%; background: linear-gradient(90deg, transparent, #ff4d6d, transparent); opacity: 0.5; animation: graphMove 2s infinite; }
+
+        /* The Geometric Plates */
+        .geo-plate {
+            background: rgba(30, 0, 0, 0.7);
+            border: 2px solid #ff4d6d;
+            padding: 20px;
+            backdrop-filter: blur(5px);
+            box-shadow: inset 0 0 20px rgba(255, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .gp-top {
+            margin-bottom: -15px; /* Overlap */
+            clip-path: polygon(0 0, 100% 0, 90% 100%, 0 100%);
+            z-index: 2;
+        }
+        
+        .gp-bottom {
+            clip-path: polygon(10% 0, 100% 0, 100% 100%, 0 90%);
+            z-index: 1;
+            padding-top: 30px;
+        }
+
+        /* Decorative bits */
+        .geo-deco { position: absolute; background: #ff4d6d; opacity: 0.5; }
+        .gd-1 { top: 50%; right: -10px; width: 20px; height: 40px; clip-path: polygon(0 0, 100% 50%, 0 100%); }
+
+        /* Data Styles */
+        .data-header { font-family: 'Orbitron'; color: #ff4d6d; font-size: 0.9rem; margin-bottom: 5px; border-bottom: 2px solid #ff4d6d; display: inline-block; padding-bottom: 2px; letter-spacing: 1px; }
+        .data-text { font-family: 'Share Tech Mono'; font-size: 0.75rem; color: #ffb3c1; line-height: 1.6; opacity: 0.9; text-shadow: 0 0 5px rgba(255, 0, 0, 0.5); }
+        .graph-box { height: 60px; border: 1px solid rgba(255, 77, 109, 0.5); position: relative; overflow: hidden; background: rgba(0,0,0,0.5); margin: 10px 0; }
+        .graph-line { position: absolute; bottom: 0; left: 0; width: 100%; height: 60%; background: linear-gradient(90deg, transparent, #ff4d6d, transparent); opacity: 0.7; animation: graphMove 2s infinite; }
 
         /* RIGHT PANEL (Reactor) */
         .hud-right { position: relative; display: flex; justify-content: center; align-items: center; }
@@ -167,32 +194,34 @@
             pointer-events: auto;
         }
 
-        /* TEXT STYLES (Reduced Glow) */
+        /* TEXT STYLES (FIXED COLOR) */
         .status-main { 
-            font-family: 'Orbitron'; font-size: 1.3rem; font-weight: 700; 
-            text-align: center; color: #fff; line-height: 1.4;
-            /* Minimal shadow for readability */
-            text-shadow: 0 0 5px rgba(255, 77, 109, 0.5);
+            font-family: 'Orbitron'; font-size: 1.3rem; font-weight: 900; 
+            text-align: center; 
+            color: #ff4d6d; /* RESTORED RED/PINK COLOR */
+            line-height: 1.4;
+            text-shadow: 0 0 15px rgba(255, 77, 109, 0.6);
+            letter-spacing: 2px;
         }
-        .status-sub { font-size: 0.8rem; color: #ff99aa; margin-top: 5px; opacity: 0.8; }
 
         /* BUTTONS */
         .connect-btn {
-            background: transparent; border: 2px solid #ff4d6d; color: #ff4d6d;
+            background: rgba(255, 77, 109, 0.1); border: 2px solid #ff4d6d; color: #ff4d6d;
             padding: 12px 25px; font-family: 'Orbitron'; font-size: 0.9rem; letter-spacing: 2px;
             margin-top: 20px; cursor: pointer; transition: 0.3s;
             animation: pulse 1.5s infinite;
+            box-shadow: 0 0 15px rgba(255, 77, 109, 0.3);
         }
-        .connect-btn:hover { background: #ff4d6d; color: #000; box-shadow: 0 0 20px #ff4d6d; }
+        .connect-btn:hover { background: #ff4d6d; color: #000; box-shadow: 0 0 30px #ff4d6d; }
 
         /* ALERT & SCANNER */
         .alert-content { text-align: center; animation: shake 0.5s infinite; }
-        .alert-icon { font-size: 3rem; margin-bottom: 10px; color: red; }
-        .alert-text { font-family: 'Orbitron'; color: red; font-size: 1.6rem; font-weight: 900; }
+        .alert-icon { font-size: 3rem; margin-bottom: 10px; color: red; text-shadow: 0 0 20px red; }
+        .alert-text { font-family: 'Orbitron'; color: red; font-size: 1.6rem; font-weight: 900; text-shadow: 0 0 20px red; }
         
         .scanner-wrapper { width: 90px; height: 120px; margin: 0 auto; position: relative; }
-        .fingerprint { width: 100%; height: 100%; border: 2px solid rgba(255, 77, 109, 0.5); border-radius: 30px; background: url('https://img.icons8.com/ios/100/ff4d6d/fingerprint.png') no-repeat center center; background-size: 70%; position: relative; overflow: hidden; background-color: rgba(30, 0, 0, 0.4); transition: 0.2s; cursor: pointer; }
-        .scan-fill { position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background: rgba(255, 77, 109, 0.6); transition: height 0.05s linear; }
+        .fingerprint { width: 100%; height: 100%; border: 2px solid rgba(255, 77, 109, 0.5); border-radius: 30px; background: url('https://img.icons8.com/ios/100/ff4d6d/fingerprint.png') no-repeat center center; background-size: 70%; position: relative; overflow: hidden; background-color: rgba(30, 0, 0, 0.4); transition: 0.2s; cursor: pointer; box-shadow: inset 0 0 20px rgba(255,0,0,0.2); }
+        .scan-fill { position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background: rgba(255, 77, 109, 0.8); transition: height 0.05s linear; box-shadow: 0 0 20px #ff4d6d; }
         .instruction { margin-top: 20px; color: #ff4d6d; font-size: 0.8rem; animation: pulse 1s infinite; font-weight: bold; letter-spacing: 1px; }
 
         /* MAIN CONTENT */
@@ -257,22 +286,22 @@
 
         <div class="hud-container">
             
-            <div class="hud-left">
-                <div>
+            <div class="hud-left-container">
+                <div class="geo-deco gd-1"></div>
+
+                <div class="geo-plate gp-top">
                     <div class="data-header">SYSTEM_STATUS</div>
                     <div class="data-text">
                         > KERNEL: ACTIVE<br>
                         > MEMORY: 98%<br>
-                        > UPLINK: SECURE<br>
-                        > PROXY: ENABLED
+                        > UPLINK: SECURE
+                    </div>
+                    <div class="graph-box">
+                        <div class="graph-line"></div>
                     </div>
                 </div>
-                
-                <div class="graph-box">
-                    <div class="graph-line"></div>
-                </div>
 
-                <div>
+                <div class="geo-plate gp-bottom">
                     <div class="data-header">NETWORK_LOG</div>
                     <div class="data-text">
                         > PACKETS: 1024<br>
@@ -289,7 +318,7 @@
                 
                 <div class="reactor-core-bg">
                     
-                    <div id="phase1" class="loading-content">
+                    <div id="phase1" class="loading-content" style="display:flex; justify-content:center; align-items:center; height:100%;">
                         <div class="status-main" id="textSequence">SYSTEM STARTUP</div>
                     </div>
 
@@ -301,7 +330,7 @@
                     <div id="phase2" class="alert-content" style="display:none;">
                         <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
                         <div class="alert-text">ACCESS DENIED</div>
-                        <div style="font-size:0.8rem; margin-top:10px; color:#ffcccc;">
+                        <div style="font-size:0.8rem; margin-top:10px; color:#ffcccc; border:1px solid red; padding:5px; background:rgba(50,0,0,0.5);">
                             SERVER PROTECTED BY AYUSH<br>
                             BIOMETRIC REQUIRED
                         </div>
@@ -396,7 +425,7 @@
         const soundScan = document.getElementById('soundScan');
         const soundGrant = document.getElementById('soundGrant');
 
-        // --- TUNNEL OBJECT GENERATOR (FLYING PAST) ---
+        // --- TUNNEL OBJECT GENERATOR (ON THE WALLS) ---
         const icons = [
             '<i class="fas fa-server"></i>', 
             '<i class="fas fa-cube"></i>', 
@@ -412,24 +441,20 @@
             el.className = 'tunnel-obj';
             el.innerHTML = icons[Math.floor(Math.random() * icons.length)];
             
-            // SPAWN ON THE WALLS (Left or Right side, randomly)
-            // Range: -400px (Left) to 400px (Right). Avoid 0 (Center).
-            let startX = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 200 + 300); // 300-500px away from center
-            let startY = (Math.random() - 0.5) * 600; // Random height
+            // Spawn far left or far right (Walls)
+            let startX = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 200 + 400); 
+            let startY = (Math.random() - 0.5) * 800; 
 
-            // End position: Move closer to center as it gets closer to camera? No, move past.
-            // We animate translateZ from -1000 to 500. X/Y stays relative.
-            
             el.style.setProperty('--sx', startX + 'px');
             el.style.setProperty('--sy', startY + 'px');
-            // End positions slightly wider to simulate passing by
-            el.style.setProperty('--ex', (startX * 1.5) + 'px');
-            el.style.setProperty('--ey', (startY * 1.5) + 'px');
+            // Move outwards as they come closer
+            el.style.setProperty('--ex', (startX * 1.2) + 'px');
+            el.style.setProperty('--ey', (startY * 1.2) + 'px');
             
             tunnelContainer.appendChild(el);
 
             setTimeout(() => { el.remove(); }, 4000);
-        }, 500);
+        }, 400);
 
         // --- SEQUENCE LOGIC ---
         function unlockAudio() {
@@ -450,13 +475,13 @@
             
             // EXACT SEQUENCE REQUESTED
             setTimeout(() => { textEl.innerText = "SYSTEM STARTUP"; }, 0);
-            setTimeout(() => { textEl.innerText = "INITIALIZING..."; }, 2000);
-            setTimeout(() => { textEl.innerText = "HEY!"; textEl.style.fontSize="3rem"; }, 4000);
+            setTimeout(() => { textEl.innerText = "INITIALIZING"; }, 1500);
+            setTimeout(() => { textEl.innerText = "HEY!"; textEl.style.fontSize="3rem"; }, 3500);
             setTimeout(() => { textEl.innerText = "WELCOME TO VIOLINA'S DATABASE"; textEl.style.fontSize="1.1rem"; }, 5500);
             setTimeout(() => { textEl.innerText = "LOADING..."; textEl.style.fontSize="1.4rem"; }, 8000);
             setTimeout(() => { textEl.innerText = "DECRYPTING SERVER DATA"; }, 10000);
             setTimeout(() => { textEl.innerText = "BYPASSING FIREWALL"; }, 12500);
-            setTimeout(() => { textEl.innerText = "TRYING TO CONNECT..."; }, 14500);
+            setTimeout(() => { textEl.innerText = "TRYING TO CONNECT"; }, 14500);
             
             // SHOW CONNECT BUTTON
             setTimeout(() => { 
