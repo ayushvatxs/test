@@ -21,32 +21,53 @@
             height: 100vh;
             color: #fff;
             user-select: none;
-            perspective: 1000px; /* 3D Depth */
+            perspective: 1000px;
         }
 
-        /* --- 1. START SCREEN --- */
-        #startScreen {
+        /* --- 1. THE TUNNEL (FIXED & VISIBLE) --- */
+        #cyberBackground {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 999;
-            display: flex; justify-content: center; align-items: center;
-            background: radial-gradient(circle, #1a0000 0%, #000 100%);
+            z-index: 0; background: #020000; overflow: hidden;
         }
-        .start-btn {
-            background: rgba(255, 0, 60, 0.1); border: 2px solid #ff4d6d; color: #ff4d6d;
-            padding: 25px 60px; font-family: 'Orbitron'; font-size: 1.5rem; letter-spacing: 4px;
-            cursor: pointer; box-shadow: 0 0 40px #ff4d6d; transition: 0.3s;
-            clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
+        .cyber-tunnel {
+            position: absolute; width: 100%; height: 100%;
+            transform-style: preserve-3d; perspective: 600px;
         }
-        .start-btn:hover { background: #ff4d6d; color: #000; box-shadow: 0 0 80px #ff4d6d; }
+        .tunnel-grid {
+            position: absolute; left: -50%; width: 200%; height: 200%;
+            background: 
+                linear-gradient(rgba(255, 0, 60, 0.4) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 0, 60, 0.4) 1px, transparent 1px);
+            background-size: 80px 80px;
+            animation: warpSpeed 4s linear infinite;
+            opacity: 0.6; box-shadow: 0 0 100px rgba(255, 0, 60, 0.2);
+        }
+        .floor { bottom: -100px; transform: rotateX(80deg); }
+        .ceiling { top: -100px; transform: rotateX(-80deg); }
 
-        /* --- 2. HUD OVERLAY (The Initial Interface) --- */
+        /* OBJECTS ON WALLS */
+        .tunnel-obj {
+            position: absolute; top: 50%; left: 50%;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 2.5rem; color: rgba(255, 50, 50, 0.9);
+            border: 1px solid rgba(255, 50, 50, 0.6);
+            background: rgba(50, 0, 0, 0.4);
+            padding: 15px; transform-style: preserve-3d;
+            animation: objectFly 4s linear forwards;
+            box-shadow: 0 0 20px #ff003c;
+        }
+
+        /* --- 2. HUD INTRO UI (Restored & Fixed) --- */
         #introOverlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 100; display: none;
+            /* Important for the ZOOM effect */
+            transform-origin: 75% 50%; /* Center zoom on the Reactor */
+            transition: transform 1.5s cubic-bezier(0.7, 0, 0.84, 0), opacity 1.5s ease;
         }
 
-        /* Edges & Frame */
-        .hud-frame { position: absolute; width: 100%; height: 100%; pointer-events: none; z-index: 50; }
+        /* The Frame */
+        .hud-frame { position: absolute; width: 100%; height: 100%; pointer-events: none; z-index: 150; }
         .hud-bar-top { position: absolute; top: 20px; left: 5%; width: 90%; height: 2px; background: #ff4d6d; box-shadow: 0 0 10px #ff4d6d; }
         .hud-corner { position: absolute; width: 80px; height: 80px; border: 4px solid #ff4d6d; box-shadow: 0 0 15px #ff4d6d; }
         .hc-tl { top: 20px; left: 20px; border-right: 0; border-bottom: 0; clip-path: polygon(0 0, 100% 0, 100% 20%, 20% 20%, 20% 100%, 0 100%); }
@@ -58,20 +79,19 @@
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             width: 95%; max-width: 1200px; height: 600px;
             display: grid; grid-template-columns: 350px 1fr; gap: 40px;
-            z-index: 60; transition: transform 0.5s ease-in;
+            padding: 20px;
         }
 
         /* Left Panel */
         .hud-left {
             display: flex; flex-direction: column; padding: 25px;
             background: rgba(20, 0, 0, 0.6); border: 1px solid rgba(255, 77, 109, 0.3);
-            backdrop-filter: blur(5px); transform-origin: center right;
+            backdrop-filter: blur(5px);
         }
         .sys-header { font-family: 'Orbitron'; font-size: 1.1rem; color: #ff4d6d; border-bottom: 2px solid #ff4d6d; display: inline-block; margin-bottom: 10px; }
         .sys-text { font-family: 'Share Tech Mono'; font-size: 0.75rem; color: #fff; opacity: 0.9; margin-bottom: 20px; }
         .geo-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 90px 90px; gap: 10px; margin-bottom: 30px; }
         .geo-box { border: 1px solid #ff4d6d; background: rgba(50, 0, 0, 0.4); box-shadow: inset 0 0 10px rgba(255,0,0,0.3); }
-        /* Shapes */
         .gb-1 { clip-path: polygon(0 0, 100% 0, 100% 80%, 80% 100%, 0 100%); }
         .gb-2 { clip-path: polygon(0 0, 100% 0, 100% 100%, 20% 100%, 0 80%); }
         .gb-3 { clip-path: polygon(0 0, 80% 0, 100% 20%, 100% 100%, 0 100%); }
@@ -81,7 +101,7 @@
         .gauge-circle::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid transparent; border-top-color: #ff4d6d; animation: spin 3s linear infinite; }
 
         /* Right Panel */
-        .hud-right { position: relative; display: flex; justify-content: center; align-items: center; transform-origin: center left; }
+        .hud-right { position: relative; display: flex; justify-content: center; align-items: center; }
         .reactor-outer { position: absolute; width: 500px; height: 500px; border: 2px solid rgba(255, 77, 109, 0.4); border-radius: 50%; border-left: transparent; border-right: transparent; animation: spin 10s linear infinite; }
         .reactor-inner { position: absolute; width: 400px; height: 400px; border: 1px dashed rgba(255, 255, 255, 0.3); border-radius: 50%; animation: spinRev 15s linear infinite; }
         .reactor-core {
@@ -91,7 +111,6 @@
             box-shadow: 0 0 60px rgba(255, 0, 60, 0.4); pointer-events: auto;
         }
 
-        /* Text & Buttons */
         .status-text { font-family: 'Orbitron'; font-size: 1.4rem; font-weight: 700; color: #fff; text-shadow: 0 0 10px #ff4d6d; text-align: center; }
         .connect-btn {
             margin-top: 20px; background: rgba(255,255,255,0.1); border: 1px solid #fff; color: #fff;
@@ -111,14 +130,12 @@
             opacity: 0; transition: opacity 2s ease;
         }
 
-        /* The Universe Container */
+        /* Universe */
         #universe {
             position: absolute; width: 100%; height: 100%;
             transform-style: preserve-3d;
             display: flex; justify-content: center; align-items: center;
         }
-
-        /* The Sun (Memory Core) */
         .sun-core {
             position: absolute; width: 150px; height: 150px;
             background: radial-gradient(circle, #fff, #ff4d6d, #550000);
@@ -126,8 +143,6 @@
             box-shadow: 0 0 100px #ff4d6d, 0 0 200px rgba(255, 77, 109, 0.4);
             animation: sunPulse 4s infinite alternate;
         }
-
-        /* Orbit Paths */
         .orbit {
             position: absolute; border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 50%; transform-style: preserve-3d;
@@ -135,73 +150,68 @@
         .o1 { width: 600px; height: 600px; animation: orbitSpin 20s linear infinite; }
         .o2 { width: 900px; height: 900px; animation: orbitSpin 35s linear infinite reverse; }
         .o3 { width: 1200px; height: 1200px; animation: orbitSpin 50s linear infinite; }
-
-        /* Planets (Sci-Fi Objects) */
         .planet {
             position: absolute; top: 50%; left: 100%;
             width: 40px; height: 40px; margin-top: -20px; margin-left: -20px;
             background: #000; border: 2px solid #ff4d6d; border-radius: 50%;
             box-shadow: 0 0 20px #ff4d6d;
         }
+        .star { position: absolute; background: #fff; border-radius: 50%; animation: twinkle 2s infinite; }
 
-        /* STARFIELD */
-        .star {
-            position: absolute; background: #fff; border-radius: 50%;
-            animation: twinkle 2s infinite;
-        }
-
-        /* FIXED CARDS LAYER (Top of Solar System) */
+        /* CARDS */
         .cards-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             overflow-y: auto; padding: 50px;
             display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px; align-content: center;
-            z-index: 10; /* Above the sun */
+            gap: 30px; align-content: center; z-index: 10;
         }
-
         .data-card {
-            background: rgba(20, 5, 5, 0.7);
-            border: 1px solid rgba(255, 77, 109, 0.5);
-            backdrop-filter: blur(10px);
-            padding: 20px; border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            transition: transform 0.3s;
+            background: rgba(20, 5, 5, 0.7); border: 1px solid rgba(255, 77, 109, 0.5);
+            backdrop-filter: blur(10px); padding: 20px; border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5); transition: transform 0.3s;
         }
         .data-card:hover { transform: translateY(-5px); border-color: #fff; box-shadow: 0 0 30px rgba(255, 77, 109, 0.3); }
-
         .card-head { font-family: 'Orbitron'; font-size: 1.1rem; color: #ff4d6d; border-bottom: 1px solid rgba(255,255,255,0.2); margin-bottom: 15px; padding-bottom: 5px; }
         .card-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.85rem; border-bottom: 1px dashed rgba(255,255,255,0.1); }
-        .lbl { color: #aaa; }
-        .val { color: #fff; font-weight: bold; text-align: right; }
+        .lbl { color: #aaa; } .val { color: #fff; font-weight: bold; text-align: right; }
 
-        /* --- ANIMATIONS --- */
+        /* --- START BUTTON --- */
+        #startScreen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 999;
+            display: flex; justify-content: center; align-items: center;
+            background: radial-gradient(circle, #1a0000 0%, #000 100%);
+        }
+
+        /* --- EFFECTS --- */
+        .hyper-dive { transform: scale(50) rotate(20deg); opacity: 0; pointer-events: none; }
+        .white-flash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 999; animation: flashAnim 2s forwards; pointer-events: none; }
+
+        @keyframes warpSpeed { 0% { transform: rotateX(80deg) translateY(0); } 100% { transform: rotateX(80deg) translateY(100px); } }
         @keyframes spin { 100% { transform: rotate(360deg); } }
         @keyframes spinRev { 100% { transform: rotate(-360deg); } }
         @keyframes pulse { 0% { opacity: 0.6; } 100% { opacity: 1; } }
-        @keyframes shake { 0% { transform: translate(2px, 2px); } 25% { transform: translate(-2px, -2px); } 50% { transform: translate(2px, -2px); } 75% { transform: translate(-2px, 2px); } }
-        
-        /* THE BIG BANG TRANSITION */
-        .implode { animation: implodeAnim 0.5s cubic-bezier(0.6, -0.28, 0.735, 0.045) forwards; }
-        @keyframes implodeAnim { 100% { transform: scale(0.01) rotate(360deg); opacity: 0; } }
-        
-        .big-bang-flash { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #fff; z-index: 999; animation: bangFlash 2s forwards; pointer-events: none;
+        @keyframes objectFly { 
+            0% { transform: translate3d(var(--tx), var(--ty), -1000px); opacity: 0; } 
+            20% { opacity: 1; } 
+            100% { transform: translate3d(var(--ex), var(--ey), 500px); opacity: 0; } 
         }
-        @keyframes bangFlash { 0% { opacity: 0; } 10% { opacity: 1; } 100% { opacity: 0; } }
-
         @keyframes sunPulse { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.1); opacity: 1; } }
         @keyframes orbitSpin { 0% { transform: rotateZ(0deg) rotateX(60deg); } 100% { transform: rotateZ(360deg) rotateX(60deg); } }
         @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+        @keyframes flashAnim { 0% { opacity: 0; } 10% { opacity: 1; } 100% { opacity: 0; } }
 
     </style>
 </head>
 <body>
 
-    <div id="tunnelBg" style="position:fixed; width:100%; height:100%; background:black; z-index:-1;">
-        <div style="position:absolute; width:200%; height:200%; left:-50%; top:-50%; background: radial-gradient(circle, transparent 20%, #000 80%), linear-gradient(rgba(255,0,60,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,0,60,0.3) 1px, transparent 1px); background-size: 60px 60px; transform: perspective(500px) rotateX(60deg); animation: tunnelMove 2s linear infinite;"></div>
+    <div id="cyberBackground">
+        <div class="cyber-tunnel">
+            <div class="tunnel-grid floor"></div>
+            <div class="tunnel-grid ceiling"></div>
+            <div id="tunnelObjects"></div>
+        </div>
     </div>
-    <style> @keyframes tunnelMove { 0% { transform: perspective(500px) rotateX(60deg) translateY(0); } 100% { transform: perspective(500px) rotateX(60deg) translateY(60px); } } </style>
 
     <audio id="soundAlert" src="alert.mp3" preload="auto"></audio>
     <audio id="soundScan" src="scan.mp3" preload="auto" loop></audio>
@@ -266,7 +276,7 @@
             <div class="orbit o1"><div class="planet"></div></div>
             <div class="orbit o2"><div class="planet"></div></div>
             <div class="orbit o3"></div>
-            </div>
+        </div>
 
         <div class="cards-layer">
             <div style="width:100%; text-align:center; margin-bottom:20px;">
@@ -278,46 +288,34 @@
                 <div class="card-row"><span class="lbl">NAME</span> <span class="val">Violina Sharma</span></div>
                 <div class="card-row"><span class="lbl">DOB</span> <span class="val">13 FEB 20XX</span></div>
                 <div class="card-row"><span class="lbl">ZODIAC</span> <span class="val">Taurus ♉</span></div>
-                <div class="card-row"><span class="lbl">EYES</span> <span class="val">Deep Espresso</span></div>
                 <div class="card-row"><span class="lbl">HAIR</span> <span class="val">Black</span></div>
-                <div class="card-row"><span class="lbl">MARKING</span> <span class="val">Mole (Right)</span></div>
-                <div class="card-row"><span class="lbl">HAND</span> <span class="val">Right</span></div>
             </div>
-
+            
             <div class="data-card">
                 <div class="card-head">CONNECTION LOGS</div>
                 <div class="card-row"><span class="lbl">MET</span> <span class="val">11 April 2025</span></div>
-                <div class="card-row"><span class="lbl">LONGEST CALL</span> <span class="val" style="color:#ff4d6d;">06 HOURS</span></div>
-                <div class="card-row"><span class="lbl">PHOTOS</span> <span class="val">489</span></div>
-                <div class="card-row"><span class="lbl">DISTANCE</span> <span class="val">611 KM</span></div>
-                <div class="card-row"><span class="lbl">FIRST SHOW</span> <span class="val">Crime Patrol</span></div>
+                <div class="card-row"><span class="lbl">CALL</span> <span class="val" style="color:#ff4d6d;">06 HOURS</span></div>
+                <div class="card-row"><span class="lbl">DIST</span> <span class="val">611 KM</span></div>
             </div>
 
             <div class="data-card">
                 <div class="card-head">PREFERENCES</div>
-                <div class="card-row"><span class="lbl">FLOWER</span> <span class="val">Roses</span></div>
                 <div class="card-row"><span class="lbl">FOOD</span> <span class="val">Brinjal / Duck</span></div>
                 <div class="card-row"><span class="lbl">DRINK</span> <span class="val">Red Tea</span></div>
-                <div class="card-row"><span class="lbl">SWEET</span> <span class="val">Kinder Joy</span></div>
-                <div class="card-row"><span class="lbl">ARTIST</span> <span class="val">Taylor Swift</span></div>
-                <div class="card-row"><span class="lbl">FAV PLACE</span> <span class="val" style="color:#ff4d6d;">My Lap</span></div>
+                <div class="card-row"><span class="lbl">SINGER</span> <span class="val">Taylor Swift</span></div>
             </div>
 
             <div class="data-card">
                 <div class="card-head">EMOTIONAL DATA</div>
-                <div class="card-row"><span class="lbl">HAPPY</span> <span class="val">Award Dance</span></div>
+                <div class="card-row"><span class="lbl">HAPPY</span> <span class="val">Dance</span></div>
                 <div class="card-row"><span class="lbl">ANGRY</span> <span class="val">Scolding Mode</span></div>
                 <div class="card-row"><span class="lbl">FIX</span> <span class="val">Treat like Kid</span></div>
-                <div class="card-row"><span class="lbl">SAD</span> <span class="val">Sleep / Quiet</span></div>
-                <div class="card-row"><span class="lbl">LAUGH</span> <span class="val">Weird Faces</span></div>
             </div>
 
             <div class="data-card">
                 <div class="card-head">MICRO DATA</div>
                 <div class="card-row"><span class="lbl">SNEEZE</span> <span class="val">Kitten 🐱</span></div>
-                <div class="card-row"><span class="lbl">WALK</span> <span class="val">Fast</span></div>
-                <div class="card-row"><span class="lbl">COOKING</span> <span class="val">10/10 (Rare)</span></div>
-                <div class="card-row"><span class="lbl">DRIVING</span> <span class="val" style="color:red;">SCARY</span></div>
+                <div class="card-row"><span class="lbl">DRIVE</span> <span class="val" style="color:red;">SCARY</span></div>
                 <div class="card-row"><span class="lbl">TALENT</span> <span class="val">Singer</span></div>
             </div>
 
@@ -333,28 +331,35 @@
         const soundAlert = document.getElementById('soundAlert');
         const soundScan = document.getElementById('soundScan');
         const soundGrant = document.getElementById('soundGrant');
+        const tunnelObjContainer = document.getElementById('tunnelObjects');
 
-        // --- STAR GENERATOR ---
+        // --- BACKGROUND OBJECTS ---
+        setInterval(() => {
+            const icons = ['<i class="fas fa-server"></i>', '<i class="fas fa-cube"></i>', 'HEX', '0101'];
+            const el = document.createElement('div');
+            el.className = 'tunnel-obj';
+            el.innerHTML = icons[Math.floor(Math.random() * icons.length)];
+            let x = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 400 + 300);
+            let y = (Math.random() - 0.5) * 600;
+            el.style.setProperty('--tx', x + 'px'); el.style.setProperty('--ty', y + 'px');
+            el.style.setProperty('--ex', (x * 1.5) + 'px'); el.style.setProperty('--ey', (y * 1.5) + 'px');
+            tunnelObjContainer.appendChild(el);
+            setTimeout(() => el.remove(), 4000);
+        }, 400);
+
+        // --- STARS ---
         const universe = document.getElementById('universe');
         for(let i=0; i<100; i++){
             let star = document.createElement('div');
             star.className = 'star';
-            let x = Math.random() * 100;
-            let y = Math.random() * 100;
+            let x = Math.random() * 100; let y = Math.random() * 100;
             let size = Math.random() * 2 + 1;
             star.style.left = x + '%'; star.style.top = y + '%';
             star.style.width = size + 'px'; star.style.height = size + 'px';
             universe.appendChild(star);
         }
 
-        // --- MOUSE PARALLAX ON BACKGROUND ---
-        document.addEventListener('mousemove', (e) => {
-            let x = (window.innerWidth/2 - e.pageX) / 50;
-            let y = (window.innerHeight/2 - e.pageY) / 50;
-            universe.style.transform = `translateX(${x}px) translateY(${y}px)`;
-        });
-
-        // --- START SYSTEM ---
+        // --- START ---
         function startSystem() {
             soundAlert.play(); soundAlert.pause();
             soundScan.play(); soundScan.pause();
@@ -386,9 +391,7 @@
             document.getElementById('phaseConnect').style.display='none';
             document.getElementById('phaseAlert').style.display='block';
             soundAlert.currentTime = 0; soundAlert.play();
-            document.body.style.animation = "shake 0.5s infinite";
             setTimeout(() => {
-                document.body.style.animation = "none";
                 document.getElementById('phaseAlert').style.display='none';
                 document.getElementById('phaseScan').style.display='block';
             }, 4000);
@@ -403,7 +406,7 @@
             soundScan.currentTime=0; soundScan.play();
             holdTimer = setInterval(() => {
                 progress+=4; scanBeam.style.height=progress+"%";
-                if(progress>=100) triggerBigBang();
+                if(progress>=100) triggerDive();
             }, 50);
         }
         function endScan() {
@@ -411,37 +414,39 @@
             if(progress<100){ progress=0; scanBeam.style.height="0%"; soundScan.pause(); }
         }
 
-        // --- THE BIG BANG TRANSITION ---
-        function triggerBigBang() {
+        // --- THE DIVE TRANSITION ---
+        function triggerDive() {
             clearInterval(holdTimer); soundScan.pause(); soundGrant.play();
             
-            // 1. IMPLOSION
-            document.getElementById('hudContent').classList.add('implode');
-            document.getElementById('tunnelBg').style.transition = "opacity 0.5s";
-            document.getElementById('tunnelBg').style.opacity = "0";
-
+            // 1. ZOOM IN (DIVE)
+            document.getElementById('introOverlay').classList.add('hyper-dive');
+            
             // 2. FLASH & SWITCH
             setTimeout(() => {
                 const flash = document.getElementById('flashLayer');
                 flash.style.display = 'block';
-                flash.style.animation = "bangFlash 2s forwards";
+                flash.style.animation = "flashAnim 2s forwards";
                 
                 document.getElementById('introOverlay').style.display = 'none';
                 
                 setTimeout(() => {
                     const main = document.getElementById('mainContent');
                     main.style.display = 'block';
-                    // Explosion Effect
-                    main.animate([{transform:'scale(0)', opacity:0}, {transform:'scale(1)', opacity:1}], {duration:1000, easing:'cubic-bezier(0.2, 0.8, 0.2, 1)'});
                     main.style.opacity = '1';
                 }, 500);
-            }, 500);
+            }, 1000);
         }
 
         scanBtn.addEventListener('mousedown', startScan);
         scanBtn.addEventListener('mouseup', endScan);
         scanBtn.addEventListener('touchstart', startScan);
         scanBtn.addEventListener('touchend', endScan);
+
+        document.addEventListener('mousemove', (e) => {
+            let x = (window.innerWidth/2 - e.pageX) / 50;
+            let y = (window.innerHeight/2 - e.pageY) / 50;
+            universe.style.transform = `translateX(${x}px) translateY(${y}px)`;
+        });
     </script>
 </body>
 </html>
