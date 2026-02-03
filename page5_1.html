@@ -10,32 +10,31 @@
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
     
     <style>
-        /* --- GLOBAL SETUP --- */
+        /* --- GLOBAL --- */
         body {
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             background-color: #000;
             font-family: 'Share Tech Mono', monospace;
             overflow: hidden; 
             height: 100vh;
             color: #fff;
+            user-select: none; /* Stop text selection during hold */
+            -webkit-user-select: none;
         }
 
-        /* --- BACKGROUND VIDEO (Fixed Alignment) --- */
+        /* --- BACKGROUND VIDEO --- */
         #bgVideo {
             position: fixed;
             top: 50%; left: 50%;
             min-width: 100%; min-height: 100%;
             width: auto; height: auto;
             z-index: -1;
-            /* CENTER THE VIDEO: Adjust these values if needed */
-            transform: translate(-50%, -50%) scale(1.2); 
-            object-position: center center;
-            /* Make it pop */
-            filter: contrast(1.2) brightness(0.8);
+            transform: translate(-50%, -50%) scale(1.1); 
+            object-position: center;
+            filter: contrast(1.3) brightness(0.7); /* Darker for better UI contrast */
         }
 
-        /* --- START BUTTON (Fixes Sound Issue) --- */
+        /* --- 1. START SCREEN (The Key to Sound) --- */
         #startScreen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -48,128 +47,153 @@
 
         .start-btn {
             background: transparent;
-            border: 2px solid #ff4d6d;
+            border: 1px solid #ff4d6d;
             color: #ff4d6d;
-            padding: 20px 40px;
+            padding: 25px 50px;
             font-family: 'Orbitron', sans-serif;
             font-size: 1.2rem;
-            letter-spacing: 3px;
+            letter-spacing: 4px;
             cursor: pointer;
-            box-shadow: 0 0 20px rgba(255, 77, 109, 0.4);
+            box-shadow: 0 0 30px rgba(255, 77, 109, 0.2);
             transition: 0.3s;
-            animation: pulseBtn 2s infinite;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .start-btn::before {
+            content: '';
+            position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 77, 109, 0.4), transparent);
+            animation: btnShine 3s infinite;
         }
 
-        .start-btn:active { transform: scale(0.95); }
-
-        /* --- THE HUD CONTAINER (The "Digital Box") --- */
+        /* --- 2. HUD INTERFACE (Video Matched) --- */
         .intro-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: 100;
-            display: none; /* Hidden until Start clicked */
+            display: none; 
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background: rgba(0,0,0,0.2); /* Very light dim */
-            backdrop-filter: blur(2px);
+            /* Tech Grid Background */
+            background-image: 
+                linear-gradient(rgba(255, 77, 109, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 77, 109, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            backdrop-filter: blur(3px);
         }
 
-        .hud-box {
-            position: relative;
-            width: 85%;
-            max-width: 400px;
+        /* The Tech Container */
+        .hud-container {
+            width: 320px;
             padding: 40px 20px;
-            border: 1px solid rgba(255, 77, 109, 0.3);
-            background: rgba(0, 0, 0, 0.6); /* Semi-transparent black box */
             text-align: center;
-            box-shadow: 0 0 50px rgba(255, 0, 0, 0.1);
+            position: relative;
+            border-top: 2px solid rgba(255, 77, 109, 0.6);
+            border-bottom: 2px solid rgba(255, 77, 109, 0.6);
+            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(20,0,0,0.8) 100%);
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
         }
 
-        /* Glowing Corners (Iron Man Style) */
-        .hud-corner {
-            position: absolute;
-            width: 20px; height: 20px;
-            border: 3px solid #ff4d6d;
+        /* Decorative Tech Lines */
+        .tech-line {
+            position: absolute; background: #ff4d6d;
             box-shadow: 0 0 10px #ff4d6d;
         }
-        .tl { top: -2px; left: -2px; border-right: none; border-bottom: none; }
-        .tr { top: -2px; right: -2px; border-left: none; border-bottom: none; }
-        .bl { bottom: -2px; left: -2px; border-right: none; border-top: none; }
-        .br { bottom: -2px; right: -2px; border-left: none; border-top: none; }
+        .tl-v { top: 0; left: 0; width: 2px; height: 30px; }
+        .tr-v { top: 0; right: 0; width: 2px; height: 30px; }
+        .bl-v { bottom: 0; left: 0; width: 2px; height: 30px; }
+        .br-v { bottom: 0; right: 0; width: 2px; height: 30px; }
 
         /* PHASE 1: LOADING */
         .loading-ring {
-            width: 50px; height: 50px;
-            border: 3px solid rgba(255, 77, 109, 0.2);
-            border-top: 3px solid #ff4d6d;
+            width: 60px; height: 60px;
+            border: 2px solid rgba(255, 77, 109, 0.1);
+            border-top: 2px solid #ff4d6d;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
+            animation: spin 0.8s linear infinite;
             margin: 0 auto 20px auto;
+            box-shadow: 0 0 15px rgba(255, 77, 109, 0.2);
         }
 
         .status-text {
             font-family: 'Orbitron', sans-serif;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             letter-spacing: 2px;
             color: #fff;
-            text-shadow: 0 0 10px #ff4d6d;
+            text-shadow: 0 0 10px rgba(255, 77, 109, 0.8);
         }
 
-        .sub-status {
-            font-size: 0.8rem;
-            color: #ffb3c1;
-            margin-top: 5px;
-            font-family: 'Share Tech Mono', monospace;
-        }
-
-        /* PHASE 2: ALERT (Red) */
+        /* PHASE 2: ALERT */
         .alert-title {
-            color: #ff3333;
-            font-size: 1.8rem;
+            color: #ff0000;
+            font-size: 2rem;
             font-weight: 900;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             font-family: 'Orbitron', sans-serif;
             text-shadow: 0 0 20px red;
-            animation: flashText 0.2s infinite alternate;
-        }
-
-        .alert-sub {
-            color: #fff;
-            letter-spacing: 1px;
-            font-size: 0.9rem;
-        }
-
-        /* PHASE 3: SCANNER */
-        .fingerprint {
-            width: 80px; height: 100px;
-            border: 2px solid rgba(255, 77, 109, 0.5);
-            border-radius: 30px;
-            margin: 0 auto;
-            position: relative;
-            background: url('https://img.icons8.com/ios/100/ff4d6d/fingerprint.png') no-repeat center center;
-            background-size: 70%;
-            cursor: pointer;
-            overflow: hidden;
-            background-color: rgba(255,0,0,0.1);
+            animation: flashText 0.3s infinite alternate;
         }
         
-        .scan-line {
+        .alert-details {
+            border: 1px solid red;
+            background: rgba(50, 0, 0, 0.5);
+            padding: 10px;
+            font-size: 0.8rem;
+            color: #ffcccc;
+            display: inline-block;
+        }
+
+        /* PHASE 3: HOLD TO SCAN */
+        .scanner-wrapper {
+            position: relative;
+            width: 100px;
+            height: 120px;
+            margin: 0 auto;
+        }
+
+        .fingerprint {
+            width: 100%; height: 100%;
+            border: 1px solid rgba(255, 77, 109, 0.3);
+            border-radius: 30px;
+            background: url('https://img.icons8.com/ios/100/ff4d6d/fingerprint.png') no-repeat center center;
+            background-size: 60%;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* The Progress Fill (Fills up as you hold) */
+        .scan-fill {
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 0%;
+            background: rgba(255, 77, 109, 0.3);
+            transition: height 0.1s linear; /* Smooth fill */
+            box-shadow: 0 0 20px rgba(255, 77, 109, 0.5);
+        }
+
+        /* The Moving Laser */
+        .scan-laser {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 2px;
-            background: #ff4d6d;
-            box-shadow: 0 0 10px #ff4d6d;
-            animation: scanMove 1.5s linear infinite;
+            background: #00ff00;
+            box-shadow: 0 0 10px #00ff00;
+            display: none; /* Only shows on success */
         }
 
         .instruction {
-            margin-top: 20px;
-            color: #ff4d6d;
+            margin-top: 25px;
             font-size: 0.8rem;
-            animation: pulse 1s infinite;
+            color: #ff4d6d;
+            letter-spacing: 1px;
+            font-weight: bold;
         }
 
-        /* --- MAIN CONTENT --- */
+        /* --- MAIN CONTENT (Data Server) --- */
         #mainContent {
             display: none;
             width: 100%;
@@ -179,7 +203,7 @@
             z-index: 10;
         }
 
-        /* (Keep your exact styling for data lines) */
+        /* (Keep your exact Terminal Styles) */
         .server-header { padding: 40px 20px; border-bottom: 1px solid #ff4d6d; background: rgba(0, 0, 0, 0.8); margin-bottom: 20px; }
         .sys-title { font-family: 'Orbitron', sans-serif; font-size: 1.8rem; color: #fff; margin-top: 5px; }
         .log-container { padding: 10px 20px; max-width: 600px; margin: 0 auto; padding-bottom: 100px; background: rgba(0,0,0,0.6); border-radius: 10px; }
@@ -193,12 +217,9 @@
         .next-btn-container { text-align: center; margin-top: 60px; padding-bottom: 50px; }
         .tech-btn { border: 1px solid #ff4d6d; color: #ff4d6d; padding: 15px 30px; font-family: 'Orbitron', sans-serif; text-decoration: none; text-transform: uppercase; transition: 0.3s; background: rgba(0,0,0,0.7); }
         
-        /* ANIMATIONS */
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes flashText { 0% { opacity: 1; } 100% { opacity: 0.5; } }
-        @keyframes scanMove { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
-        @keyframes pulse { 0% { opacity: 0.6; } 100% { opacity: 1; } }
-        @keyframes pulseBtn { 0% { box-shadow: 0 0 0 rgba(255,77,109, 0.4); } 70% { box-shadow: 0 0 20px rgba(255,77,109, 0); } 100% { box-shadow: 0 0 0 rgba(255,77,109, 0); } }
+        @keyframes flashText { 0% { opacity: 1; } 100% { opacity: 0.3; } }
+        @keyframes btnShine { 0% { left: -100%; } 20% { left: 100%; } 100% { left: 100%; } }
 
     </style>
 </head>
@@ -208,9 +229,9 @@
         <source src="server_bg.mp4" type="video/mp4">
     </video>
 
-    <audio id="soundAlert" src="alert.mp3"></audio>
-    <audio id="soundScan" src="scan.mp3" loop></audio>
-    <audio id="soundGrant" src="granted.mp3"></audio>
+    <audio id="soundAlert" src="alert.mp3" preload="auto"></audio>
+    <audio id="soundScan" src="scan.mp3" preload="auto" loop></audio>
+    <audio id="soundGrant" src="granted.mp3" preload="auto"></audio>
 
     <div id="startScreen">
         <button class="start-btn" onclick="initializeSystem()">INITIALIZE SYSTEM</button>
@@ -218,32 +239,34 @@
 
     <div class="intro-overlay" id="overlay">
         
-        <div class="hud-box">
-            <div class="hud-corner tl"></div>
-            <div class="hud-corner tr"></div>
-            <div class="hud-corner bl"></div>
-            <div class="hud-corner br"></div>
+        <div class="hud-container">
+            <div class="tech-line tl-v"></div><div class="tech-line tr-v"></div>
+            <div class="tech-line bl-v"></div><div class="tech-line br-v"></div>
 
             <div id="phase1">
                 <div class="loading-ring"></div>
                 <div class="status-text" id="mainStatus">SYSTEM STARTUP</div>
-                <div class="sub-status" id="subStatus">Checking Security Protocols...</div>
+                <div style="font-size: 0.8rem; color: #888; margin-top: 10px;">Establishing Secure Connection...</div>
             </div>
 
             <div id="phase2" style="display:none;">
                 <div class="alert-title">🚫 ACCESS DENIED</div>
-                <div class="alert-sub" style="font-weight:bold; margin-bottom:10px;">SERVER PROTECTED BY AYUSH</div>
-                <div class="alert-sub" style="opacity:0.7;">BIOMETRIC MISMATCH</div>
+                <div class="alert-details">
+                    SERVER PROTECTED BY AYUSH<br>
+                    BIOMETRIC REQUIRED
+                </div>
             </div>
 
             <div id="phase3" style="display:none;">
-                <div class="fingerprint" id="fingerBtn" onclick="startScan()">
-                    <div class="scan-line"></div>
+                <div class="scanner-wrapper">
+                    <div class="fingerprint" id="fingerBtn">
+                        <div class="scan-fill" id="scanFill"></div>
+                        <div class="scan-laser" id="scanLaser"></div>
+                    </div>
                 </div>
-                <div class="instruction">PRESS THUMB TO VERIFY</div>
+                <div class="instruction" id="scanText">HOLD THUMB TO SCAN</div>
             </div>
         </div>
-
     </div>
 
     <div id="mainContent">
@@ -310,7 +333,6 @@
             <div class="data-line"><span class="label">> CONFUSED FACE:</span> <span class="value">Forehead stretched, eyes top-right</span></div>
             <div class="data-line"><span class="label">> MOST USED SLANG:</span> <span class="value">"Seriously"</span></div>
             <div class="data-line"><span class="label">> FOCUS FACE:</span> <span class="value">Studying Mode</span></div>
-
         </div>
 
         <div class="next-btn-container">
@@ -321,7 +343,6 @@
     <script>
         // SCRIPT
         const mainStatus = document.getElementById('mainStatus');
-        const subStatus = document.getElementById('subStatus');
         const phase1 = document.getElementById('phase1');
         const phase2 = document.getElementById('phase2');
         const phase3 = document.getElementById('phase3');
@@ -334,74 +355,107 @@
         const soundScan = document.getElementById('soundScan');
         const soundGrant = document.getElementById('soundGrant');
 
-        // 1. CLICK TO START (Unlocks Audio)
+        // iPad Audio Fix: Play everything muted once on first click
+        function unlockAudio() {
+            soundAlert.play(); soundAlert.pause();
+            soundScan.play(); soundScan.pause();
+            soundGrant.play(); soundGrant.pause();
+        }
+
+        // 1. INITIALIZE (Click -> Unlock Audio -> Start)
         function initializeSystem() {
-            startScreen.style.display = 'none'; // Hide button
-            overlay.style.display = 'flex';     // Show HUD
-            bgVideo.play();                     // Start video
+            unlockAudio();
+            startScreen.style.display = 'none'; 
+            overlay.style.display = 'flex';     
+            bgVideo.play();                     
             
             runIntroSequence();
         }
 
         function runIntroSequence() {
-            // STEP 1: Loading
-            setTimeout(() => {
-                mainStatus.innerText = "ESTABLISHING CONNECTION...";
-                subStatus.innerText = "Encrypting Data Stream...";
-            }, 2000);
-
-            setTimeout(() => {
-                mainStatus.innerText = "LOADING MEMORY MODULES...";
-                subStatus.innerText = "Fetching Sector 1-5...";
-            }, 4500);
-
+            // STEP 1: Loading (0-3s)
             setTimeout(() => {
                 mainStatus.innerText = "BYPASSING FIREWALL...";
-                subStatus.innerText = "Requesting Admin Privileges...";
-            }, 7000);
+            }, 3000);
 
-            // STEP 2: ALERT (Starts at 9s)
+            // STEP 2: ALERT (3s-7s)
             setTimeout(() => {
                 phase1.style.display = 'none';
                 phase2.style.display = 'block';
-                soundAlert.play(); // Sound is now guaranteed!
-            }, 9000);
+                soundAlert.currentTime = 0;
+                soundAlert.play().catch(e => console.log(e));
+            }, 4000);
 
-            // STEP 3: SCANNER (Starts at 13s)
+            // STEP 3: SCANNER (7s+)
             setTimeout(() => {
                 phase2.style.display = 'none';
                 phase3.style.display = 'block';
-            }, 13000);
+            }, 8000);
         }
 
-        function startScan() {
-            const fingerBtn = document.getElementById('fingerBtn');
-            const instruction = document.querySelector('.instruction');
+        // --- HOLD TO SCAN LOGIC ---
+        let holdTimer = null;
+        let progress = 0;
+        const fingerBtn = document.getElementById('fingerBtn');
+        const scanFill = document.getElementById('scanFill');
+        const scanText = document.getElementById('scanText');
+
+        // Start Holding
+        function startHold(e) {
+            e.preventDefault(); // Stop scrolling on touch
             
+            // Reset visual
             fingerBtn.style.borderColor = "#00ff00"; 
-            instruction.innerText = "VERIFYING...";
-            instruction.style.color = "#00ff00";
-            
+            scanText.innerText = "SCANNING... DO NOT RELEASE";
+            scanText.style.color = "#00ff00";
+            soundScan.currentTime = 0;
             soundScan.play();
 
-            setTimeout(() => {
-                finishScan();
-            }, 3000);
+            // Progress Loop
+            holdTimer = setInterval(() => {
+                progress += 2; // Speed of fill
+                scanFill.style.height = progress + "%";
+
+                if (progress >= 100) {
+                    success();
+                }
+            }, 30); // 30ms * 50 steps = 1.5 seconds hold time
         }
 
-        function finishScan() {
+        // Release Early (Fail)
+        function endHold() {
+            if (progress < 100) {
+                clearInterval(holdTimer);
+                progress = 0;
+                scanFill.style.height = "0%";
+                
+                // Visual Fail
+                fingerBtn.style.borderColor = "rgba(255, 77, 109, 0.5)";
+                scanText.innerText = "SCAN FAILED - TRY AGAIN";
+                scanText.style.color = "#ff4d6d";
+                soundScan.pause();
+            }
+        }
+
+        // Success State
+        function success() {
+            clearInterval(holdTimer);
             soundScan.pause();
             soundGrant.play();
 
-            document.querySelector('.instruction').innerText = "ACCESS GRANTED";
+            scanText.innerText = "IDENTITY VERIFIED";
+            document.getElementById('scanLaser').style.display = 'block'; // Show laser
             
+            // Remove listeners so they can't click again
+            fingerBtn.onmousedown = null;
+            fingerBtn.ontouchstart = null;
+
             setTimeout(() => {
                 overlay.style.opacity = '0';
                 setTimeout(() => {
                     overlay.style.display = 'none';
                     mainContent.style.display = 'block';
                     document.body.style.overflow = 'auto';
-                    
                     setTimeout(() => {
                         mainContent.style.opacity = '1';
                         triggerDataScroll();
@@ -410,6 +464,15 @@
             }, 1500);
         }
 
+        // Attach Listeners
+        fingerBtn.addEventListener('mousedown', startHold);
+        fingerBtn.addEventListener('mouseup', endHold);
+        fingerBtn.addEventListener('mouseleave', endHold);
+
+        fingerBtn.addEventListener('touchstart', startHold);
+        fingerBtn.addEventListener('touchend', endHold);
+
+        // Scroll Reveal
         function triggerDataScroll() {
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
