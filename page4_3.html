@@ -39,7 +39,6 @@
             top: 0;
             left: 0;
             width: 100%;
-            /* Height will be set by JS to match content */
             z-index: 0;
             pointer-events: none;
         }
@@ -63,11 +62,11 @@
             max-width: 600px;
             margin: 0 auto;
             padding-top: 100px; 
-            padding-bottom: 50px; 
+            /* Removed bottom padding so button sits tight */
         }
 
         .chapter {
-            min-height: 80vh; /* Gives space between messages */
+            min-height: 80vh; 
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -108,19 +107,19 @@
         }
 
         /* --- NEXT BUTTON SECTION --- */
-        /* This is now a regular block at the bottom, not fixed */
         .final-cta-container {
             width: 100%;
-            height: 300px; /* Extra space at bottom */
+            height: 200px; /* Reduced height */
             display: flex;
-            align-items: center;
+            align-items: flex-start; /* Align to top so line connects easily */
             justify-content: center;
             position: relative;
             z-index: 10;
+            padding-top: 20px; /* Space for the line to land */
         }
 
         .btn-gold {
-            background: transparent;
+            background: #000; /* Black bg to cover line if needed */
             border: 1px solid #ffd700;
             color: #ffd700;
             padding: 15px 40px;
@@ -131,8 +130,10 @@
             text-decoration: none;
             transition: all 0.3s;
             box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
-            opacity: 0; /* Hidden until scrolled */
+            opacity: 0; 
             transform: translateY(20px);
+            position: relative;
+            z-index: 20;
         }
 
         .btn-gold.visible {
@@ -222,80 +223,84 @@
     </div>
 
     <script>
-        // --- 1. DYNAMIC JAGGED HEARTBEAT GENERATOR ---
+        // --- 1. DYNAMIC PATH (FIXED TO STOP AT BUTTON) ---
         function generateJaggedPath() {
             const svg = document.getElementById('svgLine');
             const path = document.getElementById('heartPath');
-            const content = document.getElementById('storyContent');
-            const footer = document.querySelector('.final-cta-container');
+            const btn = document.getElementById('nextBtn');
             
-            // Calculate Total Height (Content + Footer)
-            const totalHeight = content.offsetHeight + footer.offsetHeight + 100;
+            // 1. Get exact Y position of the button relative to the page
+            const btnRect = btn.getBoundingClientRect();
+            const absoluteBtnTop = btnRect.top + window.scrollY;
             
-            // Set SVG height to match the full scrollable area
-            svg.setAttribute('height', totalHeight);
+            // Set SVG height to end exactly at the button
+            svg.setAttribute('height', absoluteBtnTop);
 
             // Generator Logic
             const width = window.innerWidth;
             const center = width / 2;
-            let d = `M ${center} 0 `; // Start at top center
+            let d = `M ${center} 0 `; 
 
-            // Settings for the spikes
-            const stepSize = 150; // Distance between spikes vertically
-            const steps = Math.ceil(totalHeight / stepSize);
+            // Calculate spacing
+            const stepSize = 150; 
+            // We only generate steps until we reach the button
+            const steps = Math.floor(absoluteBtnTop / stepSize);
             
             let currentY = 0;
 
             for (let i = 0; i < steps; i++) {
-                currentY += 80; // Go down a bit
+                // Ensure we don't draw past the button
+                if (currentY + 100 > absoluteBtnTop) break;
+
+                currentY += 80; 
                 d += `L ${center} ${currentY} `;
 
-                // Create the "ECG Spike" (P-Q-R-S-T wave look)
-                // Small bump, Big Spike Up, Big Spike Down, Return to center
-                d += `L ${center - 10} ${currentY + 10} `; // Left small
-                d += `L ${center - 40} ${currentY + 30} `; // Left big spike
-                d += `L ${center + 40} ${currentY + 50} `; // Right big spike
-                d += `L ${center + 10} ${currentY + 70} `; // Right small
+                // ECG Spike
+                d += `L ${center - 10} ${currentY + 10} `; 
+                d += `L ${center - 40} ${currentY + 30} `; 
+                d += `L ${center + 40} ${currentY + 50} `; 
+                d += `L ${center + 10} ${currentY + 70} `; 
                 
-                currentY += 70; // Advance Y
-                d += `L ${center} ${currentY} `; // Back to center
+                currentY += 70; 
+                d += `L ${center} ${currentY} `; 
             }
 
-            // Extend line to the very bottom button
-            d += `L ${center} ${totalHeight}`;
+            // Draw final straight line connecting to the button
+            d += `L ${center} ${absoluteBtnTop}`;
 
             path.setAttribute('d', d);
             
-            // Setup drawing animation lengths
             const pathLength = path.getTotalLength();
             path.style.strokeDasharray = pathLength;
             path.style.strokeDashoffset = pathLength;
             return pathLength;
         }
 
-        // Run on load
-        let totalLength = generateJaggedPath();
+        // Run on load and resize
+        let totalLength = 0;
+        
+        // Wait for page to fully load so button position is correct
+        window.onload = () => {
+            totalLength = generateJaggedPath();
+        };
 
-        // Recalculate if window resizes (keeps it responsive)
         window.addEventListener('resize', () => {
             totalLength = generateJaggedPath();
         });
 
-        // --- 2. SCROLL DRAWING LOGIC ---
+        // --- 2. SCROLL LOGIC ---
         window.addEventListener('scroll', () => {
             const path = document.getElementById('heartPath');
             
-            // Calculate scroll percentage
             const scrollTop = window.scrollY;
             const docHeight = document.body.scrollHeight - window.innerHeight;
             const scrollPercent = scrollTop / docHeight;
 
-            // Draw line
             const drawLength = totalLength * scrollPercent;
             path.style.strokeDashoffset = totalLength - drawLength;
 
-            // Show Button when near bottom
-            if(scrollPercent > 0.9) {
+            // Show Button
+            if(scrollPercent > 0.95) {
                 document.getElementById('nextBtn').classList.add('visible');
             }
         });
@@ -313,7 +318,7 @@
             observer.observe(el);
         });
 
-        // --- 4. AUDIO SYSTEM ---
+        // --- 4. AUDIO ---
         const audio = document.getElementById('bgMusic');
         audio.volume = 0.5;
 
