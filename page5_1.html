@@ -21,112 +21,120 @@
             height: 100vh;
             color: #fff;
             user-select: none;
-            perspective: 1000px;
+            perspective: 1500px; /* Deep 3D Space */
         }
 
-        /* --- 1. THE LIVE 3D TUNNEL --- */
+        /* --- 1. START SCREEN --- */
+        #startScreen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #020001; z-index: 200;
+            display: flex; justify-content: center; align-items: center;
+            background-image: radial-gradient(circle at center, #1a0000 0%, #000 100%);
+        }
+        .start-btn {
+            background: rgba(20, 0, 0, 0.9); border: 2px solid #ff4d6d; color: #ff4d6d;
+            padding: 25px 60px; font-family: 'Orbitron', sans-serif; font-size: 1.4rem; letter-spacing: 4px;
+            cursor: pointer; box-shadow: 0 0 30px rgba(255, 77, 109, 0.2);
+            text-transform: uppercase; position: relative; z-index: 201; transition: 0.3s;
+            clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
+        }
+        .start-btn:hover { background: #ff4d6d; color: #000; box-shadow: 0 0 50px #ff4d6d; }
+
+        /* --- 2. LIVE BACKGROUND (TUNNEL) --- */
         #cyberBackground {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0; background: #020000; overflow: hidden;
+            z-index: 0; background: #000; overflow: hidden;
         }
-
         .cyber-tunnel {
             position: absolute; width: 100%; height: 100%;
             transform-style: preserve-3d; perspective: 600px;
         }
-
         .tunnel-grid {
             position: absolute; left: -50%; width: 200%; height: 200%;
             background: 
-                linear-gradient(rgba(255, 0, 60, 0.4) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 0, 60, 0.4) 1px, transparent 1px);
+                linear-gradient(rgba(255, 0, 60, 0.5) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 0, 60, 0.5) 1px, transparent 1px);
             background-size: 80px 80px;
             animation: warpSpeed 4s linear infinite;
-            opacity: 0.6; /* Visible Brightness */
-            box-shadow: 0 0 100px rgba(255, 0, 60, 0.2);
+            opacity: 0.6; box-shadow: 0 0 80px rgba(255, 0, 60, 0.2);
             transition: all 1s ease;
         }
         .floor { bottom: -100px; transform: rotateX(80deg); }
         .ceiling { top: -100px; transform: rotateX(-80deg); }
-
         .tunnel-obj {
             position: absolute; top: 50%; left: 50%;
             display: flex; justify-content: center; align-items: center;
             font-size: 2rem; color: rgba(255, 50, 50, 0.8);
-            border: 1px solid rgba(255, 50, 50, 0.5);
-            background: rgba(50, 0, 0, 0.3);
+            border: 1px solid rgba(255, 50, 50, 0.5); background: rgba(50, 0, 0, 0.3);
             padding: 10px; transform-style: preserve-3d;
             animation: objectFly 4s linear forwards;
         }
 
-        /* --- 2. START SCREEN --- */
-        #startScreen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); z-index: 200;
-            display: flex; justify-content: center; align-items: center;
-        }
-        .start-btn {
-            background: rgba(255, 0, 60, 0.1); border: 2px solid #ff003c; color: #ff003c;
-            padding: 20px 60px; font-family: 'Orbitron'; font-size: 1.5rem; letter-spacing: 4px;
-            cursor: pointer; box-shadow: 0 0 40px rgba(255, 0, 60, 0.4);
-            transition: 0.3s; clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
-        }
-        .start-btn:hover { background: #ff003c; color: #000; box-shadow: 0 0 80px #ff003c; }
-
-        /* --- 3. HUD INTRO UI (THE RESTORED LAYOUT) --- */
+        /* --- 3. HUD INTRO UI --- */
         #introOverlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 100; display: none;
         }
 
-        .hud-frame { position: absolute; width: 100%; height: 100%; pointer-events: none; }
+        /* THE EDGES (RESTORED EXACTLY) */
+        .hud-frame { position: absolute; width: 100%; height: 100%; pointer-events: none; z-index: 150; }
         .hud-bar-top { position: absolute; top: 20px; left: 5%; width: 90%; height: 2px; background: #ff4d6d; box-shadow: 0 0 10px #ff4d6d; }
-        .hud-corner { position: absolute; width: 80px; height: 80px; border: 3px solid #ff4d6d; box-shadow: 0 0 15px #ff4d6d; }
-        .hc-tl { top: 20px; left: 20px; border-right: 0; border-bottom: 0; }
-        .hc-tr { top: 20px; right: 20px; border-left: 0; border-bottom: 0; }
-        .hc-bl { bottom: 20px; left: 20px; border-right: 0; border-top: 0; }
-        .hc-br { bottom: 20px; right: 20px; border-left: 0; border-top: 0; }
+        .hud-bar-top::after { content:''; position:absolute; top:0; left:40%; width:20%; height:5px; background:#ff4d6d; }
+        
+        /* Rulers */
+        .hud-ruler { position: absolute; top: 20%; height: 60%; width: 8px; background: repeating-linear-gradient(0deg, #ff4d6d 0px, #ff4d6d 1px, transparent 1px, transparent 10px); opacity: 0.8; }
+        .rule-l { left: 20px; border-right: 1px solid #ff4d6d; }
+        .rule-r { right: 20px; border-left: 1px solid #ff4d6d; }
+        
+        /* Thick Corners */
+        .hud-corner { position: absolute; width: 60px; height: 60px; border: 4px solid #ff4d6d; box-shadow: 0 0 15px #ff4d6d; }
+        .hc-tl { top: 30px; left: 30px; border-right: 0; border-bottom: 0; }
+        .hc-tr { top: 30px; right: 30px; border-left: 0; border-bottom: 0; }
+        .hc-bl { bottom: 30px; left: 30px; border-right: 0; border-top: 0; }
+        .hc-br { bottom: 30px; right: 30px; border-left: 0; border-top: 0; }
 
+        /* Layout */
         .hud-container {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 95%; max-width: 1100px; height: 600px;
+            width: 90%; max-width: 1200px; height: 600px;
             display: grid; grid-template-columns: 350px 1fr; gap: 40px;
             padding: 20px; transition: transform 0.5s;
         }
 
-        /* LEFT PANEL: EXACT GEOMETRY */
+        /* LEFT PANEL */
         .hud-left {
             display: flex; flex-direction: column; padding: 25px;
-            background: rgba(20, 0, 0, 0.3); border: 1px solid rgba(255, 77, 109, 0.3);
+            background: rgba(20, 0, 0, 0.4); border: 1px solid rgba(255, 77, 109, 0.3);
             backdrop-filter: blur(5px);
         }
-        .sys-header { font-family: 'Orbitron'; font-size: 1.1rem; color: #ff4d6d; border-bottom: 2px solid #ff4d6d; padding-bottom: 5px; margin-bottom: 10px; display: inline-block; }
+        .sys-header { font-family: 'Orbitron'; font-size: 1.1rem; color: #ff4d6d; border-bottom: 2px solid #ff4d6d; display: inline-block; margin-bottom: 10px; }
         .sys-text { font-family: 'Share Tech Mono'; font-size: 0.75rem; color: #ffb3c1; line-height: 1.6; margin-bottom: 25px; opacity: 0.9; }
         
+        /* 2x2 Grid with Cuts */
         .geo-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 90px 90px; gap: 10px; margin-bottom: 30px; }
-        .geo-box { border: 1px solid #ff4d6d; background: rgba(50, 0, 0, 0.4); box-shadow: inset 0 0 15px rgba(255, 0, 0, 0.3); }
+        .geo-box { border: 1px solid #ff4d6d; background: rgba(50, 0, 0, 0.4); box-shadow: inset 0 0 15px rgba(255, 0, 0, 0.3); position: relative; }
         .gb-1 { clip-path: polygon(0 0, 100% 0, 100% 80%, 80% 100%, 0 100%); }
         .gb-2 { clip-path: polygon(0 0, 100% 0, 100% 100%, 20% 100%, 0 80%); }
         .gb-3 { clip-path: polygon(0 0, 80% 0, 100% 20%, 100% 100%, 0 100%); }
         .gb-4 { clip-path: polygon(20% 0, 100% 0, 100% 100%, 0 100%, 0 20%); }
 
+        /* Gauges */
         .gauge-container { display: flex; gap: 20px; }
         .gauge-circle { width: 55px; height: 55px; border-radius: 50%; border: 1px solid rgba(255, 77, 109, 0.3); display: flex; justify-content: center; align-items: center; font-size: 0.7rem; color: #ffb3c1; position: relative; }
         .gauge-circle::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid transparent; border-top-color: #ff4d6d; animation: spin 3s linear infinite; }
 
-        /* RIGHT PANEL: REACTOR */
+        /* RIGHT PANEL */
         .hud-right { position: relative; display: flex; justify-content: center; align-items: center; }
-        .reactor-outer { position: absolute; width: 450px; height: 450px; border: 2px solid rgba(255, 77, 109, 0.4); border-radius: 50%; border-left: transparent; border-right: transparent; animation: spin 10s linear infinite; }
-        .reactor-inner { position: absolute; width: 380px; height: 380px; border: 1px dashed rgba(255, 255, 255, 0.3); border-radius: 50%; animation: spinRev 15s linear infinite; }
+        .reactor-outer { position: absolute; width: 480px; height: 480px; border: 2px solid rgba(255, 77, 109, 0.4); border-radius: 50%; border-left: transparent; border-right: transparent; animation: spin 10s linear infinite; }
+        .reactor-inner { position: absolute; width: 400px; height: 400px; border: 1px dashed rgba(255, 255, 255, 0.3); border-radius: 50%; animation: spinRev 15s linear infinite; }
         .reactor-core {
             width: 320px; height: 320px; background: rgba(20, 0, 0, 0.9);
             border: 2px solid #ff4d6d; border-radius: 50%;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            box-shadow: 0 0 40px rgba(255, 0, 60, 0.4); pointer-events: auto;
+            box-shadow: 0 0 60px rgba(255, 0, 60, 0.4); pointer-events: auto;
         }
 
-        /* TEXT (WHITE WITH GLOW) */
-        .status-text { font-family: 'Orbitron'; font-size: 1.4rem; font-weight: 700; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.8), 0 0 20px #ff4d6d; text-align: center; }
+        .status-text { font-family: 'Orbitron'; font-size: 1.4rem; font-weight: 700; color: #fff; text-shadow: 0 0 15px rgba(255, 77, 109, 0.9); text-align: center; }
         
         .btn-connect { margin-top: 20px; background: rgba(255,255,255,0.1); border: 1px solid #fff; color: #fff; padding: 10px 25px; font-family: 'Orbitron'; cursor: pointer; text-shadow: 0 0 5px #fff; animation: pulse 1.5s infinite; }
         .btn-connect:hover { background: #fff; color: #000; box-shadow: 0 0 20px #fff; }
@@ -135,45 +143,67 @@
         .finger-icon { width: 100%; height: 100%; background: url('https://img.icons8.com/ios/100/ff4d6d/fingerprint.png') center/70% no-repeat; opacity: 0.5; }
         .scan-beam { position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background: rgba(255, 0, 60, 0.8); transition: height 0.1s linear; box-shadow: 0 0 20px #ff0000; }
 
-        /* --- 4. MAIN CONTENT (FULL DETAILS) --- */
+        /* --- 4. MAIN CONTENT (3D UNIVERSE) --- */
         #mainContent {
             display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 50; overflow-y: auto; padding: 40px;
-            opacity: 0; transition: opacity 1s ease;
+            z-index: 50; overflow: hidden; opacity: 0;
+            transform-style: preserve-3d;
         }
 
-        .main-header { text-align: center; margin-bottom: 40px; border-bottom: 2px solid #ff4d6d; padding-bottom: 20px; background: rgba(0,0,0,0.6); }
-        .sys-title { font-family: 'Orbitron'; font-size: 2.5rem; color: #fff; text-shadow: 0 0 20px #ff4d6d; }
+        /* 3D Container for Data */
+        #universeContainer {
+            width: 100%; height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease-out; /* For mouse movement */
+            display: flex; justify-content: center; align-items: center;
+        }
 
-        .cards-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; perspective: 1000px; padding-bottom: 50px; }
-        
-        .holo-card {
-            width: 320px; background: rgba(20, 5, 5, 0.85);
+        .main-header { 
+            position: absolute; top: 50px; width: 100%; text-align: center; 
+            transform: translateZ(100px); text-shadow: 0 0 30px #ff4d6d;
+        }
+        .sys-title { font-family: 'Orbitron'; font-size: 3rem; color: #fff; }
+
+        /* THE DATA ORBS */
+        .orb-grid {
+            display: grid; grid-template-columns: repeat(3, 300px); gap: 50px;
+            transform-style: preserve-3d;
+        }
+
+        .data-orb {
+            background: rgba(10, 0, 0, 0.85);
             border: 1px solid rgba(255, 77, 109, 0.6);
-            padding: 20px; border-radius: 8px;
-            box-shadow: 0 0 15px rgba(255, 0, 0, 0.1);
-            transition: transform 0.3s; transform-style: preserve-3d;
+            padding: 20px; border-radius: 15px;
+            box-shadow: 0 0 30px rgba(255, 0, 60, 0.2);
+            transition: all 0.4s ease;
+            transform: translateZ(0);
+            position: relative;
         }
-        .holo-card:hover { transform: translateZ(20px) rotateX(5deg); box-shadow: 0 0 40px rgba(255, 0, 60, 0.3); border-color: #fff; }
+        .data-orb:hover {
+            background: rgba(30, 0, 0, 0.95);
+            border-color: #fff;
+            box-shadow: 0 0 60px rgba(255, 0, 60, 0.6);
+            transform: translateZ(100px) scale(1.1); /* POP OUT EFFECT */
+            z-index: 100;
+        }
 
-        .card-head { font-family: 'Orbitron'; font-size: 1.1rem; color: #ff4d6d; border-bottom: 1px solid rgba(255,255,255,0.2); margin-bottom: 15px; padding-bottom: 5px; }
-        .card-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.85rem; border-bottom: 1px dashed rgba(255,255,255,0.1); }
-        .lbl { color: #aaa; }
-        .val { color: #fff; text-shadow: 0 0 5px rgba(255,255,255,0.5); font-weight: bold; text-align: right; max-width: 60%; }
+        .orb-title { font-family: 'Orbitron'; color: #ff4d6d; border-bottom: 1px solid rgba(255,255,255,0.3); margin-bottom: 15px; font-size: 1.2rem; }
+        .orb-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; }
+        .val { color: #fff; font-weight: bold; text-shadow: 0 0 5px #fff; }
 
-        /* --- TRANSITION EFFECTS --- */
-        .warp-speed { animation: warpSpeed 0.2s linear infinite !important; filter: brightness(2) contrast(1.2); opacity: 1 !important; }
-        .shake-screen { animation: violentShake 0.5s linear infinite; }
-        .flash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 999; animation: flashAnim 1.5s forwards; pointer-events: none; }
-        .hide-ui { transform: scale(1.5); opacity: 0; filter: blur(10px); }
+        /* --- EFFECTS --- */
+        .glitch-hud { animation: violentShake 0.4s infinite; filter: hue-rotate(90deg); }
+        .hyperspace { animation: warpSpeed 0.2s linear infinite !important; filter: brightness(3) contrast(1.5); opacity: 1 !important; }
+        .flash-bang { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 999; animation: flashAnim 2s forwards; pointer-events: none; }
+        .explode-out { animation: bigBang 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
 
         @keyframes warpSpeed { 0% { transform: rotateX(80deg) translateY(0); } 100% { transform: rotateX(80deg) translateY(100px); } }
-        @keyframes objectFly { 0% { transform: translate3d(var(--tx), var(--ty), -800px); opacity: 0; } 20% { opacity: 1; } 100% { transform: translate3d(var(--tx), var(--ty), 600px); opacity: 0; } }
         @keyframes spin { 100% { transform: rotate(360deg); } }
         @keyframes spinRev { 100% { transform: rotate(-360deg); } }
-        @keyframes pulse { 0% { opacity: 0.5; } 100% { opacity: 1; } }
-        @keyframes violentShake { 0% { transform: translate(2px, 2px); } 25% { transform: translate(-2px, -2px); } 50% { transform: translate(2px, -2px); } 75% { transform: translate(-2px, 2px); } }
+        @keyframes violentShake { 0% { transform: translate(3px, 3px); } 25% { transform: translate(-3px, -3px); } 50% { transform: translate(3px, -3px); } 75% { transform: translate(-3px, 3px); } }
         @keyframes flashAnim { 0% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes bigBang { 0% { opacity: 0; transform: scale(0); } 60% { opacity: 1; transform: scale(1.05); } 100% { opacity: 1; transform: scale(1); } }
+        @keyframes objectFly { 0% { transform: translate3d(var(--tx), var(--ty), -1000px); opacity: 0; } 20% { opacity: 1; } 100% { transform: translate3d(var(--tx), var(--ty), 600px); opacity: 0; } }
 
     </style>
 </head>
@@ -198,20 +228,18 @@
     <div id="introOverlay">
         <div class="hud-frame">
             <div class="hud-bar-top"></div>
+            <div class="hud-ruler rule-l"></div><div class="hud-ruler rule-r"></div>
             <div class="hud-corner hc-tl"></div><div class="hud-corner hc-tr"></div>
             <div class="hud-corner hc-bl"></div><div class="hud-corner hc-br"></div>
         </div>
 
-        <div class="hud-container" id="hudContainer">
-            
+        <div class="hud-container" id="hudBox">
             <div class="hud-left">
                 <div>
                     <div class="sys-header">SYSTEM_LOG</div>
                     <div class="sys-text">
-                        > MEM_ALLOC: 98%<br>
-                        > ENCRYPTION: AES-256<br>
-                        > PROXY_CHAIN: ACTIVE<br>
-                        > LATENCY: 12ms
+                        > MEM_ALLOC: 98%<br>> ENCRYPTION: AES-256<br>
+                        > PROXY_CHAIN: ACTIVE<br>> LATENCY: 12ms
                     </div>
                 </div>
                 <div class="geo-grid">
@@ -224,11 +252,11 @@
             </div>
 
             <div class="hud-right">
-                <div class="reactor-outer" id="reactorOuter"></div>
-                <div class="reactor-inner" id="reactorInner"></div>
+                <div class="reactor-outer" id="reactorOut"></div>
+                <div class="reactor-inner" id="reactorIn"></div>
                 <div class="reactor-core">
                     
-                    <div id="phase1" style="display:flex; justify-content:center; align-items:center; width:100%;">
+                    <div id="phase1" style="display:flex; flex-direction:column; align-items:center;">
                         <div class="status-text" id="mainText">SYSTEM STARTUP</div>
                     </div>
 
@@ -240,7 +268,9 @@
                     <div id="phaseAlert" style="display:none; text-align:center;">
                         <i class="fas fa-exclamation-triangle" style="font-size:3rem; color:red;"></i>
                         <div class="status-text" style="color:red;">ACCESS DENIED</div>
-                        <div style="color:red; font-size:0.8rem; margin-top:5px;">BIOMETRICS REQUIRED</div>
+                        <div style="font-size:0.8rem; margin-top:10px; color:#ffcccc; border:1px solid red; padding:5px; background:rgba(50,0,0,0.5);">
+                            SERVER PROTECTED BY AYUSH<br>BIOMETRICS REQUIRED
+                        </div>
                     </div>
 
                     <div id="phaseScan" style="display:none; text-align:center;">
@@ -250,82 +280,66 @@
                         </div>
                         <div class="status-text" style="font-size:0.8rem; margin-top:10px;">HOLD TO VERIFY</div>
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
 
     <div id="mainContent">
-        <div class="main-header">
-            <div class="sys-title">MEMORY DATABASE</div>
-            <div style="color:#ffb3c1;">SECURE CONNECTION ESTABLISHED</div>
-        </div>
-
-        <div class="cards-grid">
-            <div class="holo-card">
-                <div class="card-head">IDENTITY_CORE</div>
-                <div class="card-row"><span class="lbl">FULL NAME</span> <span class="val decrypt">Violina Sharma</span></div>
-                <div class="card-row"><span class="lbl">DOB</span> <span class="val">13 FEB 20XX</span></div>
-                <div class="card-row"><span class="lbl">ZODIAC</span> <span class="val">Taurus ♉</span></div>
-                <div class="card-row"><span class="lbl">EYES</span> <span class="val">Deep Espresso Brown</span></div>
-                <div class="card-row"><span class="lbl">HAIR</span> <span class="val">Black</span></div>
-                <div class="card-row"><span class="lbl">SHOE SIZE</span> <span class="val">7</span></div>
-                <div class="card-row"><span class="lbl">MARKING</span> <span class="val">Mole (Right Forehead)</span></div>
-                <div class="card-row"><span class="lbl">GLASSES</span> <span class="val">YES</span></div>
-                <div class="card-row"><span class="lbl">HAND</span> <span class="val">Right</span></div>
+        <div id="universeContainer">
+            
+            <div class="main-header">
+                <div class="sys-title">MEMORY DATABASE</div>
+                <div style="color:#ffb3c1;">SECURE CONNECTION ESTABLISHED</div>
             </div>
 
-            <div class="holo-card">
-                <div class="card-head">CONNECTION_LOGS</div>
-                <div class="card-row"><span class="lbl">MET</span> <span class="val">11 April 2025</span></div>
-                <div class="card-row"><span class="lbl">LONGEST CALL</span> <span class="val" style="color:#ff4d6d;">06 HOURS</span></div>
-                <div class="card-row"><span class="lbl">PHOTOS SAVED</span> <span class="val">489</span></div>
-                <div class="card-row"><span class="lbl">DISTANCE</span> <span class="val">611 KM</span></div>
-                <div class="card-row"><span class="lbl">FIRST MOVIE</span> <span class="val">Crime Patrol</span></div>
-                <div class="card-row"><span class="lbl">IMPRESSION</span> <span class="val">Gorgeous & Talented</span></div>
+            <div class="orb-grid">
+                <div class="data-orb">
+                    <div class="orb-title">IDENTITY</div>
+                    <div class="orb-row"><span class="lbl">NAME</span> <span class="val decrypt">Violina Sharma</span></div>
+                    <div class="orb-row"><span class="lbl">DOB</span> <span class="val">13 FEB 20XX</span></div>
+                    <div class="orb-row"><span class="lbl">ZODIAC</span> <span class="val">Taurus ♉</span></div>
+                    <div class="orb-row"><span class="lbl">EYES</span> <span class="val">Deep Espresso</span></div>
+                    <div class="orb-row"><span class="lbl">MARK</span> <span class="val">Mole (Right)</span></div>
+                </div>
+
+                <div class="data-orb">
+                    <div class="orb-title">CONNECTION</div>
+                    <div class="orb-row"><span class="lbl">MET</span> <span class="val">11 April 2025</span></div>
+                    <div class="orb-row"><span class="lbl">CALL</span> <span class="val" style="color:#ff4d6d;">06 HOURS</span></div>
+                    <div class="orb-row"><span class="lbl">PICS</span> <span class="val">489</span></div>
+                    <div class="orb-row"><span class="lbl">DIST</span> <span class="val">611 KM</span></div>
+                </div>
+
+                <div class="data-orb">
+                    <div class="orb-title">FAVORITES</div>
+                    <div class="orb-row"><span class="lbl">FLOWER</span> <span class="val">Roses</span></div>
+                    <div class="orb-row"><span class="lbl">FOOD</span> <span class="val">Brinjal / Duck</span></div>
+                    <div class="orb-row"><span class="lbl">DRINK</span> <span class="val">Red Tea</span></div>
+                    <div class="orb-row"><span class="lbl">SINGER</span> <span class="val">Taylor Swift</span></div>
+                </div>
+
+                <div class="data-orb">
+                    <div class="orb-title">EMOTIONS</div>
+                    <div class="orb-row"><span class="lbl">ANGRY</span> <span class="val">Scolds Me</span></div>
+                    <div class="orb-row"><span class="lbl">FIX</span> <span class="val">Treat like Kid</span></div>
+                    <div class="orb-row"><span class="lbl">HAPPY</span> <span class="val">Dances</span></div>
+                    <div class="orb-row"><span class="lbl">SAD</span> <span class="val">Sleeps</span></div>
+                </div>
+
+                <div class="data-orb">
+                    <div class="orb-title">MICRO_DATA</div>
+                    <div class="orb-row"><span class="lbl">SNEEZE</span> <span class="val">Kitten 🐱</span></div>
+                    <div class="orb-row"><span class="lbl">WALK</span> <span class="val">Fast</span></div>
+                    <div class="orb-row"><span class="lbl">DRIVE</span> <span class="val" style="color:red;">SCARY</span></div>
+                    <div class="orb-row"><span class="lbl">TALENT</span> <span class="val">Singer (Private)</span></div>
+                </div>
             </div>
 
-            <div class="holo-card">
-                <div class="card-head">PREFERENCES</div>
-                <div class="card-row"><span class="lbl">COLOR</span> <span class="val">Black</span></div>
-                <div class="card-row"><span class="lbl">FLOWER</span> <span class="val">Roses</span></div>
-                <div class="card-row"><span class="lbl">FOOD</span> <span class="val">Brinjal, Chole Chawal, Duck</span></div>
-                <div class="card-row"><span class="lbl">DRINK</span> <span class="val">Red Tea</span></div>
-                <div class="card-row"><span class="lbl">CHOCOLATE</span> <span class="val">Kinder Joy</span></div>
-                <div class="card-row"><span class="lbl">ICE CREAM</span> <span class="val">Chocolate</span></div>
-                <div class="card-row"><span class="lbl">SEASON</span> <span class="val">Winter (Snow)</span></div>
-                <div class="card-row"><span class="lbl">SINGER</span> <span class="val">Taylor Swift</span></div>
-                <div class="card-row"><span class="lbl">FAV PLACE</span> <span class="val" style="color:#ff4d6d;">Sleeping on my lap</span></div>
+            <div style="position:absolute; bottom:50px; width:100%; text-align:center; transform:translateZ(50px);">
+                <a href="page5_2.html" class="btn-connect" style="text-decoration:none;">INITIATE REASSEMBLY ></a>
             </div>
 
-            <div class="holo-card">
-                <div class="card-head">EMOTIONAL_PROTOCOLS</div>
-                <div class="card-row"><span class="lbl">HAPPY</span> <span class="val">Dance</span></div>
-                <div class="card-row"><span class="lbl">ANGRY</span> <span class="val">Scold / "Baad me baat krte h"</span></div>
-                <div class="card-row"><span class="lbl">ANGER FIX</span> <span class="val">Listen > Agree > Apologize</span></div>
-                <div class="card-row"><span class="lbl">SAD</span> <span class="val">Sleep / Less Talk</span></div>
-                <div class="card-row"><span class="lbl">COMFORT</span> <span class="val">Treat like a kid</span></div>
-                <div class="card-row"><span class="lbl">LAUGH TRIGGER</span> <span class="val">My weird faces / Roasting me</span></div>
-                <div class="card-row"><span class="lbl">STRESSED</span> <span class="val">Sleep / Talk to me</span></div>
-            </div>
-
-            <div class="holo-card">
-                <div class="card-head">MICRO_OBSERVATIONS</div>
-                <div class="card-row"><span class="lbl">SNEEZE</span> <span class="val">Kitten 🐱</span></div>
-                <div class="card-row"><span class="lbl">LAUGH</span> <span class="val">Giggle</span></div>
-                <div class="card-row"><span class="lbl">WALK</span> <span class="val">Fast</span></div>
-                <div class="card-row"><span class="lbl">TEXT STYLE</span> <span class="val">Typoz</span></div>
-                <div class="card-row"><span class="lbl">COOKING</span> <span class="val">10/10 (Rarely)</span></div>
-                <div class="card-row"><span class="lbl">DRIVING</span> <span class="val" style="color:red;">SCARY</span></div>
-                <div class="card-row"><span class="lbl">WATER</span> <span class="val">Hydrated Queen / Cactus</span></div>
-                <div class="card-row"><span class="lbl">GHOSTS</span> <span class="val">Fears like a kid</span></div>
-                <div class="card-row"><span class="lbl">CONFUSED FACE</span> <span class="val">Forehead stretched, eyes up-right</span></div>
-            </div>
-        </div>
-        
-        <div style="text-align:center; padding-bottom:50px;">
-            <a href="page5_2.html" class="btn-connect" style="text-decoration:none;">INITIATE REASSEMBLY ></a>
         </div>
     </div>
 
@@ -337,7 +351,7 @@
         const soundGrant = document.getElementById('soundGrant');
         const tunnelObjContainer = document.getElementById('tunnelObjects');
 
-        // BACKGROUND ANIMATION
+        // --- BACKGROUND OBJECTS ---
         setInterval(() => {
             const icons = ['<i class="fas fa-server"></i>', '<i class="fas fa-database"></i>', 'HEX', '0101'];
             const el = document.createElement('div');
@@ -345,10 +359,9 @@
             el.innerHTML = icons[Math.floor(Math.random() * icons.length)];
             let x = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 400 + 300);
             let y = (Math.random() - 0.5) * 600;
-            el.style.setProperty('--tx', x + 'px');
-            el.style.setProperty('--ty', y + 'px');
+            el.style.setProperty('--tx', x + 'px'); el.style.setProperty('--ty', y + 'px');
             tunnelObjContainer.appendChild(el);
-            setTimeout(() => el.remove(), 3000);
+            setTimeout(() => el.remove(), 4000);
         }, 300);
 
         function startSystem() {
@@ -365,12 +378,12 @@
             const seq = [
                 { t: "SYSTEM STARTUP", d: 0 },
                 { t: "INITIALIZING", d: 1500 },
-                { t: "HEY!", d: 3000, s: "3rem" },
-                { t: "WELCOME TO VIOLINA'S DATABASE", d: 5000, s: "1rem" },
-                { t: "LOADING...", d: 7000 },
-                { t: "DECRYPTING SERVER DATA", d: 9000 },
-                { t: "BYPASSING FIREWALL", d: 11000 },
-                { t: "TRYING TO CONNECT", d: 13000 }
+                { t: "HEY!", d: 3500, s: "3rem" },
+                { t: "WELCOME TO VIOLINA'S DATABASE", d: 5500, s: "1rem" },
+                { t: "LOADING...", d: 8000, s: "1.4rem" },
+                { t: "DECRYPTING SERVER DATA", d: 10000 },
+                { t: "BYPASSING FIREWALL", d: 12500 },
+                { t: "TRYING TO CONNECT", d: 14500 }
             ];
             seq.forEach(step => {
                 setTimeout(() => {
@@ -382,16 +395,17 @@
             setTimeout(() => {
                 document.getElementById('phase1').style.display = 'none';
                 document.getElementById('phaseConnect').style.display = 'block';
-            }, 15000);
+            }, 17000);
         }
 
         function triggerBreach() {
             document.getElementById('phaseConnect').style.display = 'none';
             document.getElementById('phaseAlert').style.display = 'block';
             soundAlert.currentTime = 0; soundAlert.play();
-            document.body.classList.add('shake-screen');
+            // Shake Effect
+            document.getElementById('hudBox').classList.add('glitch-hud');
             setTimeout(() => {
-                document.body.classList.remove('shake-screen');
+                document.getElementById('hudBox').classList.remove('glitch-hud');
                 document.getElementById('phaseAlert').style.display = 'none';
                 document.getElementById('phaseScan').style.display = 'block';
             }, 4000);
@@ -416,34 +430,33 @@
         }
 
         function triggerSuccess() {
-            clearInterval(holdTimer);
-            soundScan.pause(); soundGrant.play();
+            clearInterval(holdTimer); soundScan.pause(); soundGrant.play();
             
-            // TRANSITION EFFECTS
-            document.body.classList.add('shake-screen');
-            document.getElementById('hudContainer').classList.add('hide-ui');
-            document.getElementById('reactorOuter').style.animationDuration = "0.5s";
-            document.getElementById('gridFloor').classList.add('warp-speed');
-            document.getElementById('gridCeiling').classList.add('warp-speed');
-
+            // --- GOD TRANSITION ---
+            // 1. HUD Glitch
+            document.getElementById('hudBox').classList.add('glitch-hud');
+            // 2. Tunnel Warp
+            document.getElementById('gridFloor').classList.add('hyperspace');
+            document.getElementById('gridCeiling').classList.add('hyperspace');
+            
             setTimeout(() => {
-                document.getElementById('flashLayer').classList.add('flash-screen');
-                document.getElementById('introOverlay').style.opacity = '0';
+                // 3. Flash
+                document.getElementById('flashLayer').classList.add('flash-bang');
+                document.getElementById('introOverlay').style.display = 'none';
                 
+                // 4. Reveal Universe
                 setTimeout(() => {
-                    document.getElementById('introOverlay').style.display = 'none';
                     document.getElementById('mainContent').style.display = 'block';
-                    document.body.classList.remove('shake-screen');
-                    
-                    // Decrypt Text
+                    document.getElementById('mainContent').classList.add('explode-out');
                     document.getElementById('mainContent').style.opacity = '1';
+                    
                     decryptText();
                     
                     // Stabilize BG
-                    document.getElementById('gridFloor').classList.remove('warp-speed');
-                    document.getElementById('gridCeiling').classList.remove('warp-speed');
-                }, 1000);
-            }, 1500);
+                    document.getElementById('gridFloor').classList.remove('hyperspace');
+                    document.getElementById('gridCeiling').classList.remove('hyperspace');
+                }, 800);
+            }, 1200);
         }
 
         scanBtn.addEventListener('mousedown', startScan);
@@ -464,6 +477,17 @@
                 }, 30);
             });
         }
+
+        // --- INTERACTIVE MOUSE PARALLAX ---
+        document.addEventListener('mousemove', (e) => {
+            const container = document.getElementById('universeContainer');
+            if(container) {
+                const x = (window.innerWidth / 2 - e.pageX) / 30;
+                const y = (window.innerHeight / 2 - e.pageY) / 30;
+                container.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+            }
+        });
+
     </script>
 </body>
 </html>
