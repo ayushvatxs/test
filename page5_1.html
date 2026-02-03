@@ -42,20 +42,16 @@
         #startScreen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: #020001;
+            background: #000;
             z-index: 200;
             display: flex;
             justify-content: center;
             align-items: center;
-            background-image: 
-                radial-gradient(circle at center, transparent 0%, #000 100%),
-                linear-gradient(rgba(255, 0, 0, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 0, 0, 0.05) 1px, transparent 1px);
-            background-size: 100% 100%, 40px 40px, 40px 40px;
+            background-image: radial-gradient(circle at center, #1a0000 0%, #000 100%);
         }
 
         .start-btn {
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(20, 0, 0, 0.9);
             border: 2px solid #ff4d6d;
             color: #ff4d6d;
             padding: 25px 60px;
@@ -63,166 +59,172 @@
             font-size: 1.4rem;
             letter-spacing: 4px;
             cursor: pointer;
-            box-shadow: 0 0 40px rgba(255, 77, 109, 0.3), inset 0 0 20px rgba(255, 77, 109, 0.1);
-            transition: 0.3s;
+            box-shadow: 0 0 50px rgba(255, 77, 109, 0.4);
             text-transform: uppercase;
             position: relative;
-            overflow: hidden;
             z-index: 201;
+            transition: 0.3s;
         }
-        
-        .start-btn:hover {
-            background: rgba(255, 77, 109, 0.1);
-            box-shadow: 0 0 60px rgba(255, 77, 109, 0.6);
-            text-shadow: 0 0 10px #ff4d6d;
-        }
+        .start-btn:hover { background: #ff4d6d; color: #000; box-shadow: 0 0 80px #ff4d6d; }
 
-        /* --- 2. INTRO OVERLAY --- */
+        /* --- 2. 3D HYPER TUNNEL --- */
         .intro-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: 100;
             display: none; 
-            justify-content: center;
-            align-items: center;
-            background: radial-gradient(circle at center, #1a0000 0%, #000 90%);
+            background: #000;
             overflow: hidden;
         }
 
-        /* --- 3D ENVIRONMENT --- */
         .cyber-tunnel {
             position: absolute;
             width: 100%; height: 100%;
-            perspective: 600px;
+            perspective: 800px;
             overflow: hidden;
-            pointer-events: none;
         }
 
-        /* Moving Grid Floor */
+        /* Moving Grid Floor & Ceiling */
         .tunnel-grid {
             position: absolute;
-            top: -50%; left: -50%; width: 200%; height: 200%;
+            left: -50%; width: 200%; height: 200%;
             background: 
-                linear-gradient(rgba(255, 0, 0, 0.2) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 0, 0, 0.2) 1px, transparent 1px);
+                linear-gradient(rgba(255, 0, 0, 0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.3) 1px, transparent 1px);
             background-size: 80px 80px;
-            transform: rotateX(80deg);
-            animation: tunnelMove 3s linear infinite;
+            animation: warpSpeed 2s linear infinite;
+        }
+        .floor { bottom: -100%; transform: rotateX(80deg); }
+        .ceiling { top: -100%; transform: rotateX(-80deg); opacity: 0.5; }
+
+        /* Warp Particles */
+        .particle {
+            position: absolute;
+            width: 2px; height: 20px;
+            background: rgba(255, 77, 109, 0.8);
+            box-shadow: 0 0 10px red;
         }
 
-        /* Top Code Stream */
-        .top-code-stream {
+        /* Dense Code Clouds (Top Left & Right) */
+        .code-cloud {
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 150px;
-            background: linear-gradient(to bottom, rgba(255,0,0,0.1), transparent);
-            z-index: 10;
-            display: flex;
-            justify-content: space-around;
-            overflow: hidden;
-            opacity: 0.5;
-        }
-        .code-col {
+            top: 20px;
             font-size: 10px;
             color: #ff4d6d;
-            writing-mode: vertical-rl;
-            text-orientation: upright;
-            animation: rainDown 5s linear infinite;
+            opacity: 0.7;
+            white-space: pre;
+            line-height: 10px;
+            text-shadow: 0 0 5px red;
         }
+        .cloud-left { left: 20px; text-align: left; }
+        .cloud-right { right: 20px; text-align: right; }
 
-        /* Floating 3D Shapes */
-        .shape-container {
+        /* --- 3. THE DUAL-PANEL HUD LAYOUT --- */
+        .hud-container {
             position: absolute;
-            transform-style: preserve-3d;
-            animation: floatSpin 10s infinite linear;
-        }
-        .s1 { top: 20%; left: 10%; animation-duration: 12s; }
-        .s2 { bottom: 20%; right: 10%; animation-duration: 15s; }
-        .s3 { top: 15%; right: 25%; animation-duration: 9s; transform: scale(0.5); }
-
-        .wireframe-box {
-            width: 60px; height: 60px;
-            border: 1px solid rgba(255, 77, 109, 0.6);
-            transform: rotateX(45deg) rotateY(45deg);
-            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
-        }
-
-        /* --- THE GLASS HUD --- */
-        .hud-glass-panel {
-            position: relative;
-            width: 90%; max-width: 550px;
-            min-height: 300px;
-            padding: 40px;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            /* Glass Look */
-            background: rgba(15, 0, 0, 0.75);
-            border: 1px solid rgba(255, 77, 109, 0.4);
-            box-shadow: 
-                0 0 60px rgba(255, 0, 0, 0.2), 
-                inset 0 0 50px rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 95%; max-width: 1000px;
+            height: 500px;
+            display: grid;
+            grid-template-columns: 1fr 1.5fr; /* Split Left/Right */
+            gap: 20px;
+            pointer-events: none; /* Let clicks pass through to interactive elements */
             z-index: 50;
-            transform-style: preserve-3d;
-            clip-path: polygon(
-                30px 0, 100% 0, 
-                100% calc(100% - 30px), calc(100% - 30px) 100%, 
-                0 100%, 0 30px
-            );
         }
 
-        /* HUD Corners */
-        .corner {
-            position: absolute; width: 40px; height: 40px;
-            border: 3px solid #ff4d6d;
-            box-shadow: 0 0 10px #ff4d6d;
-        }
-        .c-tl { top: 0; left: 0; border-right: 0; border-bottom: 0; }
-        .c-tr { top: 0; right: 0; border-left: 0; border-bottom: 0; }
-        .c-bl { bottom: 0; left: 0; border-right: 0; border-top: 0; }
-        .c-br { bottom: 0; right: 0; border-left: 0; border-top: 0; }
-
-        /* PHASE 1: TEXT SEQUENCE (Centered & Bold) */
-        .big-status-text {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #fff;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 0 0 20px rgba(255, 77, 109, 0.8);
-            animation: glitchText 3s infinite;
+        /* LEFT PANEL: DATA & GRAPHS */
+        .hud-left {
+            border: 1px solid rgba(255, 77, 109, 0.3);
+            background: rgba(10, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            padding: 20px;
+            display: flex; flex-direction: column; justify-content: space-between;
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 85% 100%, 0 100%);
         }
         
-        .sub-status {
-            margin-top: 15px;
-            font-size: 0.9rem;
+        .data-block {
+            border: 1px solid rgba(255, 77, 109, 0.2);
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 0.7rem;
             color: #ff99aa;
-            opacity: 0.8;
-            font-family: 'Share Tech Mono';
+        }
+        .graph-sim {
+            height: 60px;
+            background: repeating-linear-gradient(90deg, #ff4d6d 0px, #ff4d6d 2px, transparent 2px, transparent 10px);
+            opacity: 0.5;
+            animation: pulseGraph 1s infinite;
         }
 
-        /* PHASE 2: ALERT (Red Box) */
-        .alert-wrap {
-            border: 2px solid red;
-            background: rgba(50, 0, 0, 0.6);
-            padding: 30px;
-            text-align: center;
-            width: 100%;
-            animation: shake 0.5s infinite;
+        /* RIGHT PANEL: THE MAIN REACTOR (Interactive Area) */
+        .hud-right {
+            position: relative;
+            display: flex; justify-content: center; align-items: center;
         }
-        .alert-header { font-size: 2.5rem; color: red; font-family: 'Orbitron'; font-weight: 900; text-shadow: 0 0 30px red; margin-bottom: 15px; }
-        .alert-detail { font-size: 1rem; color: #fff; letter-spacing: 1px; margin-bottom: 5px; }
 
-        /* PHASE 3: SCANNER */
-        .scanner-wrapper { width: 110px; height: 140px; margin: 0 auto; position: relative; }
-        .fingerprint { width: 100%; height: 100%; border: 2px solid rgba(255, 77, 109, 0.5); border-radius: 35px; background: url('https://img.icons8.com/ios/100/ff4d6d/fingerprint.png') no-repeat center center; background-size: 70%; position: relative; overflow: hidden; background-color: rgba(30, 0, 0, 0.4); box-shadow: 0 0 30px rgba(255,0,0,0.2); transition: all 0.2s; cursor: pointer; }
+        /* The Reactor Ring */
+        .reactor-ring-outer {
+            position: absolute;
+            width: 450px; height: 450px;
+            border: 2px solid rgba(255, 77, 109, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #ff4d6d;
+            border-bottom: 4px solid #ff4d6d;
+            animation: spinRight 10s linear infinite;
+        }
+        .reactor-ring-inner {
+            position: absolute;
+            width: 380px; height: 380px;
+            border: 1px dashed rgba(255, 77, 109, 0.5);
+            border-radius: 50%;
+            animation: spinLeft 15s linear infinite;
+        }
+        .reactor-core-bg {
+            position: absolute;
+            width: 300px; height: 300px;
+            background: rgba(20, 0, 0, 0.8);
+            border: 1px solid #ff4d6d;
+            border-radius: 50%;
+            box-shadow: 0 0 50px rgba(255, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            pointer-events: auto; /* Enable clicks inside */
+        }
+
+        /* --- CONTENT STATES INSIDE REACTOR --- */
+        
+        /* 1. LOADING STATE */
+        .loading-content { text-align: center; }
+        .loading-spinner {
+            width: 60px; height: 60px;
+            border: 5px solid rgba(255, 77, 109, 0.2);
+            border-top: 5px solid #ff4d6d;
+            border-radius: 50%;
+            margin: 0 auto 20px auto;
+            animation: spinRight 1s linear infinite;
+            box-shadow: 0 0 20px #ff4d6d;
+        }
+        .status-main { font-family: 'Orbitron'; font-size: 1.2rem; font-weight: bold; text-shadow: 0 0 10px red; }
+        .status-sub { font-size: 0.8rem; color: #ff99aa; margin-top: 5px; }
+
+        /* 2. ALERT STATE */
+        .alert-content { text-align: center; animation: shake 0.5s infinite; }
+        .alert-icon { font-size: 3rem; margin-bottom: 10px; text-shadow: 0 0 30px red; }
+        .alert-text { font-family: 'Orbitron'; color: red; font-size: 1.5rem; font-weight: 900; }
+        .alert-detail { font-size: 0.8rem; border: 1px solid red; padding: 5px; margin-top: 10px; background: rgba(50,0,0,0.5); }
+
+        /* 3. SCANNER STATE */
+        .scanner-content { text-align: center; }
+        .scanner-wrapper { width: 90px; height: 120px; margin: 0 auto; position: relative; }
+        .fingerprint { width: 100%; height: 100%; border: 2px solid rgba(255, 77, 109, 0.5); border-radius: 30px; background: url('https://img.icons8.com/ios/100/ff4d6d/fingerprint.png') no-repeat center center; background-size: 70%; position: relative; overflow: hidden; background-color: rgba(30, 0, 0, 0.4); box-shadow: 0 0 30px rgba(255,0,0,0.2); transition: all 0.2s; cursor: pointer; }
         .scan-fill { position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background: rgba(255, 77, 109, 0.6); transition: height 0.05s linear; box-shadow: 0 0 40px rgba(255, 77, 109, 0.9); }
-        .scan-laser { position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: #00ff00; box-shadow: 0 0 20px #00ff00; display: none; }
-        .instruction { margin-top: 25px; color: #ff4d6d; font-size: 1rem; animation: pulse 1s infinite; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; }
-
-        /* --- MAIN CONTENT (Server) --- */
+        .instruction { margin-top: 20px; color: #ff4d6d; font-size: 0.8rem; animation: pulse 1s infinite; font-weight: bold; letter-spacing: 1px; }
+        
+        /* --- MAIN SERVER CONTENT --- */
         #mainContent { display: none; width: 100%; opacity: 0; transition: opacity 2s ease; position: relative; z-index: 10; }
-        /* Keep existing terminal styles */
+        
+        /* Keep all terminal styles exactly as they were */
         .server-header { padding: 40px 20px; border-bottom: 1px solid #ff4d6d; background: rgba(0, 0, 0, 0.8); margin-bottom: 20px; }
         .sys-title { font-family: 'Orbitron', sans-serif; font-size: 1.8rem; color: #fff; margin-top: 5px; }
         .log-container { padding: 10px 20px; max-width: 600px; margin: 0 auto; padding-bottom: 100px; background: rgba(0,0,0,0.6); border-radius: 10px; }
@@ -236,13 +238,15 @@
         .next-btn-container { text-align: center; margin-top: 60px; padding-bottom: 50px; }
         .tech-btn { border: 1px solid #ff4d6d; color: #ff4d6d; padding: 15px 30px; font-family: 'Orbitron', sans-serif; text-decoration: none; text-transform: uppercase; transition: 0.3s; background: rgba(0,0,0,0.7); }
 
+
         /* ANIMATIONS */
-        @keyframes tunnelMove { 0% { transform: rotateX(80deg) translateY(0); } 100% { transform: rotateX(80deg) translateY(100px); } }
-        @keyframes rainDown { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
-        @keyframes floatSpin { 0% { transform: rotateX(0) rotateY(0) translateY(0); } 100% { transform: rotateX(360deg) rotateY(360deg) translateY(50px); } }
-        @keyframes glitchText { 0% { transform: translate(0); } 2% { transform: translate(-2px, 2px); } 4% { transform: translate(2px, -2px); } 6% { transform: translate(0); } }
-        @keyframes shake { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -2px); } 100% { transform: translate(1px, -1px); } }
-        @keyframes pulse { 0% { opacity: 0.5; } 100% { opacity: 1; } }
+        @keyframes warpSpeed { 0% { transform: perspective(800px) rotateX(80deg) translateY(0); } 100% { transform: perspective(800px) rotateX(80deg) translateY(80px); } }
+        @keyframes spinRight { 100% { transform: rotate(360deg); } }
+        @keyframes spinLeft { 100% { transform: rotate(-360deg); } }
+        @keyframes shake { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -1px); } 100% { transform: translate(1px, -1px); } }
+        @keyframes pulse { 0% { opacity: 0.6; } 100% { opacity: 1; } }
+        @keyframes pulseGraph { 0% { opacity: 0.3; } 50% { opacity: 0.7; } 100% { opacity: 0.3; } }
+        @keyframes flyPast { 0% { transform: translateZ(0); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateZ(800px); opacity: 0; } }
 
     </style>
 </head>
@@ -263,48 +267,69 @@
     <div class="intro-overlay" id="overlay">
         
         <div class="cyber-tunnel">
-            <div class="tunnel-grid"></div>
-            
-            <div class="top-code-stream">
-                <div class="code-col">01010101010101</div>
-                <div class="code-col">AF0934BBA3948</div>
-                <div class="code-col">SYSTEM_ROOT</div>
-                <div class="code-col">010010001011</div>
-                <div class="code-col">ENCRYPTION_KEY</div>
+            <div class="tunnel-grid floor"></div>
+            <div class="tunnel-grid ceiling"></div>
+            <div class="code-cloud cloud-left">
+                0101100101
+                SYSTEM_OK
+                MEM_ALLOC: 98%
+                0xFF00AA12
             </div>
-
-            <div class="shape-container s1"><div class="wireframe-box"></div></div>
-            <div class="shape-container s2"><div class="wireframe-box"></div></div>
-            <div class="shape-container s3"><div class="wireframe-box"></div></div>
+            <div class="code-cloud cloud-right">
+                SCANNING...
+                PORT: 8080
+                SECURE_SHELL
+                0x00112233
+            </div>
+            <div id="tunnelParticles"></div>
         </div>
 
-        <div class="hud-glass-panel">
-            <div class="corner c-tl"></div><div class="corner c-tr"></div>
-            <div class="corner c-bl"></div><div class="corner c-br"></div>
-
-            <div id="phase1">
-                <div class="big-status-text" id="mainStatus">SYSTEM STARTUP</div>
-                <div style="text-align:center;">
-                    <div class="loading-ring" style="width:40px; height:40px; margin-top:20px; border-width:3px;"></div>
+        <div class="hud-container">
+            
+            <div class="hud-left">
+                <div>
+                    <div style="font-family:'Orbitron'; color:#ff4d6d; margin-bottom:10px;">DIAGNOSTICS</div>
+                    <div class="data-block">CPU_TEMP: 45°C<br>CORE_VOLTAGE: 1.2V</div>
+                    <div class="data-block">NETWORK: SECURE<br>ENCRYPTION: AES-256</div>
+                    <div class="graph-sim"></div>
+                </div>
+                <div class="data-block" style="margin-top:20px; border-color:red;">
+                    THREAT LEVEL: LOW<br>
+                    FIREWALL: ACTIVE
                 </div>
             </div>
 
-            <div id="phase2" style="display:none;">
-                <div class="alert-wrap">
-                    <div class="alert-header">🚫 ACCESS DENIED</div>
-                    <div class="alert-detail" style="font-weight:bold;">SERVER PROTECTED BY AYUSH</div>
-                    <div class="alert-detail" style="color:#ff9999; margin-top:10px;">BIOMETRICS NEEDED</div>
-                </div>
-            </div>
-
-            <div id="phase3" style="display:none;">
-                <div class="scanner-wrapper">
-                    <div class="fingerprint" id="fingerBtn">
-                        <div class="scan-fill" id="scanFill"></div>
-                        <div class="scan-laser" id="scanLaser"></div>
+            <div class="hud-right">
+                <div class="reactor-ring-outer"></div>
+                <div class="reactor-ring-inner"></div>
+                
+                <div class="reactor-core-bg">
+                    
+                    <div id="phase1" class="loading-content">
+                        <div class="loading-spinner"></div>
+                        <div class="status-main" id="textSequence">SYSTEM STARTUP</div>
+                        <div class="status-sub">Processing...</div>
                     </div>
+
+                    <div id="phase2" class="alert-content" style="display:none;">
+                        <div class="alert-icon">⚠️</div>
+                        <div class="alert-text">ACCESS DENIED</div>
+                        <div class="alert-detail">
+                            SERVER PROTECTED BY AYUSH<br>
+                            BIOMETRICS NEEDED
+                        </div>
+                    </div>
+
+                    <div id="phase3" class="scanner-content" style="display:none;">
+                        <div class="scanner-wrapper">
+                            <div class="fingerprint" id="fingerBtn">
+                                <div class="scan-fill" id="scanFill"></div>
+                            </div>
+                        </div>
+                        <div class="instruction" id="scanText">HOLD THUMB TO VERIFY</div>
+                    </div>
+
                 </div>
-                <div class="instruction" id="scanText">HOLD THUMB TO VERIFY</div>
             </div>
 
         </div>
@@ -382,20 +407,23 @@
     </div>
 
     <script>
-        // --- SCRIPT ---
-        const mainStatus = document.getElementById('mainStatus');
-        const phase1 = document.getElementById('phase1');
-        const phase2 = document.getElementById('phase2');
-        const phase3 = document.getElementById('phase3');
-        const overlay = document.getElementById('overlay');
-        const startScreen = document.getElementById('startScreen');
-        const mainContent = document.getElementById('mainContent');
-        const bgVideo = document.getElementById('bgVideo');
-
         const soundAlert = document.getElementById('soundAlert');
         const soundScan = document.getElementById('soundScan');
         const soundGrant = document.getElementById('soundGrant');
 
+        // PARTICLE SYSTEM (WARP SPEED)
+        const tunnelParticles = document.getElementById('tunnelParticles');
+        for(let i=0; i<40; i++) {
+            let p = document.createElement('div');
+            p.className = 'particle';
+            p.style.left = Math.random() * 100 + '%';
+            p.style.top = Math.random() * 100 + '%';
+            // Random animation speed for depth
+            p.style.animation = `flyPast ${Math.random() * 2 + 1}s linear infinite`;
+            tunnelParticles.appendChild(p);
+        }
+
+        // --- UNLOCK AUDIO ---
         function unlockAudio() {
             soundAlert.play(); soundAlert.pause();
             soundScan.play(); soundScan.pause();
@@ -404,44 +432,43 @@
 
         function initializeSystem() {
             unlockAudio();
-            startScreen.style.display = 'none'; 
-            overlay.style.display = 'flex';     
+            document.getElementById('startScreen').style.display = 'none'; 
+            document.getElementById('overlay').style.display = 'block';     
             runTextSequence();
         }
 
-        // --- SPECIFIC TEXT SEQUENCE LOGIC ---
+        // --- SEQUENCE ---
         function runTextSequence() {
-            const steps = [
+            const textSeq = [
                 { text: "SYSTEM STARTUP", delay: 1000 },
                 { text: "LOADING...", delay: 2500 },
-                { text: "DECRYPTING SERVER DATA", delay: 4000 },
-                { text: "BYPASSING FIREWALL", delay: 6000 },
-                { text: "TRYING TO CONNECT...", delay: 8000 }
+                { text: "DECRYPTING DATA", delay: 4000 },
+                { text: "BYPASSING FIREWALL", delay: 5500 },
+                { text: "TRYING TO CONNECT", delay: 7000 }
             ];
 
-            // Run the text updates
-            steps.forEach(step => {
-                setTimeout(() => {
-                    mainStatus.innerText = step.text;
-                }, step.delay);
+            const textEl = document.getElementById('textSequence');
+            
+            textSeq.forEach(step => {
+                setTimeout(() => { textEl.innerText = step.text; }, step.delay);
             });
 
-            // Trigger Alert after texts
+            // ALERT
             setTimeout(() => {
-                phase1.style.display = 'none';
-                phase2.style.display = 'block';
+                document.getElementById('phase1').style.display = 'none';
+                document.getElementById('phase2').style.display = 'block';
                 soundAlert.currentTime = 0;
-                soundAlert.play().catch(e => console.log(e));
-            }, 10000);
+                soundAlert.play();
+            }, 9000);
 
-            // Trigger Scanner after Alert
+            // SCANNER
             setTimeout(() => {
-                phase2.style.display = 'none';
-                phase3.style.display = 'block';
-            }, 14000);
+                document.getElementById('phase2').style.display = 'none';
+                document.getElementById('phase3').style.display = 'block';
+            }, 13000);
         }
 
-        // --- HOLD TO SCAN LOGIC ---
+        // --- SCANNER LOGIC ---
         let holdTimer = null;
         let progress = 0;
         const fingerBtn = document.getElementById('fingerBtn');
@@ -451,7 +478,7 @@
         function startHold(e) {
             e.preventDefault();
             fingerBtn.style.borderColor = "#00ff00"; 
-            scanText.innerText = "VERIFYING IDENTITY...";
+            scanText.innerText = "VERIFYING...";
             scanText.style.color = "#00ff00";
             soundScan.currentTime = 0;
             soundScan.play();
@@ -469,7 +496,7 @@
                 progress = 0;
                 scanFill.style.height = "0%";
                 fingerBtn.style.borderColor = "rgba(255, 77, 109, 0.5)";
-                scanText.innerText = "SCAN FAILED - RETRY";
+                scanText.innerText = "RETRY SCAN";
                 scanText.style.color = "#ff4d6d";
                 soundScan.pause();
             }
@@ -481,23 +508,22 @@
             soundGrant.play();
 
             scanText.innerText = "IDENTITY CONFIRMED";
-            document.getElementById('scanLaser').style.display = 'block';
             
             fingerBtn.onmousedown = null;
             fingerBtn.ontouchstart = null;
 
             setTimeout(() => {
-                overlay.style.opacity = '0';
-                bgVideo.style.opacity = '1';
-                bgVideo.play();
+                document.getElementById('overlay').style.opacity = '0';
+                document.getElementById('bgVideo').style.opacity = '1';
+                document.getElementById('bgVideo').play();
 
                 setTimeout(() => {
-                    overlay.style.display = 'none';
-                    mainContent.style.display = 'block';
+                    document.getElementById('overlay').style.display = 'none';
+                    document.getElementById('mainContent').style.display = 'block';
                     document.body.style.overflow = 'auto';
                     
                     setTimeout(() => {
-                        mainContent.style.opacity = '1';
+                        document.getElementById('mainContent').style.opacity = '1';
                         triggerDataScroll();
                     }, 100);
                 }, 1000);
