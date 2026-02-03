@@ -120,7 +120,7 @@
             width: 95%; max-width: 1100px;
             height: 600px;
             display: grid;
-            grid-template-columns: 320px 1fr; /* Slightly wider left for shapes */
+            grid-template-columns: 320px 1fr;
             gap: 30px;
             pointer-events: none;
             z-index: 50;
@@ -141,48 +141,46 @@
         .hc-bl { bottom: 0; left: 0; border-right: none; border-top: none; clip-path: polygon(0 0, 20% 0, 20% 80%, 100% 80%, 100% 100%, 0 100%); }
         .hc-br { bottom: 0; right: 0; border-left: none; border-top: none; clip-path: polygon(80% 0, 100% 0, 100% 100%, 0 100%, 0 80%, 80% 80%); }
 
-        /* --- LEFT PANEL (RESTORED GEOMETRY) --- */
-        .hud-left-container {
-            position: relative;
-            height: 100%;
+        /* --- LEFT PANEL (CLEAN RECTANGLE) --- */
+        .hud-left-panel {
+            background: rgba(20, 20, 20, 0.6); /* Dark translucent bg */
+            border: 1px solid rgba(255, 255, 255, 0.15); /* Subtle white border */
+            padding: 25px;
+            backdrop-filter: blur(8px);
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            gap: 30px;
+            height: 100%;
         }
 
-        /* The Geometric Plates */
-        .geo-plate {
-            background: rgba(30, 0, 0, 0.7);
-            border: 2px solid #ff4d6d;
-            padding: 20px;
-            backdrop-filter: blur(5px);
-            box-shadow: inset 0 0 20px rgba(255, 0, 0, 0.3);
-            position: relative;
+        /* Data Styles - WHITE WITH SUBTLE GLOW */
+        .data-section {
+            border-left: 2px solid rgba(255, 255, 255, 0.5);
+            padding-left: 15px;
         }
-
-        .gp-top {
-            margin-bottom: -15px; /* Overlap */
-            clip-path: polygon(0 0, 100% 0, 90% 100%, 0 100%);
-            z-index: 2;
+        .data-header { 
+            font-family: 'Orbitron'; 
+            color: #ffffff; 
+            font-size: 1rem; 
+            margin-bottom: 10px; 
+            letter-spacing: 1px;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+            font-weight: 700;
+        }
+        .data-text { 
+            font-family: 'Share Tech Mono'; 
+            font-size: 0.85rem; 
+            color: #ffffff; 
+            line-height: 1.8; 
+            opacity: 0.9;
+            text-shadow: 0 0 4px rgba(255, 255, 255, 0.4);
         }
         
-        .gp-bottom {
-            clip-path: polygon(10% 0, 100% 0, 100% 100%, 0 90%);
-            z-index: 1;
-            padding-top: 30px;
-        }
+        /* Graph with white theme */
+        .graph-box { height: 60px; border: 1px solid rgba(255, 255, 255, 0.2); position: relative; overflow: hidden; background: rgba(0,0,0,0.3); margin: 15px 0; }
+        .graph-line { position: absolute; bottom: 0; left: 0; width: 100%; height: 60%; background: linear-gradient(90deg, transparent, #ffffff, transparent); opacity: 0.5; animation: graphMove 2s infinite; }
 
-        /* Decorative bits */
-        .geo-deco { position: absolute; background: #ff4d6d; opacity: 0.5; }
-        .gd-1 { top: 50%; right: -10px; width: 20px; height: 40px; clip-path: polygon(0 0, 100% 50%, 0 100%); }
-
-        /* Data Styles */
-        .data-header { font-family: 'Orbitron'; color: #ff4d6d; font-size: 0.9rem; margin-bottom: 5px; border-bottom: 2px solid #ff4d6d; display: inline-block; padding-bottom: 2px; letter-spacing: 1px; }
-        .data-text { font-family: 'Share Tech Mono'; font-size: 0.75rem; color: #ffb3c1; line-height: 1.6; opacity: 0.9; text-shadow: 0 0 5px rgba(255, 0, 0, 0.5); }
-        .graph-box { height: 60px; border: 1px solid rgba(255, 77, 109, 0.5); position: relative; overflow: hidden; background: rgba(0,0,0,0.5); margin: 10px 0; }
-        .graph-line { position: absolute; bottom: 0; left: 0; width: 100%; height: 60%; background: linear-gradient(90deg, transparent, #ff4d6d, transparent); opacity: 0.7; animation: graphMove 2s infinite; }
-
-        /* RIGHT PANEL (Reactor) */
+        /* RIGHT PANEL (Reactor - Kept as is for contrast) */
         .hud-right { position: relative; display: flex; justify-content: center; align-items: center; }
         .reactor-ring-outer { position: absolute; width: 450px; height: 450px; border: 2px solid rgba(255, 77, 109, 0.3); border-radius: 50%; border-top: 4px solid #ff4d6d; border-bottom: 4px solid #ff4d6d; animation: spinRight 10s linear infinite; }
         .reactor-ring-inner { position: absolute; width: 380px; height: 380px; border: 1px dashed rgba(255, 77, 109, 0.5); border-radius: 50%; animation: spinLeft 15s linear infinite; }
@@ -194,11 +192,11 @@
             pointer-events: auto;
         }
 
-        /* TEXT STYLES (FIXED COLOR) */
+        /* MAIN STATUS TEXT (Red for Reactor) */
         .status-main { 
             font-family: 'Orbitron'; font-size: 1.3rem; font-weight: 900; 
             text-align: center; 
-            color: #ff4d6d; /* RESTORED RED/PINK COLOR */
+            color: #ff4d6d;
             line-height: 1.4;
             text-shadow: 0 0 15px rgba(255, 77, 109, 0.6);
             letter-spacing: 2px;
@@ -286,30 +284,31 @@
 
         <div class="hud-container">
             
-            <div class="hud-left-container">
-                <div class="geo-deco gd-1"></div>
-
-                <div class="geo-plate gp-top">
-                    <div class="data-header">SYSTEM_STATUS</div>
+            <div class="hud-left-panel">
+                
+                <div class="data-section">
+                    <div class="data-header">SYSTEM DIAGNOSTICS</div>
                     <div class="data-text">
-                        > KERNEL: ACTIVE<br>
-                        > MEMORY: 98%<br>
-                        > UPLINK: SECURE
+                        > KERNEL VERSION: 5.15.0-generic<br>
+                        > MEMORY USAGE: 98.2% (CRITICAL)<br>
+                        > UPLINK STATUS: STABLE<br>
+                        > ENCRYPTION: AES-256-GCM
                     </div>
                     <div class="graph-box">
                         <div class="graph-line"></div>
                     </div>
                 </div>
 
-                <div class="geo-plate gp-bottom">
-                    <div class="data-header">NETWORK_LOG</div>
+                <div class="data-section">
+                    <div class="data-header">NETWORK TRAFFIC</div>
                     <div class="data-text">
-                        > PACKETS: 1024<br>
-                        > LOSS: 0%<br>
+                        > PACKETS SENT: 1,024,512<br>
+                        > PACKET LOSS: 0.001%<br>
                         > LATENCY: 12ms<br>
-                        > FIREWALL: ON
+                        > ACTIVE PROXIES: 4
                     </div>
                 </div>
+
             </div>
 
             <div class="hud-right">
