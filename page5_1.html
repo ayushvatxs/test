@@ -24,20 +24,6 @@
             perspective: 1000px;
         }
 
-        /* --- BACKGROUND VIDEO --- */
-        #bgVideo {
-            position: fixed;
-            top: 50%; left: 50%;
-            min-width: 100%; min-height: 100%;
-            width: auto; height: auto;
-            z-index: 0; 
-            transform: translate(-50%, -50%) scale(1.1); 
-            object-position: center;
-            filter: contrast(1.2) brightness(0.8);
-            opacity: 0; 
-            transition: opacity 2s ease;
-        }
-
         /* --- 1. START SCREEN --- */
         #startScreen {
             position: fixed;
@@ -68,24 +54,13 @@
         }
         .start-btn:hover { background: #ff4d6d; color: #000; box-shadow: 0 0 50px #ff4d6d; }
 
-        /* --- 2. HUD INTRO OVERLAY --- */
-        .intro-overlay {
+        /* --- 2. LIVE 3D BACKGROUND (THE TUNNEL) --- */
+        #cyberBackground {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 100; /* High Z-Index to stay on top */
-            display: none; 
-            background: rgba(0, 0, 0, 0.3); /* Transparent to see tunnel */
+            z-index: 0; /* Background layer */
             overflow: hidden;
-        }
-
-        /* 3D TUNNEL (Background Layer) */
-        .cyber-tunnel {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
             perspective: 600px;
-            overflow: hidden;
-            z-index: 10; /* Behind HUD */
         }
 
         .tunnel-grid {
@@ -97,9 +72,16 @@
             background-size: 80px 80px;
             animation: warpSpeed 6s linear infinite;
             opacity: 0.5;
+            transition: opacity 2s ease; /* For smooth stabilization */
         }
         .floor { bottom: -80px; transform: rotateX(80deg); }
         .ceiling { top: -80px; transform: rotateX(-80deg); }
+
+        /* Stable Class (Added after unlock) */
+        .stable {
+            animation-duration: 20s !important; /* Slow down */
+            opacity: 0.2 !important; /* Fade out slightly */
+        }
 
         .tunnel-obj {
             position: absolute;
@@ -114,23 +96,17 @@
             animation: objectFly 4s linear forwards;
         }
 
-        /* --- 3. HUD UI LAYOUT --- */
-        .hud-container {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 95%; max-width: 1100px;
-            height: 600px;
-            display: grid;
-            grid-template-columns: 350px 1fr; /* Fixed width for left panel */
-            gap: 40px;
-            pointer-events: none;
-            z-index: 150; /* Front of Tunnel */
-            padding: 20px;
+        /* --- 3. HUD UI OVERLAY --- */
+        #hudOverlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 100;
+            display: none; 
+            transition: opacity 1s ease;
         }
 
-        /* HUD FRAME (Edges) */
-        .hud-frame { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 140; }
+        /* HUD FRAME */
+        .hud-frame { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 60; }
         .hud-bar-top { position: absolute; top: 0; left: 5%; width: 90%; height: 15px; border-top: 2px solid #ff4d6d; border-left: 2px solid #ff4d6d; border-right: 2px solid #ff4d6d; }
         .hud-ruler { position: absolute; top: 20%; height: 60%; width: 10px; background: repeating-linear-gradient(0deg, #ff4d6d 0px, #ff4d6d 1px, transparent 1px, transparent 10px); opacity: 0.7; }
         .rule-l { left: 0; border-right: 2px solid #ff4d6d; }
@@ -141,122 +117,55 @@
         .hc-bl { bottom: 0; left: 0; border-right: none; border-top: none; clip-path: polygon(0 0, 20% 0, 20% 80%, 100% 80%, 100% 100%, 0 100%); }
         .hc-br { bottom: 0; right: 0; border-left: none; border-top: none; clip-path: polygon(80% 0, 100% 0, 100% 100%, 0 100%, 0 80%, 80% 80%); }
 
-        /* --- LEFT PANEL: THE EXACT REPLICA --- */
+        /* HUD LAYOUT */
+        .hud-container {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 95%; max-width: 1100px; height: 600px;
+            display: grid; grid-template-columns: 320px 1fr; gap: 30px;
+            pointer-events: none; z-index: 50; padding: 20px;
+        }
+
+        /* LEFT PANEL: THE EXACT REPLICA */
         .hud-left {
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            background: rgba(10, 0, 0, 0.2); /* Very faint background */
-            border: 1px solid rgba(255, 77, 109, 0.1);
+            display: flex; flex-direction: column; padding: 20px;
+            background: rgba(10, 0, 0, 0.2); border: 1px solid rgba(255, 77, 109, 0.1);
         }
+        .sys-log-header { font-family: 'Orbitron'; color: #ff4d6d; font-size: 1.2rem; text-transform: uppercase; border-bottom: 2px solid #ff4d6d; display: inline-block; margin-bottom: 5px; letter-spacing: 1px; }
+        .sys-log-content { font-family: 'Share Tech Mono'; color: #ffb3c1; font-size: 0.7rem; line-height: 1.5; margin-bottom: 30px; opacity: 0.8; }
+        .geo-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 90px 90px; gap: 8px; margin-bottom: 40px; }
+        .geo-box { background: rgba(40, 0, 0, 0.6); border: 1px solid #ff4d6d; box-shadow: inset 0 0 10px rgba(255, 0, 0, 0.2); }
+        .gb-1 { clip-path: polygon(0 0, 100% 0, 100% 80%, 80% 100%, 0 100%); }
+        .gb-2 { clip-path: polygon(0 0, 100% 0, 100% 100%, 20% 100%, 0 80%); }
+        .gb-3 { clip-path: polygon(0 0, 80% 0, 100% 20%, 100% 100%, 0 100%); }
+        .gb-4 { clip-path: polygon(20% 0, 100% 0, 100% 100%, 0 100%, 0 20%); }
+        .gauge-container { display: flex; gap: 20px; }
+        .gauge-circle { width: 50px; height: 50px; border-radius: 50%; border: 1px solid rgba(255, 77, 109, 0.3); display: flex; justify-content: center; align-items: center; font-size: 0.7rem; color: #ffb3c1; position: relative; font-family: 'Share Tech Mono'; }
+        .gauge-circle::after { content: ''; position: absolute; top: -3px; left: -3px; right: -3px; bottom: -3px; border-radius: 50%; border: 2px solid transparent; border-top-color: #ff4d6d; animation: spinRight 3s linear infinite; }
 
-        /* Header Area */
-        .sys-log-header {
-            font-family: 'Orbitron';
-            color: #ff4d6d;
-            font-size: 1.2rem;
-            text-transform: uppercase;
-            border-bottom: 2px solid #ff4d6d;
-            display: inline-block;
-            margin-bottom: 5px;
-            letter-spacing: 1px;
-        }
-        
-        .sys-log-content {
-            font-family: 'Share Tech Mono';
-            color: #ffb3c1;
-            font-size: 0.7rem;
-            line-height: 1.5;
-            margin-bottom: 30px;
-            opacity: 0.8;
-        }
-
-        /* THE 2x2 GRID (Exact Shapes) */
-        .geo-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: 90px 90px;
-            gap: 8px;
-            margin-bottom: 40px;
-        }
-
-        .geo-box {
-            background: rgba(40, 0, 0, 0.6);
-            border: 1px solid #ff4d6d;
-            box-shadow: inset 0 0 10px rgba(255, 0, 0, 0.2);
-        }
-
-        /* Inward Cuts (Chamfers) */
-        .gb-1 { clip-path: polygon(0 0, 100% 0, 100% 80%, 80% 100%, 0 100%); } /* Top Left: Cut bottom-right */
-        .gb-2 { clip-path: polygon(0 0, 100% 0, 100% 100%, 20% 100%, 0 80%); } /* Top Right: Cut bottom-left */
-        .gb-3 { clip-path: polygon(0 0, 80% 0, 100% 20%, 100% 100%, 0 100%); } /* Bottom Left: Cut top-right */
-        .gb-4 { clip-path: polygon(20% 0, 100% 0, 100% 100%, 0 100%, 0 20%); } /* Bottom Right: Cut top-left */
-
-        /* Bottom Gauges */
-        .gauge-container {
-            display: flex;
-            gap: 20px;
-        }
-        .gauge-circle {
-            width: 50px; height: 50px;
-            border-radius: 50%;
-            border: 1px solid rgba(255, 77, 109, 0.3);
-            display: flex; justify-content: center; align-items: center;
-            font-size: 0.7rem; color: #ffb3c1;
-            position: relative;
-            font-family: 'Share Tech Mono';
-        }
-        .gauge-circle::after {
-            content: ''; position: absolute; top: -3px; left: -3px; right: -3px; bottom: -3px;
-            border-radius: 50%; border: 2px solid transparent; border-top-color: #ff4d6d;
-            animation: spinRight 3s linear infinite;
-        }
-
-        /* --- RIGHT PANEL: REACTOR & TEXT --- */
+        /* RIGHT PANEL: REACTOR & TEXT */
         .hud-right { position: relative; display: flex; justify-content: center; align-items: center; }
         .reactor-ring-outer { position: absolute; width: 450px; height: 450px; border: 2px solid rgba(255, 77, 109, 0.3); border-radius: 50%; border-top: 4px solid #ff4d6d; border-bottom: 4px solid #ff4d6d; animation: spinRight 10s linear infinite; }
         .reactor-ring-inner { position: absolute; width: 380px; height: 380px; border: 1px dashed rgba(255, 77, 109, 0.5); border-radius: 50%; animation: spinLeft 15s linear infinite; }
-        .reactor-core-bg {
-            position: absolute; width: 320px; height: 320px;
-            background: rgba(20, 0, 0, 0.95); border: 2px solid #ff4d6d; border-radius: 50%;
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.3);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            pointer-events: auto;
-        }
+        .reactor-core-bg { position: absolute; width: 320px; height: 320px; background: rgba(20, 0, 0, 0.95); border: 2px solid #ff4d6d; border-radius: 50%; box-shadow: 0 0 30px rgba(255, 0, 0, 0.3); display: flex; flex-direction: column; justify-content: center; align-items: center; pointer-events: auto; }
 
-        /* TEXT STYLES (White with Pink Glow) */
-        .status-main { 
-            font-family: 'Orbitron'; font-size: 1.3rem; font-weight: 700; 
-            text-align: center; 
-            color: #ffffff; 
-            line-height: 1.4;
-            text-shadow: 0 0 10px rgba(255, 77, 109, 0.8), 0 0 20px rgba(255, 77, 109, 0.4); 
-            letter-spacing: 2px;
-        }
+        /* WHITE TEXT + GLOW */
+        .status-main { font-family: 'Orbitron'; font-size: 1.3rem; font-weight: 700; text-align: center; color: #ffffff; line-height: 1.4; text-shadow: 0 0 10px rgba(255, 77, 109, 0.8), 0 0 20px rgba(255, 77, 109, 0.4); letter-spacing: 2px; }
 
         /* BUTTONS */
-        .connect-btn {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid #ffffff; color: #ffffff;
-            padding: 12px 25px; font-family: 'Orbitron'; font-size: 0.9rem; letter-spacing: 2px;
-            margin-top: 20px; cursor: pointer; transition: 0.3s;
-            animation: pulse 1.5s infinite;
-            text-shadow: 0 0 5px #ff4d6d;
-            box-shadow: 0 0 10px rgba(255, 77, 109, 0.3);
-        }
+        .connect-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid #ffffff; color: #ffffff; padding: 12px 25px; font-family: 'Orbitron'; font-size: 0.9rem; letter-spacing: 2px; margin-top: 20px; cursor: pointer; transition: 0.3s; animation: pulse 1.5s infinite; text-shadow: 0 0 5px #ff4d6d; box-shadow: 0 0 10px rgba(255, 77, 109, 0.3); }
         .connect-btn:hover { background: #ffffff; color: #000; box-shadow: 0 0 20px #ffffff; }
 
         /* ALERT & SCANNER */
         .alert-content { text-align: center; animation: shake 0.5s infinite; }
         .alert-icon { font-size: 3rem; margin-bottom: 10px; color: red; text-shadow: 0 0 20px red; }
         .alert-text { font-family: 'Orbitron'; color: red; font-size: 1.6rem; font-weight: 900; text-shadow: 0 0 20px red; }
-        
         .scanner-wrapper { width: 90px; height: 120px; margin: 0 auto; position: relative; }
         .fingerprint { width: 100%; height: 100%; border: 2px solid rgba(255, 77, 109, 0.5); border-radius: 30px; background: url('https://img.icons8.com/ios/100/ff4d6d/fingerprint.png') no-repeat center center; background-size: 70%; position: relative; overflow: hidden; background-color: rgba(30, 0, 0, 0.4); transition: 0.2s; cursor: pointer; box-shadow: inset 0 0 20px rgba(255,0,0,0.2); }
         .scan-fill { position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background: rgba(255, 77, 109, 0.8); transition: height 0.05s linear; box-shadow: 0 0 20px #ff4d6d; }
         .instruction { margin-top: 20px; color: #ff4d6d; font-size: 0.8rem; animation: pulse 1s infinite; font-weight: bold; letter-spacing: 1px; }
 
-        /* MAIN CONTENT */
-        #mainContent { display: none; width: 100%; opacity: 0; transition: opacity 2s ease; position: relative; z-index: 10; }
+        /* --- 4. MAIN CONTENT --- */
+        #mainContent { display: none; width: 100%; opacity: 0; transition: opacity 2s ease; position: relative; z-index: 10; padding-top: 20px; }
         .server-header { padding: 40px 20px; border-bottom: 1px solid #ff4d6d; background: rgba(0, 0, 0, 0.8); margin-bottom: 20px; }
         .sys-title { font-family: 'Orbitron', sans-serif; font-size: 1.8rem; color: #fff; margin-top: 5px; }
         .log-container { padding: 10px 20px; max-width: 600px; margin: 0 auto; padding-bottom: 100px; background: rgba(0,0,0,0.6); border-radius: 10px; }
@@ -276,46 +185,35 @@
         @keyframes spinLeft { 100% { transform: rotate(-360deg); } }
         @keyframes shake { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -1px); } 100% { transform: translate(1px, -1px); } }
         @keyframes pulse { 0% { opacity: 0.6; } 100% { opacity: 1; } }
-        @keyframes objectFly { 
-            0% { transform: translate3d(var(--sx), var(--sy), -1000px); opacity: 0; } 
-            20% { opacity: 1; }
-            100% { transform: translate3d(var(--ex), var(--ey), 500px); opacity: 0; }
-        }
+        @keyframes objectFly { 0% { transform: translate3d(var(--sx), var(--sy), -1000px); opacity: 0; } 20% { opacity: 1; } 100% { transform: translate3d(var(--ex), var(--ey), 500px); opacity: 0; } }
 
     </style>
 </head>
 <body>
 
-    <video id="bgVideo" loop muted playsinline>
-        <source src="server_bg.mp4" type="video/mp4">
-    </video>
+    <div id="startScreen">
+        <button class="start-btn" onclick="initializeSystem()">INITIALIZE SYSTEM</button>
+    </div>
+
+    <div id="cyberBackground">
+        <div class="tunnel-grid floor" id="gridFloor"></div>
+        <div class="tunnel-grid ceiling" id="gridCeiling"></div>
+        <div id="tunnelObjects"></div>
+    </div>
 
     <audio id="soundAlert" src="alert.mp3" preload="auto"></audio>
     <audio id="soundScan" src="scan.mp3" preload="auto" loop></audio>
     <audio id="soundGrant" src="granted.mp3" preload="auto"></audio>
 
-    <div id="startScreen">
-        <button class="start-btn" onclick="initializeSystem()">INITIALIZE SYSTEM</button>
-    </div>
-
-    <div class="intro-overlay" id="overlay">
-        
-        <div class="cyber-tunnel">
-            <div class="tunnel-grid floor"></div>
-            <div class="tunnel-grid ceiling"></div>
-            <div id="tunnelObjects"></div>
-        </div>
-
+    <div id="hudOverlay">
         <div class="hud-frame">
             <div class="hud-bar-top"></div>
-            <div class="hud-ruler rule-l"></div>
-            <div class="hud-ruler rule-r"></div>
+            <div class="hud-ruler rule-l"></div><div class="hud-ruler rule-r"></div>
             <div class="hud-corner hc-tl"></div><div class="hud-corner hc-tr"></div>
             <div class="hud-corner hc-bl"></div><div class="hud-corner hc-br"></div>
         </div>
 
         <div class="hud-container">
-            
             <div class="hud-left">
                 <div>
                     <div class="sys-log-header">SYSTEM_LOG</div>
@@ -326,31 +224,24 @@
                         > LATENCY: 12ms
                     </div>
                 </div>
-
                 <div class="geo-grid">
-                    <div class="geo-box gb-1"></div>
-                    <div class="geo-box gb-2"></div>
-                    <div class="geo-box gb-3"></div>
-                    <div class="geo-box gb-4"></div>
+                    <div class="geo-box gb-1"></div><div class="geo-box gb-2"></div>
+                    <div class="geo-box gb-3"></div><div class="geo-box gb-4"></div>
                 </div>
-
                 <div class="gauge-container">
-                    <div class="gauge-circle">CPU</div>
-                    <div class="gauge-circle">RAM</div>
+                    <div class="gauge-circle">CPU</div><div class="gauge-circle">RAM</div>
                 </div>
             </div>
 
             <div class="hud-right">
-                <div class="reactor-ring-outer"></div>
-                <div class="reactor-ring-inner"></div>
-                
+                <div class="reactor-ring-outer"></div><div class="reactor-ring-inner"></div>
                 <div class="reactor-core-bg">
                     
-                    <div id="phase1" class="loading-content" style="display:flex; justify-content:center; align-items:center; height:100%;">
+                    <div id="phase1" style="display:flex; flex-direction:column; align-items:center;">
                         <div class="status-main" id="textSequence">SYSTEM STARTUP</div>
                     </div>
 
-                    <div id="phase1_5" class="loading-content" style="display:none; text-align:center;">
+                    <div id="phase1_5" style="display:none; text-align:center;">
                         <div class="status-main" style="font-size:1rem;">SERVER READY</div>
                         <button class="connect-btn" onclick="triggerAlert()">CONNECT CONSOLE</button>
                     </div>
@@ -359,22 +250,16 @@
                         <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
                         <div class="alert-text">ACCESS DENIED</div>
                         <div style="font-size:0.8rem; margin-top:10px; color:#ffcccc; border:1px solid red; padding:5px; background:rgba(50,0,0,0.5);">
-                            SERVER PROTECTED BY AYUSH<br>
-                            BIOMETRIC REQUIRED
+                            SERVER PROTECTED BY AYUSH<br>BIOMETRIC REQUIRED
                         </div>
                     </div>
 
-                    <div id="phase3" class="scanner-content" style="display:none; text-align:center;">
-                        <div class="scanner-wrapper">
-                            <div class="fingerprint" id="fingerBtn">
-                                <div class="scan-fill" id="scanFill"></div>
-                            </div>
-                        </div>
-                        <div class="instruction" id="scanText">HOLD THUMB TO VERIFY</div>
+                    <div id="phase3" style="display:none; text-align:center;">
+                        <div class="scanner-wrapper"><div class="fingerprint" id="fingerBtn"><div class="scan-fill" id="scanFill"></div></div></div>
+                        <div class="instruction">HOLD THUMB TO VERIFY</div>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -398,51 +283,30 @@
 
             <div class="sector-title">SECTOR 2: CONNECTION LOGS</div>
             <div class="data-line"><span class="label">> FIRST CONTACT:</span> <span class="value">11 April 2025</span></div>
-            <div class="data-line"><span class="label">> FIRST IMPRESSION:</span> <span class="value">Gorgeous & Talented</span></div>
             <div class="data-line"><span class="label">> DISTANCE:</span> <span class="value error">611 KM (Too Far)</span></div>
             <div class="data-line"><span class="label">> LONGEST CALL:</span> <span class="value highlight">6 HOURS 00 MINS</span></div>
             <div class="data-line"><span class="label">> DATA STORED:</span> <span class="value">489 Photos</span></div>
-            <div class="data-line"><span class="label">> FIRST SCREENING:</span> <span class="value">Crime Patrol</span></div>
 
             <div class="sector-title">SECTOR 3: USER PREFERENCES</div>
             <div class="data-line"><span class="label">> FAV COLOR:</span> <span class="value">Black</span></div>
             <div class="data-line"><span class="label">> FLORA:</span> <span class="value">Roses</span></div>
             <div class="data-line"><span class="label">> CUISINE:</span> <span class="value">Brinjal, Chole Chawal, Duck</span></div>
-            <div class="data-line"><span class="label">> JUNK FOOD:</span> <span class="value error">ERROR 404 (Health Conscious)</span></div>
             <div class="data-line"><span class="label">> BEVERAGE:</span> <span class="value">Red Tea</span></div>
-            <div class="data-line"><span class="label">> SWEETENER:</span> <span class="value">Kinder Joy & Choco Ice Cream</span></div>
-            <div class="data-line"><span class="label">> WEATHER:</span> <span class="value">Winter / Snow</span></div>
-            <div class="data-line"><span class="label">> MEDIA:</span> <span class="value">Crime Thrillers</span></div>
             <div class="data-line"><span class="label">> ARTIST:</span> <span class="value">Taylor Swift</span></div>
             <div class="data-line"><span class="label">> FAV PLACE:</span> <span class="value highlight">Sleeping on my lap</span></div>
-            <div class="data-line"><span class="label">> SLEEP CONFIG:</span> <span class="value">2 Pillows (Head) + 1 Pillow (Hands)</span></div>
 
             <div class="sector-title">SECTOR 4: BEHAVIORAL ANALYSIS</div>
             <div class="data-line"><span class="label">> HAPPY STATE:</span> <span class="value">Dance (Award Winning)</span></div>
             <div class="data-line"><span class="label">> ANGRY STATE:</span> <span class="value error">Scolding Mode ("Baad me baat krte h")</span></div>
             <div class="data-line"><span class="label">> ANGER FIX:</span> <span class="value">Listen > Agree > Apologize > Laugh</span></div>
-            <div class="data-line"><span class="label">> SAD STATE:</span> <span class="value">Sleep / Quiet</span></div>
             <div class="data-line"><span class="label">> COMFORT FIX:</span> <span class="value">Treat like a kid (100% Success)</span></div>
-            <div class="data-line"><span class="label">> LAUGHTER TRIGGER:</span> <span class="value">My weird faces & Roasts</span></div>
-            <div class="data-line"><span class="label">> STRESS RESPONSE:</span> <span class="value">Sleep & Talk to me</span></div>
 
             <div class="sector-title">SECTOR 5: MICRO-OBSERVATIONS</div>
             <div class="data-line"><span class="label">> SNEEZE TYPE:</span> <span class="value">Kitten 🐱</span></div>
-            <div class="data-line"><span class="label">> LAUGH SOUND:</span> <span class="value">Giggle</span></div>
             <div class="data-line"><span class="label">> CUTE ERROR:</span> <span class="value">Says "Thank uuuu" uniquely</span></div>
-            <div class="data-line"><span class="label">> WALKING SPEED:</span> <span class="value">Fast</span></div>
-            <div class="data-line"><span class="label">> TEXT STYLE:</span> <span class="value">Typoz Queen</span></div>
-            <div class="data-line"><span class="label">> COOKING SKILL:</span> <span class="value">10/10 (Rare Event)</span></div>
             <div class="data-line"><span class="label">> DRIVING SKILL:</span> <span class="value error">SCARY. DO NOT ENTER VEHICLE.</span></div>
-            <div class="data-line"><span class="label">> HYDRATION:</span> <span class="value">Summer: Queen | Winter: Cactus 🌵</span></div>
-            <div class="data-line"><span class="label">> PARANORMAL:</span> <span class="value">Fears like a kid</span></div>
             <div class="data-line"><span class="label">> HIDDEN TALENT:</span> <span class="value highlight">Amazing Singer (Private Show Only)</span></div>
-            <div class="data-line"><span class="label">> WANT FACE:</span> <span class="value">Cute like a small kid 🥺</span></div>
-            <div class="data-line"><span class="label">> CONFUSED FACE:</span> <span class="value">Forehead stretched, eyes top-right</span></div>
-            <div class="data-line"><span class="label">> MOST USED SLANG:</span> <span class="value">"Seriously"</span></div>
-            <div class="data-line"><span class="label">> FOCUS FACE:</span> <span class="value">Studying Mode</span></div>
         </div>
-
         <div class="next-btn-container">
             <a href="page5_2.html" class="tech-btn">INITIATE REASSEMBLY ></a>
         </div>
@@ -452,66 +316,51 @@
         const soundAlert = document.getElementById('soundAlert');
         const soundScan = document.getElementById('soundScan');
         const soundGrant = document.getElementById('soundGrant');
-
-        // --- TUNNEL OBJECT GENERATOR (ON THE WALLS) ---
-        const icons = [
-            '<i class="fas fa-server"></i>', 
-            '<i class="fas fa-cube"></i>', 
-            '<i class="fas fa-microchip"></i>',
-            '<i class="fas fa-database"></i>',
-            '0101', 'HEX'
-        ];
-        
         const tunnelContainer = document.getElementById('tunnelObjects');
 
-        setInterval(() => {
+        // SPAWN OBJECTS (Walls only)
+        let spawnInterval = setInterval(() => {
+            const icons = ['<i class="fas fa-server"></i>', '<i class="fas fa-cube"></i>', '<i class="fas fa-database"></i>', '0101'];
             const el = document.createElement('div');
             el.className = 'tunnel-obj';
             el.innerHTML = icons[Math.floor(Math.random() * icons.length)];
-            
-            // Spawn far left or far right (Walls)
             let startX = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 200 + 400); 
             let startY = (Math.random() - 0.5) * 800; 
-
-            el.style.setProperty('--sx', startX + 'px');
-            el.style.setProperty('--sy', startY + 'px');
-            // Move outwards as they come closer
-            el.style.setProperty('--ex', (startX * 1.2) + 'px');
-            el.style.setProperty('--ey', (startY * 1.2) + 'px');
-            
+            el.style.setProperty('--sx', startX + 'px'); el.style.setProperty('--sy', startY + 'px');
+            el.style.setProperty('--ex', (startX * 1.2) + 'px'); el.style.setProperty('--ey', (startY * 1.2) + 'px');
             tunnelContainer.appendChild(el);
-
-            setTimeout(() => { el.remove(); }, 4000);
+            setTimeout(() => el.remove(), 4000);
         }, 400);
 
-        // --- SEQUENCE LOGIC ---
-        function unlockAudio() {
-            soundAlert.play(); soundAlert.pause();
-            soundScan.play(); soundScan.pause();
-            soundGrant.play(); soundGrant.pause();
-        }
-
         function initializeSystem() {
-            unlockAudio();
+            soundAlert.play(); soundAlert.pause(); soundScan.play(); soundScan.pause(); soundGrant.play(); soundGrant.pause();
             document.getElementById('startScreen').style.display = 'none'; 
-            document.getElementById('overlay').style.display = 'block';     
+            document.getElementById('hudOverlay').style.display = 'block';     
             runStorySequence();
         }
 
         function runStorySequence() {
             const textEl = document.getElementById('textSequence');
-            
-            // EXACT SEQUENCE REQUESTED
-            setTimeout(() => { textEl.innerText = "SYSTEM STARTUP"; }, 0);
-            setTimeout(() => { textEl.innerText = "INITIALIZING"; }, 1500);
-            setTimeout(() => { textEl.innerText = "HEY!"; textEl.style.fontSize="3rem"; }, 3500);
-            setTimeout(() => { textEl.innerText = "WELCOME TO VIOLINA'S DATABASE"; textEl.style.fontSize="1.1rem"; }, 5500);
-            setTimeout(() => { textEl.innerText = "LOADING..."; textEl.style.fontSize="1.4rem"; }, 8000);
-            setTimeout(() => { textEl.innerText = "DECRYPTING SERVER DATA"; }, 10000);
-            setTimeout(() => { textEl.innerText = "BYPASSING FIREWALL"; }, 12500);
-            setTimeout(() => { textEl.innerText = "TRYING TO CONNECT"; }, 14500);
-            
-            // SHOW CONNECT BUTTON
+            const seq = [
+                {t:"SYSTEM STARTUP", d:0}, 
+                {t:"INITIALIZING", d:1500}, 
+                {t:"HEY!", d:3500, s:"3rem"}, 
+                {t:"WELCOME TO VIOLINA'S DATABASE", d:5500, s:"1rem"}, 
+                {t:"LOADING...", d:8000, s:"1.4rem"}, 
+                {t:"DECRYPTING SERVER DATA", d:10000}, 
+                {t:"BYPASSING FIREWALL", d:12500}, 
+                {t:"TRYING TO CONNECT", d:14500},
+                {t:"SERVER READY", d:16500}
+            ];
+
+            seq.forEach(item => {
+                setTimeout(() => {
+                    textEl.innerText = item.t;
+                    if(item.s) textEl.style.fontSize = item.s;
+                    else textEl.style.fontSize = "1.3rem";
+                }, item.d);
+            });
+
             setTimeout(() => { 
                 document.getElementById('phase1').style.display = 'none';
                 document.getElementById('phase1_5').style.display = 'block'; 
@@ -521,92 +370,62 @@
         function triggerAlert() {
             document.getElementById('phase1_5').style.display = 'none';
             document.getElementById('phase2').style.display = 'block';
-            soundAlert.currentTime = 0;
-            soundAlert.play();
-
+            soundAlert.currentTime = 0; soundAlert.play();
             setTimeout(() => {
                 document.getElementById('phase2').style.display = 'none';
                 document.getElementById('phase3').style.display = 'block';
             }, 4000);
         }
 
-        // --- SCANNER ---
-        let holdTimer = null;
-        let progress = 0;
+        let holdTimer, progress = 0;
         const fingerBtn = document.getElementById('fingerBtn');
         const scanFill = document.getElementById('scanFill');
-        const scanText = document.getElementById('scanText');
 
         function startHold(e) {
             e.preventDefault();
-            fingerBtn.style.borderColor = "#00ff00"; 
-            scanText.innerText = "VERIFYING...";
-            scanText.style.color = "#00ff00";
-            soundScan.currentTime = 0;
-            soundScan.play();
-
+            fingerBtn.style.borderColor = "#00ff00"; soundScan.currentTime = 0; soundScan.play();
             holdTimer = setInterval(() => {
-                progress += 2;
-                scanFill.style.height = progress + "%";
+                progress += 2; scanFill.style.height = progress + "%";
                 if (progress >= 100) success();
             }, 30);
         }
 
         function endHold() {
             if (progress < 100) {
-                clearInterval(holdTimer);
-                progress = 0;
-                scanFill.style.height = "0%";
-                fingerBtn.style.borderColor = "rgba(255, 77, 109, 0.5)";
-                scanText.innerText = "RETRY SCAN";
-                scanText.style.color = "#ff4d6d";
-                soundScan.pause();
+                clearInterval(holdTimer); progress = 0; scanFill.style.height = "0%";
+                fingerBtn.style.borderColor = "rgba(255, 77, 109, 0.5)"; soundScan.pause();
             }
         }
 
         function success() {
-            clearInterval(holdTimer);
-            soundScan.pause();
-            soundGrant.play();
-            scanText.innerText = "IDENTITY CONFIRMED";
-            fingerBtn.onmousedown = null;
-            fingerBtn.ontouchstart = null;
-
+            clearInterval(holdTimer); soundScan.pause(); soundGrant.play();
+            // Stabilize Background
+            clearInterval(spawnInterval);
+            document.getElementById('gridFloor').classList.add('stable');
+            document.getElementById('gridCeiling').classList.add('stable');
+            
             setTimeout(() => {
-                document.getElementById('overlay').style.opacity = '0';
-                document.getElementById('bgVideo').style.opacity = '1';
-                document.getElementById('bgVideo').play();
-
+                document.getElementById('hudOverlay').style.opacity = '0';
                 setTimeout(() => {
-                    document.getElementById('overlay').style.display = 'none';
+                    document.getElementById('hudOverlay').style.display = 'none';
                     document.getElementById('mainContent').style.display = 'block';
                     document.body.style.overflow = 'auto';
-                    setTimeout(() => {
-                        document.getElementById('mainContent').style.opacity = '1';
-                        triggerDataScroll();
-                    }, 100);
+                    setTimeout(() => { document.getElementById('mainContent').style.opacity = '1'; triggerDataScroll(); }, 100);
                 }, 1000);
             }, 1500);
         }
 
         fingerBtn.addEventListener('mousedown', startHold);
         fingerBtn.addEventListener('mouseup', endHold);
-        fingerBtn.addEventListener('mouseleave', endHold);
         fingerBtn.addEventListener('touchstart', startHold);
         fingerBtn.addEventListener('touchend', endHold);
 
         function triggerDataScroll() {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                    }
-                });
+            const obs = new IntersectionObserver((entries) => {
+                entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
             }, { threshold: 0.1 });
-
-            document.querySelectorAll('.data-line').forEach((el, index) => {
-                el.style.transitionDelay = `${index * 50}ms`; 
-                observer.observe(el);
+            document.querySelectorAll('.data-line').forEach((el, i) => {
+                el.style.transitionDelay = `${i * 50}ms`; obs.observe(el);
             });
         }
     </script>
