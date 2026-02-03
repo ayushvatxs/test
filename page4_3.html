@@ -15,16 +15,17 @@
             margin: 0;
             padding: 0;
             background-color: #050505;
+            /* Deep, dark red/black vignette */
             background-image: 
                 radial-gradient(circle at 50% 0%, #2a0a12 0%, transparent 70%),
                 radial-gradient(circle at 50% 100%, #1a0508 0%, transparent 70%);
             font-family: 'Montserrat', sans-serif;
             color: #fff;
             overflow-x: hidden;
-            min-height: 400vh; /* Long scroll for the storytelling */
+            /* Remove fixed height, let content define it */
         }
 
-        /* Ambient Grain for Texture */
+        /* Ambient Grain */
         .noise-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -33,15 +34,16 @@
             z-index: 1;
         }
 
-        /* --- THE HEARTBEAT SVG --- */
+        /* --- THE DYNAMIC HEARTBEAT LINE --- */
         .svg-container {
-            position: fixed;
+            position: absolute; /* Changed to absolute to follow full scroll height */
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: 0;
             pointer-events: none;
+            overflow: visible;
         }
 
         /* The Glowing Line */
@@ -52,6 +54,7 @@
             stroke-linecap: round;
             stroke-linejoin: round;
             filter: drop-shadow(0 0 8px rgba(255, 77, 109, 0.8));
+            transition: stroke-dashoffset 0.1s linear; /* Smooth drawing */
         }
 
         /* --- TEXT CONTAINERS --- */
@@ -61,17 +64,18 @@
             width: 100%;
             max-width: 600px;
             margin: 0 auto;
-            padding-bottom: 200px; /* Space for end button */
+            padding-top: 20vh; /* Start lower */
+            padding-bottom: 200px; 
         }
 
         .chapter {
-            height: 80vh; /* Each text block takes almost a full screen */
+            min-height: 80vh; /* Gives space between messages */
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
-            opacity: 0; /* Hidden initially */
+            opacity: 0;
             transform: translateY(30px);
             transition: all 1s ease-out;
             padding: 0 20px;
@@ -82,13 +86,13 @@
             transform: translateY(0);
         }
 
-        /* Typography Styles */
+        /* Typography */
         .script-text {
             font-family: 'Pinyon Script', cursive;
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             color: #ff4d6d;
-            margin-bottom: 15px;
-            text-shadow: 0 0 10px rgba(255, 77, 109, 0.5);
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px rgba(255, 77, 109, 0.6);
         }
 
         .body-text {
@@ -96,13 +100,25 @@
             line-height: 1.8;
             color: #e0e0e0;
             font-weight: 300;
-            max-width: 80%;
+            max-width: 85%;
         }
 
         .highlight {
             color: #ffd700;
             font-weight: 500;
             text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+        }
+
+        /* --- AUDIO HINT --- */
+        .audio-hint {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            color: rgba(255,255,255,0.3);
+            font-size: 0.7rem;
+            z-index: 10;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         /* --- FLOATING PARTICLES --- */
@@ -122,22 +138,15 @@
             100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
         }
 
-        /* --- THE FINAL BUTTON --- */
+        /* --- NEXT BUTTON --- */
         .final-cta {
-            position: fixed;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
+            margin-top: 100px;
+            margin-bottom: 100px;
+            text-align: center;
             opacity: 0;
             transition: opacity 1s;
-            z-index: 100;
-            pointer-events: none;
         }
-
-        .final-cta.show {
-            opacity: 1;
-            pointer-events: auto;
-        }
+        .final-cta.visible { opacity: 1; }
 
         .btn-gold {
             background: transparent;
@@ -152,7 +161,6 @@
             transition: all 0.3s;
             box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
         }
-
         .btn-gold:hover {
             background: #ffd700;
             color: #000;
@@ -164,23 +172,15 @@
 <body>
 
     <div class="noise-overlay"></div>
+    <div class="audio-hint">Sound On • Scroll Slowly</div>
 
-    <div style="position:fixed; top:20px; right:20px; color:#555; font-size:0.7rem; z-index:10;">
-        SCROLL SLOWLY ↓
-    </div>
+    <audio id="bgMusic" loop>
+        <source src="heartbeat.mp3" type="audio/mpeg">
+    </audio>
 
     <div class="svg-container">
-        <svg width="100%" height="100%" viewBox="0 0 400 3000" preserveAspectRatio="none">
-            <path id="heartPath" d="M 200 0 
-                     Q 200 200, 200 400 
-                     L 180 420 L 220 440 L 150 480 L 250 520 L 200 550 
-                     Q 200 800, 200 1000
-                     L 190 1020 L 210 1040 L 160 1080 L 240 1120 L 200 1150
-                     Q 200 1400, 200 1600
-                     L 180 1620 L 220 1640 L 150 1680 L 250 1720 L 200 1750
-                     Q 200 2000, 200 2200
-                     L 190 2220 L 210 2240 L 160 2280 L 240 2320 L 200 2350
-                     Q 200 2600, 200 3000" />
+        <svg id="svgLine" width="100%" height="100%" preserveAspectRatio="none">
+            <path id="heartPath" d="" />
         </svg>
     </div>
 
@@ -223,56 +223,102 @@
                 <span class="highlight">I love you, Violina.</span>
             </div>
         </div>
+        
+        <div class="final-cta chapter">
+            <a href="page5.html" class="btn-gold">The Promises</a>
+        </div>
 
     </div>
 
     <div class="floating-heart" style="left: 10%; animation-duration: 9s;">❤️</div>
     <div class="floating-heart" style="left: 80%; animation-duration: 12s;">✨</div>
     <div class="floating-heart" style="left: 20%; animation-duration: 7s; animation-delay: 2s;">💖</div>
-    <div class="floating-heart" style="left: 70%; animation-duration: 10s; animation-delay: 1s;">🌸</div>
-
-    <div class="final-cta" id="nextBtn">
-        <a href="page5.html" class="btn-gold">The Promises</a>
-    </div>
 
     <script>
-        // --- SCROLLYTELLING LOGIC ---
-        
-        // 1. Setup the Path Drawing
-        const path = document.getElementById('heartPath');
-        const pathLength = path.getTotalLength();
-
-        path.style.strokeDasharray = pathLength;
-        path.style.strokeDashoffset = pathLength;
-
-        window.addEventListener('scroll', () => {
-            const scrollPercentage = (document.documentElement.scrollTop + document.body.scrollTop) / (document.documentElement.scrollHeight - document.documentElement.clientHeight);
+        // --- 1. DYNAMIC PATH GENERATOR (The "Pro" Math) ---
+        function updatePath() {
+            const svg = document.getElementById('svgLine');
+            const path = document.getElementById('heartPath');
+            const container = document.querySelector('.story-container');
             
-            // Draw the line as we scroll
-            const drawLength = pathLength * scrollPercentage;
-            path.style.strokeDashoffset = pathLength - drawLength;
+            // Calculate total height based on your text content
+            const height = container.offsetHeight + 500; 
+            svg.setAttribute('height', height);
 
-            // Show Button at the end
-            const btn = document.getElementById('nextBtn');
-            if(scrollPercentage > 0.85) {
-                btn.classList.add('show');
-            } else {
-                btn.classList.remove('show');
+            // Generate a curvy "Heartbeat" line dynamically
+            const width = window.innerWidth;
+            const center = width / 2;
+            let d = `M ${center} 0 `; // Start at top center
+
+            // Loop to create curves down the page
+            const steps = 20; // How many curves
+            const stepHeight = height / steps;
+
+            for (let i = 0; i < steps; i++) {
+                const y = (i + 1) * stepHeight;
+                const offset = (i % 2 === 0) ? 60 : -60; // Zig-Zag width
+                
+                // Bezier Curve Logic
+                d += `Q ${center + offset} ${y - (stepHeight/2)}, ${center} ${y} `;
             }
+
+            path.setAttribute('d', d);
+            
+            // Re-initialize scroll drawing length
+            const pathLength = path.getTotalLength();
+            path.style.strokeDasharray = pathLength;
+            path.style.strokeDashoffset = pathLength;
+            return pathLength;
+        }
+
+        // Run path generation on load
+        let totalLength = updatePath();
+
+        // --- 2. SCROLL DRAWING LOGIC ---
+        window.addEventListener('scroll', () => {
+            const path = document.getElementById('heartPath');
+            
+            // How far have we scrolled?
+            const scrollTop = window.scrollY;
+            const docHeight = document.body.scrollHeight - window.innerHeight;
+            const scrollPercent = scrollTop / docHeight;
+
+            // Draw the line
+            const drawLength = totalLength * scrollPercent;
+            path.style.strokeDashoffset = totalLength - drawLength;
         });
 
-        // 2. Setup Fade-In Text (Intersection Observer)
+        // --- 3. TEXT FADE IN LOGIC ---
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('visible');
                 }
             });
-        }, { threshold: 0.5 });
+        }, { threshold: 0.3 });
 
         document.querySelectorAll('.chapter').forEach((el) => {
             observer.observe(el);
         });
+
+        // --- 4. SMART AUDIO SYSTEM ---
+        const audio = document.getElementById('bgMusic');
+        audio.volume = 0.5; // 50% volume so it's not too loud
+
+        function playAudio() {
+            audio.play().catch(error => {
+                console.log("Audio waiting for interaction...");
+            });
+            // Remove listeners once playing starts
+            document.removeEventListener('click', playAudio);
+            document.removeEventListener('touchstart', playAudio);
+            document.removeEventListener('scroll', playAudio);
+        }
+
+        // Try to play on any user interaction
+        document.addEventListener('click', playAudio);
+        document.addEventListener('touchstart', playAudio);
+        document.addEventListener('scroll', playAudio);
 
     </script>
 </body>
