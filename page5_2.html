@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIOLINA DATABASE | CORE V5</title>
+    <title>VIOLINA DATABASE | CAM TOUR</title>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
     <style>
         /* --- CORE RESET --- */
@@ -12,7 +12,7 @@
             background-color: #050505; color: #fff;
             font-family: 'Share Tech Mono', monospace;
             overflow: hidden; height: 100vh; width: 100vw;
-            perspective: 1200px; /* Essential for the Zoom Effect */
+            perspective: 1000px;
         }
 
         :root {
@@ -35,12 +35,22 @@
             background-size: 20px 20px;
         }
 
+        /* --- THE CAMERA RIG --- */
+        /* This div holds the entire UI and moves around */
+        #camera-rig {
+            position: absolute; width: 100%; height: 100%;
+            transform-style: preserve-3d;
+            transform-origin: 50% 50%; /* Default center */
+            transition: transform 1.2s cubic-bezier(0.65, 0, 0.35, 1); /* Smooth Cinematic Pan */
+            will-change: transform;
+        }
+
         /* --- MAIN LAYOUT --- */
         .main-ui {
             position: absolute; inset: 40px;
             display: grid;
             grid-template-columns: 320px 1fr 380px;
-            grid-template-rows: 60px 1fr 140px; /* Increased bottom row height */
+            grid-template-rows: 60px 1fr 140px;
             gap: 20px;
         }
 
@@ -56,80 +66,48 @@
             opacity: 0; transition: opacity 2s;
         }
 
-        /* --- ANIMATION BASE CLASS (THE ZOOM) --- */
+        /* --- MODULE ANIMATION STATE --- */
         .anim-part {
             opacity: 0;
-            /* Starts very close to camera (Big & Blurry) */
-            transform: translateZ(500px) scale(1.5); 
-            filter: blur(20px);
-            transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
-            will-change: transform, opacity, filter;
+            transform: scale(0.8); /* Start slightly small */
+            filter: blur(10px);
+            transition: all 0.5s ease-out; /* Fast pop-in once camera arrives */
         }
         .anim-part.active {
             opacity: 1; 
-            transform: translateZ(0) scale(1); 
+            transform: scale(1); 
             filter: blur(0);
         }
 
         /* --- LEFT COLUMN --- */
         .col-left { grid-column: 1; grid-row: 1 / span 3; display: flex; flex-direction: column; gap: 20px; padding-top: 40px; }
 
-        /* 3D Wireframe Earth */
         .mod-globe {
             width: 100%; height: 200px; position: relative; perspective: 800px;
             display: flex; justify-content: center; align-items: center;
         }
-        .sphere-wrap {
-            width: 160px; height: 160px; position: relative;
-            transform-style: preserve-3d; animation: rotateGlobe 15s linear infinite;
-        }
-        .sphere-ring {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            border: 1px solid rgba(255, 0, 60, 0.4); border-radius: 50%;
-        }
-        .sr1 { transform: rotateY(0deg); }
-        .sr2 { transform: rotateY(30deg); }
-        .sr3 { transform: rotateY(60deg); }
-        .sr4 { transform: rotateY(90deg); }
-        .sr5 { transform: rotateY(120deg); }
-        .sr6 { transform: rotateY(150deg); }
+        .sphere-wrap { width: 160px; height: 160px; position: relative; transform-style: preserve-3d; animation: rotateGlobe 15s linear infinite; }
+        .sphere-ring { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 1px solid rgba(255, 0, 60, 0.4); border-radius: 50%; }
+        .sr1 { transform: rotateY(0deg); } .sr2 { transform: rotateY(30deg); } .sr3 { transform: rotateY(60deg); }
+        .sr4 { transform: rotateY(90deg); } .sr5 { transform: rotateY(120deg); } .sr6 { transform: rotateY(150deg); }
         .sr-equator { transform: rotateX(90deg); border-color: var(--pink); box-shadow: 0 0 10px var(--pink); }
 
-        /* Progress Bars */
         .mod-prog { display: flex; flex-direction: column; gap: 10px; }
-        .bar-box {
-            height: 25px; border: 1px solid var(--pink); background: var(--bg-glass);
-            display: flex; align-items: center; padding: 2px; position: relative;
-        }
+        .bar-box { height: 25px; border: 1px solid var(--pink); background: var(--bg-glass); display: flex; align-items: center; padding: 2px; position: relative; }
         .bar-fill { height: 100%; background: var(--pink); width: 0%; transition: width 1.5s ease-out; opacity: 0.8; }
         .bar-txt { position: absolute; right: 5px; font-size: 0.6rem; letter-spacing: 1px; }
 
-        /* Histogram */
-        .mod-histo {
-            flex-grow: 1; border-left: 2px solid var(--pink); border-bottom: 2px solid var(--pink);
-            display: flex; align-items: flex-end; justify-content: space-around; padding: 10px;
-            margin-bottom: 20px;
-        }
+        .mod-histo { flex-grow: 1; border-left: 2px solid var(--pink); border-bottom: 2px solid var(--pink); display: flex; align-items: flex-end; justify-content: space-around; padding: 10px; margin-bottom: 20px; }
         .h-col { width: 15px; background: var(--pink); box-shadow: 0 0 10px var(--pink); animation: bounce 2s infinite alternate; }
 
         /* --- CENTER COLUMN --- */
         .col-center { grid-column: 2; grid-row: 1 / span 3; position: relative; display: flex; flex-direction: column; align-items: center; }
 
-        /* Top Line Detail */
-        .top-line-deco {
-            width: 80%; height: 2px; background: var(--pink); margin-top: 40px; position: relative;
-            box-shadow: 0 0 10px var(--pink);
-        }
+        .top-line-deco { width: 80%; height: 2px; background: var(--pink); margin-top: 40px; position: relative; box-shadow: 0 0 10px var(--pink); }
         .top-line-deco::after { content: 'SYSTEM_ANALYSIS // 98%'; position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font-size: 0.6rem; color: var(--pink); background: #000; padding: 0 10px; }
 
-        /* The Main Reactor (FIXED SIZE & OVERLAP) */
-        .reactor-container {
-            position: relative; margin-top: 40px; 
-            width: 350px; height: 350px; /* Reduced Size */
-            display: flex; justify-content: center; align-items: center;
-        }
+        .reactor-container { position: relative; margin-top: 40px; width: 350px; height: 350px; display: flex; justify-content: center; align-items: center; }
         .ring { position: absolute; border-radius: 50%; }
-        /* 8 Complex Rings */
         .r1 { width: 350px; height: 350px; border: 4px dashed var(--pink); opacity: 0.3; animation: spin 60s linear infinite; }
         .r2 { width: 310px; height: 310px; border: 1px solid var(--pink); box-shadow: 0 0 15px var(--pink); opacity: 0.8; }
         .r3 { width: 280px; height: 280px; border: 8px solid transparent; border-top: 8px solid var(--pink); border-bottom: 8px solid var(--pink); animation: spin 10s linear infinite; }
@@ -139,64 +117,27 @@
         .r7 { width: 140px; height: 140px; border: 1px solid #fff; opacity: 0.3; }
         .r8 { width: 50px; height: 50px; background: #fff; border-radius: 50%; opacity: 0.8; box-shadow: 0 0 20px #fff; }
 
-        /* Bottom Connectors (FIXED POSITIONING) */
-        .bottom-array {
-            position: absolute; bottom: 10px; width: 120%; left: -10%;
-            display: flex; align-items: center; justify-content: center; gap: 15px;
-        }
-        
-        /* Sliders */
+        .bottom-array { position: absolute; bottom: 10px; width: 120%; left: -10%; display: flex; align-items: center; justify-content: center; gap: 15px; }
         .slider-group { width: 180px; display: flex; flex-direction: column; gap: 8px; }
         .s-track { width: 100%; height: 1px; background: rgba(255,255,255,0.3); position: relative; }
         .s-nob { width: 6px; height: 6px; background: var(--pink); position: absolute; top: -2px; box-shadow: 0 0 8px var(--pink); }
-
-        /* Text Badge */
-        .main-badge {
-            border: 1px solid var(--pink); color: var(--pink); padding: 8px 30px;
-            font-family: 'Orbitron'; font-weight: bold; font-size: 0.9rem;
-            background: rgba(255,0,60,0.1); clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
-            white-space: nowrap; box-shadow: 0 0 15px var(--dim);
-        }
-
-        /* Radar (FIXED POSITION & OVERLAP) */
-        .radar-unit {
-            width: 80px; height: 80px; border: 1px solid var(--pink); border-radius: 50%;
-            background: repeating-radial-gradient(transparent, transparent 9px, rgba(255,0,60,0.2) 10px);
-            position: relative; overflow: hidden;
-        }
-        .radar-scan {
-            position: absolute; inset: 0; background: conic-gradient(transparent 270deg, var(--pink));
-            border-radius: 50%; animation: spin 2s linear infinite; opacity: 0.6;
-        }
+        .main-badge { border: 1px solid var(--pink); color: var(--pink); padding: 8px 30px; font-family: 'Orbitron'; font-weight: bold; font-size: 0.9rem; background: rgba(255,0,60,0.1); clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%); white-space: nowrap; box-shadow: 0 0 15px var(--dim); }
+        .radar-unit { width: 80px; height: 80px; border: 1px solid var(--pink); border-radius: 50%; background: repeating-radial-gradient(transparent, transparent 9px, rgba(255,0,60,0.2) 10px); position: relative; overflow: hidden; }
+        .radar-scan { position: absolute; inset: 0; background: conic-gradient(transparent 270deg, var(--pink)); border-radius: 50%; animation: spin 2s linear infinite; opacity: 0.6; }
 
         /* --- RIGHT COLUMN --- */
         .col-right { grid-column: 3; grid-row: 1 / span 3; display: flex; flex-direction: column; gap: 15px; padding-top: 40px; }
-
-        .tech-box {
-            position: relative; background: var(--bg-glass); border: 1px solid rgba(255,0,60,0.3); padding: 15px;
-            flex-grow: 1; display: flex; flex-direction: column;
-        }
-        /* Corner Brackets */
+        .tech-box { position: relative; background: var(--bg-glass); border: 1px solid rgba(255,0,60,0.3); padding: 15px; flex-grow: 1; display: flex; flex-direction: column; }
         .tech-box::before { content: ''; position: absolute; top: -1px; left: -1px; width: 20px; height: 20px; border-top: 3px solid var(--pink); border-left: 3px solid var(--pink); box-shadow: -2px -2px 10px var(--pink); }
         .tech-box::after { content: ''; position: absolute; bottom: -1px; right: -1px; width: 20px; height: 20px; border-bottom: 3px solid var(--pink); border-right: 3px solid var(--pink); box-shadow: 2px 2px 10px var(--pink); }
 
-        /* Box 1: ISO Grid */
         .iso-wrap { overflow: hidden; height: 100%; position: relative; }
-        .iso-grid {
-            position: absolute; top: 50%; left: 50%; width: 300px; height: 300px;
-            background: linear-gradient(var(--pink) 1px, transparent 1px), linear-gradient(90deg, var(--pink) 1px, transparent 1px);
-            background-size: 30px 30px; transform: translate(-50%, -50%) rotateX(60deg) rotateZ(45deg);
-        }
-
-        /* Box 2: Text */
+        .iso-grid { position: absolute; top: 50%; left: 50%; width: 300px; height: 300px; background: linear-gradient(var(--pink) 1px, transparent 1px), linear-gradient(90deg, var(--pink) 1px, transparent 1px); background-size: 30px 30px; transform: translate(-50%, -50%) rotateX(60deg) rotateZ(45deg); }
         .text-content { font-size: 0.6rem; color: #ff99aa; line-height: 1.6; opacity: 0.8; }
-
-        /* Box 3: Waveform */
         .wave-box { display: flex; align-items: center; justify-content: center; height: 100%; }
         .wave-path { width: 100%; height: 2px; background: var(--pink); position: relative; box-shadow: 0 0 10px var(--pink); }
         .wave-dot { width: 8px; height: 8px; background: #fff; border-radius: 50%; position: absolute; top: -3px; animation: bounceX 2s infinite ease-in-out; }
 
-        /* --- KEYFRAMES --- */
         @keyframes spin { 100% { transform: rotate(360deg); } }
         @keyframes spinRev { 100% { transform: rotate(-360deg); } }
         @keyframes rotateGlobe { 0% { transform: rotateY(0deg) rotateX(10deg); } 100% { transform: rotateY(360deg) rotateX(10deg); } }
@@ -208,114 +149,180 @@
 </head>
 <body>
 
-    <div class="bg-grid"></div>
-    <div class="bg-dots"></div>
+    <div id="camera-rig">
+        <div class="bg-grid"></div>
+        <div class="bg-dots"></div>
 
-    <div class="outer-frame" id="main-border"></div>
+        <div class="outer-frame" id="main-border"></div>
 
-    <div class="main-ui">
-        
-        <div class="col-left">
-            <div class="mod-globe anim-part" id="p1">
-                <div class="sphere-wrap">
-                    <div class="sphere-ring sr1"></div><div class="sphere-ring sr2"></div>
-                    <div class="sphere-ring sr3"></div><div class="sphere-ring sr4"></div>
-                    <div class="sphere-ring sr5"></div><div class="sphere-ring sr6"></div>
-                    <div class="sphere-ring sr-equator"></div>
+        <div class="main-ui">
+            
+            <div class="col-left">
+                <div class="mod-globe anim-part" id="p1">
+                    <div class="sphere-wrap">
+                        <div class="sphere-ring sr1"></div><div class="sphere-ring sr2"></div>
+                        <div class="sphere-ring sr3"></div><div class="sphere-ring sr4"></div>
+                        <div class="sphere-ring sr5"></div><div class="sphere-ring sr6"></div>
+                        <div class="sphere-ring sr-equator"></div>
+                    </div>
+                    <div style="position:absolute; bottom:10px; font-size:0.6rem; color:var(--pink);">TRACKING // ACTIVE</div>
                 </div>
-                <div style="position:absolute; bottom:10px; font-size:0.6rem; color:var(--pink);">TRACKING // ACTIVE</div>
+
+                <div class="mod-prog anim-part" id="p2">
+                    <div class="bar-box"><div class="bar-fill" style="width:85%"></div><div class="bar-txt">SECURE.85</div></div>
+                    <div class="bar-box"><div class="bar-fill" style="width:60%"></div><div class="bar-txt">LINK.60</div></div>
+                    <div class="bar-box"><div class="bar-fill" style="width:95%"></div><div class="bar-txt">CORE.95</div></div>
+                </div>
+
+                <div class="mod-histo anim-part" id="p3">
+                    <div class="h-col" style="height:40%"></div><div class="h-col" style="height:80%"></div>
+                    <div class="h-col" style="height:60%"></div><div class="h-col" style="height:90%"></div>
+                </div>
             </div>
 
-            <div class="mod-prog anim-part" id="p2">
-                <div class="bar-box"><div class="bar-fill" style="width:85%"></div><div class="bar-txt">SECURE.85</div></div>
-                <div class="bar-box"><div class="bar-fill" style="width:60%"></div><div class="bar-txt">LINK.60</div></div>
-                <div class="bar-box"><div class="bar-fill" style="width:95%"></div><div class="bar-txt">CORE.95</div></div>
+            <div class="col-center">
+                <div class="top-line-deco anim-part" id="p4"></div>
+
+                <div class="reactor-container anim-part" id="p5">
+                    <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
+                    <div class="ring r4"></div><div class="ring r5"></div>
+                    <div class="ring r6"></div><div class="ring r7"></div><div class="ring r8"></div>
+                </div>
+
+                <div class="bottom-array anim-part" id="p6">
+                    <div class="slider-group">
+                        <div class="s-track"><div class="s-nob" style="left:30%"></div></div>
+                        <div class="s-track"><div class="s-nob" style="left:70%"></div></div>
+                        <div class="s-track"><div class="s-nob" style="left:50%"></div></div>
+                    </div>
+                    <div style="width: 20px; height: 1px; background: var(--pink);"></div>
+                    <div class="main-badge">SYS.CORE // V.SHARMA</div>
+                    <div style="width: 20px; height: 1px; background: var(--pink);"></div>
+                    <div class="radar-unit">
+                        <div class="radar-scan"></div>
+                    </div>
+                </div>
             </div>
 
-            <div class="mod-histo anim-part" id="p3">
-                <div class="h-col" style="height:40%"></div><div class="h-col" style="height:80%"></div>
-                <div class="h-col" style="height:60%"></div><div class="h-col" style="height:90%"></div>
+            <div class="col-right">
+                <div class="tech-box anim-part" id="p7">
+                    <div class="iso-wrap"><div class="iso-grid"></div></div>
+                </div>
+
+                <div class="tech-box anim-part" id="p8">
+                    <div class="text-content">
+                        LOREM IPSUM DATA STREAM...<br>
+                        INITIALIZING SECTOR 7G...<br>
+                        ENCRYPTION KEY: VALIDATED.<br>
+                        [SECURE CONNECTION ESTABLISHED]<br>
+                        AWAITING USER INPUT...
+                    </div>
+                </div>
+
+                <div class="tech-box anim-part" id="p9" style="flex-grow:0; height:120px;">
+                    <div class="wave-box">
+                        <div class="wave-path"><div class="wave-dot"></div></div>
+                    </div>
+                </div>
             </div>
+
         </div>
-
-        <div class="col-center">
-            <div class="top-line-deco anim-part" id="p4"></div>
-
-            <div class="reactor-container anim-part" id="p5">
-                <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
-                <div class="ring r4"></div><div class="ring r5"></div><div class="ring r6"></div>
-                <div class="ring r7"></div><div class="ring r8"></div>
-            </div>
-
-            <div class="bottom-array anim-part" id="p6">
-                <div class="slider-group">
-                    <div class="s-track"><div class="s-nob" style="left:30%"></div></div>
-                    <div class="s-track"><div class="s-nob" style="left:70%"></div></div>
-                    <div class="s-track"><div class="s-nob" style="left:50%"></div></div>
-                </div>
-                
-                <div style="width: 20px; height: 1px; background: var(--pink);"></div>
-                
-                <div class="radar-unit">
-                    <div class="radar-scan"></div>
-                </div>
-
-                <div class="main-badge">SYS.CORE // V.SHARMA</div>
-            </div>
-        </div>
-
-        <div class="col-right">
-            <div class="tech-box anim-part" id="p7">
-                <div class="iso-wrap"><div class="iso-grid"></div></div>
-            </div>
-
-            <div class="tech-box anim-part" id="p8">
-                <div class="text-content">
-                    LOREM IPSUM DATA STREAM...<br>
-                    INITIALIZING SECTOR 7G...<br>
-                    ENCRYPTION KEY: VALIDATED.<br>
-                    [SECURE CONNECTION ESTABLISHED]<br>
-                    AWAITING USER INPUT...
-                </div>
-            </div>
-
-            <div class="tech-box anim-part" id="p9" style="flex-grow:0; height:120px;">
-                <div class="wave-box">
-                    <div class="wave-path"><div class="wave-dot"></div></div>
-                </div>
-            </div>
-        </div>
-
     </div>
 
     <script>
-        // Make sure you have a file named 'hud_mechanic.mp3' in the folder
-        const fxSound = new Audio('hud_mechanic.mp3'); 
-        fxSound.volume = 0.5;
+        // --- AUDIO ENGINE ---
+        // Ensure these files are in your folder
+        const sounds = {
+            grid: new Audio('sfx_grid.mp3'),
+            text: new Audio('sfx_text.mp3'),
+            wave: new Audio('sfx_wave.mp3'),
+            core: new Audio('sfx_core.mp3'),
+            globe: new Audio('sfx_globe.mp3'),
+            bars: new Audio('sfx_bars.mp3'),
+            online: new Audio('sfx_online.mp3')
+        };
 
-        function playFx() {
-            fxSound.currentTime = 0;
-            fxSound.play().catch(e => console.log("Audio waiting for interaction"));
-        }
+        // Helper to play sound safely
+        const playSfx = (key) => {
+            try {
+                sounds[key].volume = 0.5;
+                sounds[key].currentTime = 0;
+                sounds[key].play().catch(e => {}); // Catch autoplay errors
+            } catch(e) { console.log("Audio not loaded"); }
+        };
 
-        window.onload = () => {
-            // Reveal Frame First
+        // --- CAMERA ANIMATION LOGIC ---
+        const rig = document.getElementById('camera-rig');
+
+        // Helper to move camera
+        // x/y: origin coordinates (where to look)
+        // scale: zoom level
+        const setCamera = (x, y, scale) => {
+            rig.style.transformOrigin = `${x}% ${y}%`;
+            rig.style.transform = `scale(${scale})`;
+        };
+
+        // Helper to show module
+        const showModule = (id) => {
+            const el = document.getElementById(id);
+            if(el) el.classList.add('active');
+        };
+
+        const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+        window.onload = async () => {
+            // 1. Reveal Frame
             setTimeout(() => { document.getElementById('main-border').style.opacity = '1'; }, 200);
 
-            // Sequence: Center -> Top/Bot -> Sides
-            const parts = ['p5', 'p4', 'p1', 'p7', 'p2', 'p8', 'p6', 'p3', 'p9'];
-            let delay = 800; // Start delay
+            // 2. Start Sequence (Start Black/Invisible)
+            await sleep(500);
 
-            parts.forEach(id => {
-                setTimeout(() => {
-                    const el = document.getElementById(id);
-                    if(el) {
-                        el.classList.add('active');
-                        playFx(); // Play generation sound
-                    }
-                }, delay);
-                delay += 1200; // 1.2s delay between items (Slower)
-            });
+            // STEP 1: ISO GRID (Top Right)
+            setCamera(100, 0, 3); // Look Top-Right
+            playSfx('grid');
+            showModule('p7'); // Reveal Grid
+            await sleep(1500);
+
+            // STEP 2: TEXT BLOCK (Mid Right)
+            setCamera(100, 50, 3); // Pan Down
+            playSfx('text');
+            showModule('p8');
+            await sleep(1500);
+
+            // STEP 3: WAVEFORM (Bot Right)
+            setCamera(100, 100, 3); // Pan Down
+            playSfx('wave');
+            showModule('p9');
+            await sleep(1500);
+
+            // STEP 4: REACTOR (Center)
+            setCamera(50, 50, 2); // Pan Center
+            playSfx('core');
+            showModule('p5'); // Reactor
+            showModule('p4'); // Top Line
+            showModule('p6'); // Bottom Array
+            await sleep(2000);
+
+            // STEP 5: GLOBE (Top Left)
+            setCamera(0, 0, 3); // Pan Top-Left
+            playSfx('globe');
+            showModule('p1');
+            await sleep(1500);
+
+            // STEP 6: BARS (Mid Left)
+            setCamera(0, 50, 3); // Pan Down
+            playSfx('bars');
+            showModule('p2');
+            await sleep(1500);
+
+            // STEP 7: HISTO (Bot Left)
+            setCamera(0, 100, 3); // Pan Down
+            showModule('p3');
+            await sleep(1500);
+
+            // FINAL STEP: ZOOM OUT
+            setCamera(50, 50, 1); // Full View
+            playSfx('online');
         };
     </script>
 </body>
