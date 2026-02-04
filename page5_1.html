@@ -3,377 +3,299 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Violina | Secure Core V2</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <title>Military HUD | V.SHARMA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        /* --- RESET --- */
-        * { box-sizing: border-box; }
-        body {
-            margin: 0; padding: 0; background: #000;
-            font-family: 'Share Tech Mono', monospace;
-            overflow: hidden; height: 100vh; color: #fff;
-            user-select: none; perspective: 1000px;
-        }
-        
-        :root {
-            --pink: #ff003c;      /* Initial UI Red */
-            --neon: #FF00FF;      /* Main Page Neon Pink */
-            --magenta: #d902ee;   /* Electric Magenta */
-            --glass: rgba(5, 0, 5, 0.95);
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            background-color: #000; color: #fff; overflow: hidden; height: 100vh;
+            font-family: 'Share Tech Mono', monospace; user-select: none;
         }
 
-        /* --- GLOBAL FX --- */
-        .noise-overlay {
-            position: fixed; inset: 0; pointer-events: none; z-index: 950; opacity: 0.08;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        :root {
+            --neon: #FF00FF;
+            --magenta: #8b008b;
+            --white: #ffffff;
+            --glass: rgba(10, 0, 10, 0.85);
+            --bloom: drop-shadow(0 0 10px #FF00FF);
         }
+
+        /* --- OVERLAYS --- */
         .scanlines {
-            position: fixed; inset: 0; z-index: 900; pointer-events: none;
-            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.3));
-            background-size: 100% 4px;
+            position: fixed; inset: 0; z-index: 999; pointer-events: none;
+            background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.4) 50%);
+            background-size: 100% 4px; opacity: 0.1;
         }
         .vignette {
-            position: fixed; inset: 0; z-index: 899; pointer-events: none;
-            background: radial-gradient(circle, transparent 40%, #000 100%);
+            position: fixed; inset: 0; z-index: 998; pointer-events: none;
+            background: radial-gradient(circle, transparent 40%, #000 120%);
         }
 
-        /* --- 1. START SCREEN --- */
-        #layer-start { position: fixed; inset: 0; z-index: 9999; background: #000; display: flex; justify-content: center; align-items: center; }
+        /* --- 1. INITIALIZE BUTTON (Mandatory for Audio) --- */
+        #start-overlay {
+            position: fixed; inset: 0; z-index: 10000; background: #000;
+            display: flex; justify-content: center; align-items: center;
+        }
         .btn-init {
-            border: 2px solid var(--pink); color: var(--pink); background: rgba(255,0,60,0.1);
-            padding: 20px 50px; font-family: 'Orbitron'; font-size: 1.5rem; letter-spacing: 4px;
-            cursor: pointer; box-shadow: 0 0 30px var(--pink);
-            clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
+            padding: 20px 60px; font-family: 'Orbitron'; color: var(--neon);
+            border: 2px solid var(--neon); background: transparent; cursor: pointer;
+            font-size: 1.5rem; box-shadow: 0 0 20px var(--neon); transition: 0.3s;
         }
+        .btn-init:hover { background: var(--neon); color: #000; }
 
-        /* --- 2. INTRO UI (PRESERVED EXACTLY) --- */
-        #layer-intro { position: fixed; inset: 0; z-index: 100; display: none; background: #020000; }
-        .bg-grid-intro {
-            position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: linear-gradient(rgba(255, 0, 60, 0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 0, 60, 0.15) 1px, transparent 1px);
-            background-size: 60px 60px; transform: perspective(500px) rotateX(60deg);
-            animation: gridMove 3s linear infinite; z-index: 0;
-        }
-        @keyframes gridMove { 0% { transform: perspective(500px) rotateX(60deg) translateY(0); } 100% { transform: perspective(500px) rotateX(60deg) translateY(60px); } }
-
-        .intro-container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; height: 600px; display: grid; grid-template-columns: 350px 1fr; gap: 50px; z-index: 10; }
-        .p-left { border: 1px solid var(--pink); background: rgba(10,0,0,0.8); padding: 20px; display: flex; flex-direction: column; }
-        .sys-head { font-family: 'Orbitron'; color: var(--pink); border-bottom: 2px solid var(--pink); margin-bottom: 10px; font-size: 1.2rem; }
-        .sys-log { color: #ff99aa; font-size: 0.8rem; line-height: 1.5; margin-bottom: 20px; }
-        .box-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; height: 150px; margin-bottom: 20px; }
-        .box { border: 1px solid var(--pink); background: rgba(50,0,0,0.3); }
-        .b1 { clip-path: polygon(0 0, 100% 0, 100% 80%, 80% 100%, 0 100%); }
-        .b2 { clip-path: polygon(0 0, 100% 0, 100% 100%, 20% 100%, 0 80%); }
-        .b3 { clip-path: polygon(0 0, 80% 0, 100% 20%, 100% 100%, 0 100%); }
-        .b4 { clip-path: polygon(20% 0, 100% 0, 100% 100%, 0 100%, 0 20%); }
-        .gauges { display: flex; gap: 20px; }
-        .gauge { width: 60px; height: 60px; border-radius: 50%; border: 1px solid var(--pink); display: flex; justify-content: center; align-items: center; font-size: 0.8rem; }
-
-        .p-right { display: flex; justify-content: center; align-items: center; position: relative; }
-        .reactor-ring { position: absolute; width: 450px; height: 450px; border: 2px solid var(--pink); border-radius: 50%; animation: spin 10s linear infinite; }
-        .reactor-core { width: 300px; height: 300px; background: #000; border: 4px solid var(--pink); border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: 0 0 50px var(--pink); position: relative; z-index: 10; }
-
-        .status-txt { font-family: 'Orbitron'; font-size: 1.4rem; color: #fff; text-shadow: 0 0 10px var(--pink); text-align: center; }
-        .btn-conn { margin-top: 20px; background: transparent; border: 1px solid #fff; color: #fff; padding: 10px 30px; font-family: 'Orbitron'; cursor: pointer; }
+        /* --- 2. INTRO UI (Persistent UI) --- */
+        #layer-intro { position: fixed; inset: 0; z-index: 100; display: none; }
+        .intro-container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; height: 600px; display: grid; grid-template-columns: 350px 1fr; gap: 50px; }
         
-        .scan-box { width: 100px; height: 140px; border: 2px solid var(--pink); border-radius: 15px; margin-top: 10px; cursor: pointer; position: relative; overflow: hidden; }
-        .finger { width: 100%; height: 100%; background: url('https://img.icons8.com/ios/100/ff003c/fingerprint.png') center/60% no-repeat; opacity: 0.7; }
-        .beam { position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: #fff; box-shadow: 0 0 15px #fff; animation: scanDown 1.5s linear infinite; display: none; }
-
-        /* --- 3. LOADING --- */
-        #layer-loading { position: fixed; inset: 0; background: #000; z-index: 200; display: none; justify-content: center; align-items: center; perspective: 1000px; }
-        .tilt-card { width: 500px; padding: 40px; background: rgba(20,0,20,0.95); border: 2px solid var(--neon); transform: rotateX(40deg); box-shadow: 0 50px 100px rgba(255,0,255,0.3); text-align: center; }
-        .load-bar { width: 100%; height: 10px; background: #303; margin-top: 20px; }
-        .load-fill { width: 0%; height: 100%; background: var(--neon); transition: width 3s linear; }
-
-        /* --- 4. MAIN DASHBOARD V2.0 (UPGRADED) --- */
-        #layer-main { position: fixed; inset: 0; z-index: 50; display: none; background: transparent; }
+        .sys-log-box { border: 1px solid var(--neon); background: var(--glass); padding: 20px; }
+        .reactor-box { display: flex; justify-content: center; align-items: center; position: relative; }
+        .ring-base { position: absolute; border: 2px solid var(--neon); border-radius: 50%; animation: spin 10s linear infinite; }
+        .core-center { width: 300px; height: 300px; background: #000; border: 4px solid var(--neon); border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: 0 0 50px var(--neon); }
         
-        /* Outer Frame with Glow */
+        .fingerprint-pad { width: 100px; height: 140px; border: 2px solid var(--neon); border-radius: 15px; margin-top: 20px; position: relative; overflow: hidden; cursor: pointer; }
+        .scan-laser { position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: #fff; box-shadow: 0 0 15px #fff; animation: scanMove 1.5s linear infinite; display: none; }
+
+        /* --- 3. MAIN HUD (THE UPGRADE) --- */
+        #layer-main { position: fixed; inset: 0; z-index: 50; display: none; }
+        
         .main-frame { 
-            position: absolute; inset: 30px; 
-            border: 2px solid var(--neon); 
-            box-shadow: 0 0 30px var(--neon), inset 0 0 20px var(--magenta); 
-            opacity: 0; transform: scale(1.1);
-            transition: all 1s ease-out;
+            position: absolute; inset: 25px; border: 2px solid var(--neon); 
+            box-shadow: 0 0 30px var(--neon), inset 0 0 40px rgba(255,0,255,0.2);
+            filter: var(--bloom); display: flex; justify-content: center; align-items: center;
         }
 
-        .dash-layout { 
-            display: grid; width: 100%; height: 100%; 
+        .hud-grid { 
+            display: grid; width: 95%; height: 90%; 
             grid-template-columns: 380px 1fr 380px; 
             grid-template-rows: 280px 1fr 250px; 
-            gap: 20px; padding: 40px; 
+            gap: 20px; padding: 20px; 
         }
 
-        /* Base Module Logic for Animation */
-        .mod { 
-            border: 1px solid var(--neon); background: var(--glass); 
-            position: relative; opacity: 0; 
-            transform: scale(1.5); /* Start Zoomed In */
-            filter: blur(10px);
-            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); /* Bouncy pop-in */
-            box-shadow: 0 0 15px rgba(255, 0, 255, 0.1);
+        .module { 
+            background: var(--glass); border: 1px solid var(--neon); 
+            position: relative; backdrop-filter: blur(10px); 
+            opacity: 0; transform: scale(2) rotateX(20deg); filter: blur(15px);
+            transition: all 1.2s cubic-bezier(0.17, 0.67, 0.83, 0.67);
         }
-        .mod.active { opacity: 1; transform: scale(1); filter: blur(0); }
-        
-        .mod::after { content: ''; position: absolute; top: 0; right: 0; width: 15px; height: 15px; border-top: 2px solid #fff; border-right: 2px solid #fff; }
-        .mod::before { content: ''; position: absolute; bottom: 0; left: 0; width: 15px; height: 15px; border-bottom: 2px solid #fff; border-left: 2px solid #fff; }
+        .module.active { opacity: 1; transform: scale(1) rotateX(0deg); filter: blur(0); }
 
-        /* A. CENTER CORE (8 RINGS) */
+        /* Module Detail Ticks */
+        .module::before { content: '28.6139° N / 77.2090° E'; position: absolute; top: -12px; left: 0; font-size: 8px; color: var(--neon); opacity: 0.6; }
+
+        /* --- MODULE: THE CORE (8 RINGS) --- */
         .m-core { grid-column: 2; grid-row: 1 / span 3; border: none; background: transparent; display: flex; justify-content: center; align-items: center; position: relative; }
-        .ring { position: absolute; border-radius: 50%; border: 1px solid var(--neon); box-shadow: 0 0 5px var(--neon); }
-        
-        .c1 { width: 620px; height: 620px; border: 1px dashed rgba(255,0,255,0.3); animation: spin 80s linear infinite; }
-        .c2 { width: 560px; height: 560px; border-width: 3px; border-left: transparent; border-right: transparent; animation: spinRev 30s linear infinite; }
-        .c3 { width: 500px; height: 500px; border: 1px dotted #fff; animation: spin 40s linear infinite; }
-        .c4 { width: 440px; height: 440px; border: 8px solid rgba(255,0,255,0.1); border-top: 8px solid var(--neon); animation: spinRev 12s linear infinite; }
-        .c5 { width: 380px; height: 380px; border: 1px solid var(--magenta); animation: spin 20s linear infinite; }
-        .c6 { width: 320px; height: 320px; border: 20px solid rgba(255,0,255,0.05); }
-        .c7 { width: 200px; height: 200px; border: 2px solid #fff; animation: pulse 2s infinite; }
-        .c8 { width: 120px; height: 120px; background: radial-gradient(var(--neon), #000); border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 0 60px var(--neon); }
-        .core-text { font-family: 'Orbitron'; font-weight: 900; letter-spacing: 2px; font-size: 0.9rem; }
+        .cr { position: absolute; border-radius: 50%; border: 1px solid var(--neon); }
+        .cr:nth-child(1) { width: 620px; border-style: dashed; animation: spin 80s linear infinite; }
+        .cr:nth-child(2) { width: 560px; border-width: 3px; border-left-color: transparent; animation: spinRev 30s linear infinite; }
+        .cr:nth-child(3) { width: 500px; border: 1px dotted #fff; animation: spin 40s linear infinite; }
+        .cr:nth-child(4) { width: 440px; border: 10px solid rgba(255,0,255,0.05); border-top-color: var(--neon); animation: spinRev 12s linear infinite; }
+        .cr:nth-child(5) { width: 380px; border-width: 0.5px; animation: spin 20s linear infinite; }
+        .cr:nth-child(6) { width: 320px; border-width: 0.5px; animation: spinRev 10s linear infinite; }
+        .cr:nth-child(7) { width: 260px; border-width: 0.5px; animation: spin 5s linear infinite; }
+        .cr:nth-child(8) { width: 140px; background: var(--neon); box-shadow: 0 0 80px var(--neon); display: flex; justify-content: center; align-items: center; animation: pulse 1s infinite; }
+        .core-lbl { font-family: 'Orbitron'; font-weight: 900; color: #000; font-size: 0.9rem; }
 
-        /* B. TOP LEFT: DOT MATRIX GLOBE */
-        .m-globe { grid-column: 1; grid-row: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: hidden; }
-        .globe-dots {
-            width: 220px; height: 220px; border-radius: 50%;
-            background: radial-gradient(circle at 50% 50%, transparent 40%, rgba(255,0,255,0.1) 100%),
-                        repeating-radial-gradient(#fff 0, #fff 1px, transparent 2px, transparent 10px);
-            background-size: 20px 20px;
-            animation: globeSpin 20s linear infinite;
-            box-shadow: inset 0 0 40px var(--neon);
-            border: 1px solid var(--magenta);
-        }
-        .globe-ring { position: absolute; width: 260px; height: 260px; border: 1px dashed var(--neon); border-radius: 50%; animation: spin 15s linear infinite; }
+        /* --- MODULE: GLOBE --- */
+        .m-globe { grid-column: 1; grid-row: 1; display: flex; justify-content: center; align-items: center; border-style: dashed; }
+        canvas#globeCanvas { width: 220px; height: 220px; filter: var(--bloom); }
 
-        /* C. TOP RIGHT: TOPO GRID */
+        /* --- MODULE: GRID --- */
         .m-grid { grid-column: 3; grid-row: 1; overflow: hidden; position: relative; }
-        .topo-mesh {
-            position: absolute; top: 50%; left: 50%; width: 400px; height: 400px;
+        .grid-surface { 
+            position: absolute; inset: 0; 
             background: linear-gradient(var(--neon) 1px, transparent 1px), linear-gradient(90deg, var(--neon) 1px, transparent 1px);
-            background-size: 30px 30px;
-            transform: translate(-50%, -50%) rotateX(60deg) rotateZ(45deg);
+            background-size: 30px 30px; transform: rotateX(60deg) rotateZ(20deg) scale(2);
+            animation: waveMove 10s linear infinite; opacity: 0.3;
         }
-        .scan-laser {
-            position: absolute; top: 0; left: 0; width: 100%; height: 5px;
-            background: var(--neon); box-shadow: 0 0 20px #fff;
-            animation: scanDown 3s linear infinite;
-        }
+        .grid-laser { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: var(--white); box-shadow: 0 0 20px var(--neon); animation: gridScan 4s linear infinite; }
 
-        /* D. BOT LEFT: DATA CARD */
-        .m-bio { grid-column: 1; grid-row: 2; padding: 25px; display: flex; flex-direction: column; justify-content: space-between; }
-        .bio-h { font-family: 'Orbitron'; color: var(--neon); border-bottom: 2px solid var(--neon); margin-bottom: 10px; }
-        .bio-r { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,0,255,0.2); padding: 4px 0; font-size: 0.85rem; }
-        .bio-l { color: var(--magenta); } .bio-v { color: #fff; font-weight: bold; text-shadow: 0 0 5px var(--neon); }
+        /* --- MODULE: DATA CARD --- */
+        .m-bio { grid-column: 1; grid-row: 2 / span 2; padding: 25px; display: flex; flex-direction: column; gap: 15px; }
+        .bio-title { font-family: 'Orbitron'; font-weight: 900; border-bottom: 2px solid var(--neon); padding-bottom: 5px; color: var(--neon); }
+        .bio-row { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,0,255,0.2); padding: 5px 0; font-size: 0.85rem; }
+        .bio-v { font-weight: bold; color: var(--white); text-shadow: 0 0 5px var(--neon); }
 
-        /* E. BOT RIGHT: TERMINAL */
-        .m-term { grid-column: 3; grid-row: 2 / span 2; padding: 15px; font-family: 'Share Tech Mono'; font-size: 0.7rem; color: #ffccff; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; background: rgba(0,0,0,0.6); }
-        .ln { margin-bottom: 2px; }
+        /* --- MODULE: RADAR --- */
+        .m-radar { grid-column: 3; grid-row: 3; display: flex; justify-content: center; align-items: center; }
+        .radar-circle { width: 180px; height: 180px; border: 1px solid var(--neon); border-radius: 50%; position: relative; overflow: hidden; background: repeating-radial-gradient(transparent, transparent 19px, rgba(255,0,255,0.1) 20px); }
+        .radar-sweep { position: absolute; inset: 0; background: conic-gradient(from 0deg, transparent 0deg, rgba(255,0,255,0.4) 360deg); animation: spin 4s linear infinite; }
 
-        /* ANIMATIONS */
+        /* --- KEYFRAMES --- */
         @keyframes spin { 100% { transform: rotate(360deg); } }
         @keyframes spinRev { 100% { transform: rotate(-360deg); } }
-        @keyframes scanDown { 0% { top: 0; opacity: 0; } 50% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
-        @keyframes globeSpin { 0% { background-position: 0 0; } 100% { background-position: 100px 0; } }
-        @keyframes whiteout { 0% { opacity: 0; } 30% { opacity: 1; } 100% { opacity: 0; } }
-        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes scanMove { 0% { top: 0; } 100% { top: 100%; } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.7; } }
+        @keyframes gridScan { 0% { top: 0; } 100% { top: 100%; } }
+        @keyframes waveMove { 0% { background-position: 0 0; } 100% { background-position: 0 300px; } }
+        @keyframes whiteout { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
 
-        /* Overlay */
-        #flashLayer { position: fixed; inset: 0; background: #fff; z-index: 2000; display: none; pointer-events: none; }
-
+        #flash { position: fixed; inset: 0; background: #fff; z-index: 2000; display: none; pointer-events: none; }
     </style>
 </head>
 <body>
 
-    <div class="noise-overlay"></div>
     <div class="scanlines"></div>
     <div class="vignette"></div>
-    <div class="starfield" id="stars"></div>
+    <div id="flash"></div>
 
-    <div id="layer-start"><button class="btn-init" onclick="initSys()">INITIALIZE SYSTEM</button></div>
-
-    <audio id="sAlert" src="alert.mp3" preload="auto"></audio>
-    <audio id="sScan" src="scan.mp3" preload="auto" loop></audio>
-    <audio id="sGrant" src="granted.mp3" preload="auto"></audio>
-
-    <div id="layer-intro">
-        <div class="bg-grid-intro"></div>
-        <div class="frame-border h-top"></div><div class="frame-border h-bot"></div>
-        <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
-        <div class="intro-container">
-            <div class="p-left">
-                <div class="sys-head">SYSTEM_LOG</div>
-                <div class="sys-log">> MEM_ALLOC: 98%<br>> ENCRYPTION: 256-BIT<br>> PROXY: REROUTED</div>
-                <div class="box-grid"><div class="box b1"></div><div class="box b2"></div><div class="box b3"></div><div class="box b4"></div></div>
-                <div class="gauges"><div class="gauge">CPU</div><div class="gauge">RAM</div></div>
-            </div>
-            <div class="p-right">
-                <div class="reactor-ring"></div>
-                <div class="reactor-core">
-                    <div id="ph1"><div class="status-txt" id="seqText">SYSTEM STARTUP</div></div>
-                    <div id="ph2" style="display:none; text-align:center;"><div class="status-txt" style="font-size:1rem;">SERVER READY</div><button class="btn-conn" onclick="deny()" style="margin-top:15px; background:transparent; border:1px solid #fff; color:#fff; padding:10px 30px; font-family:'Orbitron'; cursor:pointer;">CONNECT</button></div>
-                    <div id="ph3" style="display:none; color:red; text-align:center;"><div class="status-txt" style="color:red;">ACCESS DENIED</div><div style="font-size:0.8rem; margin-top:5px;">PROTECTED BY AYUSH</div></div>
-                    <div id="ph4" style="display:none; flex-direction:column; align-items:center;">
-                        <div class="scan-box" id="scanBtn"><div class="finger"></div><div class="beam" id="scanBeam"></div></div>
-                        <div class="status-txt" style="font-size:0.8rem; margin-top:10px;">HOLD TO VERIFY</div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div id="start-overlay">
+        <button class="btn-init" onclick="bootSystem()">INITIALIZE SYSTEM</button>
     </div>
 
-    <div id="layer-loading">
-        <div class="tilt-card">
-            <div style="font-family:'Orbitron'; font-size:1.5rem;">USER: VIOLINA</div>
-            <div style="color:var(--neon);">AUTHENTICATING...</div>
-            <div class="load-bar"><div class="load-fill" id="progBar"></div></div>
+    <div id="layer-intro">
+        <div class="intro-container">
+            <div class="sys-log-box">
+                <h2 style="color:var(--neon); font-family:'Orbitron'; margin-bottom:10px;">SYSTEM_LOG</h2>
+                <p style="color:var(--magenta); font-size: 0.8rem; line-height:1.5;">
+                    > ARCH: PROJECT_V.SHARMA<br>
+                    > ENCRYPTION: 1024-BIT RSA<br>
+                    > STATUS: PENDING_AUTH<br>
+                    > BIOMETRICS: READY
+                </p>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px;">
+                    <div style="height:80px; border:1px solid var(--neon);"></div>
+                    <div style="height:80px; border:1px solid var(--neon);"></div>
+                </div>
+            </div>
+            <div class="reactor-box">
+                <div class="ring-base" style="width:450px; height:450px;"></div>
+                <div class="core-center">
+                    <div id="status-txt" style="font-family:'Orbitron'; font-weight:900;">SYSTEM STARTUP</div>
+                    <div class="fingerprint-pad" id="scan-pad">
+                        <img src="https://img.icons8.com/ios/100/ff00ff/fingerprint.png" style="width:100%; opacity:0.7; padding:15px;">
+                        <div class="scan-laser" id="laser"></div>
+                    </div>
+                    <p style="font-size:0.7rem; margin-top:10px; color:var(--neon);">HOLD TO SCAN</p>
+                </div>
+            </div>
         </div>
     </div>
 
     <div id="layer-main">
-        <div class="main-frame" id="mainFrame">
-            <div class="dash-layout">
+        <div class="main-frame" id="main-frame">
+            <div class="hud-grid">
                 
-                <div class="mod m-globe" id="m1">
-                    <div class="globe-ring"></div>
-                    <div class="globe-dots"></div>
-                    <div style="position:absolute; bottom:10px; font-size:0.8rem; color:var(--neon); letter-spacing:2px;">GLOBAL TRACKING</div>
+                <div class="module m-globe" id="mod-1">
+                    <canvas id="globeCanvas"></canvas>
                 </div>
 
-                <div class="mod m-bio" id="m4">
-                    <div class="bio-h">SUBJECT: VIOLINA SHARMA</div>
-                    <div class="bio-r"><span class="bio-l">EYE PROFILE</span><span class="bio-v">DEEP ESPRESSO</span></div>
-                    <div class="bio-r"><span class="bio-l">SIZE</span><span class="bio-v">7 (UK/US)</span></div>
-                    <div class="bio-r"><span class="bio-l">ZODIAC</span><span class="bio-v">TAURUS</span></div>
-                    <div class="bio-r"><span class="bio-l">TAGS</span><span class="bio-v">BLK HAIR / GLASSES</span></div>
-                    <div class="bio-r"><span class="bio-l">HANDEDNESS</span><span class="bio-v">RIGHT</span></div>
-                    <div class="bio-r"><span class="bio-l">STATUS</span><span class="bio-v">ONLINE / SECURE</span></div>
+                <div class="m-core" id="mod-2">
+                    <div class="cr"></div><div class="cr"></div><div class="cr"></div>
+                    <div class="cr"></div><div class="cr"></div><div class="cr"></div>
+                    <div class="cr"></div><div class="cr"><span class="core-lbl">CORE<br>ACTIVE</span></div>
                 </div>
 
-                <div class="m-core" id="m3">
-                    <div class="ring c1"></div><div class="ring c2"></div><div class="ring c3"></div>
-                    <div class="ring c4"></div><div class="ring c5"></div><div class="ring c6"></div><div class="ring c7"></div>
-                    <div class="ring c8"><span class="core-text">CORE<br>ACTIVE</span></div>
+                <div class="module m-grid" id="mod-3">
+                    <div class="grid-surface"></div>
+                    <div class="grid-laser"></div>
                 </div>
 
-                <div class="mod m-grid" id="m2">
-                    <div class="topo-mesh"></div>
-                    <div class="scan-laser"></div>
-                    <div style="position:absolute; top:10px; right:10px; font-size:0.8rem; color:var(--neon);">SPATIAL SCAN</div>
+                <div class="module m-bio" id="mod-4">
+                    <h3 class="bio-title">PERSONAL_DATA</h3>
+                    <div class="bio-row"><span style="color:var(--magenta)">NAME:</span><span class="bio-v">VIOLINA SHARMA</span></div>
+                    <div class="bio-row"><span style="color:var(--magenta)">EYES:</span><span class="bio-v">DEEP ESPRESSO</span></div>
+                    <div class="bio-row"><span style="color:var(--magenta)">SIZE:</span><span class="bio-v">7 (UK/US)</span></div>
+                    <div class="bio-row"><span style="color:var(--magenta)">TAGS:</span><span class="bio-v">BLK HAIR / GLASSES</span></div>
+                    <div class="bio-row"><span style="color:var(--magenta)">STATUS:</span><span class="bio-v" style="color:#0f0">SECURE / LOVED</span></div>
                 </div>
 
-                <div class="mod m-term" id="m5">
-                    <div id="termContent"></div>
+                <div class="module m-radar" id="mod-5">
+                    <div class="radar-circle">
+                        <div class="radar-sweep"></div>
+                    </div>
                 </div>
 
             </div>
         </div>
     </div>
 
-    <div id="flashLayer"></div>
-
     <script>
-        const audio = { alert: document.getElementById('sAlert'), scan: document.getElementById('sScan'), grant: document.getElementById('sGrant') };
+        /* --- AUDIO ENGINE --- */
+        const audioCtx = {
+            scan: new Audio('scanning_loop.mp3'),
+            denied: new Audio('access_denied.mp3'),
+            online: new Audio('system_online.wav')
+        };
+        audioCtx.scan.loop = true;
 
-        // Parallax
-        document.addEventListener('mousemove', (e) => {
-            const x = (window.innerWidth - e.pageX * 2) / 100;
-            const y = (window.innerHeight - e.pageY * 2) / 100;
-            document.getElementById('stars').style.transform = `translate(${x}px, ${y}px)`;
-        });
-
-        function initSys() {
-            document.getElementById('layer-start').style.display='none';
-            document.getElementById('layer-intro').style.display='block';
-            audio.alert.play().catch(()=>{}); audio.scan.play().catch(()=>{}); audio.grant.play().catch(()=>{});
-            
-            const txt = document.getElementById('seqText');
-            const seq = ["SYSTEM STARTUP", "INITIALIZING...", "HEY!", "WELCOME", "DECRYPTING...", "SERVER READY"];
-            let i=0;
-            const t = setInterval(()=>{
-                if(i>=seq.length){ clearInterval(t); document.getElementById('ph1').style.display='none'; document.getElementById('ph2').style.display='block'; }
-                else { txt.innerText = seq[i]; i++; }
-            }, 800);
+        /* --- SYSTEM BOOT --- */
+        function bootSystem() {
+            document.getElementById('start-overlay').style.display = 'none';
+            document.getElementById('layer-intro').style.display = 'block';
+            // Pre-warm audio (browsers need this)
+            Object.values(audioCtx).forEach(a => { a.play().then(() => a.pause()) });
         }
 
-        function deny() {
-            document.getElementById('ph2').style.display='none'; document.getElementById('ph3').style.display='block';
-            audio.alert.currentTime=0; audio.alert.play();
-            setTimeout(()=>{ document.getElementById('ph3').style.display='none'; document.getElementById('ph4').style.display='flex'; }, 2000);
+        /* --- SCANNING LOGIC --- */
+        const pad = document.getElementById('scan-pad');
+        const laser = document.getElementById('laser');
+        let scanTimer;
+
+        pad.onmousedown = () => {
+            laser.style.display = 'block';
+            audioCtx.scan.currentTime = 0;
+            audioCtx.scan.play();
+            scanTimer = setTimeout(triggerStaggeredLoad, 2500);
+        };
+
+        pad.onmouseup = () => {
+            if(scanTimer) {
+                clearTimeout(scanTimer);
+                laser.style.display = 'none';
+                audioCtx.scan.pause();
+            }
+        };
+
+        /* --- THE STAGGERED ASYNC LOAD --- */
+        const sleep = (ms) => new Promise(res => setTimeout(res, ms));
+
+        async function triggerStaggeredLoad() {
+            audioCtx.scan.pause();
+            
+            // 1. Flash
+            const f = document.getElementById('flash');
+            f.style.display = 'block';
+            f.style.animation = 'whiteout 1s forwards';
+            
+            await sleep(500);
+            document.getElementById('layer-intro').style.display = 'none';
+            document.getElementById('layer-main').style.display = 'block';
+            
+            // 2. Sequential Load (1.5s Delays)
+            const sequence = ['mod-2', 'mod-1', 'mod-3', 'mod-4', 'mod-5'];
+            
+            for(let id of sequence) {
+                document.getElementById(id).classList.add('active');
+                await sleep(1500);
+            }
+
+            // 3. Final Audio Trigger
+            audioCtx.online.play();
+            startGlobe(); // Start Canvas Globe
         }
 
-        const btn = document.getElementById('scanBtn');
-        let timer;
-        btn.onmousedown = () => { document.getElementById('scanBeam').style.display='block'; audio.scan.currentTime=0; audio.scan.play(); timer = setTimeout(grant, 2000); };
-        btn.onmouseup = () => { clearTimeout(timer); document.getElementById('scanBeam').style.display='none'; audio.scan.pause(); };
-        btn.ontouchstart = btn.onmousedown; btn.ontouchend = btn.onmouseup;
+        /* --- CANVAS GLOBE LOGIC --- */
+        function startGlobe() {
+            const canvas = document.getElementById('globeCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 220; canvas.height = 220;
+            let angle = 0;
 
-        function grant() {
-            audio.scan.pause(); audio.grant.play();
-            
-            // Whiteout
-            const flash = document.getElementById('flashLayer');
-            flash.style.display='block';
-            flash.style.animation='whiteout 1s forwards';
-
-            setTimeout(() => {
-                document.getElementById('layer-intro').style.display='none';
-                document.getElementById('layer-loading').style.display='flex';
+            function draw() {
+                ctx.clearRect(0,0,220,220);
+                ctx.strokeStyle = '#FF00FF';
+                ctx.lineWidth = 0.5;
                 
-                // Loading Bar
-                setTimeout(() => {
-                    document.getElementById('progBar').style.width = '100%';
-                    setTimeout(revealMain, 3000);
-                }, 500);
-            }, 500);
-        }
-
-        function revealMain() {
-            document.getElementById('layer-loading').style.display='none';
-            document.getElementById('layer-main').style.display='block';
-            
-            // 1. FRAME
-            const frame = document.getElementById('mainFrame');
-            frame.style.display = 'block';
-            setTimeout(() => { frame.style.opacity = '1'; frame.style.transform = 'scale(1)'; }, 100);
-
-            // 2. CINEMATIC SEQUENCE (1.5s DELAY PER MODULE)
-            // Sequence: Core -> Globe -> Grid -> Data -> Term
-            const sequence = [
-                { id: 'm3', delay: 1500 }, // Core
-                { id: 'm1', delay: 3000 }, // Globe
-                { id: 'm2', delay: 4500 }, // Grid
-                { id: 'm4', delay: 6000 }, // Bio
-                { id: 'm5', delay: 7500 }  // Term
-            ];
-
-            sequence.forEach(item => {
-                setTimeout(() => {
-                    document.getElementById(item.id).classList.add('active');
-                }, item.delay);
-            });
-
-            // Start Terminal early but it reveals with its container
-            startTerminal();
-        }
-
-        function startTerminal() {
-            const term = document.getElementById('termContent');
-            const lines = ["Connecting Secure Shell...", "Decrypting Bio-Data...", "Target: VIOLINA SHARMA", "Eye Color: MATCH", "Shoe Size: 7 CONFIRMED", "Zodiac: TAURUS", "Physical ID: VERIFIED", "System Ready."];
-            let i=0;
-            setInterval(() => {
-                if(i < lines.length) {
-                    term.innerHTML += `<div class="ln">> ${lines[i]}</div>`;
-                    i++;
-                } else {
-                    term.innerHTML += `<div class="ln">> ${Math.random().toString(16).substr(2, 8)}...</div>`;
-                    term.scrollTop = term.scrollHeight;
+                for(let i=0; i<10; i++) {
+                    ctx.beginPath();
+                    let radius = Math.abs(Math.sin(angle + i*0.5) * 100);
+                    ctx.ellipse(110, 110, radius, 100, 0, 0, Math.PI*2);
+                    ctx.stroke();
                 }
-            }, 400);
+                angle += 0.02;
+                requestAnimationFrame(draw);
+            }
+            draw();
         }
     </script>
 </body>
