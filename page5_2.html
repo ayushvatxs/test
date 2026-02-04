@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIOLINA DATABASE | CORE FINAL</title>
+    <title>VIOLINA DATABASE | CORE V7</title>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
     <style>
         /* --- CORE RESET --- */
@@ -97,14 +97,14 @@
         .top-line-deco { width: 80%; height: 2px; background: var(--pink); margin-top: 40px; position: relative; box-shadow: 0 0 10px var(--pink); }
         .top-line-deco::after { content: 'SYSTEM_ANALYSIS // 98%'; position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font-size: 0.6rem; color: var(--pink); background: #000; padding: 0 10px; }
 
-        /* REDUCED SIZE REACTOR */
+        /* [UPDATE 1]: Increased Reactor Size via Scale */
         .reactor-container { 
             position: relative; margin-top: 50px; 
-            width: 280px; height: 280px; /* SIZE DECREASED */
-            display: flex; justify-content: center; align-items: center; 
+            width: 280px; height: 280px; 
+            display: flex; justify-content: center; align-items: center;
+            transform: scale(1.2); /* 20% Bigger */
         }
         .ring { position: absolute; border-radius: 50%; }
-        /* Adjusted Ring Sizes */
         .r1 { width: 280px; height: 280px; border: 4px dashed var(--pink); opacity: 0.3; animation: spin 60s linear infinite; }
         .r2 { width: 250px; height: 250px; border: 1px solid var(--pink); box-shadow: 0 0 15px var(--pink); opacity: 0.8; }
         .r3 { width: 220px; height: 220px; border: 8px solid transparent; border-top: 8px solid var(--pink); border-bottom: 8px solid var(--pink); animation: spin 10s linear infinite; }
@@ -114,8 +114,13 @@
         .r7 { width: 120px; height: 120px; border: 1px solid #fff; opacity: 0.3; }
         .r8 { width: 40px; height: 40px; background: #fff; border-radius: 50%; opacity: 0.8; box-shadow: 0 0 20px #fff; }
 
-        /* Overdrive: Hot Pink, not White */
-        .reactor-overdrive .ring { animation-duration: 0.2s !important; border-color: var(--pink) !important; box-shadow: 0 0 40px var(--pink); opacity: 1; }
+        /* [UPDATE 2]: White Light for Overdrive */
+        .reactor-overdrive .ring { 
+            animation-duration: 0.2s !important; 
+            border-color: #ffffff !important; 
+            box-shadow: 0 0 60px #ffffff; 
+            opacity: 1; 
+        }
 
         .btn-container { margin-top: 40px; margin-bottom: 20px; z-index: 50; }
         .btn-info {
@@ -127,7 +132,6 @@
         }
         .btn-info:hover { background: var(--pink); color: #000; box-shadow: 0 0 40px var(--pink); }
 
-        /* Shifted Radar Left */
         .bottom-array { position: absolute; bottom: 10px; width: 120%; left: -15%; display: flex; align-items: center; justify-content: center; gap: 20px; }
         .slider-group { width: 150px; display: flex; flex-direction: column; gap: 8px; }
         .s-track { width: 100%; height: 1px; background: rgba(255,255,255,0.3); position: relative; }
@@ -176,20 +180,20 @@
         .dc-row { display: flex; justify-content: space-between; border-bottom: 1px dashed rgba(255,255,255,0.1); padding: 5px 0; }
         .dc-l { color: #ff99aa; } .dc-v { font-weight: bold; text-align: right; }
 
-        /* NEXT BUTTON */
+        /* [UPDATE 3]: STATIC NEXT BUTTON */
         .btn-next-page {
             width: 100%; margin-top: 20px; padding: 15px;
             background: var(--pink); color: #000; border: none;
             font-family: 'Orbitron'; font-weight: bold; font-size: 1rem;
             cursor: pointer; box-shadow: 0 0 30px var(--pink);
             clip-path: polygon(5% 0, 100% 0, 100% 70%, 95% 100%, 0 100%, 0 30%);
-            animation: pulse 1s infinite;
+            /* No animation here for static look */
         }
 
         #access-overlay { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 3000; text-align: center; display: none; }
         .acc-txt { font-family: 'Orbitron'; font-size: 1.5rem; color: var(--pink); margin-bottom: 10px; text-shadow: 0 0 20px var(--pink); }
         .acc-bar { width: 300px; height: 5px; background: #300; position: relative; }
-        .acc-fill { width: 0%; height: 100%; background: #fff; box-shadow: 0 0 20px #fff; transition: width 4.5s linear; } /* Extended Time */
+        .acc-fill { width: 0%; height: 100%; background: #fff; box-shadow: 0 0 20px #fff; transition: width 4.5s linear; }
 
         #flash-white { position: fixed; inset: 0; background: #fff; z-index: 9999; opacity: 0; pointer-events: none; }
 
@@ -251,11 +255,11 @@
                     <button class="btn-info" onclick="accessData()">GET INFO</button>
                 </div>
                 <div class="bottom-array anim-part" id="p6">
-                    <div class="radar-unit"><div class="radar-scan"></div></div>
+                    <div class="slider-group"><div class="s-track"><div class="s-nob" style="left:30%"></div></div><div class="s-track"><div class="s-nob" style="left:70%"></div></div><div class="s-track"><div class="s-nob" style="left:50%"></div></div></div>
                     <div style="width: 20px; height: 1px; background: var(--pink);"></div>
                     <div class="main-badge">SYS.CORE // V.SHARMA</div>
                     <div style="width: 20px; height: 1px; background: var(--pink);"></div>
-                    <div class="slider-group"><div class="s-track"><div class="s-nob" style="left:30%"></div></div><div class="s-track"><div class="s-nob" style="left:70%"></div></div><div class="s-track"><div class="s-nob" style="left:50%"></div></div></div>
+                    <div class="radar-unit"><div class="radar-scan"></div></div>
                 </div>
             </div>
 
@@ -381,7 +385,7 @@
                         c.addEventListener('mouseenter',()=>playSfx('hover'));
                     });
                 }, 500);
-            }, 4500); // 4.5s Load Time
+            }, 5000); // 5.0s Load Time
         }
 
         window.onload = async () => {
@@ -400,4 +404,4 @@
         };
     </script>
 </body>
-</html> 
+</html>
