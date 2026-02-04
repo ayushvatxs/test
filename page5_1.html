@@ -18,7 +18,6 @@
 
         :root {
             --pink: #ff003c;
-            --green: #00ff00;
             --glass: rgba(20, 0, 5, 0.85);
         }
 
@@ -133,15 +132,6 @@
         .fingerprint { width: 100%; height: 100%; background: url('https://img.icons8.com/ios/100/ff003c/fingerprint.png') center/60% no-repeat; opacity: 0.7; }
         .laser { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: #fff; box-shadow: 0 0 15px #fff; display: none; animation: scanMove 1s linear infinite; }
 
-        /* SUCCESS STATE */
-        .granted .border-top, .granted .corner, .granted .panel-left, .granted .reactor-outer, .granted .reactor-core, .granted .box, .granted .circle-gauge, .granted .scanner-ui {
-            border-color: var(--green) !important; box-shadow: 0 0 20px var(--green) !important;
-        }
-        .granted .border-top { background: var(--green) !important; }
-        .granted .header { color: var(--green) !important; border-color: var(--green) !important; }
-        .granted .status-text { color: var(--green) !important; text-shadow: 0 0 20px var(--green) !important; }
-        .granted .laser { background: var(--green) !important; box-shadow: 0 0 15px var(--green) !important; }
-
         @keyframes spin { 100% { transform: rotate(360deg); } }
         @keyframes pulse { 0% { opacity: 0.6; } 100% { opacity: 1; } }
         @keyframes shake { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -1px); } 100% { transform: translate(1px, -1px); } }
@@ -215,8 +205,8 @@
                     </div>
 
                     <div id="p5" style="display:none; text-align:center;">
-                        <div class="status-text" style="color:#00ff00; margin-bottom:15px;">ACCESS GRANTED</div>
-                        <a href="page5_2.html" class="btn-start" style="text-decoration:none; font-size:1rem; border-color:#00ff00; color:#00ff00; box-shadow:0 0 20px #00ff00;">PROCEED TO DATABASE ></a>
+                        <div class="status-text" style="margin-bottom:15px;">ACCESS GRANTED</div>
+                        <a href="page5_2.html" class="btn-start" style="text-decoration:none; font-size:1rem;">PROCEED TO DATABASE ></a>
                     </div>
 
                 </div>
@@ -316,7 +306,7 @@
         // 5. Grant
         function grantAccess() {
             audio.scan.pause(); audio.grant.play();
-            document.body.classList.add('granted');
+            // Removed green effect class addition here
             document.getElementById('p4').style.display = 'none';
             document.getElementById('p5').style.display = 'block';
         }
