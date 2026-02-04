@@ -18,33 +18,43 @@
             background-color: #000;
             font-family: 'Share Tech Mono', monospace;
             overflow: hidden; 
-            height: 100vh; color: #fff;
+            height: 100vh;
+            color: #fff;
             user-select: none;
         }
 
-        /* --- 1. START BUTTON (Separate) --- */
+        :root {
+            --primary: #ff003c; /* The Pink Theme */
+            --glass: rgba(20, 0, 5, 0.85);
+        }
+
+        /* --- 1. START SCREEN (SEPARATE LAYER) --- */
         #startLayer {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 9999;
             display: flex; justify-content: center; align-items: center;
+            background: radial-gradient(circle, #1a0000 0%, #000 100%);
         }
-        .btn-init {
-            background: rgba(255, 0, 60, 0.1); border: 2px solid #ff4d6d; color: #ff4d6d;
-            padding: 20px 50px; font-family: 'Orbitron'; font-size: 1.5rem; letter-spacing: 4px;
-            cursor: pointer; box-shadow: 0 0 30px #ff4d6d; transition: 0.3s;
+        
+        .init-btn {
+            background: rgba(255, 0, 60, 0.1); 
+            border: 2px solid var(--primary); color: var(--primary);
+            padding: 25px 70px; font-family: 'Orbitron'; font-size: 1.5rem; letter-spacing: 4px;
+            cursor: pointer; box-shadow: 0 0 30px var(--primary);
             clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
+            transition: 0.3s;
         }
-        .btn-init:hover { background: #ff4d6d; color: #000; box-shadow: 0 0 60px #ff4d6d; }
+        .init-btn:hover { background: var(--primary); color: #000; box-shadow: 0 0 80px var(--primary); }
 
-        /* --- 2. INTRO UI (The Red/Pink HUD) --- */
-        #introLayer {
+        /* --- 2. INTRO UI (RED/PINK) --- */
+        #introUI {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 100; display: none;
-            transition: transform 1s cubic-bezier(0.7, 0, 0.3, 1); /* Fly Through Anim */
-            transform-origin: center;
+            z-index: 10; display: none; /* Hidden initially */
+            transform-origin: 75% 50%; /* Center zoom on reactor */
+            transition: transform 1.5s cubic-bezier(0.7, 0, 0.3, 1);
         }
 
-        /* Video-Style Background Grid */
+        /* Video-Style Grid BG */
         .bg-grid {
             position: absolute; width: 200%; height: 200%; left: -50%; top: -50%;
             background: 
@@ -52,198 +62,188 @@
                 linear-gradient(90deg, rgba(255, 0, 60, 0.1) 1px, transparent 1px);
             background-size: 60px 60px;
             transform: perspective(500px) rotateX(60deg);
-            animation: moveGrid 3s linear infinite;
+            animation: gridMove 2s linear infinite;
             z-index: 0;
         }
-        @keyframes moveGrid { 0% { transform: perspective(500px) rotateX(60deg) translateY(0); } 100% { transform: perspective(500px) rotateX(60deg) translateY(60px); } }
+        @keyframes gridMove { 0% { transform: perspective(500px) rotateX(60deg) translateY(0); } 100% { transform: perspective(500px) rotateX(60deg) translateY(60px); } }
 
-        /* Intro Layout */
-        .intro-container {
+        /* HUD Frame */
+        .frame-top { position: absolute; top: 30px; left: 5%; width: 90%; height: 3px; background: var(--primary); box-shadow: 0 0 15px var(--primary); }
+        .frame-corner { position: absolute; width: 60px; height: 60px; border: 5px solid var(--primary); box-shadow: 0 0 15px var(--primary); }
+        .tl { top: 30px; left: 30px; border-right: 0; border-bottom: 0; }
+        .tr { top: 30px; right: 30px; border-left: 0; border-bottom: 0; }
+        .bl { bottom: 30px; left: 30px; border-right: 0; border-top: 0; }
+        .br { bottom: 30px; right: 30px; border-left: 0; border-top: 0; }
+
+        /* Container */
+        .ui-container {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             width: 90%; max-width: 1200px; height: 600px;
             display: grid; grid-template-columns: 350px 1fr; gap: 50px;
             z-index: 10;
         }
 
-        /* Left Box (Logs) */
-        .intro-left {
-            border: 1px solid #ff4d6d; background: rgba(20, 0, 5, 0.8);
-            padding: 20px; display: flex; flex-direction: column;
-            clip-path: polygon(0 0, 100% 0, 100% 90%, 90% 100%, 0 100%);
+        /* Left Panel (Restored) */
+        .p-left {
+            display: flex; flex-direction: column; padding: 25px;
+            background: var(--glass); border: 1px solid rgba(255, 0, 60, 0.3);
+            backdrop-filter: blur(5px);
         }
-        .log-title { font-family: 'Orbitron'; font-size: 1.2rem; color: #ff4d6d; border-bottom: 2px solid #ff4d6d; margin-bottom: 10px; }
-        .log-content { font-size: 0.8rem; color: #ff99aa; line-height: 1.6; margin-bottom: 20px; }
-        .grid-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; height: 150px; }
-        .grid-box { border: 1px solid #ff4d6d; background: rgba(50, 0, 0, 0.3); }
+        .sys-h { font-family: 'Orbitron'; font-size: 1.2rem; color: var(--primary); border-bottom: 2px solid var(--primary); margin-bottom: 10px; display: inline-block; }
+        .sys-content { font-size: 0.8rem; color: #ff99aa; margin-bottom: 20px; line-height: 1.6; }
+        
+        .g-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; height: 150px; margin-bottom: 20px; }
+        .g-box { border: 1px solid var(--primary); background: rgba(50, 0, 0, 0.3); }
+        .c1 { clip-path: polygon(0 0, 100% 0, 100% 80%, 80% 100%, 0 100%); }
+        .c2 { clip-path: polygon(0 0, 100% 0, 100% 100%, 20% 100%, 0 80%); }
+        .c3 { clip-path: polygon(0 0, 80% 0, 100% 20%, 100% 100%, 0 100%); }
+        .c4 { clip-path: polygon(20% 0, 100% 0, 100% 100%, 0 100%, 0 20%); }
 
-        /* Right Circle (Reactor) */
-        .intro-right { display: flex; justify-content: center; align-items: center; position: relative; }
-        .circle-outer { position: absolute; width: 450px; height: 450px; border: 2px solid #ff4d6d; border-radius: 50%; border-left: transparent; border-right: transparent; animation: spin 10s linear infinite; }
-        .circle-inner { width: 300px; height: 300px; background: rgba(0,0,0,0.9); border: 4px solid #ff4d6d; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20; }
+        .gauges { display: flex; gap: 20px; margin-top: auto; }
+        .cir { width: 60px; height: 60px; border-radius: 50%; border: 1px solid var(--primary); display: flex; justify-content: center; align-items: center; font-size: 0.8rem; }
 
-        /* Scanner */
-        .scan-pad { width: 100px; height: 140px; border: 2px solid #ff4d6d; border-radius: 20px; position: relative; overflow: hidden; margin-top: 15px; cursor: pointer; }
-        .scan-line { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: #fff; box-shadow: 0 0 15px #fff; animation: scanDown 1.5s linear infinite; display: none; }
+        /* Right Panel (Reactor) */
+        .p-right { display: flex; justify-content: center; align-items: center; position: relative; }
+        .r-outer { position: absolute; width: 450px; height: 450px; border: 2px solid var(--primary); border-radius: 50%; border-left: transparent; border-right: transparent; animation: spin 10s linear infinite; }
+        .r-core { 
+            width: 300px; height: 300px; background: rgba(0,0,0,0.95);
+            border: 4px solid var(--primary); border-radius: 50%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            box-shadow: 0 0 60px var(--primary); z-index: 20;
+            transition: 0.3s;
+        }
 
-        /* --- 3. MAIN PAGE (VIDEO REPLICA DASHBOARD) --- */
-        #mainLayer {
+        /* Interactables */
+        .txt-status { font-family: 'Orbitron'; font-size: 1.4rem; font-weight: 700; text-shadow: 0 0 10px var(--primary); text-align: center; }
+        .btn-conn {
+            margin-top: 15px; background: rgba(255,255,255,0.1); border: 1px solid #fff; color: #fff;
+            padding: 10px 30px; font-family: 'Orbitron'; cursor: pointer; animation: pulse 1.5s infinite;
+        }
+        
+        .scan-area { width: 90px; height: 130px; border: 2px solid var(--primary); border-radius: 20px; position: relative; overflow: hidden; margin-top: 10px; cursor: pointer; }
+        .scan-laser { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: #fff; box-shadow: 0 0 15px #fff; display: none; animation: scanDown 1s linear infinite; }
+
+        /* --- 3. MAIN DASHBOARD (EXACT VIDEO LAYOUT) --- */
+        #mainDash {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 50; display: none; opacity: 0;
             background: #000; padding: 20px;
             transition: opacity 1s;
         }
 
-        .dashboard-grid {
+        .dash-layout {
             display: grid; width: 100%; height: 100%;
-            grid-template-columns: 300px 1fr 350px;
-            grid-template-rows: 250px 1fr 200px;
+            grid-template-columns: 300px 1fr 300px;
+            grid-template-rows: 60px 1fr 120px;
             gap: 20px;
         }
 
-        /* 1. TOP LEFT: WIREFRAME GLOBE */
-        .box-globe {
-            grid-column: 1; grid-row: 1;
-            border: 1px solid #ff4d6d; background: rgba(20, 0, 5, 0.5);
-            display: flex; justify-content: center; align-items: center;
-            position: relative; overflow: hidden;
-        }
-        .globe {
-            width: 150px; height: 150px; border-radius: 50%;
-            border: 1px solid rgba(255, 77, 109, 0.3);
-            background: repeating-linear-gradient(90deg, transparent 0, transparent 20px, rgba(255, 77, 109, 0.2) 20px, rgba(255, 77, 109, 0.2) 21px),
-                        repeating-linear-gradient(0deg, transparent 0, transparent 20px, rgba(255, 77, 109, 0.2) 20px, rgba(255, 77, 109, 0.2) 21px);
-            background-size: 200% 100%;
-            box-shadow: inset 0 0 20px #ff4d6d;
-            animation: globeSpin 5s linear infinite;
-        }
-        @keyframes globeSpin { 0% { background-position: 0 0; } 100% { background-position: 200% 0; } }
+        /* Header */
+        .d-top { grid-column: 1 / -1; border-bottom: 2px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
+        .d-title { font-family: 'Orbitron'; font-size: 2rem; color: #fff; text-shadow: 0 0 20px var(--primary); }
 
-        /* 2. CENTER: RINGS */
-        .box-center {
-            grid-column: 2; grid-row: 1 / span 2;
-            display: flex; justify-content: center; align-items: center; position: relative;
+        /* Center Ring */
+        .d-center { grid-column: 2; grid-row: 2; display: flex; justify-content: center; align-items: center; position: relative; }
+        .c-ring { width: 350px; height: 350px; border: 2px dashed rgba(255,255,255,0.2); border-radius: 50%; animation: spin 30s linear infinite; }
+        .c-dot { 
+            position: absolute; width: 150px; height: 150px; border: 5px solid var(--primary); border-radius: 50%;
+            box-shadow: 0 0 50px var(--primary); background: url('https://img.icons8.com/ios/100/ff003c/fingerprint.png') center/50% no-repeat;
         }
-        .main-ring-1 { width: 400px; height: 400px; border: 2px dashed rgba(255, 77, 109, 0.5); border-radius: 50%; animation: spin 20s linear infinite; position: absolute; }
-        .main-ring-2 { width: 300px; height: 300px; border: 5px solid #ff4d6d; border-radius: 50%; position: absolute; box-shadow: 0 0 50px #ff4d6d; display: flex; justify-content: center; align-items: center; }
-        .main-ring-2::after { content: 'DATABASE UNLOCKED'; font-family: 'Orbitron'; font-size: 1.2rem; color: #fff; text-shadow: 0 0 10px #ff4d6d; }
 
-        /* 3. RIGHT: DATA STACK (Violina's Data) */
-        .box-data {
-            grid-column: 3; grid-row: 1 / span 3;
-            display: flex; flex-direction: column; gap: 15px;
-            overflow-y: auto;
-        }
-        .data-panel {
-            background: rgba(20, 0, 5, 0.8); border: 1px solid #ff4d6d;
-            padding: 15px; position: relative;
-        }
-        .data-panel::before { content:''; position:absolute; top:0; left:0; width:5px; height:5px; background:#fff; }
-        .data-panel::after { content:''; position:absolute; bottom:0; right:0; width:5px; height:5px; background:#fff; }
-        
-        .d-head { font-family: 'Orbitron'; color: #ff99aa; border-bottom: 1px solid #ff4d6d; margin-bottom: 8px; font-size: 0.9rem; }
-        .d-row { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px; border-bottom: 1px dashed rgba(255,255,255,0.1); }
-        .val { color: #fff; font-weight: bold; text-align: right; }
+        /* Data Panels */
+        .d-panel { background: var(--glass); border: 1px solid var(--primary); padding: 15px; position: relative; overflow-y: auto; }
+        .d-panel::before { content:''; position:absolute; top:0; left:0; width:10px; height:10px; border-top:2px solid #fff; border-left:2px solid #fff; }
+        .d-panel::after { content:''; position:absolute; bottom:0; right:0; width:10px; height:10px; border-bottom:2px solid #fff; border-right:2px solid #fff; }
 
-        /* 4. BOTTOM LEFT: EQUALIZERS */
-        .box-eq {
-            grid-column: 1; grid-row: 2 / span 2;
-            border: 1px solid #ff4d6d; background: rgba(20, 0, 5, 0.5);
-            padding: 15px; display: flex; flex-direction: column; gap: 10px;
-        }
-        .bar-container { display: flex; align-items: flex-end; justify-content: space-between; height: 100px; border-bottom: 1px solid #ff4d6d; padding-bottom: 5px; }
-        .bar { width: 15px; background: #ff4d6d; animation: barMove 1s ease-in-out infinite alternate; }
-        .bar:nth-child(2) { animation-delay: 0.2s; } .bar:nth-child(3) { animation-delay: 0.4s; }
-        .bar:nth-child(4) { animation-delay: 0.1s; } .bar:nth-child(5) { animation-delay: 0.3s; }
-        @keyframes barMove { 0% { height: 20%; } 100% { height: 90%; } }
+        .dp-l { grid-column: 1; grid-row: 2; }
+        .dp-r { grid-column: 3; grid-row: 2; }
+        .dp-b { grid-column: 2; grid-row: 3; display: flex; justify-content: space-around; align-items: center; border: 1px solid rgba(255,0,60,0.4); }
 
-        /* 5. BOTTOM CENTER: MICRO DATA */
-        .box-micro {
-            grid-column: 2; grid-row: 3;
-            border-top: 1px solid #ff4d6d;
-            display: flex; justify-content: space-around; align-items: center;
-            padding-top: 10px;
-        }
-        .micro-item { text-align: center; }
-        .m-lbl { font-size: 0.7rem; color: #aaa; }
-        .m-val { font-size: 1rem; color: #fff; font-weight: bold; }
+        .h-txt { font-family: 'Orbitron'; font-size: 1rem; color: #ff80aa; border-bottom: 1px solid rgba(255,255,255,0.2); margin-bottom: 10px; }
+        .r-txt { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 5px; border-bottom: 1px dashed rgba(255,255,255,0.1); }
+        .l-col { color: #aaa; } .r-col { color: #fff; font-weight: bold; text-align: right; }
 
-        /* --- UTILS --- */
-        .hidden { display: none !important; }
-        .flex { display: flex !important; }
-        
+        /* --- EFFECTS --- */
+        .fly-thru { animation: fly 1.5s cubic-bezier(0.7, 0, 0.3, 1) forwards; }
+        .flash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 999; animation: flashAnim 1s forwards; display: none; }
+        .shake { animation: shakeAnim 0.5s infinite; }
+
         /* ACCESS GRANTED (GREEN MODE) */
-        .granted-mode .hud-bar-top, .granted-mode .intro-left, .granted-mode .circle-outer, .granted-mode .circle-inner, .granted-mode .grid-box, .granted-mode .scan-pad {
-            border-color: #00ff00 !important;
-            box-shadow: 0 0 20px #00ff00 !important;
-            color: #00ff00 !important;
+        .access-green .frame-top, .access-green .frame-corner, 
+        .access-green .g-box, .access-green .cir, .access-green .scan-area, .access-green .d-panel, .access-green .btn-conn {
+            border-color: #00ff00 !important; box-shadow: 0 0 20px #00ff00 !important; color: #00ff00 !important;
         }
-        .granted-mode .hud-bar-top { background: #00ff00 !important; }
-        .granted-mode .log-title, .granted-mode .sys-title { color: #00ff00 !important; border-color: #00ff00 !important; }
-        .granted-mode .scan-beam { background: #00ff00 !important; box-shadow: 0 0 15px #00ff00 !important; }
+        .access-green .frame-top { background: #00ff00 !important; }
+        .access-green .r-core { border-color: #00ff00 !important; box-shadow: 0 0 100px #00ff00 !important; }
+        .access-green .status-text { color: #00ff00 !important; text-shadow: 0 0 20px #00ff00 !important; }
+        .access-green .scan-laser { background: #00ff00 !important; box-shadow: 0 0 15px #00ff00 !important; }
 
-        /* Animations */
         @keyframes spin { 100% { transform: rotate(360deg); } }
         @keyframes scanDown { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
-        @keyframes zoomIn { 
-            0% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(20); opacity: 0; } 
-        }
+        @keyframes fly { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(3); opacity: 0.5; } 100% { transform: scale(20); opacity: 0; } }
+        @keyframes flashAnim { 0% { opacity: 0; } 20% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes shakeAnim { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -1px); } 100% { transform: translate(1px, -1px); } }
+        @keyframes pulse { 0% { opacity: 0.6; } 100% { opacity: 1; } }
 
     </style>
 </head>
 <body>
 
+    <div id="bgLayer"><div class="bg-grid"></div></div>
+
+    <audio id="soundAlert" src="alert.mp3" preload="auto"></audio>
+    <audio id="soundScan" src="scan.mp3" preload="auto" loop></audio>
+    <audio id="soundGrant" src="granted.mp3" preload="auto"></audio>
+
     <div id="startLayer">
-        <button class="btn-init" onclick="initApp()">INITIALIZE SYSTEM</button>
+        <button class="init-btn" onclick="runInit()">INITIALIZE SYSTEM</button>
     </div>
 
-    <div id="introLayer">
-        <div class="bg-grid"></div>
-        
-        <div class="hud-frame">
-            <div class="hud-bar-top"></div>
-        </div>
+    <div id="introUI">
+        <div class="frame-top"></div>
+        <div class="frame-corner tl"></div><div class="frame-corner tr"></div>
+        <div class="frame-corner bl"></div><div class="frame-corner br"></div>
 
-        <div class="intro-container">
-            <div class="intro-left" id="introLeft">
-                <div class="log-title">SYSTEM_LOG</div>
-                <div class="log-content">
-                    > KERNEL: ACTIVE<br>
-                    > ENCRYPTION: 256-BIT<br>
-                    > PROXY: REROUTED<br>
-                    > LATENCY: 12ms
+        <div class="ui-container">
+            <div class="p-left">
+                <div class="sys-h">SYSTEM_LOG</div>
+                <div class="sys-content">
+                    > KERNEL: ACTIVE<br>> ENCRYPTION: 256-BIT<br>> PROXY: REROUTED<br>> LATENCY: 12ms
                 </div>
-                <div class="grid-2x2">
-                    <div class="grid-box"></div><div class="grid-box"></div>
-                    <div class="grid-box"></div><div class="grid-box"></div>
+                <div class="g-grid">
+                    <div class="g-box c1"></div><div class="g-box c2"></div>
+                    <div class="g-box c3"></div><div class="g-box c4"></div>
+                </div>
+                <div class="gauges">
+                    <div class="cir">CPU</div><div class="cir">RAM</div>
                 </div>
             </div>
 
-            <div class="intro-right">
-                <div class="circle-outer" id="circleOut"></div>
-                <div class="circle-inner" id="circleIn">
+            <div class="p-right">
+                <div class="r-outer"></div>
+                <div class="r-core">
                     
-                    <div id="p1" style="text-align:center;">
-                        <div style="font-family:'Orbitron'; font-size:1.5rem; font-weight:bold;" id="seqText">SYSTEM STARTUP</div>
+                    <div id="ph1" style="display:flex; justify-content:center; align-items:center; width:100%;">
+                        <div class="status-text" id="loadTxt">SYSTEM STARTUP</div>
                     </div>
 
-                    <div id="p2" class="hidden" style="text-align:center;">
-                        <div style="font-family:'Orbitron'; margin-bottom:10px;">SERVER READY</div>
-                        <button onclick="triggerDenied()" style="background:transparent; border:1px solid #fff; color:#fff; padding:10px 20px; font-family:'Orbitron'; cursor:pointer;">CONNECT</button>
+                    <div id="ph2" style="display:none; text-align:center;">
+                        <div class="status-text" style="font-size:1rem;">SERVER READY</div>
+                        <button class="btn-conn" onclick="denyAccess()">CONNECT CONSOLE</button>
                     </div>
 
-                    <div id="p3" class="hidden" style="text-align:center; color:red;">
+                    <div id="ph3" style="display:none; text-align:center; color:red;">
                         <i class="fas fa-exclamation-triangle" style="font-size:3rem; margin-bottom:10px;"></i>
-                        <div style="font-family:'Orbitron'; font-weight:bold;">ACCESS DENIED</div>
-                        <div style="font-size:0.7rem; margin-top:5px; border:1px solid red; padding:5px;">SERVER PROTECTED BY AYUSH</div>
+                        <div class="status-text" style="color:red;">ACCESS DENIED</div>
+                        <div style="font-size:0.8rem; margin-top:10px; border:1px solid red; padding:5px; background:rgba(50,0,0,0.5);">SERVER PROTECTED BY AYUSH</div>
                     </div>
 
-                    <div id="p4" class="hidden" style="flex-direction:column; align-items:center;">
-                        <div class="scan-pad" id="scanPad">
-                            <div style="width:100%; height:100%; background:url('https://img.icons8.com/ios/100/ff4d6d/fingerprint.png') center/70% no-repeat; opacity:0.7;"></div>
-                            <div class="scan-line" id="scanBeam"></div>
+                    <div id="ph4" style="display:none; flex-direction:column; align-items:center;">
+                        <div class="scan-area" id="scanPad">
+                            <div style="width:100%; height:100%; background:url('https://img.icons8.com/ios/100/ff4d6d/fingerprint.png') center/70% no-repeat; opacity:0.6;"></div>
+                            <div class="scan-laser" id="laser"></div>
                         </div>
-                        <div id="scanStatus" style="font-family:'Orbitron'; font-size:0.8rem; margin-top:10px;">HOLD TO VERIFY</div>
+                        <div class="status-text" id="scanMsg" style="font-size:0.8rem; margin-top:10px;">HOLD TO VERIFY</div>
                     </div>
 
                 </div>
@@ -251,162 +251,154 @@
         </div>
     </div>
 
-    <div id="mainLayer">
-        <div class="dashboard-grid">
+    <div id="mainDash">
+        <div class="dash-layout">
             
-            <div class="box-globe">
-                <div class="globe"></div>
-                <div style="position:absolute; bottom:10px; font-size:0.8rem; color:#ff4d6d;">LOC: 611 KM</div>
+            <div class="d-top">
+                <div class="d-title">DATABASE UNLOCKED</div>
+                <div style="font-family:'Share Tech Mono'; color:#ff80aa;">SECURE CONNECTION ESTABLISHED</div>
             </div>
 
-            <div class="box-center">
-                <div class="main-ring-1"></div>
-                <div class="main-ring-2"></div>
+            <div class="d-panel dp-l">
+                <div class="h-txt">IDENTITY PROTOCOLS</div>
+                <div class="r-txt"><span class="l-col">NAME</span> <span class="r-col">Violina Sharma</span></div>
+                <div class="r-txt"><span class="l-col">DOB</span> <span class="r-col">13 FEB 20XX</span></div>
+                <div class="r-txt"><span class="l-col">ZODIAC</span> <span class="r-col">Taurus ♉</span></div>
+                <div class="r-txt"><span class="l-col">EYES</span> <span class="r-col">Deep Espresso</span></div>
+                <div class="r-txt"><span class="l-col">HAIR</span> <span class="r-col">Black</span></div>
+                <div class="r-txt"><span class="l-col">SHOE</span> <span class="r-col">7 (Tiny Feet)</span></div>
+                <div class="r-txt"><span class="l-col">MARK</span> <span class="r-col">Mole (Right Forehead)</span></div>
+                <div class="r-txt"><span class="l-col">GLASSES</span> <span class="r-col">YES</span></div>
+                <br>
+                <div class="h-txt">CONNECTION</div>
+                <div class="r-txt"><span class="l-col">MET</span> <span class="r-col">11 April 2025</span></div>
+                <div class="r-txt"><span class="l-col">IMPRESSION</span> <span class="r-col">Gorgeous & Talented</span></div>
+                <div class="r-txt"><span class="l-col">DIST</span> <span class="r-col" style="color:red;">611 KM</span></div>
+                <div class="r-txt"><span class="l-col">CALL</span> <span class="r-col" style="color:#00ff00;">06 HOURS</span></div>
             </div>
 
-            <div class="box-data">
-                
-                <div class="data-panel">
-                    <div class="d-head">IDENTITY PROTOCOLS</div>
-                    <div class="d-row"><span>NAME</span> <span class="val">Violina Sharma</span></div>
-                    <div class="d-row"><span>DOB</span> <span class="val">13 FEB 20XX</span></div>
-                    <div class="d-row"><span>ZODIAC</span> <span class="val">Taurus ♉</span></div>
-                    <div class="d-row"><span>EYES</span> <span class="val">Deep Espresso</span></div>
-                    <div class="d-row"><span>HAIR</span> <span class="val">Black</span></div>
-                    <div class="d-row"><span>HEIGHT</span> <span class="val">Tiny Feet (7)</span></div>
-                    <div class="d-row"><span>MARK</span> <span class="val">Mole (R. Forehead)</span></div>
-                </div>
-
-                <div class="data-panel">
-                    <div class="d-head">CONNECTION LOGS</div>
-                    <div class="d-row"><span>MET</span> <span class="val">11 April 2025</span></div>
-                    <div class="d-row"><span>IMPRESSION</span> <span class="val">Gorgeous</span></div>
-                    <div class="d-row"><span>LONGEST CALL</span> <span class="val" style="color:#00ff00;">06 HOURS</span></div>
-                    <div class="d-row"><span>PHOTOS</span> <span class="val">489 Saved</span></div>
-                    <div class="d-row"><span>FIRST SHOW</span> <span class="val">Crime Patrol</span></div>
-                </div>
-
-                <div class="data-panel">
-                    <div class="d-head">PREFERENCES</div>
-                    <div class="d-row"><span>FLOWER</span> <span class="val">Roses</span></div>
-                    <div class="d-row"><span>FOOD</span> <span class="val">Brinjal / Duck</span></div>
-                    <div class="d-row"><span>DRINK</span> <span class="val">Red Tea</span></div>
-                    <div class="d-row"><span>SWEET</span> <span class="val">Kinder Joy</span></div>
-                    <div class="d-row"><span>ARTIST</span> <span class="val">Taylor Swift</span></div>
-                    <div class="d-row"><span>PLACE</span> <span class="val">My Lap</span></div>
-                </div>
-
-                <div class="data-panel">
-                    <div class="d-head">BEHAVIOR</div>
-                    <div class="d-row"><span>HAPPY</span> <span class="val">Award Dance</span></div>
-                    <div class="d-row"><span>ANGRY</span> <span class="val">Scolding Mode</span></div>
-                    <div class="d-row"><span>FIX</span> <span class="val">Treat like Kid</span></div>
-                    <div class="d-row"><span>SAD</span> <span class="val">Sleep / Quiet</span></div>
-                </div>
-
+            <div class="d-center">
+                <div class="c-ring"></div>
+                <div class="c-dot"></div>
             </div>
 
-            <div class="box-eq">
-                <div style="font-family:'Orbitron'; color:#ff4d6d; border-bottom:1px solid #ff4d6d;">SYSTEM VITALS</div>
-                <div class="bar-container">
-                    <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                </div>
-                <div style="font-size:0.8rem; color:#fff;">CUTENESS: 100%</div>
+            <div class="d-panel dp-r">
+                <div class="h-txt">PREFERENCES</div>
+                <div class="r-txt"><span class="l-col">FOOD</span> <span class="r-col">Brinjal / Duck</span></div>
+                <div class="r-txt"><span class="l-col">DRINK</span> <span class="r-col">Red Tea</span></div>
+                <div class="r-txt"><span class="l-col">SWEET</span> <span class="r-col">Kinder Joy</span></div>
+                <div class="r-txt"><span class="l-col">ARTIST</span> <span class="r-col">Taylor Swift</span></div>
+                <div class="r-txt"><span class="l-col">PLACE</span> <span class="r-col" style="color:#ff4d6d;">My Lap</span></div>
+                <div class="r-txt"><span class="l-col">SLEEP</span> <span class="r-col">2 Pillows + 1 Hand</span></div>
+                <br>
+                <div class="h-txt">BEHAVIOR</div>
+                <div class="r-txt"><span class="l-col">HAPPY</span> <span class="r-col">Award Dance</span></div>
+                <div class="r-txt"><span class="l-col">ANGRY</span> <span class="r-col">Scolding Mode</span></div>
+                <div class="r-txt"><span class="l-col">FIX</span> <span class="r-col">Treat like Kid</span></div>
+                <div class="r-txt"><span class="l-col">SAD</span> <span class="r-col">Sleep / Quiet</span></div>
             </div>
 
-            <div class="box-micro">
-                <div class="micro-item"><div class="m-lbl">SNEEZE</div><div class="m-val">Kitten 🐱</div></div>
-                <div class="micro-item"><div class="m-lbl">LAUGH</div><div class="m-val">Giggle</div></div>
-                <div class="micro-item"><div class="m-lbl">DRIVE</div><div class="m-val" style="color:red;">SCARY</div></div>
-                <div class="micro-item"><div class="m-lbl">TALENT</div><div class="m-val">Singer</div></div>
+            <div class="d-panel dp-b">
+                <div style="text-align:center;"><span class="l-col">SNEEZE</span><br><span class="r-col">Kitten 🐱</span></div>
+                <div style="text-align:center;"><span class="l-col">LAUGH</span><br><span class="r-col">Giggle</span></div>
+                <div style="text-align:center;"><span class="l-col">DRIVE</span><br><span class="r-col" style="color:red;">SCARY</span></div>
+                <div style="text-align:center;"><span class="l-col">TALENT</span><br><span class="r-col">Singer</span></div>
+                <div style="text-align:center;"><span class="l-col">WALK</span><br><span class="r-col">Fast</span></div>
             </div>
 
-        </div>
-        
-        <div style="position:absolute; bottom:20px; width:100%; text-align:center;">
-            <a href="page5_2.html" style="color:#fff; text-decoration:none; border:1px solid #fff; padding:10px;">INITIATE REASSEMBLY ></a>
         </div>
     </div>
+
+    <div id="whiteFlash" class="flash"></div>
 
     <script>
         const sAlert = document.getElementById('soundAlert');
         const sScan = document.getElementById('soundScan');
         const sGrant = document.getElementById('soundGrant');
 
-        function initApp() {
+        // 1. START
+        function runInit() {
             document.getElementById('startLayer').style.display = 'none';
-            document.getElementById('introLayer').style.display = 'block';
-            sAlert.play(); sAlert.pause(); sScan.play(); sScan.pause(); sGrant.play(); sGrant.pause();
-            runSeq();
-        }
-
-        function runSeq() {
-            const txt = document.getElementById('seqText');
-            const seq = [
-                {t:"SYSTEM STARTUP", d:0}, {t:"INITIALIZING", d:1000},
-                {t:"HEY!", d:2500, s:"3rem"}, {t:"WELCOME TO VIOLINA'S DATABASE", d:4000, s:"1rem"},
-                {t:"LOADING...", d:6000}, {t:"DECRYPTING DATA", d:7500},
-                {t:"BYPASSING FIREWALL", d:9000}, {t:"TRYING TO CONNECT", d:10500}, {t:"SERVER READY", d:12000}
-            ];
-            seq.forEach(x => setTimeout(() => {
-                txt.innerText = x.t;
-                if(x.s) txt.style.fontSize = x.s; else txt.style.fontSize = "1.5rem";
-            }, x.d));
+            document.getElementById('introUI').style.display = 'flex';
+            sAlert.play(); sAlert.pause(); 
+            sScan.play(); sScan.pause(); 
+            sGrant.play(); sGrant.pause();
             
-            setTimeout(() => {
-                document.getElementById('p1').style.display='none';
-                document.getElementById('p2').style.display='block';
-            }, 13500);
+            // Fast Sequence (4 Seconds Total)
+            const txt = document.getElementById('loadTxt');
+            const seq = ["SYSTEM STARTUP", "INITIALIZING", "HEY!", "WELCOME", "LOADING...", "DECRYPTING", "BYPASSING", "TRYING", "SERVER READY"];
+            let i = 0;
+            const interval = setInterval(() => {
+                if(i >= seq.length) {
+                    clearInterval(interval);
+                    document.getElementById('ph1').style.display='none';
+                    document.getElementById('ph2').style.display='block';
+                } else {
+                    txt.innerText = seq[i];
+                    i++;
+                }
+            }, 500); // 0.5s per text
         }
 
-        function triggerDenied() {
-            document.getElementById('p2').style.display='none';
-            document.getElementById('p3').style.display='block';
+        // 2. DENIED
+        function denyAccess() {
+            document.getElementById('ph2').style.display='none';
+            document.getElementById('ph3').style.display='block';
             sAlert.currentTime = 0; sAlert.play();
+            
+            // Shake Effect
+            const ui = document.getElementById('introUI');
+            ui.classList.add('shake');
             setTimeout(() => {
-                document.getElementById('p3').style.display='none';
-                document.getElementById('p4').style.display='flex';
-            }, 3000);
+                ui.classList.remove('shake');
+                document.getElementById('ph3').style.display='none';
+                document.getElementById('ph4').style.display='flex';
+            }, 2500);
         }
 
-        let timer;
+        // 3. SCANNER
         const pad = document.getElementById('scanPad');
-        const beam = document.getElementById('scanBeam');
+        const laser = document.getElementById('laser');
+        let timer;
 
         function startScan(e) {
             e.preventDefault();
             sScan.currentTime=0; sScan.play();
-            beam.style.display = 'block';
-            timer = setTimeout(grantAccess, 2000);
+            laser.style.display = 'block';
+            timer = setTimeout(approveAccess, 2000);
         }
-        function endScan() {
-            clearTimeout(timer); sScan.pause(); beam.style.display = 'none';
+        function stopScan() {
+            clearTimeout(timer);
+            sScan.pause();
+            laser.style.display = 'none';
         }
 
         pad.addEventListener('mousedown', startScan);
-        pad.addEventListener('mouseup', endScan);
+        pad.addEventListener('mouseup', stopScan);
         pad.addEventListener('touchstart', startScan);
-        pad.addEventListener('touchend', endScan);
+        pad.addEventListener('touchend', stopScan);
 
-        function grantAccess() {
+        // 4. TRANSITION (VIDEO STYLE)
+        function approveAccess() {
             sScan.pause(); sGrant.play();
             
-            // 1. CHANGE COLOR TO GREEN (VIDEO STYLE)
-            document.body.classList.add('granted-mode');
-            document.getElementById('scanStatus').innerText = "ACCESS GRANTED";
-            document.getElementById('scanStatus').style.color = "#00ff00";
+            // Turn Green
+            document.body.classList.add('access-green');
+            document.getElementById('scanMsg').innerText = "ACCESS GRANTED";
+            document.getElementById('scanMsg').style.color = "#00ff00";
             
-            // 2. ZOOM THROUGH TRANSITION
+            // Fly Through (Zoom)
             setTimeout(() => {
-                document.getElementById('introLayer').style.animation = "zoomIn 1s cubic-bezier(0.7, 0, 0.3, 1) forwards";
+                document.getElementById('introUI').classList.add('fly-thru');
                 
-                // 3. SHOW MAIN PAGE
+                // Flash & Show Main
                 setTimeout(() => {
-                    document.getElementById('introLayer').style.display = 'none';
-                    document.getElementById('mainLayer').style.display = 'block';
-                    setTimeout(() => document.getElementById('mainLayer').style.opacity = '1', 50);
+                    document.getElementById('whiteFlash').style.display = 'block';
+                    document.getElementById('introUI').style.display = 'none';
+                    document.getElementById('mainDash').style.display = 'block';
+                    setTimeout(() => document.getElementById('mainDash').style.opacity = '1', 50);
                 }, 800);
-            }, 1000);
+            }, 800);
         }
     </script>
 </body>
