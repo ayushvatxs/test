@@ -7,229 +7,257 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- RESET --- */
+        /* --- RESET & VARS --- */
         * { box-sizing: border-box; }
         body {
-            margin: 0; padding: 0; background: #000;
-            font-family: 'Share Tech Mono', monospace;
-            overflow: hidden; height: 100vh; color: #fff;
-            user-select: none;
+            margin: 0; background: #000; font-family: 'Share Tech Mono', monospace;
+            overflow: hidden; height: 100vh; color: #fff; user-select: none;
+            perspective: 1000px;
         }
-        :root { --pink: #ff003c; --dim: rgba(255, 0, 60, 0.2); }
+        :root {
+            --neon: #ff00ff; /* Neon Pink */
+            --magenta: #8b008b;
+            --glass: rgba(10, 0, 10, 0.85);
+        }
+
+        /* --- GLOBAL EFFECTS --- */
+        .scanlines {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 900;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
+            background-size: 100% 4px; opacity: 0.15;
+        }
+        .starfield {
+            position: fixed; top: -50%; left: -50%; width: 200%; height: 200%; z-index: 0;
+            background-image: 
+                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
+                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px),
+                radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 3px);
+            background-size: 550px 550px, 350px 350px, 250px 250px;
+            background-position: 0 0, 40px 60px, 130px 270px;
+        }
 
         /* --- 1. START SCREEN --- */
-        #layer-start { position: fixed; inset: 0; z-index: 9999; background: #000; display: flex; justify-content: center; align-items: center; }
+        #layer-start { position: fixed; inset: 0; z-index: 1000; background: #000; display: flex; justify-content: center; align-items: center; }
         .btn-init {
-            border: 2px solid var(--pink); color: var(--pink); background: rgba(255,0,60,0.1);
-            padding: 20px 50px; font-family: 'Orbitron'; font-size: 1.5rem; letter-spacing: 4px;
-            cursor: pointer; box-shadow: 0 0 30px var(--pink);
+            border: 2px solid var(--neon); color: var(--neon); background: rgba(255,0,255,0.1);
+            padding: 20px 60px; font-family: 'Orbitron'; font-size: 1.5rem; letter-spacing: 4px;
+            cursor: pointer; box-shadow: 0 0 30px var(--neon);
             clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
+            transition: 0.3s;
         }
+        .btn-init:hover { background: var(--neon); color: #000; box-shadow: 0 0 60px var(--neon); }
 
-        /* --- 2. INTRO UI (RED) --- */
-        #layer-intro { position: fixed; inset: 0; z-index: 100; display: none; background: #020000; }
+        /* --- 2. INTRO HUD (RED/PINK BASE) --- */
+        #layer-intro { position: fixed; inset: 0; z-index: 100; display: none; }
+        .frame-border { position: absolute; background: var(--neon); box-shadow: 0 0 15px var(--neon); }
+        .h-top { top: 30px; left: 5%; width: 90%; height: 3px; } .h-bot { bottom: 30px; left: 5%; width: 90%; height: 3px; }
+        .corner { position: absolute; width: 60px; height: 60px; border: 4px solid var(--neon); box-shadow: 0 0 15px var(--neon); }
+        .tl { top: 30px; left: 30px; border-right: 0; border-bottom: 0; } .tr { top: 30px; right: 30px; border-left: 0; border-bottom: 0; }
+        .bl { bottom: 30px; left: 30px; border-right: 0; border-top: 0; } .br { bottom: 30px; right: 30px; border-left: 0; border-top: 0; }
+
+        .intro-grid { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; height: 600px; display: grid; grid-template-columns: 350px 1fr; gap: 50px; }
+        .p-left { padding: 25px; background: rgba(20,0,20,0.8); border: 1px solid var(--neon); display: flex; flex-direction: column; }
+        .box-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; height: 160px; margin-top: 20px; }
+        .box { border: 1px solid var(--neon); background: rgba(50,0,50,0.3); }
+        .b-cut { clip-path: polygon(0 0, 100% 0, 100% 80%, 80% 100%, 0 100%); }
         
-        /* Grid BG */
-        .bg-grid {
-            position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: linear-gradient(rgba(255, 0, 60, 0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 0, 60, 0.15) 1px, transparent 1px);
-            background-size: 60px 60px; transform: perspective(500px) rotateX(60deg);
-            animation: gridMove 3s linear infinite; z-index: 0;
-        }
-        @keyframes gridMove { 0% { transform: perspective(500px) rotateX(60deg) translateY(0); } 100% { transform: perspective(500px) rotateX(60deg) translateY(60px); } }
-
-        /* Layout */
-        .intro-container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; height: 600px; display: grid; grid-template-columns: 350px 1fr; gap: 50px; z-index: 10; }
-        
-        /* Left Panel */
-        .p-left { border: 1px solid var(--pink); background: rgba(10,0,0,0.8); padding: 20px; display: flex; flex-direction: column; }
-        .sys-head { font-family: 'Orbitron'; color: var(--pink); border-bottom: 2px solid var(--pink); margin-bottom: 10px; font-size: 1.2rem; }
-        .sys-log { color: #ff99aa; font-size: 0.8rem; line-height: 1.5; margin-bottom: 20px; }
-        .box-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; height: 150px; margin-bottom: 20px; }
-        .box { border: 1px solid var(--pink); background: rgba(50,0,0,0.3); }
-        .b1 { clip-path: polygon(0 0, 100% 0, 100% 80%, 80% 100%, 0 100%); }
-        .b2 { clip-path: polygon(0 0, 100% 0, 100% 100%, 20% 100%, 0 80%); }
-        .b3 { clip-path: polygon(0 0, 80% 0, 100% 20%, 100% 100%, 0 100%); }
-        .b4 { clip-path: polygon(20% 0, 100% 0, 100% 100%, 0 100%, 0 20%); }
-        .gauges { display: flex; gap: 20px; }
-        .gauge { width: 60px; height: 60px; border-radius: 50%; border: 1px solid var(--pink); display: flex; justify-content: center; align-items: center; font-size: 0.8rem; }
-
-        /* Right Panel */
         .p-right { display: flex; justify-content: center; align-items: center; position: relative; }
-        .reactor-ring { position: absolute; width: 450px; height: 450px; border: 2px solid var(--pink); border-radius: 50%; border-left-color: transparent; border-right-color: transparent; animation: spin 10s linear infinite; }
-        .reactor-core { width: 300px; height: 300px; background: #000; border: 4px solid var(--pink); border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: 0 0 50px var(--pink); z-index: 20; }
-
-        /* Interactions */
-        .status { font-family: 'Orbitron'; font-size: 1.4rem; text-shadow: 0 0 10px var(--pink); text-align: center; }
-        .btn-conn { margin-top: 20px; background: transparent; border: 1px solid #fff; color: #fff; padding: 10px 30px; font-family: 'Orbitron'; cursor: pointer; }
+        .r-outer { position: absolute; width: 450px; height: 450px; border: 2px solid var(--neon); border-radius: 50%; animation: spin 10s linear infinite; }
+        .r-core { width: 300px; height: 300px; background: #000; border: 4px solid var(--neon); border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: 0 0 50px var(--neon); position: relative; z-index: 10; }
         
-        .scan-box { width: 100px; height: 140px; border: 2px solid var(--pink); border-radius: 20px; margin-top: 15px; position: relative; overflow: hidden; cursor: pointer; }
-        .finger { width: 100%; height: 100%; background: url('https://img.icons8.com/ios/100/ff003c/fingerprint.png') center/60% no-repeat; opacity: 0.7; }
-        .beam { position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: #fff; box-shadow: 0 0 15px #fff; animation: scanAnim 1s linear infinite; display: none; }
-        @keyframes scanAnim { 0% { top: 0; } 100% { top: 100%; } }
+        .status-txt { font-family: 'Orbitron'; font-size: 1.4rem; color: #fff; text-shadow: 0 0 10px var(--neon); text-align: center; }
+        .scan-pad { width: 90px; height: 130px; border: 2px solid var(--neon); border-radius: 15px; margin-top: 10px; cursor: pointer; position: relative; overflow: hidden; }
+        .scan-line { position: absolute; width: 100%; height: 4px; background: #fff; box-shadow: 0 0 15px #fff; animation: scanDown 1.5s linear infinite; display: none; }
 
-        /* --- 3. INTERMEDIATE LOADING (TILTED CARD) --- */
-        #layer-load {
-            position: fixed; inset: 0; background: #000; z-index: 200; display: none;
-            justify-content: center; align-items: center; perspective: 1000px;
-        }
-        .tilt-card {
-            width: 500px; padding: 40px; background: rgba(10,0,0,0.9); border: 2px solid var(--pink);
-            transform: rotateX(40deg) scale(0.9); box-shadow: 0 50px 80px rgba(255,0,60,0.2);
-            text-align: center; position: relative;
-        }
-        .load-bar { width: 100%; height: 10px; background: #300; margin-top: 20px; }
-        .load-fill { width: 0%; height: 100%; background: var(--pink); transition: width 3s linear; }
+        /* --- 3. LOADING (TILTED) --- */
+        #layer-loading { position: fixed; inset: 0; background: #000; z-index: 200; display: none; justify-content: center; align-items: center; perspective: 1000px; }
+        .tilt-card { width: 500px; padding: 40px; background: rgba(20,0,20,0.95); border: 2px solid var(--neon); transform: rotateX(40deg); box-shadow: 0 50px 100px rgba(255,0,255,0.3); text-align: center; }
+        .load-bar { width: 100%; height: 10px; background: #303; margin-top: 20px; }
+        .load-fill { width: 0%; height: 100%; background: var(--neon); transition: width 3s linear; }
 
-        /* --- 4. MAIN DASHBOARD (EXACT LAYOUT) --- */
-        #layer-main {
-            position: fixed; inset: 0; background: #000; z-index: 50; display: none;
-            /* Build Animation Container */
-            transform-origin: center; transition: transform 1s ease-out;
-        }
-        /* The Layout Grid (Blue Image Replica) */
-        .dash-grid {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 95%; height: 90%;
-            display: grid; 
-            grid-template-columns: 350px 1fr 400px;
-            grid-template-rows: 250px 1fr 200px;
-            gap: 20px;
-        }
-
-        /* Modules */
-        .mod { border: 2px solid var(--pink); background: rgba(10,0,0,0.5); position: relative; opacity: 0; } /* Hidden initially for build-up */
+        /* --- 4. MAIN DASHBOARD (ADVANCED HUD) --- */
+        #layer-main { position: fixed; inset: 0; z-index: 50; display: none; background: transparent; }
         
-        /* 1. Globe (Top Left) */
-        .m-globe { grid-column: 1; grid-row: 1; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-        .globe-wire { width: 180px; height: 180px; border-radius: 50%; border: 1px solid rgba(255,0,60,0.3); background: repeating-linear-gradient(90deg, transparent 0, transparent 20px, var(--dim) 20px, var(--dim) 21px); animation: spin 20s linear infinite; }
+        .main-frame { position: absolute; inset: 25px; border: 3px solid var(--neon); box-shadow: 0 0 30px var(--neon), inset 0 0 20px var(--neon); display: none; }
+        .dash-layout { display: grid; width: 100%; height: 100%; grid-template-columns: 350px 1fr 350px; grid-template-rows: 280px 1fr 250px; gap: 20px; padding: 40px; }
 
-        /* 2. Center Rings (Middle) */
-        .m-center { grid-column: 2; grid-row: 1 / span 2; border: none; background: transparent; display: flex; justify-content: center; align-items: center; position: relative; }
-        .c-ring1 { width: 500px; height: 500px; border: 2px dashed var(--dim); border-radius: 50%; position: absolute; animation: spin 40s linear infinite; }
-        .c-ring2 { width: 350px; height: 350px; border: 15px solid rgba(255,0,60,0.1); border-top: 15px solid var(--pink); border-radius: 50%; position: absolute; animation: spinRev 5s linear infinite; }
-        .c-ring3 { width: 200px; height: 200px; border: 2px solid #fff; border-radius: 50%; position: absolute; box-shadow: 0 0 50px var(--pink); }
+        /* Generic Module Style */
+        .mod { border: 2px solid var(--neon); background: var(--glass); position: relative; opacity: 0; transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); box-shadow: 0 0 15px rgba(255,0,255,0.2); }
+        .mod::before, .mod::after { content: ''; position: absolute; width: 10px; height: 10px; border-color: #fff; border-style: solid; }
+        .mod::before { top: -2px; left: -2px; border-width: 2px 0 0 2px; }
+        .mod::after { bottom: -2px; right: -2px; border-width: 0 2px 2px 0; }
+        
+        /* Focus Animation State */
+        .mod.focused { opacity: 1; transform: scale(1); filter: blur(0); }
+        .mod.zoom-init { transform: scale(2); filter: blur(10px); }
 
-        /* 3. Pyramid (Top Right) */
-        .m-pyramid { grid-column: 3; grid-row: 1; overflow: hidden; position: relative; }
-        .pyramid-grid { position: absolute; top: 50%; left: 50%; width: 300px; height: 300px; background: linear-gradient(var(--pink) 1px, transparent 1px), linear-gradient(90deg, var(--pink) 1px, transparent 1px); background-size: 20px 20px; transform: translate(-50%, -50%) rotateX(60deg) rotateZ(45deg); animation: panGrid 2s linear infinite; }
-        @keyframes panGrid { 0% { background-position: 0 0; } 100% { background-position: 20px 20px; } }
+        /* --- TOP LEFT: 3D GLOBE --- */
+        .m-globe { grid-column: 1; grid-row: 1; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .globe-wire {
+            width: 180px; height: 180px; border-radius: 50%;
+            border: 1px solid rgba(255,0,255,0.5);
+            background: repeating-linear-gradient(90deg, transparent 0, transparent 20px, rgba(255,0,255,0.2) 20px, rgba(255,0,255,0.2) 21px),
+                        repeating-linear-gradient(0deg, transparent 0, transparent 20px, rgba(255,0,255,0.2) 20px, rgba(255,0,255,0.2) 21px);
+            background-size: 200% 100%;
+            animation: globeSpin 10s linear infinite;
+            box-shadow: inset 0 0 40px var(--neon);
+        }
+        .globe-tag { font-family: 'Orbitron'; font-size: 0.8rem; margin-top: 10px; color: var(--neon); }
 
-        /* 4. Left Stats (Middle Left) */
-        .m-stats-l { grid-column: 1; grid-row: 2; padding: 20px; }
-        .bar-wrap { display: flex; justify-content: space-between; align-items: flex-end; height: 100px; margin-top: 20px; }
-        .v-bar { width: 15px; background: var(--pink); animation: eq 0.5s infinite alternate; }
+        /* --- TOP RIGHT: ISOMETRIC GRID --- */
+        .m-iso { grid-column: 3; grid-row: 1; overflow: hidden; position: relative; }
+        .iso-grid {
+            position: absolute; top: 50%; left: 50%; width: 400px; height: 400px;
+            background: linear-gradient(var(--neon) 1px, transparent 1px), linear-gradient(90deg, var(--neon) 1px, transparent 1px);
+            background-size: 30px 30px;
+            transform: translate(-50%, -50%) rotateX(60deg) rotateZ(45deg);
+            animation: waveGrid 4s linear infinite;
+        }
 
-        /* 5. Right Text (Middle Right) */
-        .m-text-r { grid-column: 3; grid-row: 2; padding: 20px; font-size: 0.7rem; color: #ff99aa; line-height: 1.6; }
+        /* --- CENTER: REACTOR CORE (6 RINGS) --- */
+        .m-core { grid-column: 2; grid-row: 1 / span 3; border: none; background: transparent; display: flex; justify-content: center; align-items: center; position: relative; }
+        .ring { position: absolute; border-radius: 50%; border: 2px solid var(--neon); box-shadow: 0 0 10px var(--neon); display: flex; justify-content: center; align-items: center; }
+        /* Ring Configs */
+        .r1 { width: 550px; height: 550px; border: 2px dashed rgba(255,0,255,0.3); animation: spin 40s linear infinite; }
+        .r2 { width: 480px; height: 480px; border-width: 5px; border-left-color: transparent; border-right-color: transparent; animation: spinRev 15s linear infinite; }
+        .r3 { width: 400px; height: 400px; border: 1px dotted #fff; animation: spin 20s linear infinite; }
+        .r4 { width: 320px; height: 320px; border: 10px solid rgba(255,0,255,0.1); border-top: 10px solid var(--neon); animation: spinRev 5s linear infinite; }
+        .r5 { width: 200px; height: 200px; background: rgba(255,0,255,0.1); border: 2px solid #fff; box-shadow: 0 0 60px var(--neon); animation: pulse 2s infinite; }
+        .core-text { font-family: 'Orbitron'; font-weight: 900; font-size: 1.5rem; text-shadow: 0 0 20px var(--neon); }
 
-        /* 6. Bottom Radar (Bottom Right) */
-        .m-radar { grid-column: 3; grid-row: 3; position: relative; overflow: hidden; }
-        .radar-line { position: absolute; width: 50%; height: 2px; background: #fff; top: 50%; left: 50%; transform-origin: 0 0; animation: spin 2s linear infinite; }
+        /* --- BOTTOM LEFT: BIO STATS --- */
+        .m-bio { grid-column: 1; grid-row: 2 / span 2; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .bio-row { display: flex; justify-content: space-between; border-bottom: 1px dashed rgba(255,0,255,0.3); padding-bottom: 5px; }
+        .bio-lbl { color: #ff99ff; font-size: 0.8rem; }
+        .bio-val { color: #fff; font-weight: bold; text-align: right; text-shadow: 0 0 5px var(--neon); }
+        .bio-img { width: 100%; height: 100px; border: 1px solid var(--neon); background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,0,255,0.1) 10px, rgba(255,0,255,0.1) 20px); margin-bottom: 10px; display: flex; justify-content: center; align-items: center; }
 
-        /* 7. Bottom Left Panel */
-        .m-bot-l { grid-column: 1; grid-row: 3; padding: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.8rem; }
+        /* --- BOTTOM RIGHT: TERMINAL --- */
+        .m-term { grid-column: 3; grid-row: 2 / span 2; padding: 15px; font-family: 'Share Tech Mono'; font-size: 0.7rem; color: #ffccff; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; }
+        .term-line { margin-bottom: 2px; }
 
-        /* --- BUILD ANIMATION CLASSES --- */
-        .zoomed-focus { transform: scale(3); filter: blur(5px); opacity: 0; transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
-        .in-view { transform: scale(1); filter: blur(0); opacity: 1; }
+        /* --- GLITCH EFFECT --- */
+        .mod:hover { animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite; border-color: #fff; }
+        @keyframes glitch { 
+            0% { transform: translate(0); } 
+            20% { transform: translate(-2px, 2px); } 
+            40% { transform: translate(-2px, -2px); } 
+            60% { transform: translate(2px, 2px); } 
+            80% { transform: translate(2px, -2px); } 
+            100% { transform: translate(0); } 
+        }
 
-        /* Granted State */
-        .granted .status { color: #0f0; text-shadow: 0 0 20px #0f0; }
-        .granted .scan-box { border-color: #0f0; box-shadow: 0 0 20px #0f0; }
-        .granted .beam { background: #0f0; box-shadow: 0 0 15px #0f0; }
-
+        /* --- ANIMATIONS --- */
         @keyframes spin { 100% { transform: rotate(360deg); } }
         @keyframes spinRev { 100% { transform: rotate(-360deg); } }
-        @keyframes eq { 0% { height: 20%; } 100% { height: 90%; } }
-        @keyframes shake { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -1px); } 100% { transform: translate(1px, -1px); } }
+        @keyframes globeSpin { 0% { background-position: 0 0; } 100% { background-position: 200% 0; } }
+        @keyframes waveGrid { 0% { background-position: 0 0; } 100% { background-position: 30px 30px; } }
+        @keyframes scanDown { 0% { top: 0; } 100% { top: 100%; } }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.05); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes flashWhite { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
+
+        /* Whiteout Layer */
+        #flashLayer { position: fixed; inset: 0; background: #fff; z-index: 999; display: none; pointer-events: none; }
 
     </style>
 </head>
 <body>
 
+    <div class="scanlines"></div>
+    <div class="starfield" id="stars"></div>
+
     <div id="layer-start"><button class="btn-init" onclick="initSys()">INITIALIZE SYSTEM</button></div>
 
-    <audio id="sndAlert" src="alert.mp3" preload="auto"></audio>
-    <audio id="sndScan" src="scan.mp3" preload="auto" loop></audio>
-    <audio id="sndGrant" src="granted.mp3" preload="auto"></audio>
+    <audio id="sAlert" src="alert.mp3" preload="auto"></audio>
+    <audio id="sScan" src="scan.mp3" preload="auto" loop></audio>
+    <audio id="sGrant" src="granted.mp3" preload="auto"></audio>
 
     <div id="layer-intro">
-        <div class="bg-grid"></div>
-        <div class="intro-container">
+        <div class="frame-border h-top"></div><div class="frame-border h-bot"></div>
+        <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+        <div class="intro-grid">
             <div class="p-left">
-                <div class="sys-head">SYSTEM_LOG</div>
-                <div class="sys-log">> MEM_ALLOC: 98%<br>> ENCRYPTION: 256-BIT<br>> PROXY: REROUTED</div>
-                <div class="box-grid"><div class="box b1"></div><div class="box b2"></div><div class="box b3"></div><div class="box b4"></div></div>
-                <div class="gauges"><div class="gauge">CPU</div><div class="gauge">RAM</div></div>
+                <div style="font-family:'Orbitron'; color:var(--neon); border-bottom:2px solid var(--neon);">SYSTEM_LOG</div>
+                <div class="box-grid"><div class="box b-cut"></div><div class="box b-cut"></div><div class="box b-cut"></div><div class="box b-cut"></div></div>
             </div>
             <div class="p-right">
-                <div class="reactor-ring"></div>
-                <div class="reactor-core">
-                    <div id="ph1"><div class="status" id="seqText">SYSTEM STARTUP</div></div>
-                    <div id="ph2" style="display:none; text-align:center;"><div class="status" style="font-size:1rem;">SERVER READY</div><button class="btn-conn" onclick="deny()" style="margin-top:15px; background:transparent; border:1px solid #fff; color:#fff; padding:10px 30px; font-family:'Orbitron'; cursor:pointer;">CONNECT</button></div>
-                    <div id="ph3" style="display:none; color:red; text-align:center; animation:shake 0.5s infinite;"><div class="status" style="color:red;">ACCESS DENIED</div><div style="font-size:0.8rem; margin-top:5px;">PROTECTED BY AYUSH</div></div>
+                <div class="r-outer"></div>
+                <div class="r-core">
+                    <div id="ph1" class="status-txt">SYSTEM STARTUP</div>
+                    <div id="ph2" style="display:none;"><button class="btn-init" style="font-size:1rem; padding:10px 30px;" onclick="deny()">CONNECT</button></div>
+                    <div id="ph3" style="display:none; color:red; text-align:center;">ACCESS DENIED<br><small>BIOMETRICS REQUIRED</small></div>
                     <div id="ph4" style="display:none; flex-direction:column; align-items:center;">
-                        <div class="scan-box" id="scanBtn"><div class="finger"></div><div class="beam" id="scanBeam"></div></div>
-                        <div class="status" style="font-size:0.8rem; margin-top:10px;">HOLD TO VERIFY</div>
+                        <div class="scan-pad" id="scanBtn"><div class="scan-line" id="scanLine"></div></div>
+                        <div style="font-size:0.8rem; margin-top:5px;">HOLD TO VERIFY</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="layer-load">
+    <div id="layer-loading">
         <div class="tilt-card">
-            <div style="font-family:'Orbitron'; font-size:1.5rem; color:#fff;">USER: VIOLINA</div>
-            <div style="font-family:'Share Tech Mono'; color:var(--pink); margin-bottom:20px;">SCAN RETINA...</div>
+            <div style="font-family:'Orbitron'; font-size:1.5rem;">USER: VIOLINA</div>
+            <div style="color:var(--neon);">AUTHENTICATING...</div>
             <div class="load-bar"><div class="load-fill" id="progBar"></div></div>
         </div>
     </div>
 
     <div id="layer-main">
-        <div class="dash-grid" id="mainGrid">
-            
-            <div class="mod m-globe zoomed-focus" id="m1">
-                <div class="globe-wire"></div>
-            </div>
-
-            <div class="mod m-pyramid zoomed-focus" id="m2">
-                <div class="pyramid-grid"></div>
-            </div>
-
-            <div class="mod m-center zoomed-focus" id="m3">
-                <div class="c-ring1"></div><div class="c-ring2"></div><div class="c-ring3"></div>
-            </div>
-
-            <div class="mod m-stats-l zoomed-focus" id="m4">
-                <div style="font-family:'Orbitron'; border-bottom:1px solid var(--pink);">VITALS</div>
-                <div class="bar-wrap">
-                    <div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div>
+        <div class="main-frame" id="mainFrame">
+            <div class="dash-layout">
+                
+                <div class="mod m-globe zoom-init" id="m1">
+                    <div class="globe-wire"></div>
+                    <div class="globe-tag">TARGET: LOCALIZED</div>
                 </div>
-            </div>
 
-            <div class="mod m-text-r zoomed-focus" id="m5">
-                LOREM DATA STREAM...<br>ANALYZING SECTORS...<br>GRID SECURE.
-            </div>
-
-            <div class="mod m-radar zoomed-focus" id="m6">
-                <div style="border-radius:50%; border:1px solid var(--pink); width:100%; height:100%; position:relative;">
-                    <div class="radar-line"></div>
+                <div class="mod m-iso zoom-init" id="m2">
+                    <div class="iso-grid"></div>
                 </div>
-            </div>
 
-            <div class="mod m-bot-l zoomed-focus" id="m7">
-                <div>SYS: ONLINE</div><div>NET: SECURE</div>
-            </div>
+                <div class="m-core zoom-init" id="m3">
+                    <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
+                    <div class="ring r4"></div><div class="ring r5"></div>
+                    <div style="position:absolute; text-align:center;">
+                        <div class="core-text">CORE</div>
+                        <div style="font-size:0.8rem; letter-spacing:2px;">ONLINE</div>
+                    </div>
+                </div>
 
+                <div class="mod m-bio zoom-init" id="m4">
+                    <div style="font-family:'Orbitron'; color:var(--neon); border-bottom:1px solid var(--neon); margin-bottom:10px;">BIO-METRICS</div>
+                    <div class="bio-img">ID: 948-VS</div>
+                    <div class="bio-row"><span class="bio-lbl">NAME</span><span class="bio-val">VIOLINA SHARMA</span></div>
+                    <div class="bio-row"><span class="bio-lbl">EYES</span><span class="bio-val">DEEP ESPRESSO</span></div>
+                    <div class="bio-row"><span class="bio-lbl">HAIR</span><span class="bio-val">BLACK</span></div>
+                    <div class="bio-row"><span class="bio-lbl">SHOE</span><span class="bio-val">7 (UK)</span></div>
+                    <div class="bio-row"><span class="bio-lbl">ZODIAC</span><span class="bio-val">TAURUS</span></div>
+                    <div class="bio-row"><span class="bio-lbl">GLASSES</span><span class="bio-val">ENABLED</span></div>
+                    <div class="bio-row"><span class="bio-lbl">HAND</span><span class="bio-val">RIGHT</span></div>
+                </div>
+
+                <div class="mod m-term zoom-init" id="m5">
+                    <div id="termContent"></div>
+                </div>
+
+            </div>
         </div>
     </div>
 
+    <div id="flashLayer"></div>
+
     <script>
-        const audio = { alert: document.getElementById('sndAlert'), scan: document.getElementById('sndScan'), grant: document.getElementById('sndGrant') };
+        const audio = { alert: document.getElementById('sAlert'), scan: document.getElementById('sScan'), grant: document.getElementById('sGrant') };
+
+        // Parallax
+        document.addEventListener('mousemove', (e) => {
+            const x = (window.innerWidth - e.pageX * 2) / 100;
+            const y = (window.innerHeight - e.pageY * 2) / 100;
+            document.getElementById('stars').style.transform = `translate(${x}px, ${y}px)`;
+        });
 
         function initSys() {
             document.getElementById('layer-start').style.display='none';
@@ -238,86 +266,76 @@
             audio.scan.play().catch(()=>{}); audio.scan.pause();
             audio.grant.play().catch(()=>{}); audio.grant.pause();
             
-            const txt = document.getElementById('seqText');
-            // Full Sequence RESTORED
-            const seq = ["SYSTEM STARTUP", "INITIALIZING...", "HEY!", "WELCOME", "LOADING...", "DECRYPTING", "BYPASSING", "TRYING", "SERVER READY"];
+            const txt = document.getElementById('ph1').firstElementChild;
+            const seq = ["SYSTEM STARTUP", "INITIALIZING...", "HEY!", "WELCOME", "DECRYPTING...", "SERVER READY"];
             let i=0;
             const t = setInterval(()=>{
                 if(i>=seq.length){ clearInterval(t); document.getElementById('ph1').style.display='none'; document.getElementById('ph2').style.display='block'; }
                 else { txt.innerText = seq[i]; i++; }
-            }, 800); // 800ms per text (Readable)
+            }, 800);
         }
 
         function deny() {
-            document.getElementById('ph2').style.display='none';
-            document.getElementById('ph3').style.display='block';
+            document.getElementById('ph2').style.display='none'; document.getElementById('ph3').style.display='block';
             audio.alert.currentTime=0; audio.alert.play();
-            setTimeout(()=>{
-                document.getElementById('ph3').style.display='none';
-                document.getElementById('ph4').style.display='flex';
-            }, 3000);
+            setTimeout(()=>{ document.getElementById('ph3').style.display='none'; document.getElementById('ph4').style.display='flex'; }, 2000);
         }
 
         const btn = document.getElementById('scanBtn');
-        const beam = document.getElementById('scanBeam');
         let timer;
+        btn.onmousedown = () => { document.getElementById('scanLine').style.display='block'; audio.scan.currentTime=0; audio.scan.play(); timer = setTimeout(grant, 2000); };
+        btn.onmouseup = () => { clearTimeout(timer); document.getElementById('scanLine').style.display='none'; audio.scan.pause(); };
+        btn.ontouchstart = btn.onmousedown; btn.ontouchend = btn.onmouseup;
 
-        btn.onmousedown = () => {
-            beam.style.display='block'; audio.scan.currentTime=0; audio.scan.play();
-            timer = setTimeout(granted, 2000);
-        };
-        btn.onmouseup = () => { clearTimeout(timer); beam.style.display='none'; audio.scan.pause(); };
-        btn.ontouchstart = btn.onmousedown;
-        btn.ontouchend = btn.onmouseup;
-
-        function granted() {
+        function grant() {
             audio.scan.pause(); audio.grant.play();
-            document.body.classList.add('granted');
             
-            // Go to Loading
+            // Whiteout Shockwave
+            const flash = document.getElementById('flashLayer');
+            flash.style.display = 'block';
+            flash.style.animation = 'flashWhite 1s forwards';
+
             setTimeout(() => {
                 document.getElementById('layer-intro').style.display='none';
-                document.getElementById('layer-load').style.display='flex';
+                document.getElementById('layer-loading').style.display='flex';
                 
+                // Loading Bar
                 setTimeout(() => {
-                    document.getElementById('progBar').style.width='100%';
-                    
-                    // BUILD MAIN PAGE
-                    setTimeout(() => {
-                        document.getElementById('layer-load').style.display='none';
-                        document.getElementById('layer-main').style.display='block';
-                        runBuildSequence();
-                    }, 3000);
+                    document.getElementById('progBar').style.width = '100%';
+                    setTimeout(revealMain, 3000);
                 }, 500);
-            }, 1000);
+            }, 500);
         }
 
-        function runBuildSequence() {
-            const layer = document.getElementById('layer-main');
-            // Initial State: Zoomed way in on center
-            layer.style.transformOrigin = "50% 50%";
-            layer.style.transform = "scale(2)"; 
+        function revealMain() {
+            document.getElementById('layer-loading').style.display='none';
+            document.getElementById('layer-main').style.display='block';
+            document.getElementById('mainFrame').style.display='block';
             
-            const order = ['m3', 'm1', 'm2', 'm4', 'm5', 'm6', 'm7']; // Center -> Globe -> Pyramid -> Others
-            
-            order.forEach((id, idx) => {
+            // Sequence: Core -> Globe -> Grid -> Bio -> Terminal
+            const ids = ['m3', 'm1', 'm2', 'm4', 'm5'];
+            ids.forEach((id, i) => {
                 setTimeout(() => {
-                    const el = document.getElementById(id);
-                    el.classList.add('in-view'); // Removes blur/scale on element
-                    
-                    // Camera Movement Logic
-                    if(id === 'm3') layer.style.transformOrigin = "50% 50%"; // Center
-                    if(id === 'm1') layer.style.transformOrigin = "10% 10%"; // Top Left
-                    if(id === 'm2') layer.style.transformOrigin = "90% 10%"; // Top Right
-                    
-                }, idx * 800);
+                    document.getElementById(id).classList.add('focused');
+                }, i * 600);
             });
+            
+            startTerminal();
+        }
 
-            // Final Zoom Out to show full dashboard
-            setTimeout(() => {
-                layer.style.transition = "transform 1.5s ease-out";
-                layer.style.transform = "scale(1)";
-            }, order.length * 800 + 500);
+        function startTerminal() {
+            const term = document.getElementById('termContent');
+            const lines = ["Connecting...", "Decrypting Bio-Data...", "Target: V. Sharma", "Access Level: MAX", "Protocol 7 Initiated...", "Rendering Graphics...", "System Stable."];
+            let i=0;
+            setInterval(() => {
+                if(i < lines.length) {
+                    term.innerHTML += `<div class="term-line">> ${lines[i]}</div>`;
+                    i++;
+                } else {
+                    term.innerHTML += `<div class="term-line">> ${Math.random().toString(16).substr(2, 8)}...</div>`;
+                    term.scrollTop = term.scrollHeight;
+                }
+            }, 500);
         }
     </script>
 </body>
