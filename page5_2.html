@@ -3,237 +3,283 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Main Database | V.SHARMA</title>
-    
+    <title>VIOLINA DATABASE | MAIN CORE</title>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
-    
     <style>
-        /* --- CORE RESET & THEME --- */
+        /* --- CORE --- */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             background-color: #000; color: #fff;
             font-family: 'Share Tech Mono', monospace;
-            overflow: hidden; height: 100vh; user-select: none;
-            perspective: 1500px; /* For 3D effects */
+            overflow: hidden; height: 100vh; width: 100vw;
+            perspective: 1000px;
         }
 
         :root {
             --pink: #ff003c;
-            --dim-pink: rgba(255, 0, 60, 0.3);
-            --glass: rgba(20, 0, 5, 0.9);
+            --dim: rgba(255, 0, 60, 0.2);
+            --bg: rgba(10, 0, 5, 0.6);
         }
 
-        /* --- GLOBAL ATMOSPHERE --- */
-        #bg-scanlines {
-            position: fixed; inset: 0; pointer-events: none; z-index: 1;
-            background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 51%);
-            background-size: 100% 4px; opacity: 0.2;
-        }
-        #bg-vignette {
-            position: fixed; inset: 0; pointer-events: none; z-index: 2;
-            background: radial-gradient(circle at center, transparent 40%, #000 100%);
+        /* --- BACKGROUND --- */
+        .bg-grid {
+            position: absolute; inset: 0; z-index: -1; opacity: 0.15;
+            background-image: 
+                linear-gradient(var(--pink) 1px, transparent 1px),
+                linear-gradient(90deg, var(--pink) 1px, transparent 1px);
+            background-size: 40px 40px;
         }
 
-        /* --- MAIN LAYOUT CONTAINER --- */
-        #main-container {
-            position: fixed; inset: 20px; z-index: 10;
+        /* --- LAYOUT GRID --- */
+        .main-container {
+            position: absolute; inset: 20px;
             display: grid;
-            grid-template-columns: 300px 1fr 300px; /* Left, Center, Right */
-            grid-template-rows: 60px 1fr 150px; /* Top, Middle, Bottom */
+            grid-template-columns: 300px 1fr 350px;
+            grid-template-rows: 250px 1fr 200px;
             gap: 15px;
             padding: 20px;
         }
 
-        /* --- THE OUTER FRAME (Appears First) --- */
-        #outer-frame {
-            position: absolute; inset: 0;
-            border: 2px solid var(--pink);
-            box-shadow: 0 0 30px var(--dim-pink), inset 0 0 20px var(--dim-pink);
-            opacity: 0; transition: opacity 2s ease-in;
-            pointer-events: none;
+        /* --- THE 11 MODULES --- */
+        
+        /* 1. MAIN FRAME */
+        .frame-border {
+            position: absolute; inset: 0; pointer-events: none;
+            border: 4px solid var(--pink);
+            box-shadow: 0 0 30px var(--dim);
+            /* Cut corners using clip-path */
+            clip-path: polygon(
+                0 10%, 10% 0, 90% 0, 100% 10%, 
+                100% 90%, 90% 100%, 10% 100%, 0 90%
+            );
+            z-index: 10;
         }
-        /* Micro-details on frame */
-        #outer-frame::before { content: 'SECURE COMMS // ESTABLISHED'; position: absolute; top: -12px; left: 20px; font-size: 0.7rem; color: var(--pink); background: #000; padding: 0 10px; }
-        #outer-frame::after { content: 'v5.2.1'; position: absolute; bottom: -12px; right: 20px; font-size: 0.7rem; color: var(--pink); background: #000; padding: 0 10px; }
 
-
-        /* --- GENERIC MODULE STYLING --- */
-        .module {
-            background: var(--glass);
-            border: 1px solid var(--pink);
+        /* COMMON MODULE STYLE */
+        .ui-part {
             position: relative;
-            display: flex; flex-direction: column;
-            padding: 15px;
-            box-shadow: 0 0 15px var(--dim-pink);
-            
-            /* INITIAL STATE FOR ANIMATION (Hidden & Zoomed) */
-            opacity: 0;
-            transform: scale(1.5) translateZ(100px); /* Zoomed out and pushed back */
+            background: var(--bg);
+            border: 1px solid var(--pink);
+            box-shadow: 0 0 10px var(--dim);
+            opacity: 0; /* Hidden initially */
+            transform: scale(2.5) translateZ(100px); /* Zoomed IN initially */
             filter: blur(10px);
-            /* Slow, smooth transition for the "settling" effect */
-            transition: all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
-
-        /* FINAL STATE (Applied by JS) */
-        .module.initialized {
+        
+        /* Animation State */
+        .ui-part.visible {
             opacity: 1;
             transform: scale(1) translateZ(0);
             filter: blur(0);
         }
 
-        /* Module Micro-details (Corner brackets, etc.) */
-        .module::before, .module::after { content: ''; position: absolute; width: 10px; height: 10px; border-color: var(--pink); }
-        .module::before { top: -1px; left: -1px; border-top: 2px solid; border-left: 2px solid; }
-        .module::after { bottom: -1px; right: -1px; border-bottom: 2px solid; border-right: 2px solid; }
-        .mod-label { position: absolute; top: -8px; right: 10px; font-size: 0.6rem; color: var(--pink); background: #000; padding: 0 5px; letter-spacing: 1px; }
-
-        /* --- SPECIFIC MODULE PLACEMENT & PLACEHOLDER CONTENT --- */
+        /* --- LEFT COLUMN --- */
         
-        /* Top Bar */
-        #mod-top { grid-column: 1 / span 3; grid-row: 1; flex-direction: row; justify-content: space-between; align-items: center; }
-        
-        /* Left Sidebar */
-        #mod-left { grid-column: 1; grid-row: 2; }
-        
-        /* Center Core Complex */
-        #mod-center { grid-column: 2; grid-row: 2; justify-content: center; align-items: center; border: none; background: transparent; box-shadow: none; }
-        /* Placeholder for complex rings */
-        .ring-placeholder { position: absolute; border: 2px solid var(--pink); border-radius: 50%; box-shadow: 0 0 20px var(--dim-pink); animation: spin 20s linear infinite; }
-        .rp1 { width: 300px; height: 300px; border-style: dashed; }
-        .rp2 { width: 200px; height: 200px; border-width: 4px; border-left-color: transparent; border-right-color: transparent; animation-direction: reverse; animation-duration: 10s; }
-        .rp3 { width: 100px; height: 100px; background: var(--dim-pink); }
+        /* 2. GLOBE (Top Left) */
+        #part-globe { 
+            grid-column: 1; grid-row: 1; 
+            border-radius: 20px 0 0 0; border: none; background: transparent; box-shadow: none;
+            display: flex; justify-content: center; align-items: center; 
+        }
+        .globe-circle {
+            width: 180px; height: 180px; border-radius: 50%;
+            border: 2px dashed var(--pink);
+            background: repeating-linear-gradient(45deg, transparent 0, transparent 10px, var(--dim) 10px, var(--dim) 12px);
+            animation: spin 20s linear infinite;
+            box-shadow: inset 0 0 40px var(--pink);
+        }
 
-        /* Right Sidebar (Top part) */
-        #mod-right-top { grid-column: 3; grid-row: 2; height: 50%; }
-        
-        /* Right Sidebar (Bottom part - Terminal) */
-        #mod-right-bot { grid-column: 3; grid-row: 2; align-self: end; height: 45%; }
+        /* 3. PROGRESS BARS (Mid Left) */
+        #part-prog { 
+            grid-column: 1; grid-row: 2; 
+            display: flex; flex-direction: column; justify-content: center; gap: 15px; padding: 10px;
+            border: none; background: transparent; box-shadow: none;
+        }
+        .p-bar { height: 25px; border: 1px solid var(--pink); display: flex; align-items: center; padding: 2px; position: relative; }
+        .p-fill { height: 100%; background: var(--pink); opacity: 0.7; width: 0; transition: width 2s ease-out; }
+        .p-text { position: absolute; right: 10px; font-size: 0.7rem; color: #fff; }
 
-        /* Bottom Bar */
-        #mod-bottom { grid-column: 1 / span 3; grid-row: 3; }
+        /* 4. HISTOGRAM (Bot Left) */
+        #part-histo { 
+            grid-column: 1; grid-row: 3; 
+            display: flex; align-items: flex-end; justify-content: space-around; padding: 20px;
+            border-top: 2px solid var(--pink);
+        }
+        .h-bar { width: 20px; background: var(--pink); box-shadow: 0 0 10px var(--pink); animation: eq 1s infinite alternate; }
 
+        /* --- CENTER COLUMN --- */
 
-        /* Placeholder Text Styles */
-        .placeholder-header { font-family: 'Orbitron'; color: var(--pink); border-bottom: 1px solid var(--pink); margin-bottom: 10px; }
-        .placeholder-data { color: #ff99aa; font-size: 0.8rem; line-height: 1.8; }
-        .micro-text { font-size: 0.6rem; color: var(--pink); opacity: 0.7; }
+        /* 5. REACTOR CORE (Center) */
+        #part-core { 
+            grid-column: 2; grid-row: 1 / span 2; 
+            border: none; background: transparent; box-shadow: none;
+            display: flex; justify-content: center; align-items: center; position: relative;
+        }
+        .ring { position: absolute; border-radius: 50%; border: 2px solid var(--pink); }
+        .r1 { width: 500px; height: 500px; border: 2px dashed var(--dim); animation: spin 30s linear infinite; }
+        .r2 { width: 420px; height: 420px; border-width: 5px; border-left: transparent; border-right: transparent; animation: spinRev 10s linear infinite; }
+        .r3 { width: 340px; height: 340px; border: 1px dotted var(--pink); animation: spin 20s linear infinite; }
+        .r4 { width: 260px; height: 260px; border: 10px solid var(--dim); border-top: 10px solid var(--pink); animation: spinRev 5s linear infinite; }
+        .r5 { width: 120px; height: 120px; background: var(--pink); box-shadow: 0 0 60px var(--pink); border-radius: 50%; }
 
+        /* 6. SLIDERS (Bot Center) */
+        #part-slider {
+            grid-column: 2; grid-row: 3;
+            display: flex; flex-direction: column; justify-content: center; gap: 10px; padding: 20px 50px;
+            border: none; background: transparent; box-shadow: none;
+        }
+        .slider-line { width: 100%; height: 2px; background: var(--dim); position: relative; }
+        .slider-nob { width: 10px; height: 10px; background: var(--pink); position: absolute; top: -4px; left: 20%; box-shadow: 0 0 10px var(--pink); }
+
+        /* 7. BADGE (Bot Center Label) */
+        #part-badge {
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+            border: 1px solid var(--pink); padding: 5px 20px; font-size: 0.8rem;
+            background: #000; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+        }
+
+        /* --- RIGHT COLUMN --- */
+
+        /* 8. ISO GRID (Top Right) */
+        #part-iso { 
+            grid-column: 3; grid-row: 1; overflow: hidden; position: relative;
+        }
+        .iso-plane {
+            position: absolute; top: 50%; left: 50%; width: 300px; height: 300px;
+            background: linear-gradient(var(--pink) 1px, transparent 1px), linear-gradient(90deg, var(--pink) 1px, transparent 1px);
+            background-size: 30px 30px;
+            transform: translate(-50%, -50%) rotateX(60deg) rotateZ(45deg);
+            box-shadow: 0 0 20px var(--dim);
+        }
+
+        /* 9. TEXT BLOCK (Mid Right) */
+        #part-text { 
+            grid-column: 3; grid-row: 2; padding: 15px; font-size: 0.6rem; color: var(--pink);
+            overflow: hidden; line-height: 1.4; opacity: 0.8;
+        }
+
+        /* 10. WAVEFORM (Bot Right Outer) */
+        #part-wave { 
+            grid-column: 3; grid-row: 3; 
+            border-top: 2px solid var(--pink); padding: 10px;
+            display: flex; align-items: center;
+        }
+        .wave-line { width: 100%; height: 1px; background: var(--pink); position: relative; }
+        .wave-line::after { content:''; position: absolute; width: 10px; height: 10px; background: var(--pink); border-radius: 50%; top: -5px; animation: bounce 2s infinite ease-in-out; }
+
+        /* 11. RADAR (Bot Right Inner) */
+        #part-radar {
+            position: absolute; bottom: 40px; right: 280px; width: 100px; height: 100px;
+            border: 1px solid var(--pink); border-radius: 50%; background: #000;
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 0 20px var(--pink);
+            z-index: 50;
+        }
+        .radar-sweep { width: 90%; height: 90%; border-radius: 50%; background: conic-gradient(transparent, var(--pink)); animation: spin 2s linear infinite; opacity: 0.5; }
+
+        /* --- ANIMATIONS --- */
         @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes spinRev { 100% { transform: rotate(-360deg); } }
+        @keyframes eq { 0% { height: 20%; } 100% { height: 90%; } }
+        @keyframes bounce { 0%, 100% { left: 0%; } 50% { left: 100%; } }
 
     </style>
 </head>
 <body>
 
-    <div id="bg-scanlines"></div>
-    <div id="bg-vignette"></div>
+    <div class="bg-grid"></div>
 
-    <div id="main-container">
+    <div class="main-container">
         
-        <div id="outer-frame"></div>
+        <div id="part-frame" class="frame-border ui-part"></div>
 
-        <div id="mod-top" class="module">
-            <div class="mod-label">STATUS_ARRAY</div>
-            <div>LOCATION: [REDACTED]</div>
-            <div style="font-family: 'Orbitron'; font-weight: bold;">DATABASE CONNECTION: ACTIVE</div>
-            <div>TIME: T-MINUS 00:00:00</div>
+        <div id="part-globe" class="ui-part">
+            <div class="globe-circle"></div>
+            <div style="position: absolute; font-size: 0.8rem;">EARTH H33<br><span style="font-size:0.6rem; color:#aaa;">NWO ACTIVATED</span></div>
         </div>
 
-        <div id="mod-left" class="module">
-            <div class="mod-label">BIO_METRICS</div>
-            <div class="placeholder-header">SUBJECT ID: PENDING</div>
-            <div class="placeholder-data">
-                > Awaiting Input...<br>
-                > [DATA CORRUPT]<br>
-                > [DATA CORRUPT]<br>
-                > [DATA CORRUPT]<br>
-                ------------------<br>
-                Re-calibrating sensors.
-            </div>
-            <div style="margin-top: auto;">
-                 <div class="micro-text">SENSOR ARRAY L-04 // ONLINE</div>
-            </div>
+        <div id="part-prog" class="ui-part">
+            <div class="p-bar"><div class="p-fill" style="width: 90%"></div><div class="p-text">EEVU.054 COMPLETED</div></div>
+            <div class="p-bar"><div class="p-fill" style="width: 75%"></div><div class="p-text">SPAIN.009 COMPLETED</div></div>
+            <div class="p-bar"><div class="p-fill" style="width: 40%"></div><div class="p-text">ODKYO.945 LOADING...</div></div>
         </div>
 
-        <div id="mod-center" class="module">
-            <div class="ring-placeholder rp1"></div>
-            <div class="ring-placeholder rp2"></div>
-            <div class="ring-placeholder rp3"></div>
-            <div style="z-index: 2; font-family: 'Orbitron'; text-shadow: 0 0 10px var(--pink);">AWAITING<br>DATA INJECTION</div>
+        <div id="part-histo" class="ui-part">
+            <div class="h-bar" style="height: 40%"></div>
+            <div class="h-bar" style="height: 80%"></div>
+            <div class="h-bar" style="height: 60%"></div>
+            <div class="h-bar" style="height: 90%"></div>
         </div>
 
-        <div id="mod-right-top" class="module">
-            <div class="mod-label">SPATIAL_SCAN</div>
-            <div style="flex-grow: 1; border: 1px dashed var(--pink); display: flex; justify-content: center; align-items: center; color: var(--dim-pink);">
-                [VISUALIZER STANDBY]
-            </div>
+        <div id="part-core" class="ui-part">
+            <div class="ring r1"></div>
+            <div class="ring r2"></div>
+            <div class="ring r3"></div>
+            <div class="ring r4"></div>
+            <div class="ring r5"></div>
         </div>
 
-        <div id="mod-right-bot" class="module">
-            <div class="mod-label">TERMINAL_OUT</div>
-            <div class="placeholder-data" style="overflow: hidden;">
-                root@v-sharma:~$ initiate_sequence<br>
-                > Loading modules... OK<br>
-                > Establishing secure link... OK<br>
-                > Waiting for user data payload...<br>
-                > _
-            </div>
+        <div id="part-slider" class="ui-part">
+            <div class="slider-line"><div class="slider-nob" style="left:20%"></div></div>
+            <div class="slider-line"><div class="slider-nob" style="left:60%"></div></div>
+            <div class="slider-line"><div class="slider-nob" style="left:80%"></div></div>
         </div>
 
-        <div id="mod-bottom" class="module" style="flex-direction: row; align-items: flex-end; justify-content: space-between;">
-            <div class="mod-label">SYSTEM_HEALTH</div>
-            <div>
-                <div class="placeholder-header" style="font-size: 0.9rem;">NETWORK TRAFFIC</div>
-                <div style="display: flex; gap: 5px; height: 40px; align-items: flex-end;">
-                    <div style="width: 10px; height: 60%; background: var(--pink);"></div>
-                    <div style="width: 10px; height: 90%; background: var(--pink);"></div>
-                    <div style="width: 10px; height: 40%; background: var(--pink);"></div>
-                    <div style="width: 10px; height: 75%; background: var(--pink);"></div>
-                </div>
-            </div>
-            <div style="text-align: right;">
-                <div class="micro-text">POWER DISTRIBUTION: NOMINAL</div>
-                <div class="micro-text">COOLANT SYSTEMS: ACTIVE</div>
-            </div>
+        <div id="part-badge" class="ui-part">HUD BY AYUSH</div>
+
+        <div id="part-iso" class="ui-part">
+            <div class="iso-plane"></div>
+        </div>
+
+        <div id="part-text" class="ui-part">
+            LOREM IPSUM DATA STREAM...<br>
+            INITIALIZING SECTOR 7G...<br>
+            ENCRYPTION KEY: VALIDATED.<br>
+            [SECURE CONNECTION ESTABLISHED]<br>
+            <br>
+            WAITING FOR USER INPUT...
+        </div>
+
+        <div id="part-wave" class="ui-part">
+            <div style="font-size:0.6rem; margin-right:10px;">FREQ</div>
+            <div class="wave-line"></div>
+        </div>
+
+        <div id="part-radar" class="ui-part">
+            <div class="radar-sweep"></div>
         </div>
 
     </div>
 
-
     <script>
-        // The Cinematic Initialization Sequence
+        // SEQUENTIAL ZOOM-IN INITIALIZATION
         window.onload = function() {
-            // 1. Show Outer Frame immediately
-            setTimeout(() => {
-                document.getElementById('outer-frame').style.opacity = '1';
-            }, 500);
-
-            // 2. Define the sequence of modules to appear
-            // IDs correspond to the HTML elements
-            const sequence = [
-                'mod-top',      // Top bar
-                'mod-center',   // The core
-                'mod-left',     // Left panel
-                'mod-right-top',// Right top panel
-                'mod-right-bot',// Right bottom terminal
-                'mod-bottom'    // Bottom bar
+            // Sequence order matching the visual flow
+            const ids = [
+                'part-frame',
+                'part-core',   // Centerpiece
+                'part-globe',  // Top Left
+                'part-iso',    // Top Right
+                'part-prog',   // Mid Left
+                'part-text',   // Mid Right
+                'part-histo',  // Bot Left
+                'part-wave',   // Bot Right
+                'part-slider', // Bot Center
+                'part-radar',  // Detail
+                'part-badge'   // Detail
             ];
 
-            let delayTime = 1200; // Initial delay before first module starts
+            let delay = 500; // Start delay
 
-            // 3. Loop through and trigger the animation class
-            sequence.forEach((id) => {
+            ids.forEach((id) => {
                 setTimeout(() => {
                     const el = document.getElementById(id);
-                    if(el) {
-                        // Add the class that triggers the CSS transition to scale 1 and opacity 1
-                        el.classList.add('initialized');
-                    }
-                }, delayTime);
-
-                // Add 1.2 seconds to the delay for the next item
-                delayTime += 1200;
+                    if(el) el.classList.add('visible');
+                }, delay);
+                delay += 800; // 0.8s gap between each part appearing
             });
-        }
+        };
     </script>
 </body>
 </html>
