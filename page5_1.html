@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- CORE SETTINGS --- */
+        /* --- CORE --- */
         * { box-sizing: border-box; }
         body {
             margin: 0; padding: 0;
@@ -23,24 +23,7 @@
             user-select: none;
         }
 
-        /* --- 1. START SCREEN (SEPARATE LAYER) --- */
-        #startScreen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 10000; /* Highest Priority */
-            display: flex; justify-content: center; align-items: center;
-            background: radial-gradient(circle, #1a0000 0%, #000 100%);
-        }
-        
-        .start-btn {
-            background: rgba(255, 0, 60, 0.1); 
-            border: 2px solid #ff4d6d; color: #ff4d6d;
-            padding: 20px 60px; font-family: 'Orbitron'; font-size: 1.5rem; letter-spacing: 4px;
-            cursor: pointer; box-shadow: 0 0 30px #ff4d6d; transition: 0.3s;
-            clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
-        }
-        .start-btn:hover { background: #ff4d6d; color: #000; box-shadow: 0 0 60px #ff4d6d; }
-
-        /* --- 2. BACKGROUND GRID --- */
+        /* --- 1. BACKGROUND (Infinite Grid) --- */
         #bgLayer {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 0; background: #020000; perspective: 1000px; overflow: hidden;
@@ -57,18 +40,45 @@
         .ceiling { top: -100px; transform: rotateX(-80deg); animation: gridMove 2s linear infinite; }
         @keyframes gridMove { 0% { background-position: 0 0; } 100% { background-position: 0 80px; } }
 
-        /* --- 3. HUD INTERFACE --- */
+        /* Floating Objects (Wall) */
+        #tunnelObjs { position: absolute; width: 100%; height: 100%; pointer-events: none; }
+        .wall-obj {
+            position: absolute; color: rgba(255, 0, 60, 0.5); border: 1px solid rgba(255, 0, 60, 0.3);
+            padding: 5px; font-size: 1.2rem;
+            animation: flyObj 3s linear infinite;
+        }
+        @keyframes flyObj {
+            0% { transform: translate3d(var(--tx), var(--ty), -1000px); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translate3d(var(--ex), var(--ty), 500px); opacity: 0; }
+        }
+
+        /* --- 2. START SCREEN (SEPARATE) --- */
+        #startScreen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 10000;
+            display: flex; justify-content: center; align-items: center;
+            background: radial-gradient(circle, #1a0000 0%, #000 100%);
+        }
+        .start-btn {
+            background: rgba(255, 0, 60, 0.1); border: 2px solid #ff4d6d; color: #ff4d6d;
+            padding: 20px 60px; font-family: 'Orbitron'; font-size: 1.5rem; letter-spacing: 4px;
+            cursor: pointer; box-shadow: 0 0 30px #ff4d6d; transition: 0.3s;
+            clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
+        }
+        .start-btn:hover { background: #ff4d6d; color: #000; box-shadow: 0 0 60px #ff4d6d; }
+
+        /* --- 3. HUD INTERFACE (Exact Replica of your Image) --- */
         #introUI {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 10; display: none; /* Hidden until Init */
-            transition: transform 1s ease-in, opacity 0.5s ease-in;
-            transform-origin: 75% 50%; /* Center Zoom on Reactor */
+            transition: transform 1.2s cubic-bezier(0.7, 0, 0.3, 1), opacity 0.5s ease;
+            transform-origin: 75% 50%; /* Center zoom on reactor */
         }
 
-        /* THE FRAME (Borders) */
+        /* FRAME (Borders) */
         .hud-border-top { position: absolute; top: 30px; left: 5%; width: 90%; height: 3px; background: #ff4d6d; box-shadow: 0 0 15px #ff4d6d; }
         .hud-border-bottom { position: absolute; bottom: 30px; left: 5%; width: 90%; height: 3px; background: #ff4d6d; box-shadow: 0 0 15px #ff4d6d; }
-        
         .hud-corner { position: absolute; width: 80px; height: 80px; border: 5px solid #ff4d6d; box-shadow: 0 0 15px #ff4d6d; }
         .tl { top: 30px; left: 30px; border-right: 0; border-bottom: 0; }
         .tr { top: 30px; right: 30px; border-left: 0; border-bottom: 0; }
@@ -82,7 +92,7 @@
             display: grid; grid-template-columns: 350px 1fr; gap: 50px;
         }
 
-        /* LEFT PANEL (Exact Replication) */
+        /* LEFT PANEL (The Specific 2x2 Grid) */
         .left-panel {
             display: flex; flex-direction: column; padding: 25px;
             background: rgba(20, 0, 5, 0.7); border: 1px solid rgba(255, 77, 109, 0.3);
@@ -93,7 +103,7 @@
 
         .geo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; height: 180px; margin-bottom: 30px; }
         .geo-box { border: 1px solid #ff4d6d; background: rgba(50, 0, 0, 0.3); position: relative; }
-        /* Chamfered Cuts */
+        /* Chamfered Cuts (Exact) */
         .g1 { clip-path: polygon(0 0, 100% 0, 100% 80%, 80% 100%, 0 100%); }
         .g2 { clip-path: polygon(0 0, 100% 0, 100% 100%, 20% 100%, 0 80%); }
         .g3 { clip-path: polygon(0 0, 80% 0, 100% 20%, 100% 100%, 0 100%); }
@@ -114,37 +124,36 @@
             transition: all 0.5s;
         }
 
-        /* TEXT & BUTTONS */
+        /* TEXT & INTERACTION */
         .status-text { font-family: 'Orbitron'; font-size: 1.5rem; font-weight: 700; color: #fff; text-shadow: 0 0 15px #ff4d6d; text-align: center; }
         .connect-btn {
             margin-top: 20px; background: rgba(255,255,255,0.1); border: 1px solid #fff; color: #fff;
             padding: 12px 35px; font-family: 'Orbitron'; font-size: 1rem; cursor: pointer;
             animation: pulse 1.5s infinite; pointer-events: auto;
         }
-        .connect-btn:hover { background: #fff; color: #000; box-shadow: 0 0 20px #fff; }
-
-        /* ALERT & SCANNER */
+        
         .alert-box { text-align: center; animation: shake 0.5s infinite; }
         .scanner-ui { width: 90px; height: 130px; border: 2px solid #ff4d6d; border-radius: 20px; position: relative; overflow: hidden; margin-top: 15px; cursor: pointer; }
         .scan-beam { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: #fff; box-shadow: 0 0 15px #fff; animation: scanDown 1.5s linear infinite; display: none; }
 
-        /* --- 4. MAIN DASHBOARD (Video Style) --- */
+        /* --- 4. MAIN DASHBOARD (Video Replica Layout) --- */
         #mainDashboard {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 5; display: none; opacity: 0;
-            background: #000; padding: 30px;
+            background: #000; padding: 20px;
             transition: opacity 1s ease;
         }
 
+        /* 3-Column Video Layout */
         .dash-grid {
             display: grid; 
             grid-template-columns: 320px 1fr 320px; 
-            grid-template-rows: 80px 1fr 120px;
-            height: 100%; gap: 30px;
+            grid-template-rows: 80px 1fr 150px;
+            height: 100%; gap: 20px; width: 100%;
         }
 
         /* Dashboard Header */
-        .d-header { grid-column: 1 / -1; border-bottom: 2px solid #ff4d6d; display: flex; justify-content: space-between; align-items: center; }
+        .d-header { grid-column: 1 / -1; border-bottom: 2px solid #ff4d6d; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
         .d-title { font-family: 'Orbitron'; font-size: 2rem; color: #fff; text-shadow: 0 0 20px #ff4d6d; }
 
         /* Center Circle */
@@ -165,56 +174,53 @@
             background-position: center; background-size: 50%; background-repeat: no-repeat;
         }
 
-        /* Panels */
-        .d-panel { background: rgba(20, 0, 5, 0.6); border: 1px solid #ff4d6d; padding: 15px; position: relative; }
+        /* Panels (Video Style Box) */
+        .d-panel {
+            background: rgba(20, 0, 5, 0.6); border: 1px solid #ff4d6d;
+            padding: 15px; position: relative; overflow-y: auto;
+        }
+        /* Corner Accents */
         .d-panel::before { content:''; position:absolute; top:0; left:0; width:10px; height:10px; border-top:2px solid #fff; border-left:2px solid #fff; }
         .d-panel::after { content:''; position:absolute; bottom:0; right:0; width:10px; height:10px; border-bottom:2px solid #fff; border-right:2px solid #fff; }
 
         .dp-left { grid-column: 1; grid-row: 2; }
         .dp-right { grid-column: 3; grid-row: 2; }
-        .dp-bot { grid-column: 2; grid-row: 3; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,0,60,0.3); }
+        /* Bottom Bar for Micro Data */
+        .dp-bot { grid-column: 2; grid-row: 3; display: flex; justify-content: space-around; align-items: center; border: 1px solid rgba(255,0,60,0.3); }
 
         .dp-head { font-family: 'Orbitron'; font-size: 1rem; color: #ff80aa; border-bottom: 1px solid rgba(255,255,255,0.2); margin-bottom: 10px; padding-bottom: 5px; }
         .dp-row { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 5px; border-bottom: 1px dashed rgba(255,255,255,0.1); }
-        .lbl { color: #aaa; } .val { color: #fff; font-weight: bold; }
+        .lbl { color: #aaa; } .val { color: #fff; font-weight: bold; text-align: right; }
 
-        /* --- ACCESS GRANTED STATE (GREEN) --- */
-        .granted-mode .hud-bar-top, 
-        .granted-mode .hud-corner, 
-        .granted-mode .geo-box, 
+        /* --- ANIMATIONS & STATES --- */
+        /* ACCESS GRANTED (GREEN) */
+        .granted-mode .hud-border-top, .granted-mode .hud-border-bottom, 
+        .granted-mode .hud-corner, .granted-mode .geo-box, 
         .granted-mode .gauge { border-color: #00ff00 !important; box-shadow: 0 0 20px #00ff00 !important; }
-        .granted-mode .hud-bar-top { background: #00ff00 !important; }
         
         .granted-mode .reactor-core { border-color: #00ff00 !important; box-shadow: 0 0 100px #00ff00 !important; }
         .granted-mode .status-text { color: #00ff00 !important; text-shadow: 0 0 20px #00ff00 !important; }
         
-        /* Transition Animation */
-        .zoom-through { animation: flyAnim 1.5s cubic-bezier(0.7, 0, 0.3, 1) forwards; }
-        .flash-white { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 999; animation: flashAnim 2s forwards; display: none; }
+        /* TRANSITION: FLY THROUGH */
+        .zoom-through { animation: flyAnim 1.2s cubic-bezier(0.7, 0, 0.3, 1) forwards; }
+        .flash-white { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 999; animation: flashAnim 1s forwards; display: none; }
 
         @keyframes spin { 100% { transform: rotate(360deg); } }
         @keyframes spinRev { 100% { transform: rotate(-360deg); } }
         @keyframes pulse { 0% { opacity: 0.6; } 100% { opacity: 1; } }
-        @keyframes shake { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -1px); } 100% { transform: translate(1px, -1px); } }
+        @keyframes shake { 0% { transform: translate(2px, 2px); } 25% { transform: translate(-2px, -2px); } 50% { transform: translate(2px, -2px); } 75% { transform: translate(-2px, 2px); } }
         @keyframes scanDown { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
-        
-        @keyframes flyAnim {
-            0% { transform: scale(1); opacity: 1; }
-            40% { transform: scale(1.5); opacity: 1; }
-            100% { transform: scale(30); opacity: 0; }
-        }
-        @keyframes flashAnim { 0% { opacity: 0; } 10% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes flyAnim { 0% { transform: scale(1); opacity: 1; } 40% { transform: scale(1.5); opacity: 1; } 100% { transform: scale(30); opacity: 0; } }
+        @keyframes flashAnim { 0% { opacity: 0; } 20% { opacity: 1; } 100% { opacity: 0; } }
 
     </style>
 </head>
 <body>
 
     <div id="bgLayer">
-        <div id="tunnelBg">
-            <div class="tunnel-grid floor"></div>
-            <div class="tunnel-grid ceiling"></div>
-            <div id="tunnelObjects"></div>
-        </div>
+        <div class="grid-plane floor"></div>
+        <div class="grid-plane ceiling"></div>
+        <div id="tunnelObjs"></div>
     </div>
 
     <audio id="soundAlert" src="alert.mp3" preload="auto"></audio>
@@ -226,11 +232,11 @@
     </div>
 
     <div id="introUI">
-        <div class="hud-bar-top"></div><div class="hud-border-bottom"></div>
+        <div class="hud-border-top"></div><div class="hud-border-bottom"></div>
         <div class="hud-corner tl"></div><div class="hud-corner tr"></div>
         <div class="hud-corner bl"></div><div class="hud-corner br"></div>
 
-        <div class="hud-container">
+        <div class="hud-content">
             <div class="left-panel">
                 <div class="sys-head">SYSTEM_LOG</div>
                 <div class="sys-log">
@@ -247,7 +253,6 @@
 
             <div class="right-panel">
                 <div class="reactor-outer"></div>
-                <div class="reactor-inner"></div>
                 <div class="reactor-core" id="mainReactor">
                     
                     <div id="p1" style="display:flex; justify-content:center; align-items:center; height:100%;">
@@ -259,8 +264,8 @@
                         <button class="connect-btn" onclick="triggerDenied()">CONNECT CONSOLE</button>
                     </div>
 
-                    <div id="p3" style="display:none;" class="alert-wrap">
-                        <i class="fas fa-exclamation-triangle" style="font-size:3rem; color:red; margin-bottom:10px;"></i>
+                    <div id="p3" style="display:none;" class="alert-box">
+                        <i class="fas fa-exclamation-triangle" style="font-size:3rem; margin-bottom:10px; color:red;"></i>
                         <div class="status-text" style="color:red;">ACCESS DENIED</div>
                         <div style="font-size:0.8rem; margin-top:5px; border:1px solid red; padding:5px; color:#ffcccc;">SERVER PROTECTED BY AYUSH</div>
                     </div>
@@ -293,7 +298,7 @@
                 <div class="dp-row"><span class="lbl">ZODIAC</span> <span class="val">Taurus ♉</span></div>
                 <div class="dp-row"><span class="lbl">EYES</span> <span class="val">Deep Espresso</span></div>
                 <div class="dp-row"><span class="lbl">HAIR</span> <span class="val">Black</span></div>
-                <div class="dp-row"><span class="lbl">SHOE</span> <span class="val">7 (Tiny)</span></div>
+                <div class="dp-row"><span class="lbl">SHOE</span> <span class="val">7 (Tiny Feet)</span></div>
                 <div class="dp-row"><span class="lbl">MARK</span> <span class="val">Mole (Right Forehead)</span></div>
                 <div class="dp-row"><span class="lbl">GLASSES</span> <span class="val">YES</span></div>
                 <br>
@@ -301,7 +306,8 @@
                 <div class="dp-row"><span class="lbl">MET</span> <span class="val">11 April 2025</span></div>
                 <div class="dp-row"><span class="lbl">IMPRESSION</span> <span class="val">Gorgeous & Talented</span></div>
                 <div class="dp-row"><span class="lbl">DIST</span> <span class="val" style="color:red;">611 KM</span></div>
-                <div class="dp-row"><span class="lbl">CALL</span> <span class="val" style="color:#00ff00;">06 HOURS</span></div>
+                <div class="dp-row"><span class="lbl">LONGEST CALL</span> <span class="val" style="color:#00ff00;">06 HOURS</span></div>
+                <div class="dp-row"><span class="lbl">PHOTOS</span> <span class="val">489</span></div>
             </div>
 
             <div class="d-center">
@@ -322,6 +328,7 @@
                 <div class="dp-row"><span class="lbl">HAPPY</span> <span class="val">Award Dance</span></div>
                 <div class="dp-row"><span class="lbl">ANGRY</span> <span class="val">Scolding Mode</span></div>
                 <div class="dp-row"><span class="lbl">FIX</span> <span class="val">Treat like Kid</span></div>
+                <div class="dp-row"><span class="lbl">SAD</span> <span class="val">Sleep / Quiet</span></div>
             </div>
 
             <div class="d-panel dp-bot">
@@ -341,18 +348,16 @@
         const soundAlert = document.getElementById('soundAlert');
         const soundScan = document.getElementById('soundScan');
         const soundGrant = document.getElementById('soundGrant');
-        const tunnelObjContainer = document.getElementById('tunnelObjects');
+        const tunnelDiv = document.getElementById('tunnelObjs');
 
         // Wall Objects
-        const tunnelDiv = document.getElementById('tunnelBg');
         setInterval(() => {
             const el = document.createElement('div');
             el.className = 'wall-obj';
             el.innerHTML = Math.random() > 0.5 ? '0101' : 'HEX';
             let x = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 400 + 300);
-            let y = (Math.random() - 0.5) * 600;
-            el.style.setProperty('--tx', x + 'px'); el.style.setProperty('--ty', y + 'px');
-            el.style.setProperty('--ex', (x*1.5) + 'px');
+            el.style.setProperty('--tx', x + 'px'); el.style.setProperty('--ty', (Math.random()*600 - 300) + 'px');
+            el.style.setProperty('--ex', (x * 1.5) + 'px');
             tunnelDiv.appendChild(el);
             setTimeout(() => el.remove(), 4000);
         }, 500);
@@ -363,13 +368,14 @@
             soundGrant.play(); soundGrant.pause();
             
             document.getElementById('startScreen').style.display = 'none';
-            document.getElementById('introUI').style.display = 'flex'; // Use Flex for center
+            document.getElementById('introUI').style.display = 'block';
             
             const txt = document.getElementById('seqText');
+            // EXACT SEQUENCE
             const seq = [
                 {t:"SYSTEM STARTUP", d:0}, {t:"INITIALIZING", d:1000},
                 {t:"HEY!", d:2500, s:"3rem"}, {t:"WELCOME TO VIOLINA'S DATABASE", d:4000, s:"1rem"},
-                {t:"LOADING...", d:6000, s:"1.2rem"}, {t:"DECRYPTING SERVER DATA", d:7500},
+                {t:"LOADING...", d:6000, s:"1.2rem"}, {t:"DECRYPTING DATA", d:7500},
                 {t:"BYPASSING FIREWALL", d:9000}, {t:"TRYING TO CONNECT", d:10500}, {t:"SERVER READY", d:12000}
             ];
             
@@ -389,13 +395,11 @@
             document.getElementById('p3').style.display='block';
             soundAlert.currentTime=0; soundAlert.play();
             // Shake HUD
-            document.getElementById('introUI').style.transform = "translate(5px, 0)";
-            setTimeout(() => document.getElementById('introUI').style.transform = "translate(-5px, 0)", 50);
-            setTimeout(() => document.getElementById('introUI').style.transform = "translate(0, 0)", 100);
-
+            document.getElementById('introUI').style.animation = "shake 0.5s infinite";
             setTimeout(() => {
-                document.getElementById('p3').style.display='none';
-                document.getElementById('p4').style.display='flex';
+                document.getElementById('introUI').style.animation = "none";
+                document.getElementById('p3').style.display = 'none';
+                document.getElementById('p4').style.display = 'flex';
             }, 3000);
         }
 
@@ -422,29 +426,28 @@
         pad.addEventListener('touchstart', startScan);
         pad.addEventListener('touchend', endScan);
 
-        // --- 1:1 VIDEO TRANSITION ---
+        // --- THE TRANSITION (VIDEO STYLE) ---
         function grantAccess() {
             soundScan.pause(); soundGrant.play();
             
-            // 1. Turn Green (Verify)
+            // 1. Turn Green
             document.body.classList.add('granted-mode');
             document.getElementById('scanStatus').innerText = "ACCESS GRANTED";
-            document.getElementById('scanStatus').style.color = "#00ff00";
             
-            // 2. Fly Through (Zoom Camera)
+            // 2. Fly Through
             setTimeout(() => {
                 document.getElementById('introUI').classList.add('zoom-through');
                 
                 // 3. Flash & Show Main
                 setTimeout(() => {
                     document.getElementById('flashLayer').style.display = 'block';
-                    document.getElementById('flashLayer').style.animation = "flashAnim 2s forwards";
+                    document.getElementById('flashLayer').style.animation = "flashAnim 1s forwards";
                     
                     document.getElementById('introUI').style.display = 'none';
                     document.getElementById('mainDashboard').style.display = 'block';
-                    setTimeout(() => document.getElementById('mainDashboard').style.opacity = '1', 100);
+                    setTimeout(() => document.getElementById('mainDashboard').style.opacity = '1', 50);
                 }, 800);
-            }, 1000);
+            }, 800);
         }
     </script>
 </body>
