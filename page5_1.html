@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Violina | System Startup</title>
+    <title>Violina | Database</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,24 +18,24 @@
             background-color: #000;
             font-family: 'Share Tech Mono', monospace;
             overflow: hidden; 
-            height: 100vh;
-            color: #fff;
+            height: 100vh; color: #fff;
             user-select: none;
+            perspective: 1000px; /* Essential for 3D tilt */
         }
 
         :root {
             --pink: #ff003c;
-            --glass: rgba(20, 0, 5, 0.7);
+            --green: #00ff00;
+            --glass: rgba(10, 0, 0, 0.85);
         }
 
-        /* --- 1. START SCREEN (User Interaction Required for Audio) --- */
+        /* --- 1. START SCREEN --- */
         #layer-start {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 9999;
             display: flex; justify-content: center; align-items: center;
             background: radial-gradient(circle, #200000 0%, #000 100%);
         }
-        
         .btn-init {
             border: 2px solid var(--pink); color: var(--pink); background: rgba(255,0,60,0.1);
             padding: 20px 60px; font-family: 'Orbitron'; font-size: 1.5rem; letter-spacing: 4px;
@@ -45,100 +45,134 @@
         }
         .btn-init:hover { background: var(--pink); color: #000; box-shadow: 0 0 60px var(--pink); }
 
-        /* --- 2. BACKGROUND TUNNEL --- */
-        #bgLayer {
+        /* --- 2. INTRO HUD (RED UI) --- */
+        #layer-intro {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0; perspective: 1000px; overflow: hidden;
+            z-index: 100; display: none;
+            transition: opacity 0.5s;
         }
-        .grid-plane {
-            position: absolute; left: -50%; width: 200%; height: 200%;
-            background: 
-                linear-gradient(rgba(255, 0, 60, 0.2) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 0, 60, 0.2) 1px, transparent 1px);
-            background-size: 80px 80px;
-            transform: rotateX(80deg);
-        }
-        .floor { bottom: -100px; animation: gridRun 3s linear infinite; }
-        .ceiling { top: -100px; transform: rotateX(-80deg); animation: gridRun 3s linear infinite; }
-        @keyframes gridRun { 0% { background-position: 0 0; } 100% { background-position: 0 80px; } }
-
-        /* Flying Particles (The "Substances") */
-        #particles { position: absolute; width: 100%; height: 100%; pointer-events: none; }
-        .fly-obj {
-            position: absolute; color: rgba(255, 0, 60, 0.6); 
-            font-size: 1.2rem; font-weight: bold;
-            text-shadow: 0 0 5px var(--pink);
-            animation: fly 4s linear infinite;
-        }
-        @keyframes fly {
-            0% { transform: translate3d(var(--tx), var(--ty), -1000px); opacity: 0; }
-            20% { opacity: 1; }
-            100% { transform: translate3d(var(--ex), var(--ty), 500px); opacity: 0; }
-        }
-
-        /* --- 3. HUD INTERFACE --- */
-        #introUI {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 10; display: none;
-        }
-
-        /* CORNERS (The Edges) */
-        .corner { position: absolute; width: 80px; height: 80px; border: 5px solid var(--pink); box-shadow: 0 0 15px var(--pink); }
-        .tl { top: 30px; left: 30px; border-right: 0; border-bottom: 0; clip-path: polygon(0 0, 100% 0, 100% 20%, 20% 20%, 20% 100%, 0 100%); }
-        .tr { top: 30px; right: 30px; border-left: 0; border-bottom: 0; clip-path: polygon(0 0, 100% 0, 100% 100%, 80% 100%, 80% 20%, 0 20%); }
-        .bl { bottom: 30px; left: 30px; border-right: 0; border-top: 0; clip-path: polygon(0 0, 20% 0, 20% 80%, 100% 80%, 100% 100%, 0 100%); }
-        .br { bottom: 30px; right: 30px; border-left: 0; border-top: 0; clip-path: polygon(80% 0, 100% 0, 100% 100%, 0 100%, 0 80%, 80% 80%); }
         
-        .top-bar { position: absolute; top: 30px; left: 10%; width: 80%; height: 3px; background: var(--pink); box-shadow: 0 0 10px var(--pink); }
+        /* Grid & Particles */
+        .bg-grid {
+            position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: linear-gradient(rgba(255, 0, 60, 0.15) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255, 0, 60, 0.15) 1px, transparent 1px);
+            background-size: 80px 80px; transform: perspective(500px) rotateX(60deg);
+            animation: moveGrid 3s linear infinite; z-index: -1;
+        }
+        @keyframes moveGrid { 0% { transform: perspective(500px) rotateX(60deg) translateY(0); } 100% { transform: perspective(500px) rotateX(60deg) translateY(80px); } }
+        #particles { position: absolute; width: 100%; height: 100%; pointer-events: none; }
+        .fly-obj { position: absolute; color: rgba(255, 0, 60, 0.6); animation: fly 4s linear infinite; }
+        @keyframes fly { 0% { transform: translate3d(var(--tx), var(--ty), -1000px); opacity: 0; } 20% { opacity: 1; } 100% { transform: translate3d(var(--ex), var(--ty), 500px); opacity: 0; } }
 
-        /* GRID LAYOUT */
-        .ui-container {
+        /* HUD Structure */
+        .frame-top { position: absolute; top: 20px; left: 5%; width: 90%; height: 3px; background: var(--pink); box-shadow: 0 0 10px var(--pink); }
+        .frame-bot { position: absolute; bottom: 20px; left: 5%; width: 90%; height: 3px; background: var(--pink); box-shadow: 0 0 10px var(--pink); }
+        .corner { position: absolute; width: 60px; height: 60px; border: 5px solid var(--pink); box-shadow: 0 0 15px var(--pink); }
+        .tl { top: 20px; left: 20px; border-right: 0; border-bottom: 0; } .tr { top: 20px; right: 20px; border-left: 0; border-bottom: 0; }
+        .bl { bottom: 20px; left: 20px; border-right: 0; border-top: 0; } .br { bottom: 20px; right: 20px; border-left: 0; border-top: 0; }
+
+        .intro-grid {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             width: 90%; max-width: 1200px; height: 600px;
             display: grid; grid-template-columns: 350px 1fr; gap: 50px;
         }
 
-        /* LEFT PANEL (Restored) */
-        .p-left {
-            display: flex; flex-direction: column; padding: 25px;
-            background: var(--glass); border: 1px solid rgba(255,0,60,0.4);
-        }
+        /* Left Panel */
+        .p-left { padding: 20px; background: var(--glass); border: 1px solid rgba(255,0,60,0.4); display: flex; flex-direction: column; }
         .sys-h { font-family: 'Orbitron'; font-size: 1.2rem; color: var(--pink); border-bottom: 2px solid var(--pink); margin-bottom: 10px; display: inline-block; }
         .sys-list { font-size: 0.8rem; color: #ff99aa; line-height: 1.6; margin-bottom: 20px; }
-        
-        .box-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; height: 160px; margin-bottom: 20px; }
+        .box-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; height: 160px; margin-bottom: 20px; }
         .box { border: 1px solid var(--pink); background: rgba(50,0,0,0.3); }
-        /* The Chamfered Cuts */
-        .b1 { clip-path: polygon(0 0, 100% 0, 100% 80%, 80% 100%, 0 100%); }
-        .b2 { clip-path: polygon(0 0, 100% 0, 100% 100%, 20% 100%, 0 80%); }
-        .b3 { clip-path: polygon(0 0, 80% 0, 100% 20%, 100% 100%, 0 100%); }
-        .b4 { clip-path: polygon(20% 0, 100% 0, 100% 100%, 0 100%, 0 20%); }
-
+        /* Cuts */
+        .b1 { clip-path: polygon(0 0, 100% 0, 100% 80%, 80% 100%, 0 100%); } .b2 { clip-path: polygon(0 0, 100% 0, 100% 100%, 20% 100%, 0 80%); }
+        .b3 { clip-path: polygon(0 0, 80% 0, 100% 20%, 100% 100%, 0 100%); } .b4 { clip-path: polygon(20% 0, 100% 0, 100% 100%, 0 100%, 0 20%); }
         .gauges { display: flex; gap: 20px; margin-top: auto; }
         .gauge { width: 60px; height: 60px; border-radius: 50%; border: 1px solid var(--pink); display: flex; justify-content: center; align-items: center; font-size: 0.8rem; position: relative; }
         .gauge::after { content:''; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid transparent; border-top-color: var(--pink); animation: spin 2s linear infinite; }
 
-        /* RIGHT PANEL (Reactor) */
+        /* Right Panel */
         .p-right { display: flex; justify-content: center; align-items: center; position: relative; }
         .r-outer { position: absolute; width: 450px; height: 450px; border: 2px solid var(--pink); border-radius: 50%; border-left: transparent; border-right: transparent; animation: spin 10s linear infinite; }
-        .r-mid { position: absolute; width: 380px; height: 380px; border: 1px dashed rgba(255, 0, 60, 0.5); border-radius: 50%; animation: spinRev 15s linear infinite; }
-        .r-core { width: 300px; height: 300px; background: rgba(0,0,0,0.9); border: 4px solid var(--pink); border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: 0 0 50px var(--pink); z-index: 10; }
+        .r-inner { width: 300px; height: 300px; background: rgba(0,0,0,0.9); border: 4px solid var(--pink); border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: 0 0 50px var(--pink); z-index: 10; position: relative; }
 
-        /* TEXT */
-        .status-txt { font-family: 'Orbitron'; font-size: 1.5rem; font-weight: 700; color: #fff; text-shadow: 0 0 10px var(--pink); text-align: center; }
-        
-        .btn-connect { margin-top: 20px; background: rgba(255,255,255,0.1); border: 1px solid #fff; color: #fff; padding: 10px 30px; font-family: 'Orbitron'; cursor: pointer; animation: pulse 1s infinite; }
-        
+        .status-txt { font-family: 'Orbitron'; font-size: 1.4rem; font-weight: 700; color: #fff; text-shadow: 0 0 10px var(--pink); text-align: center; }
+        .btn-connect { margin-top: 15px; background: transparent; border: 1px solid #fff; color: #fff; padding: 10px 30px; font-family: 'Orbitron'; cursor: pointer; animation: pulse 1s infinite; }
         .alert-box { text-align: center; color: red; animation: shake 0.5s infinite; }
-        
         .scan-pad { width: 90px; height: 130px; border: 2px solid var(--pink); border-radius: 20px; position: relative; overflow: hidden; margin-top: 10px; cursor: pointer; background: rgba(0,0,0,0.5); }
         .scan-line { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: #fff; box-shadow: 0 0 15px #fff; display: none; animation: scanDown 1.5s linear infinite; }
 
+        /* --- 3. THE INTERMEDIATE LOADING SCREEN (VIDEO STYLE) --- */
+        #layer-loading {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 200; display: none;
+            justify-content: center; align-items: center;
+            perspective: 800px; /* Camera distance */
+        }
+
+        /* The Tilted Card */
+        .load-card {
+            width: 400px; padding: 30px;
+            background: rgba(10, 0, 5, 0.9);
+            border: 1px solid rgba(255, 0, 60, 0.3);
+            transform: rotateX(40deg) scale(0.8); /* TILTED BACK LIKE VIDEO */
+            box-shadow: 0 20px 50px rgba(255, 0, 60, 0.2);
+            position: relative;
+            opacity: 0;
+            animation: cardAppear 1s ease-out forwards;
+        }
+
+        /* Decorative Corners (Brackets) */
+        .lc-tl { position: absolute; top: -2px; left: -2px; width: 20px; height: 20px; border-top: 3px solid var(--pink); border-left: 3px solid var(--pink); }
+        .lc-br { position: absolute; bottom: -2px; right: -2px; width: 20px; height: 20px; border-bottom: 3px solid var(--pink); border-right: 3px solid var(--pink); }
+
+        .load-text { font-family: 'Orbitron'; letter-spacing: 2px; color: #fff; font-size: 0.9rem; margin-bottom: 5px; }
+        .load-sub { font-family: 'Share Tech Mono'; color: var(--pink); font-size: 1.2rem; margin-bottom: 20px; text-transform: uppercase; }
+
+        /* Progress Bar Container */
+        .load-bar-bg {
+            width: 100%; height: 10px; background: #220;
+            border: 1px solid #440; position: relative;
+            overflow: hidden;
+        }
+        /* The Filling Bar */
+        .load-bar-fill {
+            width: 0%; height: 100%; background: var(--pink);
+            box-shadow: 0 0 15px var(--pink);
+            transition: width 3s linear; /* 3s Loading Time */
+        }
+
+        /* --- 4. MAIN DASHBOARD --- */
+        #layer-main {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 50; display: none; opacity: 0;
+            background: #000; padding: 20px;
+            transition: opacity 1s;
+        }
+        .dash-grid { display: grid; width: 100%; height: 100%; grid-template-columns: 320px 1fr 320px; grid-template-rows: 60px 1fr 120px; gap: 20px; }
+        .dash-head { grid-column: 1 / -1; border-bottom: 2px solid var(--pink); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
+        .d-title { font-family: 'Orbitron'; font-size: 2rem; color: #fff; text-shadow: 0 0 20px var(--pink); }
+        .dash-center { grid-column: 2; grid-row: 2; display: flex; justify-content: center; align-items: center; position: relative; }
+        .c-ring { width: 350px; height: 350px; border: 2px dashed rgba(255,255,255,0.2); border-radius: 50%; animation: spin 30s linear infinite; display: flex; justify-content: center; align-items: center; }
+        .c-core { width: 180px; height: 180px; border: 5px solid var(--pink); border-radius: 50%; box-shadow: 0 0 80px var(--pink); background: rgba(0,0,0,0.8); }
+        .dash-panel { background: rgba(20, 0, 5, 0.7); border: 1px solid var(--pink); padding: 15px; position: relative; overflow-y: auto; }
+        .dp-l { grid-column: 1; grid-row: 2; } .dp-r { grid-column: 3; grid-row: 2; }
+        .dp-b { grid-column: 2; grid-row: 3; display: flex; justify-content: space-around; align-items: center; border: 1px solid rgba(255,0,60,0.3); }
+        .dh { font-family: 'Orbitron'; font-size: 1rem; color: #ff80aa; border-bottom: 1px solid rgba(255,255,255,0.2); margin-bottom: 10px; padding-bottom: 5px; }
+        .dr { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 5px; border-bottom: 1px dashed rgba(255,255,255,0.1); }
+        .lb { color: #aaa; } .vl { color: #fff; font-weight: bold; text-align: right; }
+
+        /* STATES & ANIMS */
+        .granted .frame-top, .granted .frame-bot, .granted .corner, .granted .box, .granted .gauge { border-color: var(--green) !important; box-shadow: 0 0 20px var(--green) !important; color: var(--green) !important; }
+        .granted .frame-top, .granted .frame-bot { background: var(--green) !important; }
+        .granted .r-core { border-color: var(--green) !important; box-shadow: 0 0 100px var(--green) !important; }
+        .granted .status-txt { color: var(--green) !important; text-shadow: 0 0 20px var(--green) !important; }
+        .granted .scan-line { background: var(--green) !important; box-shadow: 0 0 15px var(--green) !important; }
+
         @keyframes spin { 100% { transform: rotate(360deg); } }
-        @keyframes spinRev { 100% { transform: rotate(-360deg); } }
-        @keyframes pulse { 0% { opacity: 0.6; } 100% { opacity: 1; } }
-        @keyframes shake { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -1px); } 100% { transform: translate(1px, -1px); } }
         @keyframes scanDown { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
+        @keyframes shake { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -1px); } 100% { transform: translate(1px, -1px); } }
+        @keyframes cardAppear { 0% { opacity: 0; transform: rotateX(60deg) scale(0.5) translateY(100px); } 100% { opacity: 1; transform: rotateX(40deg) scale(1) translateY(0); } }
 
     </style>
 </head>
@@ -152,63 +186,82 @@
     <audio id="sScan" src="scan.mp3" preload="auto" loop></audio>
     <audio id="sGrant" src="granted.mp3" preload="auto"></audio>
 
-    <div id="introUI">
-        <div id="bgLayer">
-            <div class="grid-plane floor"></div>
-            <div class="grid-plane ceiling"></div>
-            <div id="particles"></div>
-        </div>
-
-        <div class="top-bar"></div>
+    <div id="layer-intro">
+        <div class="bg-grid"></div>
+        <div id="particles"></div>
+        <div class="frame-top"></div><div class="frame-bot"></div>
         <div class="corner tl"></div><div class="corner tr"></div>
         <div class="corner bl"></div><div class="corner br"></div>
 
-        <div class="ui-container">
+        <div class="intro-grid">
             <div class="p-left">
                 <div class="sys-h">SYSTEM_LOG</div>
-                <div class="sys-list">
-                    > MEM_ALLOC: 98%<br>> ENCRYPTION: 256-BIT<br>> PROXY: REROUTED<br>> LATENCY: 12ms
-                </div>
-                <div class="box-grid">
-                    <div class="box b1"></div><div class="box b2"></div>
-                    <div class="box b3"></div><div class="box b4"></div>
-                </div>
-                <div class="gauges">
-                    <div class="gauge">CPU</div><div class="gauge">RAM</div>
-                </div>
+                <div class="sys-list">> KERNEL: ACTIVE<br>> ENCRYPTION: 256-BIT<br>> PROXY: REROUTED</div>
+                <div class="box-grid"><div class="box b1"></div><div class="box b2"></div><div class="box b3"></div><div class="box b4"></div></div>
+                <div class="gauges"><div class="gauge">CPU</div><div class="gauge">RAM</div></div>
             </div>
-
             <div class="p-right">
                 <div class="r-outer"></div>
-                <div class="r-mid"></div>
-                <div class="r-core">
-                    
-                    <div id="p1" style="display:flex; justify-content:center; align-items:center; width:100%;">
-                        <div class="status-txt" id="seqText">SYSTEM STARTUP</div>
-                    </div>
-
-                    <div id="p2" style="display:none; text-align:center;">
-                        <div class="status-txt" style="font-size:1rem;">SERVER READY</div>
-                        <button class="btn-connect" onclick="triggerDenied()">CONNECT CONSOLE</button>
-                    </div>
-
-                    <div id="p3" style="display:none;" class="alert-box">
-                        <i class="fas fa-exclamation-triangle" style="font-size:3rem; margin-bottom:10px;"></i>
-                        <div class="status-txt" style="color:red;">ACCESS DENIED</div>
-                        <div style="font-size:0.8rem; margin-top:5px; border:1px solid red; padding:5px;">SERVER PROTECTED BY AYUSH</div>
-                    </div>
-
-                    <div id="p4" style="display:none; flex-direction:column; align-items:center;">
-                        <div class="scan-pad" id="scanBtn">
-                            <div style="width:100%; height:100%; background:url('https://img.icons8.com/ios/100/ff4d6d/fingerprint.png') center/70% no-repeat; opacity:0.6;"></div>
-                            <div class="scan-line" id="scanLine"></div>
-                        </div>
-                        <div class="status-txt" style="font-size:0.8rem; margin-top:10px;">HOLD TO VERIFY</div>
-                    </div>
-
+                <div class="r-inner">
+                    <div id="ph1"><div class="status-txt" id="seqText">SYSTEM STARTUP</div></div>
+                    <div id="ph2" style="display:none; text-align:center;"><div class="status-txt" style="font-size:1rem;">SERVER READY</div><button class="btn-connect" onclick="triggerDenied()">CONNECT CONSOLE</button></div>
+                    <div id="ph3" style="display:none;" class="alert-box"><i class="fas fa-exclamation-triangle" style="font-size:3rem; color:red; margin-bottom:10px;"></i><div class="status-txt" style="color:red;">ACCESS DENIED</div><div style="font-size:0.8rem; margin-top:5px; border:1px solid red; padding:5px;">SERVER PROTECTED BY AYUSH</div></div>
+                    <div id="ph4" style="display:none; flex-direction:column; align-items:center;"><div class="scan-pad" id="scanBtn"><div style="width:100%; height:100%; background:url('https://img.icons8.com/ios/100/ff4d6d/fingerprint.png') center/70% no-repeat; opacity:0.6;"></div><div class="scan-line" id="scanLine"></div></div><div class="status-txt" id="scanStatus" style="font-size:0.8rem; margin-top:10px;">HOLD TO VERIFY</div></div>
                 </div>
             </div>
         </div>
+    </div>
+
+    <div id="layer-loading">
+        <div class="load-card">
+            <div class="lc-tl"></div><div class="lc-br"></div>
+            <div class="load-text">USER: VIOLINA</div>
+            <div class="load-sub">LOADING DATABASE...</div>
+            <div class="load-bar-bg">
+                <div class="load-bar-fill" id="progBar"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layer-main">
+        <div class="dash-grid">
+            <div class="dash-head"><div class="d-title">DATABASE UNLOCKED</div><div style="font-family:'Share Tech Mono'; color:#ff80aa;">SECURE CONNECTION ESTABLISHED</div></div>
+            <div class="dash-panel dp-l">
+                <div class="dh">IDENTITY PROTOCOLS</div>
+                <div class="dr"><span class="lb">NAME</span> <span class="vl">Violina Sharma</span></div>
+                <div class="dr"><span class="lb">DOB</span> <span class="vl">13 FEB 20XX</span></div>
+                <div class="dr"><span class="lb">ZODIAC</span> <span class="vl">Taurus ♉</span></div>
+                <div class="dr"><span class="lb">EYES</span> <span class="vl">Deep Espresso</span></div>
+                <div class="dr"><span class="lb">HAIR</span> <span class="vl">Black</span></div>
+                <div class="dr"><span class="lb">SHOE</span> <span class="vl">7 (Tiny Feet)</span></div>
+                <br>
+                <div class="dh">CONNECTION</div>
+                <div class="dr"><span class="lb">MET</span> <span class="vl">11 April 2025</span></div>
+                <div class="dr"><span class="lb">DIST</span> <span class="vl" style="color:red;">611 KM</span></div>
+                <div class="dr"><span class="lb">CALL</span> <span class="vl" style="color:#00ff00;">06 HOURS</span></div>
+            </div>
+            <div class="dash-center"><div class="c-ring"></div><div class="c-core"></div></div>
+            <div class="dash-panel dp-r">
+                <div class="dh">PREFERENCES</div>
+                <div class="dr"><span class="lb">FOOD</span> <span class="vl">Brinjal / Duck</span></div>
+                <div class="dr"><span class="lb">DRINK</span> <span class="vl">Red Tea</span></div>
+                <div class="dr"><span class="lb">ARTIST</span> <span class="vl">Taylor Swift</span></div>
+                <div class="dr"><span class="lb">PLACE</span> <span class="vl" style="color:#ff4d6d;">My Lap</span></div>
+                <br>
+                <div class="dh">BEHAVIOR</div>
+                <div class="dr"><span class="lb">HAPPY</span> <span class="vl">Award Dance</span></div>
+                <div class="dr"><span class="lb">ANGRY</span> <span class="vl">Scolding</span></div>
+                <div class="dr"><span class="lb">FIX</span> <span class="vl">Treat like Kid</span></div>
+            </div>
+            <div class="dash-panel dp-b">
+                <div style="text-align:center;"><span class="lb">SNEEZE</span><br><span class="vl">Kitten 🐱</span></div>
+                <div style="text-align:center;"><span class="lb">LAUGH</span><br><span class="vl">Giggle</span></div>
+                <div style="text-align:center;"><span class="lb">DRIVE</span><br><span class="vl" style="color:red;">SCARY</span></div>
+                <div style="text-align:center;"><span class="lb">TALENT</span><br><span class="vl">Singer</span></div>
+                <div style="text-align:center;"><span class="lb">WALK</span><br><span class="vl">Fast</span></div>
+            </div>
+        </div>
+        <div style="position:absolute; bottom:20px; width:100%; text-align:center;"><a href="page5_2.html" style="color:#fff; text-decoration:none; border:1px solid #fff; padding:10px;">INITIATE REASSEMBLY ></a></div>
     </div>
 
     <script>
@@ -217,12 +270,10 @@
         const sGrant = document.getElementById('sGrant');
         const particles = document.getElementById('particles');
 
-        // Tunnel Objects (Particles)
+        // Tunnel Particles
         setInterval(() => {
-            const el = document.createElement('div');
-            el.className = 'fly-obj';
+            const el = document.createElement('div'); el.className = 'fly-obj';
             el.innerHTML = Math.random() > 0.5 ? '0101' : 'HEX';
-            // Random Position on sides
             let x = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 400 + 300);
             let y = (Math.random() - 0.5) * 600;
             el.style.setProperty('--tx', x + 'px'); el.style.setProperty('--ty', y + 'px');
@@ -232,13 +283,9 @@
         }, 400);
 
         function initSystem() {
-            // Unlock Audio
-            sAlert.play().catch(()=>{}); sAlert.pause();
-            sScan.play().catch(()=>{}); sScan.pause();
-            sGrant.play().catch(()=>{}); sGrant.pause();
-
+            sAlert.play().catch(()=>{}); sAlert.pause(); sScan.play().catch(()=>{}); sScan.pause(); sGrant.play().catch(()=>{}); sGrant.pause();
             document.getElementById('layer-start').style.display = 'none';
-            document.getElementById('introUI').style.display = 'block';
+            document.getElementById('layer-intro').style.display = 'block';
             runSequence();
         }
 
@@ -250,30 +297,26 @@
                 {t:"LOADING...", d:6000}, {t:"DECRYPTING DATA", d:7500},
                 {t:"BYPASSING FIREWALL", d:9000}, {t:"TRYING TO CONNECT", d:10500}, {t:"SERVER READY", d:12000}
             ];
-            
             seq.forEach(x => setTimeout(() => {
                 txt.innerText = x.t;
                 if(x.s) txt.style.fontSize = x.s; else txt.style.fontSize = "1.5rem";
             }, x.d));
-
             setTimeout(() => {
-                document.getElementById('p1').style.display = 'none';
-                document.getElementById('p2').style.display = 'block';
+                document.getElementById('ph1').style.display = 'none';
+                document.getElementById('ph2').style.display = 'block';
             }, 13500);
         }
 
         function triggerDenied() {
-            document.getElementById('p2').style.display = 'none';
-            document.getElementById('p3').style.display = 'block';
+            document.getElementById('ph2').style.display = 'none';
+            document.getElementById('ph3').style.display = 'block';
             sAlert.currentTime = 0; sAlert.play();
-            
             setTimeout(() => {
-                document.getElementById('p3').style.display = 'none';
-                document.getElementById('p4').style.display = 'flex';
+                document.getElementById('ph3').style.display = 'none';
+                document.getElementById('ph4').style.display = 'flex';
             }, 3000);
         }
 
-        // Scanner Logic
         const pad = document.getElementById('scanBtn');
         const line = document.getElementById('scanLine');
         let timer;
@@ -282,23 +325,45 @@
             e.preventDefault();
             sScan.currentTime=0; sScan.play();
             line.style.display = 'block';
-            // Placeholder for next step (Currently does nothing as requested)
-            timer = setTimeout(() => {
-                sScan.pause(); sGrant.play();
-                alert("NEXT STEP PENDING YOUR INSTRUCTION");
-            }, 2000);
+            line.style.animation = "scanDown 1s linear infinite";
+            timer = setTimeout(grantAccess, 2000);
         }
-        function endScan() {
-            clearTimeout(timer);
-            sScan.pause();
-            line.style.display = 'none';
-        }
+        function endScan() { clearTimeout(timer); sScan.pause(); line.style.display = 'none'; }
 
         pad.addEventListener('mousedown', startScan);
         pad.addEventListener('mouseup', endScan);
         pad.addEventListener('touchstart', startScan);
         pad.addEventListener('touchend', endScan);
 
+        function grantAccess() {
+            sScan.pause(); sGrant.play();
+            
+            // 1. Green
+            document.body.classList.add('granted');
+            document.getElementById('scanStatus').innerText = "ACCESS GRANTED";
+            
+            // 2. Black Screen & Loading Card
+            setTimeout(() => {
+                document.getElementById('layer-intro').style.opacity = '0';
+                
+                setTimeout(() => {
+                    document.getElementById('layer-intro').style.display = 'none';
+                    document.getElementById('layer-loading').style.display = 'flex';
+                    
+                    // 3. Fill Bar
+                    setTimeout(() => {
+                        document.getElementById('progBar').style.width = "100%";
+                        
+                        // 4. Show Main
+                        setTimeout(() => {
+                            document.getElementById('layer-loading').style.display = 'none';
+                            document.getElementById('layer-main').style.display = 'block';
+                            setTimeout(() => document.getElementById('layer-main').style.opacity = '1', 50);
+                        }, 3500); // Wait for bar to fill
+                    }, 500);
+                }, 500);
+            }, 1000);
+        }
     </script>
 </body>
 </html>
