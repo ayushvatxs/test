@@ -22,7 +22,7 @@
             --glass: rgba(20, 0, 5, 0.85);
         }
 
-        /* --- 1. START SCREEN (Audio Unlocker) --- */
+        /* --- 1. START SCREEN --- */
         #start-screen {
             position: fixed; inset: 0; z-index: 9999;
             background: radial-gradient(circle, #200000 0%, #000 100%);
@@ -80,7 +80,7 @@
             display: grid; grid-template-columns: 350px 1fr; gap: 50px;
         }
 
-        /* --- LEFT PANEL (EXACT REPLICA) --- */
+        /* --- LEFT PANEL --- */
         .panel-left {
             display: flex; flex-direction: column; padding: 25px;
             background: var(--glass); border: 1px solid rgba(255,0,60,0.3);
@@ -91,12 +91,10 @@
         }
         .logs { font-size: 0.8rem; color: #ff99aa; line-height: 1.6; margin-bottom: 25px; }
 
-        /* The 4-Box Chamfered Grid */
         .box-container {
             display: grid; grid-template-columns: 1fr 1fr; gap: 10px; height: 160px; margin-bottom: 25px;
         }
         .box { border: 1px solid var(--pink); background: rgba(50,0,0,0.3); }
-        /* Inner Chamfer Cuts */
         .b1 { clip-path: polygon(0 0, 100% 0, 100% 80%, 80% 100%, 0 100%); }
         .b2 { clip-path: polygon(0 0, 100% 0, 100% 100%, 20% 100%, 0 80%); }
         .b3 { clip-path: polygon(0 0, 80% 0, 100% 20%, 100% 100%, 0 100%); }
@@ -109,7 +107,7 @@
         }
         .circle-gauge::after { content:''; position: absolute; inset: -3px; border-radius: 50%; border: 2px solid transparent; border-top-color: var(--pink); animation: spin 2s linear infinite; }
 
-        /* --- RIGHT PANEL (REACTOR) --- */
+        /* --- RIGHT PANEL --- */
         .panel-right { display: flex; justify-content: center; align-items: center; position: relative; }
         .reactor-outer { position: absolute; width: 450px; height: 450px; border: 2px solid var(--pink); border-radius: 50%; border-left: transparent; border-right: transparent; animation: spin 10s linear infinite; }
         .reactor-core {
@@ -119,7 +117,6 @@
             box-shadow: 0 0 60px var(--pink); z-index: 20; position: relative;
         }
 
-        /* TEXT & BUTTONS */
         .status-text { font-family: 'Orbitron'; font-size: 1.4rem; font-weight: bold; text-shadow: 0 0 10px var(--pink); text-align: center; }
         
         .btn-connect {
@@ -128,7 +125,6 @@
         }
         .alert { color: red; text-align: center; animation: shake 0.5s infinite; }
 
-        /* SCANNER */
         .scanner-ui {
             width: 90px; height: 130px; border: 2px solid var(--pink); border-radius: 20px;
             position: relative; overflow: hidden; margin-top: 15px; cursor: pointer;
@@ -137,7 +133,7 @@
         .fingerprint { width: 100%; height: 100%; background: url('https://img.icons8.com/ios/100/ff003c/fingerprint.png') center/60% no-repeat; opacity: 0.7; }
         .laser { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: #fff; box-shadow: 0 0 15px #fff; display: none; animation: scanMove 1s linear infinite; }
 
-        /* --- SUCCESS STATE (GREEN) --- */
+        /* SUCCESS STATE */
         .granted .border-top, .granted .corner, .granted .panel-left, .granted .reactor-outer, .granted .reactor-core, .granted .box, .granted .circle-gauge, .granted .scanner-ui {
             border-color: var(--green) !important; box-shadow: 0 0 20px var(--green) !important;
         }
@@ -146,7 +142,6 @@
         .granted .status-text { color: var(--green) !important; text-shadow: 0 0 20px var(--green) !important; }
         .granted .laser { background: var(--green) !important; box-shadow: 0 0 15px var(--green) !important; }
 
-        /* ANIMATIONS */
         @keyframes spin { 100% { transform: rotate(360deg); } }
         @keyframes pulse { 0% { opacity: 0.6; } 100% { opacity: 1; } }
         @keyframes shake { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -1px); } 100% { transform: translate(1px, -1px); } }
@@ -246,21 +241,30 @@
 
         // 1. Initialize
         function initialize() {
-            // Unlock Audio Context
             audio.alert.play().catch(()=>{}); audio.alert.pause();
             audio.scan.play().catch(()=>{}); audio.scan.pause();
             audio.grant.play().catch(()=>{}); audio.grant.pause();
 
             document.getElementById('start-screen').style.display = 'none';
             document.getElementById('ui-layer').style.display = 'block';
-            
             runSequence();
         }
 
-        // 2. Text Sequence
+        // 2. Full Sequence (Slower)
         function runSequence() {
             const txt = document.getElementById('seqText');
-            const seq = ["SYSTEM STARTUP", "INITIALIZING...", "HEY!", "WELCOME", "DECRYPTING...", "SERVER READY"];
+            const seq = [
+                "SYSTEM STARTUP",
+                "INITIALIZING...",
+                "HEY!",
+                "WELCOME TO VIOLINA'S DATABASE",
+                "LOADING...",
+                "DECRYPTING DATA...",
+                "BYPASSING FIREWALL...",
+                "TRYING TO CONNECT...",
+                "SERVER READY"
+            ];
+            
             let i = 0;
             const t = setInterval(() => {
                 if(i >= seq.length) {
@@ -271,10 +275,10 @@
                     txt.innerText = seq[i];
                     i++;
                 }
-            }, 1000); // 1s per text
+            }, 1800); // 1.8 seconds per message
         }
 
-        // 3. Deny Access
+        // 3. Deny
         function triggerDeny() {
             document.getElementById('p2').style.display = 'none';
             document.getElementById('p3').style.display = 'block';
@@ -286,7 +290,7 @@
             }, 3000);
         }
 
-        // 4. Scanner Logic
+        // 4. Scan
         const pad = document.getElementById('scanPad');
         const laser = document.getElementById('laser');
         let scanTimer;
@@ -300,8 +304,6 @@
             e.preventDefault();
             laser.style.display = 'block';
             audio.scan.currentTime = 0; audio.scan.play();
-            
-            // Hold for 2 seconds to grant access
             scanTimer = setTimeout(grantAccess, 2000);
         }
 
@@ -311,15 +313,13 @@
             audio.scan.pause();
         }
 
-        // 5. Grant Access
+        // 5. Grant
         function grantAccess() {
             audio.scan.pause(); audio.grant.play();
             document.body.classList.add('granted');
-            
             document.getElementById('p4').style.display = 'none';
             document.getElementById('p5').style.display = 'block';
         }
-
     </script>
 </body>
 </html>
