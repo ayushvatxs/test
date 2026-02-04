@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- CORE --- */
+        /* --- CORE SETTINGS --- */
         * { box-sizing: border-box; }
         body {
             margin: 0; padding: 0;
@@ -23,223 +23,222 @@
             user-select: none;
         }
 
-        /* --- 1. START SCREEN (SEPARATE) --- */
+        /* --- 1. START SCREEN (SEPARATE LAYER) --- */
         #startScreen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 9999;
+            background: #000; z-index: 10000; /* Highest Priority */
             display: flex; justify-content: center; align-items: center;
             background: radial-gradient(circle, #1a0000 0%, #000 100%);
         }
+        
         .start-btn {
-            background: rgba(255, 0, 60, 0.1); border: 2px solid #ff4d6d; color: #ff4d6d;
+            background: rgba(255, 0, 60, 0.1); 
+            border: 2px solid #ff4d6d; color: #ff4d6d;
             padding: 20px 60px; font-family: 'Orbitron'; font-size: 1.5rem; letter-spacing: 4px;
             cursor: pointer; box-shadow: 0 0 30px #ff4d6d; transition: 0.3s;
             clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
         }
         .start-btn:hover { background: #ff4d6d; color: #000; box-shadow: 0 0 60px #ff4d6d; }
 
-        /* --- 2. INTRO HUD --- */
-        #introUI {
+        /* --- 2. BACKGROUND GRID --- */
+        #bgLayer {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 10; display: none; /* Hidden until start */
-            perspective: 1000px;
+            z-index: 0; background: #020000; perspective: 1000px; overflow: hidden;
         }
-
-        /* Background Tunnel */
-        #tunnelBg {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0; overflow: hidden;
-        }
-        .tunnel-grid {
+        .grid-plane {
             position: absolute; left: -50%; width: 200%; height: 200%;
             background: 
                 linear-gradient(rgba(255, 0, 60, 0.2) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255, 0, 60, 0.2) 1px, transparent 1px);
             background-size: 80px 80px;
-            transform: rotateX(80deg); opacity: 0.5;
+            transform: rotateX(80deg);
         }
-        .floor { bottom: -100px; animation: gridRun 3s linear infinite; }
-        .ceiling { top: -100px; transform: rotateX(-80deg); animation: gridRun 3s linear infinite; }
-        @keyframes gridRun { 0% { background-position: 0 0; } 100% { background-position: 0 80px; } }
+        .floor { bottom: -100px; animation: gridMove 2s linear infinite; }
+        .ceiling { top: -100px; transform: rotateX(-80deg); animation: gridMove 2s linear infinite; }
+        @keyframes gridMove { 0% { background-position: 0 0; } 100% { background-position: 0 80px; } }
 
-        /* Floating Wall Objects */
-        .wall-obj {
-            position: absolute; color: rgba(255, 0, 60, 0.6); border: 1px solid rgba(255, 0, 60, 0.4);
-            padding: 10px; font-size: 1.5rem; background: rgba(20, 0, 0, 0.5);
-            animation: objFly 4s linear infinite;
-        }
-        @keyframes objFly { 
-            0% { transform: translate3d(var(--tx), var(--ty), -1000px); opacity: 0; } 
-            20% { opacity: 1; } 
-            100% { transform: translate3d(var(--ex), var(--ty), 500px); opacity: 0; } 
+        /* --- 3. HUD INTERFACE --- */
+        #introUI {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 10; display: none; /* Hidden until Init */
+            transition: transform 1s ease-in, opacity 0.5s ease-in;
+            transform-origin: 75% 50%; /* Center Zoom on Reactor */
         }
 
-        /* HUD Frame */
-        .hud-frame { position: absolute; width: 100%; height: 100%; pointer-events: none; z-index: 20; }
-        .hud-bar-top { position: absolute; top: 30px; left: 5%; width: 90%; height: 2px; background: #ff4d6d; box-shadow: 0 0 10px #ff4d6d; }
-        .hud-corner { position: absolute; width: 60px; height: 60px; border: 4px solid #ff4d6d; box-shadow: 0 0 15px #ff4d6d; }
-        .hc-tl { top: 30px; left: 30px; border-right: 0; border-bottom: 0; }
-        .hc-tr { top: 30px; right: 30px; border-left: 0; border-bottom: 0; }
-        .hc-bl { bottom: 30px; left: 30px; border-right: 0; border-top: 0; }
-        .hc-br { bottom: 30px; right: 30px; border-left: 0; border-top: 0; }
+        /* THE FRAME (Borders) */
+        .hud-border-top { position: absolute; top: 30px; left: 5%; width: 90%; height: 3px; background: #ff4d6d; box-shadow: 0 0 15px #ff4d6d; }
+        .hud-border-bottom { position: absolute; bottom: 30px; left: 5%; width: 90%; height: 3px; background: #ff4d6d; box-shadow: 0 0 15px #ff4d6d; }
+        
+        .hud-corner { position: absolute; width: 80px; height: 80px; border: 5px solid #ff4d6d; box-shadow: 0 0 15px #ff4d6d; }
+        .tl { top: 30px; left: 30px; border-right: 0; border-bottom: 0; }
+        .tr { top: 30px; right: 30px; border-left: 0; border-bottom: 0; }
+        .bl { bottom: 30px; left: 30px; border-right: 0; border-top: 0; }
+        .br { bottom: 30px; right: 30px; border-left: 0; border-top: 0; }
 
-        /* Container */
-        .hud-container {
+        /* HUD LAYOUT */
+        .hud-content {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 90%; max-width: 1200px; height: 600px;
+            width: 90%; max-width: 1300px; height: 600px;
             display: grid; grid-template-columns: 350px 1fr; gap: 50px;
-            z-index: 30;
         }
 
-        /* Left Panel (Restored) */
+        /* LEFT PANEL (Exact Replication) */
         .left-panel {
-            background: rgba(20, 0, 5, 0.7); border: 1px solid rgba(255, 0, 60, 0.3);
-            padding: 20px; display: flex; flex-direction: column;
+            display: flex; flex-direction: column; padding: 25px;
+            background: rgba(20, 0, 5, 0.7); border: 1px solid rgba(255, 77, 109, 0.3);
             backdrop-filter: blur(5px);
         }
-        .sys-title { font-family: 'Orbitron'; font-size: 1.2rem; color: #ff4d6d; border-bottom: 2px solid #ff4d6d; margin-bottom: 10px; display: inline-block; }
-        .sys-log { font-size: 0.75rem; color: #ffb3c1; margin-bottom: 20px; line-height: 1.6; }
-        
-        .geo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; height: 180px; margin-bottom: 20px; }
+        .sys-head { font-family: 'Orbitron'; font-size: 1.3rem; color: #ff4d6d; border-bottom: 3px solid #ff4d6d; margin-bottom: 15px; padding-bottom: 5px; display: inline-block; }
+        .sys-log { font-size: 0.8rem; color: #ffb3c1; margin-bottom: 25px; line-height: 1.8; }
+
+        .geo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; height: 180px; margin-bottom: 30px; }
         .geo-box { border: 1px solid #ff4d6d; background: rgba(50, 0, 0, 0.3); position: relative; }
-        .gb-1 { clip-path: polygon(0 0, 100% 0, 100% 80%, 80% 100%, 0 100%); }
-        .gb-2 { clip-path: polygon(0 0, 100% 0, 100% 100%, 20% 100%, 0 80%); }
-        .gb-3 { clip-path: polygon(0 0, 80% 0, 100% 20%, 100% 100%, 0 100%); }
-        .gb-4 { clip-path: polygon(20% 0, 100% 0, 100% 100%, 0 100%, 0 20%); }
+        /* Chamfered Cuts */
+        .g1 { clip-path: polygon(0 0, 100% 0, 100% 80%, 80% 100%, 0 100%); }
+        .g2 { clip-path: polygon(0 0, 100% 0, 100% 100%, 20% 100%, 0 80%); }
+        .g3 { clip-path: polygon(0 0, 80% 0, 100% 20%, 100% 100%, 0 100%); }
+        .g4 { clip-path: polygon(20% 0, 100% 0, 100% 100%, 0 100%, 0 20%); }
 
         .gauges { display: flex; gap: 20px; margin-top: auto; }
-        .gauge { width: 50px; height: 50px; border-radius: 50%; border: 1px solid #ff4d6d; display: flex; justify-content: center; align-items: center; font-size: 0.7rem; position: relative; }
-        .gauge::after { content:''; position:absolute; inset:-3px; border-radius:50%; border:2px solid transparent; border-top-color:#ff4d6d; animation: spin 2s linear infinite; }
+        .gauge { width: 60px; height: 60px; border-radius: 50%; border: 1px solid #ff4d6d; display: flex; justify-content: center; align-items: center; color: #fff; font-size: 0.8rem; position: relative; }
+        .gauge::after { content:''; position:absolute; inset:-4px; border-radius:50%; border:2px solid transparent; border-top-color:#ff4d6d; animation: spin 2s linear infinite; }
 
-        /* Right Panel (Reactor) */
+        /* RIGHT PANEL (Reactor) */
         .right-panel { display: flex; justify-content: center; align-items: center; position: relative; }
-        .reactor-outer { position: absolute; width: 450px; height: 450px; border: 2px solid rgba(255, 77, 109, 0.5); border-radius: 50%; border-left: transparent; border-right: transparent; animation: spin 10s linear infinite; }
+        .reactor-outer { position: absolute; width: 500px; height: 500px; border: 2px solid rgba(255, 77, 109, 0.5); border-radius: 50%; border-left: transparent; border-right: transparent; animation: spin 10s linear infinite; }
         .reactor-core {
-            width: 300px; height: 300px; background: rgba(0, 0, 0, 0.9);
-            border: 3px solid #ff4d6d; border-radius: 50%;
+            width: 320px; height: 320px; background: rgba(0, 0, 0, 0.95);
+            border: 4px solid #ff4d6d; border-radius: 50%;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            box-shadow: 0 0 50px rgba(255, 0, 60, 0.4); z-index: 40;
+            box-shadow: 0 0 60px rgba(255, 0, 60, 0.4); z-index: 10;
             transition: all 0.5s;
         }
 
-        /* Interactive Elements */
-        .status-text { font-family: 'Orbitron'; font-size: 1.4rem; font-weight: 700; text-shadow: 0 0 10px #ff4d6d; text-align: center; }
+        /* TEXT & BUTTONS */
+        .status-text { font-family: 'Orbitron'; font-size: 1.5rem; font-weight: 700; color: #fff; text-shadow: 0 0 15px #ff4d6d; text-align: center; }
         .connect-btn {
             margin-top: 20px; background: rgba(255,255,255,0.1); border: 1px solid #fff; color: #fff;
-            padding: 10px 30px; font-family: 'Orbitron'; cursor: pointer;
+            padding: 12px 35px; font-family: 'Orbitron'; font-size: 1rem; cursor: pointer;
             animation: pulse 1.5s infinite; pointer-events: auto;
         }
-        
-        .alert-wrap { text-align: center; animation: shake 0.5s infinite; }
-        .scanner-ui { width: 80px; height: 120px; border: 2px solid #ff4d6d; border-radius: 20px; position: relative; overflow: hidden; margin-top: 10px; cursor: pointer; }
-        .scan-line { position: absolute; width: 100%; height: 2px; background: #fff; top: 0; box-shadow: 0 0 10px #fff; display: none; }
+        .connect-btn:hover { background: #fff; color: #000; box-shadow: 0 0 20px #fff; }
 
-        /* --- 3. TRANSITION EFFECT (VIDEO STYLE) --- */
-        .fly-through-anim { animation: cameraZoom 1s cubic-bezier(0.7, 0, 0.3, 1) forwards; }
-        
-        @keyframes cameraZoom {
-            0% { transform: scale(1); opacity: 1; }
-            40% { transform: scale(1.5); opacity: 1; }
-            100% { transform: scale(20); opacity: 0; }
-        }
+        /* ALERT & SCANNER */
+        .alert-box { text-align: center; animation: shake 0.5s infinite; }
+        .scanner-ui { width: 90px; height: 130px; border: 2px solid #ff4d6d; border-radius: 20px; position: relative; overflow: hidden; margin-top: 15px; cursor: pointer; }
+        .scan-beam { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: #fff; box-shadow: 0 0 15px #fff; animation: scanDown 1.5s linear infinite; display: none; }
 
-        /* --- 4. MAIN DASHBOARD (VIDEO REPLICA) --- */
+        /* --- 4. MAIN DASHBOARD (Video Style) --- */
         #mainDashboard {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 5; display: none; opacity: 0;
-            background: #050005; padding: 20px;
-            transition: opacity 1s;
+            background: #000; padding: 30px;
+            transition: opacity 1s ease;
         }
 
         .dash-grid {
             display: grid; 
-            grid-template-columns: 300px 1fr 300px; 
-            grid-template-rows: 60px 1fr 150px;
-            height: 100%; gap: 20px; width: 100%;
+            grid-template-columns: 320px 1fr 320px; 
+            grid-template-rows: 80px 1fr 120px;
+            height: 100%; gap: 30px;
         }
 
         /* Dashboard Header */
-        .dash-top { grid-column: 1 / -1; border-bottom: 2px solid #ff4d6d; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
-        .dash-title { font-family: 'Orbitron'; font-size: 1.5rem; text-shadow: 0 0 10px #ff4d6d; }
+        .d-header { grid-column: 1 / -1; border-bottom: 2px solid #ff4d6d; display: flex; justify-content: space-between; align-items: center; }
+        .d-title { font-family: 'Orbitron'; font-size: 2rem; color: #fff; text-shadow: 0 0 20px #ff4d6d; }
 
-        /* Center Visualization */
-        .dash-center { 
+        /* Center Circle */
+        .d-center { 
             grid-column: 2; grid-row: 2; 
             display: flex; justify-content: center; align-items: center; 
             position: relative;
         }
-        .center-circle {
-            width: 300px; height: 300px; border: 2px dashed rgba(255,255,255,0.2); border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            animation: spin 30s linear infinite;
+        .center-ring {
+            width: 350px; height: 350px; border: 2px dashed rgba(255,255,255,0.3); border-radius: 50%;
+            animation: spin 30s linear infinite; display: flex; justify-content: center; align-items: center;
         }
-        .center-core {
-            width: 150px; height: 150px; border: 5px solid #ff4d6d; border-radius: 50%;
-            box-shadow: 0 0 50px #ff4d6d;
-            background: url('https://img.icons8.com/ios/100/ff4d6d/fingerprint.png') center/50% no-repeat;
+        .center-dot {
+            width: 180px; height: 180px; background: rgba(20,0,5,0.8);
+            border: 5px solid #ff4d6d; border-radius: 50%;
+            box-shadow: 0 0 80px #ff4d6d;
+            background-image: url('https://img.icons8.com/ios/100/ff4d6d/fingerprint.png');
+            background-position: center; background-size: 50%; background-repeat: no-repeat;
         }
 
-        /* Panels (Video Style Layout) */
-        .dash-panel {
-            background: rgba(20, 0, 5, 0.6); border: 1px solid #ff4d6d;
-            padding: 15px; position: relative; overflow-y: auto;
-        }
-        .dash-panel::before { content:''; position:absolute; top:0; left:0; width:10px; height:10px; border-top:2px solid #fff; border-left:2px solid #fff; }
-        .dash-panel::after { content:''; position:absolute; bottom:0; right:0; width:10px; height:10px; border-bottom:2px solid #fff; border-right:2px solid #fff; }
+        /* Panels */
+        .d-panel { background: rgba(20, 0, 5, 0.6); border: 1px solid #ff4d6d; padding: 15px; position: relative; }
+        .d-panel::before { content:''; position:absolute; top:0; left:0; width:10px; height:10px; border-top:2px solid #fff; border-left:2px solid #fff; }
+        .d-panel::after { content:''; position:absolute; bottom:0; right:0; width:10px; height:10px; border-bottom:2px solid #fff; border-right:2px solid #fff; }
 
-        .p-left { grid-column: 1; grid-row: 2; }
-        .p-right { grid-column: 3; grid-row: 2; }
-        .p-bottom { grid-column: 2; grid-row: 3; display: flex; justify-content: space-around; align-items: center; border: 1px solid rgba(255,0,60,0.3); }
+        .dp-left { grid-column: 1; grid-row: 2; }
+        .dp-right { grid-column: 3; grid-row: 2; }
+        .dp-bot { grid-column: 2; grid-row: 3; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,0,60,0.3); }
 
-        .d-head { font-family: 'Orbitron'; font-size: 1rem; color: #ff80aa; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.2); }
-        .d-row { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 5px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 2px; }
-        .dl { color: #aaa; } .dv { color: #fff; font-weight: bold; text-align: right; }
+        .dp-head { font-family: 'Orbitron'; font-size: 1rem; color: #ff80aa; border-bottom: 1px solid rgba(255,255,255,0.2); margin-bottom: 10px; padding-bottom: 5px; }
+        .dp-row { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 5px; border-bottom: 1px dashed rgba(255,255,255,0.1); }
+        .lbl { color: #aaa; } .val { color: #fff; font-weight: bold; }
 
-        /* Animations */
+        /* --- ACCESS GRANTED STATE (GREEN) --- */
+        .granted-mode .hud-bar-top, 
+        .granted-mode .hud-corner, 
+        .granted-mode .geo-box, 
+        .granted-mode .gauge { border-color: #00ff00 !important; box-shadow: 0 0 20px #00ff00 !important; }
+        .granted-mode .hud-bar-top { background: #00ff00 !important; }
+        
+        .granted-mode .reactor-core { border-color: #00ff00 !important; box-shadow: 0 0 100px #00ff00 !important; }
+        .granted-mode .status-text { color: #00ff00 !important; text-shadow: 0 0 20px #00ff00 !important; }
+        
+        /* Transition Animation */
+        .zoom-through { animation: flyAnim 1.5s cubic-bezier(0.7, 0, 0.3, 1) forwards; }
+        .flash-white { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 999; animation: flashAnim 2s forwards; display: none; }
+
         @keyframes spin { 100% { transform: rotate(360deg); } }
         @keyframes spinRev { 100% { transform: rotate(-360deg); } }
-        @keyframes shake { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -1px); } 100% { transform: translate(1px, -1px); } }
         @keyframes pulse { 0% { opacity: 0.6; } 100% { opacity: 1; } }
-        @keyframes scanMove { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
-
-        /* Granted State */
-        .access-granted .hud-bar-top, .access-granted .hud-corner, .access-granted .geo-box, .access-granted .gauge {
-            border-color: #00ff00 !important; box-shadow: 0 0 15px #00ff00 !important;
+        @keyframes shake { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -1px); } 100% { transform: translate(1px, -1px); } }
+        @keyframes scanDown { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
+        
+        @keyframes flyAnim {
+            0% { transform: scale(1); opacity: 1; }
+            40% { transform: scale(1.5); opacity: 1; }
+            100% { transform: scale(30); opacity: 0; }
         }
-        .access-granted .hud-bar-top { background: #00ff00 !important; }
-        .access-granted .reactor-core { border-color: #00ff00 !important; box-shadow: 0 0 80px #00ff00 !important; }
-        .access-granted .status-text { color: #00ff00 !important; text-shadow: 0 0 20px #00ff00 !important; }
+        @keyframes flashAnim { 0% { opacity: 0; } 10% { opacity: 1; } 100% { opacity: 0; } }
 
     </style>
 </head>
 <body>
 
-    <div id="startScreen">
-        <button class="start-btn" onclick="startApp()">INITIALIZE SYSTEM</button>
-    </div>
-
-    <div id="introUI">
+    <div id="bgLayer">
         <div id="tunnelBg">
             <div class="tunnel-grid floor"></div>
             <div class="tunnel-grid ceiling"></div>
-            <div id="tunnelObjs"></div>
+            <div id="tunnelObjects"></div>
         </div>
+    </div>
 
-        <div class="hud-frame">
-            <div class="hud-bar-top"></div>
-            <div class="hud-corner hc-tl"></div><div class="hud-corner hc-tr"></div>
-            <div class="hud-corner hc-bl"></div><div class="hud-corner hc-br"></div>
-        </div>
+    <audio id="soundAlert" src="alert.mp3" preload="auto"></audio>
+    <audio id="soundScan" src="scan.mp3" preload="auto" loop></audio>
+    <audio id="soundGrant" src="granted.mp3" preload="auto"></audio>
+
+    <div id="startScreen">
+        <button class="start-btn" onclick="startSequence()">INITIALIZE SYSTEM</button>
+    </div>
+
+    <div id="introUI">
+        <div class="hud-bar-top"></div><div class="hud-border-bottom"></div>
+        <div class="hud-corner tl"></div><div class="hud-corner tr"></div>
+        <div class="hud-corner bl"></div><div class="hud-corner br"></div>
 
         <div class="hud-container">
             <div class="left-panel">
-                <div class="sys-title">SYSTEM_LOG</div>
+                <div class="sys-head">SYSTEM_LOG</div>
                 <div class="sys-log">
                     > MEM_ALLOC: 98%<br>> ENCRYPTION: 256-BIT<br>> PROXY: REROUTED<br>> LATENCY: 12ms
                 </div>
                 <div class="geo-grid">
-                    <div class="geo-box gb-1"></div><div class="geo-box gb-2"></div>
-                    <div class="geo-box gb-3"></div><div class="geo-box gb-4"></div>
+                    <div class="geo-box g1"></div><div class="geo-box g2"></div>
+                    <div class="geo-box g3"></div><div class="geo-box g4"></div>
                 </div>
                 <div class="gauges">
                     <div class="gauge">CPU</div><div class="gauge">RAM</div>
@@ -248,6 +247,7 @@
 
             <div class="right-panel">
                 <div class="reactor-outer"></div>
+                <div class="reactor-inner"></div>
                 <div class="reactor-core" id="mainReactor">
                     
                     <div id="p1" style="display:flex; justify-content:center; align-items:center; height:100%;">
@@ -256,19 +256,19 @@
 
                     <div id="p2" style="display:none; text-align:center;">
                         <div class="status-text" style="font-size:1rem;">SERVER READY</div>
-                        <button class="connect-btn" onclick="triggerConnect()">CONNECT CONSOLE</button>
+                        <button class="connect-btn" onclick="triggerDenied()">CONNECT CONSOLE</button>
                     </div>
 
                     <div id="p3" style="display:none;" class="alert-wrap">
-                        <i class="fas fa-exclamation-triangle" style="font-size:3rem; margin-bottom:10px; color:red;"></i>
+                        <i class="fas fa-exclamation-triangle" style="font-size:3rem; color:red; margin-bottom:10px;"></i>
                         <div class="status-text" style="color:red;">ACCESS DENIED</div>
-                        <div style="font-size:0.8rem; margin-top:5px; border:1px solid red; padding:5px;">SERVER PROTECTED BY AYUSH</div>
+                        <div style="font-size:0.8rem; margin-top:5px; border:1px solid red; padding:5px; color:#ffcccc;">SERVER PROTECTED BY AYUSH</div>
                     </div>
 
                     <div id="p4" style="display:none; flex-direction:column; align-items:center;">
                         <div class="scanner-ui" id="scanPad">
                             <div style="width:100%; height:100%; background:url('https://img.icons8.com/ios/100/ff4d6d/fingerprint.png') center/70% no-repeat; opacity:0.6;"></div>
-                            <div class="scan-line" id="scanLine"></div>
+                            <div class="scan-beam" id="scanBeam"></div>
                         </div>
                         <div class="status-text" id="scanStatus" style="font-size:0.8rem; margin-top:10px;">HOLD TO VERIFY</div>
                     </div>
@@ -281,147 +281,140 @@
     <div id="mainDashboard">
         <div class="dash-grid">
             
-            <div class="dash-top">
-                <div class="dash-title">DATABASE: UNLOCKED</div>
+            <div class="d-header">
+                <div class="d-title">DATABASE: UNLOCKED</div>
                 <div style="font-family:'Share Tech Mono'; color:#ff80aa;">SECURE CONNECTION ESTABLISHED</div>
             </div>
 
-            <div class="dash-panel p-left">
-                <div class="d-head">IDENTITY CORE</div>
-                <div class="d-row"><span class="dl">NAME</span> <span class="dv">Violina Sharma</span></div>
-                <div class="d-row"><span class="dl">DOB</span> <span class="dv">13 FEB 20XX</span></div>
-                <div class="d-row"><span class="dl">ZODIAC</span> <span class="dv">Taurus ♉</span></div>
-                <div class="d-row"><span class="dl">EYES</span> <span class="dv">Deep Espresso</span></div>
-                <div class="d-row"><span class="dl">HAIR</span> <span class="dv">Black</span></div>
-                <div class="d-row"><span class="dl">SHOE</span> <span class="dv">7 (Tiny Feet)</span></div>
-                <div class="d-row"><span class="dl">MARK</span> <span class="dv">Right Forehead Mole</span></div>
-                <div class="d-row"><span class="dl">GLASSES</span> <span class="dv">YES</span></div>
+            <div class="d-panel dp-left">
+                <div class="dp-head">IDENTITY PROTOCOLS</div>
+                <div class="dp-row"><span class="lbl">NAME</span> <span class="val">Violina Sharma</span></div>
+                <div class="dp-row"><span class="lbl">DOB</span> <span class="val">13 FEB 20XX</span></div>
+                <div class="dp-row"><span class="lbl">ZODIAC</span> <span class="val">Taurus ♉</span></div>
+                <div class="dp-row"><span class="lbl">EYES</span> <span class="val">Deep Espresso</span></div>
+                <div class="dp-row"><span class="lbl">HAIR</span> <span class="val">Black</span></div>
+                <div class="dp-row"><span class="lbl">SHOE</span> <span class="val">7 (Tiny)</span></div>
+                <div class="dp-row"><span class="lbl">MARK</span> <span class="val">Mole (Right Forehead)</span></div>
+                <div class="dp-row"><span class="lbl">GLASSES</span> <span class="val">YES</span></div>
                 <br>
-                <div class="d-head">CONNECTION</div>
-                <div class="d-row"><span class="dl">MET</span> <span class="dv">11 April 2025</span></div>
-                <div class="d-row"><span class="dl">IMPRESSION</span> <span class="dv">Gorgeous & Talented</span></div>
-                <div class="d-row"><span class="dl">DIST</span> <span class="dv" style="color:red;">611 KM</span></div>
-                <div class="d-row"><span class="dl">MAX CALL</span> <span class="dv" style="color:#00ff00;">06 HOURS</span></div>
-                <div class="d-row"><span class="dl">PHOTOS</span> <span class="dv">489</span></div>
+                <div class="dp-head">CONNECTION</div>
+                <div class="dp-row"><span class="lbl">MET</span> <span class="val">11 April 2025</span></div>
+                <div class="dp-row"><span class="lbl">IMPRESSION</span> <span class="val">Gorgeous & Talented</span></div>
+                <div class="dp-row"><span class="lbl">DIST</span> <span class="val" style="color:red;">611 KM</span></div>
+                <div class="dp-row"><span class="lbl">CALL</span> <span class="val" style="color:#00ff00;">06 HOURS</span></div>
             </div>
 
-            <div class="dash-center">
-                <div class="center-circle"></div>
-                <div class="center-core"></div>
+            <div class="d-center">
+                <div class="center-ring"></div>
+                <div class="center-dot"></div>
             </div>
 
-            <div class="dash-panel p-right">
-                <div class="d-head">PREFERENCES</div>
-                <div class="d-row"><span class="dl">FOOD</span> <span class="dv">Brinjal / Duck</span></div>
-                <div class="d-row"><span class="dl">DRINK</span> <span class="dv">Red Tea</span></div>
-                <div class="d-row"><span class="dl">SWEET</span> <span class="dv">Kinder Joy</span></div>
-                <div class="d-row"><span class="dl">ARTIST</span> <span class="dv">Taylor Swift</span></div>
-                <div class="d-row"><span class="dl">PLACE</span> <span class="dv" style="color:#ff4d6d;">My Lap</span></div>
+            <div class="d-panel dp-right">
+                <div class="dp-head">PREFERENCES</div>
+                <div class="dp-row"><span class="lbl">FOOD</span> <span class="val">Brinjal / Duck</span></div>
+                <div class="dp-row"><span class="lbl">DRINK</span> <span class="val">Red Tea</span></div>
+                <div class="dp-row"><span class="lbl">SWEET</span> <span class="val">Kinder Joy</span></div>
+                <div class="dp-row"><span class="lbl">ARTIST</span> <span class="val">Taylor Swift</span></div>
+                <div class="dp-row"><span class="lbl">PLACE</span> <span class="val" style="color:#ff4d6d;">My Lap</span></div>
+                <div class="dp-row"><span class="lbl">SLEEP</span> <span class="val">2 Pillows + 1 Hand</span></div>
                 <br>
-                <div class="d-head">BEHAVIOR</div>
-                <div class="d-row"><span class="dl">HAPPY</span> <span class="dv">Dance</span></div>
-                <div class="d-row"><span class="dl">ANGRY</span> <span class="dv">Scolding</span></div>
-                <div class="d-row"><span class="dl">FIX</span> <span class="dv">Treat like Kid</span></div>
-                <div class="d-row"><span class="dl">SAD</span> <span class="dv">Sleep</span></div>
+                <div class="dp-head">BEHAVIOR</div>
+                <div class="dp-row"><span class="lbl">HAPPY</span> <span class="val">Award Dance</span></div>
+                <div class="dp-row"><span class="lbl">ANGRY</span> <span class="val">Scolding Mode</span></div>
+                <div class="dp-row"><span class="lbl">FIX</span> <span class="val">Treat like Kid</span></div>
             </div>
 
-            <div class="dash-panel p-bottom">
-                <div style="text-align:center;">
-                    <div class="dl">SNEEZE</div><div class="dv">Kitten 🐱</div>
-                </div>
-                <div style="text-align:center;">
-                    <div class="dl">LAUGH</div><div class="dv">Giggle</div>
-                </div>
-                <div style="text-align:center;">
-                    <div class="dl">DRIVE</div><div class="dv" style="color:red;">SCARY</div>
-                </div>
-                <div style="text-align:center;">
-                    <div class="dl">TALENT</div><div class="dv">Singer</div>
-                </div>
-                <div style="text-align:center;">
-                    <div class="dl">WALK</div><div class="dv">Fast</div>
-                </div>
+            <div class="d-panel dp-bot">
+                <div style="text-align:center;"><span class="lbl">SNEEZE</span><br><span class="val">Kitten 🐱</span></div>
+                <div style="text-align:center;"><span class="lbl">LAUGH</span><br><span class="val">Giggle</span></div>
+                <div style="text-align:center;"><span class="lbl">DRIVE</span><br><span class="val" style="color:red;">SCARY</span></div>
+                <div style="text-align:center;"><span class="lbl">TALENT</span><br><span class="val">Singer</span></div>
+                <div style="text-align:center;"><span class="lbl">WALK</span><br><span class="val">Fast</span></div>
             </div>
 
         </div>
     </div>
 
+    <div id="flashLayer" class="flash-white"></div>
+
     <script>
         const soundAlert = document.getElementById('soundAlert');
         const soundScan = document.getElementById('soundScan');
         const soundGrant = document.getElementById('soundGrant');
-        const tunnelObjs = document.getElementById('tunnelObjs');
+        const tunnelObjContainer = document.getElementById('tunnelObjects');
 
-        // Tunnel Objects
+        // Wall Objects
+        const tunnelDiv = document.getElementById('tunnelBg');
         setInterval(() => {
             const el = document.createElement('div');
             el.className = 'wall-obj';
             el.innerHTML = Math.random() > 0.5 ? '0101' : 'HEX';
             let x = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 400 + 300);
-            el.style.setProperty('--tx', x + 'px'); el.style.setProperty('--ty', (Math.random()*600 - 300) + 'px');
-            el.style.setProperty('--ex', (x * 1.5) + 'px');
-            tunnelObjs.appendChild(el);
+            let y = (Math.random() - 0.5) * 600;
+            el.style.setProperty('--tx', x + 'px'); el.style.setProperty('--ty', y + 'px');
+            el.style.setProperty('--ex', (x*1.5) + 'px');
+            tunnelDiv.appendChild(el);
             setTimeout(() => el.remove(), 4000);
         }, 500);
 
-        function startApp() {
-            document.getElementById('startScreen').style.display = 'none';
-            document.getElementById('introUI').style.display = 'block';
-            soundAlert.play(); soundAlert.pause(); // Unlock Audio
-            soundScan.play(); soundScan.pause();
+        function startSequence() {
+            soundAlert.play(); soundAlert.pause(); 
+            soundScan.play(); soundScan.pause(); 
             soundGrant.play(); soundGrant.pause();
-            runSeq();
-        }
-
-        function runSeq() {
+            
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('introUI').style.display = 'flex'; // Use Flex for center
+            
             const txt = document.getElementById('seqText');
-            // EXACT SEQUENCE
-            const steps = [
-                {t:"SYSTEM STARTUP", d:0}, {t:"INITIALIZING", d:1500},
-                {t:"HEY!", d:3500, s:"3rem"}, {t:"WELCOME TO VIOLINA'S DATABASE", d:5500, s:"1rem"},
-                {t:"LOADING...", d:8000, s:"1.2rem"}, {t:"DECRYPTING DATA", d:9500},
-                {t:"BYPASSING FIREWALL", d:11000}, {t:"TRYING TO CONNECT", d:12500}, {t:"SERVER READY", d:14000}
+            const seq = [
+                {t:"SYSTEM STARTUP", d:0}, {t:"INITIALIZING", d:1000},
+                {t:"HEY!", d:2500, s:"3rem"}, {t:"WELCOME TO VIOLINA'S DATABASE", d:4000, s:"1rem"},
+                {t:"LOADING...", d:6000, s:"1.2rem"}, {t:"DECRYPTING SERVER DATA", d:7500},
+                {t:"BYPASSING FIREWALL", d:9000}, {t:"TRYING TO CONNECT", d:10500}, {t:"SERVER READY", d:12000}
             ];
-            steps.forEach(k => setTimeout(() => {
-                txt.innerText = k.t;
-                if(k.s) txt.style.fontSize = k.s; else txt.style.fontSize = "1.4rem";
-            }, k.d));
             
+            seq.forEach(s => setTimeout(() => {
+                txt.innerText = s.t;
+                if(s.s) txt.style.fontSize = s.s; else txt.style.fontSize = "1.4rem";
+            }, s.d));
+
             setTimeout(() => {
-                document.getElementById('p1').style.display = 'none';
-                document.getElementById('p2').style.display = 'block';
-            }, 15500);
+                document.getElementById('p1').style.display='none';
+                document.getElementById('p2').style.display='block';
+            }, 13000);
         }
 
-        function triggerConnect() {
-            document.getElementById('p2').style.display = 'none';
-            document.getElementById('p3').style.display = 'block';
-            soundAlert.currentTime = 0; soundAlert.play();
-            // Shake UI (No Lag)
-            document.getElementById('introUI').style.animation = "shake 0.5s infinite";
-            
+        function triggerDenied() {
+            document.getElementById('p2').style.display='none';
+            document.getElementById('p3').style.display='block';
+            soundAlert.currentTime=0; soundAlert.play();
+            // Shake HUD
+            document.getElementById('introUI').style.transform = "translate(5px, 0)";
+            setTimeout(() => document.getElementById('introUI').style.transform = "translate(-5px, 0)", 50);
+            setTimeout(() => document.getElementById('introUI').style.transform = "translate(0, 0)", 100);
+
             setTimeout(() => {
-                document.getElementById('introUI').style.animation = "none";
-                document.getElementById('p3').style.display = 'none';
-                document.getElementById('p4').style.display = 'flex';
-            }, 4000);
+                document.getElementById('p3').style.display='none';
+                document.getElementById('p4').style.display='flex';
+            }, 3000);
         }
 
-        let timer;
+        // Scanner
         const pad = document.getElementById('scanPad');
-        const line = document.getElementById('scanLine');
+        const beam = document.getElementById('scanBeam');
+        let timer;
 
         function startScan(e) {
             e.preventDefault();
             soundScan.currentTime=0; soundScan.play();
-            line.style.display = 'block';
-            line.style.animation = "gridRun 1s linear infinite"; // Fast scan
+            beam.style.display = 'block';
+            beam.style.animation = "scanDown 1s linear infinite";
             timer = setTimeout(grantAccess, 2000);
         }
         function endScan() {
             clearTimeout(timer);
             soundScan.pause();
-            line.style.display = 'none';
+            beam.style.display = 'none';
         }
 
         pad.addEventListener('mousedown', startScan);
@@ -429,26 +422,29 @@
         pad.addEventListener('touchstart', startScan);
         pad.addEventListener('touchend', endScan);
 
-        // --- THE VIDEO TRANSITION ---
+        // --- 1:1 VIDEO TRANSITION ---
         function grantAccess() {
             soundScan.pause(); soundGrant.play();
             
-            // 1. Turn Green
-            document.body.classList.add('access-granted');
+            // 1. Turn Green (Verify)
+            document.body.classList.add('granted-mode');
             document.getElementById('scanStatus').innerText = "ACCESS GRANTED";
             document.getElementById('scanStatus').style.color = "#00ff00";
             
-            // 2. Fly Through (Zoom)
+            // 2. Fly Through (Zoom Camera)
             setTimeout(() => {
-                document.getElementById('introUI').classList.add('fly-through-anim');
+                document.getElementById('introUI').classList.add('zoom-through');
                 
-                // 3. Show Dashboard
+                // 3. Flash & Show Main
                 setTimeout(() => {
+                    document.getElementById('flashLayer').style.display = 'block';
+                    document.getElementById('flashLayer').style.animation = "flashAnim 2s forwards";
+                    
                     document.getElementById('introUI').style.display = 'none';
                     document.getElementById('mainDashboard').style.display = 'block';
-                    setTimeout(() => document.getElementById('mainDashboard').style.opacity = '1', 50);
+                    setTimeout(() => document.getElementById('mainDashboard').style.opacity = '1', 100);
                 }, 800);
-            }, 800);
+            }, 1000);
         }
     </script>
 </body>
