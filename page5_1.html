@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Violina | Secure Core</title>
+    <title>Violina | Secure Core V2</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
@@ -19,31 +19,26 @@
             user-select: none; perspective: 1000px;
         }
         
-        /* --- PALETTE --- */
         :root {
-            --pink: #ff003c;      /* Initial UI Red/Pink */
+            --pink: #ff003c;      /* Initial UI Red */
             --neon: #FF00FF;      /* Main Page Neon Pink */
-            --magenta: #8b008b;   /* Deep Magenta */
-            --glass: rgba(10, 0, 10, 0.9);
+            --magenta: #d902ee;   /* Electric Magenta */
+            --glass: rgba(5, 0, 5, 0.95);
         }
 
         /* --- GLOBAL FX --- */
+        .noise-overlay {
+            position: fixed; inset: 0; pointer-events: none; z-index: 950; opacity: 0.08;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
         .scanlines {
             position: fixed; inset: 0; z-index: 900; pointer-events: none;
-            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
-            background-size: 100% 4px; opacity: 0.15;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.3));
+            background-size: 100% 4px;
         }
         .vignette {
             position: fixed; inset: 0; z-index: 899; pointer-events: none;
-            background: radial-gradient(circle, transparent 50%, #000 100%);
-        }
-        .starfield {
-            position: fixed; top: -50%; left: -50%; width: 200%; height: 200%; z-index: 0;
-            background-image: 
-                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
-                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px);
-            background-size: 550px 550px, 350px 350px;
-            background-position: 0 0, 40px 60px;
+            background: radial-gradient(circle, transparent 40%, #000 100%);
         }
 
         /* --- 1. START SCREEN --- */
@@ -55,7 +50,7 @@
             clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
         }
 
-        /* --- 2. INTRO UI (RED/PINK) - PRESERVED --- */
+        /* --- 2. INTRO UI (PRESERVED EXACTLY) --- */
         #layer-intro { position: fixed; inset: 0; z-index: 100; display: none; background: #020000; }
         .bg-grid-intro {
             position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
@@ -79,126 +74,122 @@
         .gauge { width: 60px; height: 60px; border-radius: 50%; border: 1px solid var(--pink); display: flex; justify-content: center; align-items: center; font-size: 0.8rem; }
 
         .p-right { display: flex; justify-content: center; align-items: center; position: relative; }
-        .reactor-ring { position: absolute; width: 450px; height: 450px; border: 2px solid var(--pink); border-radius: 50%; border-left-color: transparent; border-right-color: transparent; animation: spin 10s linear infinite; }
+        .reactor-ring { position: absolute; width: 450px; height: 450px; border: 2px solid var(--pink); border-radius: 50%; animation: spin 10s linear infinite; }
         .reactor-core { width: 300px; height: 300px; background: #000; border: 4px solid var(--pink); border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: 0 0 50px var(--pink); position: relative; z-index: 10; }
 
         .status-txt { font-family: 'Orbitron'; font-size: 1.4rem; color: #fff; text-shadow: 0 0 10px var(--pink); text-align: center; }
-        .scan-pad { width: 90px; height: 130px; border: 2px solid var(--pink); border-radius: 15px; margin-top: 10px; cursor: pointer; position: relative; overflow: hidden; }
-        .scan-line { position: absolute; width: 100%; height: 4px; background: #fff; box-shadow: 0 0 15px #fff; animation: scanDown 1.5s linear infinite; display: none; }
+        .btn-conn { margin-top: 20px; background: transparent; border: 1px solid #fff; color: #fff; padding: 10px 30px; font-family: 'Orbitron'; cursor: pointer; }
+        
+        .scan-box { width: 100px; height: 140px; border: 2px solid var(--pink); border-radius: 15px; margin-top: 10px; cursor: pointer; position: relative; overflow: hidden; }
+        .finger { width: 100%; height: 100%; background: url('https://img.icons8.com/ios/100/ff003c/fingerprint.png') center/60% no-repeat; opacity: 0.7; }
+        .beam { position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: #fff; box-shadow: 0 0 15px #fff; animation: scanDown 1.5s linear infinite; display: none; }
 
-        /* --- 3. LOADING SCREEN --- */
+        /* --- 3. LOADING --- */
         #layer-loading { position: fixed; inset: 0; background: #000; z-index: 200; display: none; justify-content: center; align-items: center; perspective: 1000px; }
         .tilt-card { width: 500px; padding: 40px; background: rgba(20,0,20,0.95); border: 2px solid var(--neon); transform: rotateX(40deg); box-shadow: 0 50px 100px rgba(255,0,255,0.3); text-align: center; }
         .load-bar { width: 100%; height: 10px; background: #303; margin-top: 20px; }
         .load-fill { width: 0%; height: 100%; background: var(--neon); transition: width 3s linear; }
 
-        /* --- 4. MAIN DASHBOARD (MILITARY SCI-FI HUD) --- */
+        /* --- 4. MAIN DASHBOARD V2.0 (UPGRADED) --- */
         #layer-main { position: fixed; inset: 0; z-index: 50; display: none; background: transparent; }
         
+        /* Outer Frame with Glow */
         .main-frame { 
             position: absolute; inset: 30px; 
             border: 2px solid var(--neon); 
-            box-shadow: 0 0 20px var(--neon), inset 0 0 30px rgba(255,0,255,0.2); 
-            display: none; 
+            box-shadow: 0 0 30px var(--neon), inset 0 0 20px var(--magenta); 
+            opacity: 0; transform: scale(1.1);
+            transition: all 1s ease-out;
         }
-        /* Chromatic Glitch on Frame */
-        .main-frame::before { content:''; position:absolute; top:-2px; left:-2px; width:100%; height:100%; border: 2px solid cyan; opacity: 0.3; transform: translate(-2px, -2px); pointer-events: none; }
-        .main-frame::after { content:''; position:absolute; top:-2px; left:-2px; width:100%; height:100%; border: 2px solid red; opacity: 0.3; transform: translate(2px, 2px); pointer-events: none; }
 
         .dash-layout { 
             display: grid; width: 100%; height: 100%; 
-            grid-template-columns: 350px 1fr 350px; 
-            grid-template-rows: 250px 1fr 200px; 
-            gap: 15px; padding: 30px; 
+            grid-template-columns: 380px 1fr 380px; 
+            grid-template-rows: 280px 1fr 250px; 
+            gap: 20px; padding: 40px; 
         }
 
-        /* Generic HUD Panel */
+        /* Base Module Logic for Animation */
         .mod { 
-            border: 1px solid var(--neon); background: rgba(10, 0, 10, 0.6); 
-            position: relative; opacity: 0; box-shadow: 0 0 10px rgba(255,0,255,0.1);
-            transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+            border: 1px solid var(--neon); background: var(--glass); 
+            position: relative; opacity: 0; 
+            transform: scale(1.5); /* Start Zoomed In */
+            filter: blur(10px);
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); /* Bouncy pop-in */
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.1);
         }
-        .mod::after { content:''; position: absolute; bottom: 0; right: 0; width: 20px; height: 20px; border-bottom: 3px solid var(--neon); border-right: 3px solid var(--neon); }
+        .mod.active { opacity: 1; transform: scale(1); filter: blur(0); }
         
-        /* Chromatic Aberration Hover */
-        .mod:hover {
-            box-shadow: 3px 0 0 rgba(255,0,0,0.5), -3px 0 0 rgba(0,0,255,0.5);
-            border-color: #fff;
-        }
+        .mod::after { content: ''; position: absolute; top: 0; right: 0; width: 15px; height: 15px; border-top: 2px solid #fff; border-right: 2px solid #fff; }
+        .mod::before { content: ''; position: absolute; bottom: 0; left: 0; width: 15px; height: 15px; border-bottom: 2px solid #fff; border-left: 2px solid #fff; }
 
-        /* --- CENTER: THE REACTOR CORE (8 RINGS) --- */
+        /* A. CENTER CORE (8 RINGS) */
         .m-core { grid-column: 2; grid-row: 1 / span 3; border: none; background: transparent; display: flex; justify-content: center; align-items: center; position: relative; }
         .ring { position: absolute; border-radius: 50%; border: 1px solid var(--neon); box-shadow: 0 0 5px var(--neon); }
-        .cr1 { width: 600px; height: 600px; border: 1px dashed rgba(255,0,255,0.3); animation: spin 60s linear infinite; }
-        .cr2 { width: 540px; height: 540px; border-width: 2px; border-left: transparent; border-right: transparent; animation: spinRev 25s linear infinite; }
-        .cr3 { width: 480px; height: 480px; border: 4px dotted var(--magenta); animation: spin 30s linear infinite; }
-        .cr4 { width: 420px; height: 420px; border: 1px solid var(--neon); clip-path: polygon(0 0, 100% 0, 100% 20%, 0 20%); animation: spin 5s linear infinite; }
-        .cr5 { width: 360px; height: 360px; border: 8px solid rgba(255,0,255,0.1); border-top: 8px solid var(--neon); animation: spinRev 8s linear infinite; }
-        .cr6 { width: 300px; height: 300px; border: 1px dashed #fff; animation: spin 15s linear infinite; }
-        .cr7 { width: 240px; height: 240px; border: 20px solid rgba(255,0,255,0.05); }
-        .cr8 { width: 100px; height: 100px; background: var(--neon); border-radius: 50%; box-shadow: 0 0 80px var(--neon); animation: pulse 1s infinite; display: flex; justify-content: center; align-items: center; }
-        .core-lbl { font-family: 'Orbitron'; font-weight: 900; color: #000; font-size: 0.8rem; letter-spacing: 2px; }
-
-        /* --- TOP LEFT: WIREFRAME GLOBE --- */
-        .m-globe { grid-column: 1; grid-row: 1; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
-        .globe-mesh {
-            width: 180px; height: 180px; border-radius: 50%; border: 1px solid rgba(255,0,255,0.4);
-            background: 
-                repeating-linear-gradient(90deg, transparent 0, transparent 20px, var(--magenta) 20px, var(--magenta) 21px),
-                repeating-linear-gradient(0deg, transparent 0, transparent 20px, var(--magenta) 20px, var(--magenta) 21px);
-            background-size: 200% 100%; animation: globeRot 12s linear infinite;
-            box-shadow: inset 0 0 30px var(--neon);
-        }
-        .globe-ring { position: absolute; width: 220px; height: 220px; border: 1px dashed var(--neon); border-radius: 50%; animation: spinRev 20s linear infinite; }
-
-        /* --- BOTTOM LEFT: VITALS & EQUALIZERS --- */
-        .m-bio { grid-column: 1; grid-row: 2 / span 2; padding: 20px; display: flex; flex-direction: column; }
-        .bio-title { font-family: 'Orbitron'; color: var(--neon); border-bottom: 2px solid var(--neon); margin-bottom: 15px; font-size: 1.1rem; }
-        .bio-row { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,0,255,0.2); padding: 5px 0; font-size: 0.8rem; }
-        .bio-k { color: var(--magenta); } .bio-v { color: #fff; font-weight: bold; text-shadow: 0 0 5px var(--neon); }
         
-        .eq-container { display: flex; justify-content: space-between; align-items: flex-end; height: 60px; margin-top: auto; }
-        .eq-bar { width: 8px; background: var(--neon); animation: eq 0.5s infinite alternate; }
-        .eq-stat { font-size: 0.6rem; color: #fff; margin-top: 5px; }
+        .c1 { width: 620px; height: 620px; border: 1px dashed rgba(255,0,255,0.3); animation: spin 80s linear infinite; }
+        .c2 { width: 560px; height: 560px; border-width: 3px; border-left: transparent; border-right: transparent; animation: spinRev 30s linear infinite; }
+        .c3 { width: 500px; height: 500px; border: 1px dotted #fff; animation: spin 40s linear infinite; }
+        .c4 { width: 440px; height: 440px; border: 8px solid rgba(255,0,255,0.1); border-top: 8px solid var(--neon); animation: spinRev 12s linear infinite; }
+        .c5 { width: 380px; height: 380px; border: 1px solid var(--magenta); animation: spin 20s linear infinite; }
+        .c6 { width: 320px; height: 320px; border: 20px solid rgba(255,0,255,0.05); }
+        .c7 { width: 200px; height: 200px; border: 2px solid #fff; animation: pulse 2s infinite; }
+        .c8 { width: 120px; height: 120px; background: radial-gradient(var(--neon), #000); border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 0 60px var(--neon); }
+        .core-text { font-family: 'Orbitron'; font-weight: 900; letter-spacing: 2px; font-size: 0.9rem; }
 
-        /* --- TOP RIGHT: ISO WIREFRAME GRID --- */
-        .m-iso { grid-column: 3; grid-row: 1; overflow: hidden; position: relative; }
-        .iso-plane {
+        /* B. TOP LEFT: DOT MATRIX GLOBE */
+        .m-globe { grid-column: 1; grid-row: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: hidden; }
+        .globe-dots {
+            width: 220px; height: 220px; border-radius: 50%;
+            background: radial-gradient(circle at 50% 50%, transparent 40%, rgba(255,0,255,0.1) 100%),
+                        repeating-radial-gradient(#fff 0, #fff 1px, transparent 2px, transparent 10px);
+            background-size: 20px 20px;
+            animation: globeSpin 20s linear infinite;
+            box-shadow: inset 0 0 40px var(--neon);
+            border: 1px solid var(--magenta);
+        }
+        .globe-ring { position: absolute; width: 260px; height: 260px; border: 1px dashed var(--neon); border-radius: 50%; animation: spin 15s linear infinite; }
+
+        /* C. TOP RIGHT: TOPO GRID */
+        .m-grid { grid-column: 3; grid-row: 1; overflow: hidden; position: relative; }
+        .topo-mesh {
             position: absolute; top: 50%; left: 50%; width: 400px; height: 400px;
             background: linear-gradient(var(--neon) 1px, transparent 1px), linear-gradient(90deg, var(--neon) 1px, transparent 1px);
-            background-size: 40px 40px;
+            background-size: 30px 30px;
             transform: translate(-50%, -50%) rotateX(60deg) rotateZ(45deg);
-            animation: waveGrid 5s linear infinite;
+        }
+        .scan-laser {
+            position: absolute; top: 0; left: 0; width: 100%; height: 5px;
+            background: var(--neon); box-shadow: 0 0 20px #fff;
+            animation: scanDown 3s linear infinite;
         }
 
-        /* --- MIDDLE RIGHT: TERMINAL --- */
-        .m-term { grid-column: 3; grid-row: 2; padding: 15px; font-family: 'Share Tech Mono'; font-size: 0.7rem; color: #ffccff; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; background: rgba(0,0,0,0.5); }
-        .term-line { margin-bottom: 2px; white-space: nowrap; }
+        /* D. BOT LEFT: DATA CARD */
+        .m-bio { grid-column: 1; grid-row: 2; padding: 25px; display: flex; flex-direction: column; justify-content: space-between; }
+        .bio-h { font-family: 'Orbitron'; color: var(--neon); border-bottom: 2px solid var(--neon); margin-bottom: 10px; }
+        .bio-r { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,0,255,0.2); padding: 4px 0; font-size: 0.85rem; }
+        .bio-l { color: var(--magenta); } .bio-v { color: #fff; font-weight: bold; text-shadow: 0 0 5px var(--neon); }
 
-        /* --- BOTTOM RIGHT: RADAR --- */
-        .m-radar { grid-column: 3; grid-row: 3; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center; }
-        .radar-circle { width: 180px; height: 180px; border: 1px solid var(--neon); border-radius: 50%; position: relative; background: repeating-radial-gradient(transparent, transparent 19px, rgba(255,0,255,0.2) 20px); }
-        .radar-sweep { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; background: conic-gradient(from 0deg, transparent 0deg, transparent 270deg, rgba(255,0,255,0.5) 360deg); animation: spin 3s linear infinite; }
+        /* E. BOT RIGHT: TERMINAL */
+        .m-term { grid-column: 3; grid-row: 2 / span 2; padding: 15px; font-family: 'Share Tech Mono'; font-size: 0.7rem; color: #ffccff; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; background: rgba(0,0,0,0.6); }
+        .ln { margin-bottom: 2px; }
 
-        /* --- ANIMATION CLASSES --- */
-        .zoomed-focus { transform: scale(3); filter: blur(5px); opacity: 0; transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
-        .in-view { transform: scale(1); filter: blur(0); opacity: 1; }
-
-        /* KEYFRAMES */
+        /* ANIMATIONS */
         @keyframes spin { 100% { transform: rotate(360deg); } }
         @keyframes spinRev { 100% { transform: rotate(-360deg); } }
-        @keyframes scanDown { 0% { top: 0; } 100% { top: 100%; } }
-        @keyframes globeRot { 0% { background-position: 0 0; } 100% { background-position: 200% 0; } }
-        @keyframes waveGrid { 0% { background-position: 0 0; } 100% { background-position: 40px 40px; } }
-        @keyframes eq { 0% { height: 20%; } 100% { height: 100%; } }
-        @keyframes whiteout { 0% { opacity: 0; } 20% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes scanDown { 0% { top: 0; opacity: 0; } 50% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
+        @keyframes globeSpin { 0% { background-position: 0 0; } 100% { background-position: 100px 0; } }
+        @keyframes whiteout { 0% { opacity: 0; } 30% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
 
+        /* Overlay */
         #flashLayer { position: fixed; inset: 0; background: #fff; z-index: 2000; display: none; pointer-events: none; }
 
     </style>
 </head>
 <body>
 
+    <div class="noise-overlay"></div>
     <div class="scanlines"></div>
     <div class="vignette"></div>
     <div class="starfield" id="stars"></div>
@@ -227,7 +218,7 @@
                     <div id="ph2" style="display:none; text-align:center;"><div class="status-txt" style="font-size:1rem;">SERVER READY</div><button class="btn-conn" onclick="deny()" style="margin-top:15px; background:transparent; border:1px solid #fff; color:#fff; padding:10px 30px; font-family:'Orbitron'; cursor:pointer;">CONNECT</button></div>
                     <div id="ph3" style="display:none; color:red; text-align:center;"><div class="status-txt" style="color:red;">ACCESS DENIED</div><div style="font-size:0.8rem; margin-top:5px;">PROTECTED BY AYUSH</div></div>
                     <div id="ph4" style="display:none; flex-direction:column; align-items:center;">
-                        <div class="scan-pad" id="scanBtn"><div class="finger"></div><div class="scan-line" id="scanLine"></div></div>
+                        <div class="scan-box" id="scanBtn"><div class="finger"></div><div class="beam" id="scanBeam"></div></div>
                         <div class="status-txt" style="font-size:0.8rem; margin-top:10px;">HOLD TO VERIFY</div>
                     </div>
                 </div>
@@ -247,47 +238,36 @@
         <div class="main-frame" id="mainFrame">
             <div class="dash-layout">
                 
-                <div class="mod m-globe zoomed-focus" id="m1">
+                <div class="mod m-globe" id="m1">
                     <div class="globe-ring"></div>
-                    <div class="globe-mesh"></div>
-                    <div style="position:absolute; bottom:10px; font-size:0.8rem; color:var(--neon);">GLOBAL TRACKING</div>
+                    <div class="globe-dots"></div>
+                    <div style="position:absolute; bottom:10px; font-size:0.8rem; color:var(--neon); letter-spacing:2px;">GLOBAL TRACKING</div>
                 </div>
 
-                <div class="mod m-bio zoomed-focus" id="m4">
-                    <div class="bio-title">TARGET: VIOLINA</div>
-                    <div class="bio-row"><span class="bio-k">NAME</span><span class="bio-v">VIOLINA SHARMA</span></div>
-                    <div class="bio-row"><span class="bio-k">EYES</span><span class="bio-v">DEEP ESPRESSO</span></div>
-                    <div class="bio-row"><span class="bio-k">SIZE</span><span class="bio-v">7 (UK/US)</span></div>
-                    <div class="bio-row"><span class="bio-k">ZODIAC</span><span class="bio-v">TAURUS</span></div>
-                    <div class="bio-row"><span class="bio-k">STATUS</span><span class="bio-v">ONLINE / SECURE</span></div>
-                    
-                    <div class="eq-container">
-                        <div class="eq-bar" style="height:40%"></div><div class="eq-bar" style="height:80%"></div>
-                        <div class="eq-bar" style="height:60%"></div><div class="eq-bar" style="height:30%"></div>
-                        <div class="eq-bar" style="height:90%"></div><div class="eq-bar" style="height:50%"></div>
-                    </div>
-                    <div class="eq-stat"><span style="color:var(--magenta)">LOADING</span> | <span style="color:var(--neon)">COMPLETED</span></div>
+                <div class="mod m-bio" id="m4">
+                    <div class="bio-h">SUBJECT: VIOLINA SHARMA</div>
+                    <div class="bio-r"><span class="bio-l">EYE PROFILE</span><span class="bio-v">DEEP ESPRESSO</span></div>
+                    <div class="bio-r"><span class="bio-l">SIZE</span><span class="bio-v">7 (UK/US)</span></div>
+                    <div class="bio-r"><span class="bio-l">ZODIAC</span><span class="bio-v">TAURUS</span></div>
+                    <div class="bio-r"><span class="bio-l">TAGS</span><span class="bio-v">BLK HAIR / GLASSES</span></div>
+                    <div class="bio-r"><span class="bio-l">HANDEDNESS</span><span class="bio-v">RIGHT</span></div>
+                    <div class="bio-r"><span class="bio-l">STATUS</span><span class="bio-v">ONLINE / SECURE</span></div>
                 </div>
 
-                <div class="m-core zoomed-focus" id="m3">
-                    <div class="ring cr1"></div><div class="ring cr2"></div><div class="ring cr3"></div>
-                    <div class="ring cr4"></div><div class="ring cr5"></div><div class="ring cr6"></div><div class="ring cr7"></div>
-                    <div class="ring cr8"><span class="core-lbl">CORE<br>ACTIVE</span></div>
+                <div class="m-core" id="m3">
+                    <div class="ring c1"></div><div class="ring c2"></div><div class="ring c3"></div>
+                    <div class="ring c4"></div><div class="ring c5"></div><div class="ring c6"></div><div class="ring c7"></div>
+                    <div class="ring c8"><span class="core-text">CORE<br>ACTIVE</span></div>
                 </div>
 
-                <div class="mod m-iso zoomed-focus" id="m2">
-                    <div class="iso-plane"></div>
-                    <div style="position:absolute; top:10px; right:10px; font-size:0.8rem; color:var(--neon);">SPATIAL GRID</div>
+                <div class="mod m-grid" id="m2">
+                    <div class="topo-mesh"></div>
+                    <div class="scan-laser"></div>
+                    <div style="position:absolute; top:10px; right:10px; font-size:0.8rem; color:var(--neon);">SPATIAL SCAN</div>
                 </div>
 
-                <div class="mod m-term zoomed-focus" id="m5">
+                <div class="mod m-term" id="m5">
                     <div id="termContent"></div>
-                </div>
-
-                <div class="mod m-radar zoomed-focus" id="m6">
-                    <div class="radar-circle">
-                        <div class="radar-sweep"></div>
-                    </div>
                 </div>
 
             </div>
@@ -309,9 +289,7 @@
         function initSys() {
             document.getElementById('layer-start').style.display='none';
             document.getElementById('layer-intro').style.display='block';
-            audio.alert.play().catch(()=>{}); audio.alert.pause();
-            audio.scan.play().catch(()=>{}); audio.scan.pause();
-            audio.grant.play().catch(()=>{}); audio.grant.pause();
+            audio.alert.play().catch(()=>{}); audio.scan.play().catch(()=>{}); audio.grant.play().catch(()=>{});
             
             const txt = document.getElementById('seqText');
             const seq = ["SYSTEM STARTUP", "INITIALIZING...", "HEY!", "WELCOME", "DECRYPTING...", "SERVER READY"];
@@ -330,8 +308,8 @@
 
         const btn = document.getElementById('scanBtn');
         let timer;
-        btn.onmousedown = () => { document.getElementById('scanLine').style.display='block'; audio.scan.currentTime=0; audio.scan.play(); timer = setTimeout(grant, 2000); };
-        btn.onmouseup = () => { clearTimeout(timer); document.getElementById('scanLine').style.display='none'; audio.scan.pause(); };
+        btn.onmousedown = () => { document.getElementById('scanBeam').style.display='block'; audio.scan.currentTime=0; audio.scan.play(); timer = setTimeout(grant, 2000); };
+        btn.onmouseup = () => { clearTimeout(timer); document.getElementById('scanBeam').style.display='none'; audio.scan.pause(); };
         btn.ontouchstart = btn.onmousedown; btn.ontouchend = btn.onmouseup;
 
         function grant() {
@@ -357,49 +335,45 @@
         function revealMain() {
             document.getElementById('layer-loading').style.display='none';
             document.getElementById('layer-main').style.display='block';
-            document.getElementById('mainFrame').style.display='block';
             
-            // Sequence: Core -> Globe -> Grid -> Bio -> Term -> Radar
-            const ids = ['m3', 'm1', 'm2', 'm4', 'm5', 'm6'];
-            const layer = document.getElementById('layer-main');
-            
-            // Initial Zoom State
-            layer.style.transformOrigin = "50% 50%";
-            layer.style.transform = "scale(2)";
+            // 1. FRAME
+            const frame = document.getElementById('mainFrame');
+            frame.style.display = 'block';
+            setTimeout(() => { frame.style.opacity = '1'; frame.style.transform = 'scale(1)'; }, 100);
 
-            ids.forEach((id, i) => {
+            // 2. CINEMATIC SEQUENCE (1.5s DELAY PER MODULE)
+            // Sequence: Core -> Globe -> Grid -> Data -> Term
+            const sequence = [
+                { id: 'm3', delay: 1500 }, // Core
+                { id: 'm1', delay: 3000 }, // Globe
+                { id: 'm2', delay: 4500 }, // Grid
+                { id: 'm4', delay: 6000 }, // Bio
+                { id: 'm5', delay: 7500 }  // Term
+            ];
+
+            sequence.forEach(item => {
                 setTimeout(() => {
-                    const el = document.getElementById(id);
-                    el.classList.add('in-view');
-                    
-                    // Camera Movement
-                    if(id==='m3') layer.style.transformOrigin = "50% 50%";
-                    if(id==='m1') layer.style.transformOrigin = "10% 10%";
-                    if(id==='m2') layer.style.transformOrigin = "90% 10%";
-                    
-                }, i * 700);
+                    document.getElementById(item.id).classList.add('active');
+                }, item.delay);
             });
-            
-            // Final Zoom Out
-            setTimeout(() => {
-                layer.style.transform = "scale(1)";
-                startTerminal();
-            }, ids.length * 700 + 500);
+
+            // Start Terminal early but it reveals with its container
+            startTerminal();
         }
 
         function startTerminal() {
             const term = document.getElementById('termContent');
-            const lines = ["Connecting...", "Reading Bio-Metrics...", "Eye Color: DEEP ESPRESSO", "Shoe Size: 7 CONFIRMED", "Zodiac: TAURUS", "Physical ID: VERIFIED", "System Ready."];
+            const lines = ["Connecting Secure Shell...", "Decrypting Bio-Data...", "Target: VIOLINA SHARMA", "Eye Color: MATCH", "Shoe Size: 7 CONFIRMED", "Zodiac: TAURUS", "Physical ID: VERIFIED", "System Ready."];
             let i=0;
             setInterval(() => {
                 if(i < lines.length) {
-                    term.innerHTML += `<div class="term-line">> ${lines[i]}</div>`;
+                    term.innerHTML += `<div class="ln">> ${lines[i]}</div>`;
                     i++;
                 } else {
-                    term.innerHTML += `<div class="term-line">> ${Math.random().toString(16).substr(2, 8)}...</div>`;
+                    term.innerHTML += `<div class="ln">> ${Math.random().toString(16).substr(2, 8)}...</div>`;
                     term.scrollTop = term.scrollHeight;
                 }
-            }, 300);
+            }, 400);
         }
     </script>
 </body>
