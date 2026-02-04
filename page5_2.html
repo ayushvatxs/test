@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIOLINA DATABASE | FINAL REVEAL</title>
+    <title>VIOLINA DATABASE | CORE FINAL</title>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
     <style>
         /* --- CORE RESET --- */
@@ -37,7 +37,7 @@
         .load-bar-track { width: 100%; height: 10px; background: #300; margin-top: 20px; border: 1px solid var(--pink); }
         .load-bar-fill { width: 0%; height: 100%; background: var(--pink); box-shadow: 0 0 15px var(--pink); transition: width 3s linear; }
 
-        /* --- MAIN BACKGROUNDS --- */
+        /* --- BACKGROUND --- */
         .bg-grid {
             position: absolute; inset: 0; z-index: -1; opacity: 0.2;
             background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
@@ -56,7 +56,6 @@
             transition: transform 2s cubic-bezier(0.65, 0, 0.35, 1);
             will-change: transform;
         }
-        /* Blur Class for Final Reveal */
         .blur-mode { filter: blur(10px) brightness(0.4); pointer-events: none; transition: 1s; }
 
         /* --- MAIN UI LAYOUT --- */
@@ -98,21 +97,27 @@
         .top-line-deco { width: 80%; height: 2px; background: var(--pink); margin-top: 40px; position: relative; box-shadow: 0 0 10px var(--pink); }
         .top-line-deco::after { content: 'SYSTEM_ANALYSIS // 98%'; position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font-size: 0.6rem; color: var(--pink); background: #000; padding: 0 10px; }
 
-        .reactor-container { position: relative; margin-top: 30px; width: 350px; height: 350px; display: flex; justify-content: center; align-items: center; }
+        /* REDUCED SIZE REACTOR */
+        .reactor-container { 
+            position: relative; margin-top: 50px; 
+            width: 280px; height: 280px; /* SIZE DECREASED */
+            display: flex; justify-content: center; align-items: center; 
+        }
         .ring { position: absolute; border-radius: 50%; }
-        .r1 { width: 350px; height: 350px; border: 4px dashed var(--pink); opacity: 0.3; animation: spin 60s linear infinite; }
-        .r2 { width: 310px; height: 310px; border: 1px solid var(--pink); box-shadow: 0 0 15px var(--pink); opacity: 0.8; }
-        .r3 { width: 280px; height: 280px; border: 8px solid transparent; border-top: 8px solid var(--pink); border-bottom: 8px solid var(--pink); animation: spin 10s linear infinite; }
-        .r4 { width: 240px; height: 240px; border: 2px dotted var(--pink); animation: spinRev 20s linear infinite; }
-        .r5 { width: 200px; height: 200px; border: 4px solid var(--pink); border-left: 4px solid transparent; animation: spin 5s linear infinite; }
-        .r6 { width: 100px; height: 100px; background: radial-gradient(var(--pink), transparent); border: 2px solid #fff; opacity: 0.5; animation: pulse 2s infinite; }
-        .r7 { width: 140px; height: 140px; border: 1px solid #fff; opacity: 0.3; }
-        .r8 { width: 50px; height: 50px; background: #fff; border-radius: 50%; opacity: 0.8; box-shadow: 0 0 20px #fff; }
+        /* Adjusted Ring Sizes */
+        .r1 { width: 280px; height: 280px; border: 4px dashed var(--pink); opacity: 0.3; animation: spin 60s linear infinite; }
+        .r2 { width: 250px; height: 250px; border: 1px solid var(--pink); box-shadow: 0 0 15px var(--pink); opacity: 0.8; }
+        .r3 { width: 220px; height: 220px; border: 8px solid transparent; border-top: 8px solid var(--pink); border-bottom: 8px solid var(--pink); animation: spin 10s linear infinite; }
+        .r4 { width: 190px; height: 190px; border: 2px dotted var(--pink); animation: spinRev 20s linear infinite; }
+        .r5 { width: 160px; height: 160px; border: 4px solid var(--pink); border-left: 4px solid transparent; animation: spin 5s linear infinite; }
+        .r6 { width: 80px; height: 80px; background: radial-gradient(var(--pink), transparent); border: 2px solid #fff; opacity: 0.5; animation: pulse 2s infinite; }
+        .r7 { width: 120px; height: 120px; border: 1px solid #fff; opacity: 0.3; }
+        .r8 { width: 40px; height: 40px; background: #fff; border-radius: 50%; opacity: 0.8; box-shadow: 0 0 20px #fff; }
 
-        /* Overdrive Class for Reactor */
-        .reactor-overdrive .ring { animation-duration: 0.2s !important; border-color: #fff !important; box-shadow: 0 0 30px var(--pink); }
+        /* Overdrive: Hot Pink, not White */
+        .reactor-overdrive .ring { animation-duration: 0.2s !important; border-color: var(--pink) !important; box-shadow: 0 0 40px var(--pink); opacity: 1; }
 
-        .btn-container { margin-top: 20px; margin-bottom: 20px; z-index: 50; }
+        .btn-container { margin-top: 40px; margin-bottom: 20px; z-index: 50; }
         .btn-info {
             background: rgba(0,0,0,0.8); border: 2px solid var(--pink); color: var(--pink);
             font-family: 'Orbitron'; font-size: 1rem; padding: 10px 40px; cursor: pointer;
@@ -122,8 +127,9 @@
         }
         .btn-info:hover { background: var(--pink); color: #000; box-shadow: 0 0 40px var(--pink); }
 
-        .bottom-array { position: absolute; bottom: 10px; width: 120%; left: -10%; display: flex; align-items: center; justify-content: center; gap: 15px; }
-        .slider-group { width: 180px; display: flex; flex-direction: column; gap: 8px; }
+        /* Shifted Radar Left */
+        .bottom-array { position: absolute; bottom: 10px; width: 120%; left: -15%; display: flex; align-items: center; justify-content: center; gap: 20px; }
+        .slider-group { width: 150px; display: flex; flex-direction: column; gap: 8px; }
         .s-track { width: 100%; height: 1px; background: rgba(255,255,255,0.3); position: relative; }
         .s-nob { width: 6px; height: 6px; background: var(--pink); position: absolute; top: -2px; box-shadow: 0 0 8px var(--pink); }
         .main-badge { border: 1px solid var(--pink); color: var(--pink); padding: 8px 30px; font-family: 'Orbitron'; font-weight: bold; font-size: 0.9rem; background: rgba(255,0,60,0.1); clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%); white-space: nowrap; box-shadow: 0 0 15px var(--dim); }
@@ -143,49 +149,48 @@
         .wave-path { width: 100%; height: 2px; background: var(--pink); position: relative; box-shadow: 0 0 10px var(--pink); }
         .wave-dot { width: 8px; height: 8px; background: #fff; border-radius: 50%; position: absolute; top: -3px; animation: bounceX 2s infinite ease-in-out; }
 
-        /* --- FINAL REVEAL OVERLAY (THE 5 CARDS) --- */
+        /* --- FINAL REVEAL OVERLAY --- */
         #data-reveal-layer {
             position: fixed; inset: 0; z-index: 5000;
             display: none;
             flex-wrap: wrap; justify-content: center; align-items: center; gap: 30px;
             padding: 50px; perspective: 1500px;
-            overflow-y: auto; /* In case of small screens */
+            overflow-y: auto;
         }
 
         .data-card {
-            width: 300px; height: 400px;
-            background: rgba(10, 0, 5, 0.8);
+            width: 300px; height: 420px;
+            background: rgba(10, 0, 5, 0.85);
             border: 1px solid var(--pink);
             box-shadow: 0 0 20px var(--dim);
             backdrop-filter: blur(15px);
-            padding: 20px;
-            display: flex; flex-direction: column;
+            padding: 20px; display: flex; flex-direction: column;
             transform: translateY(100px) rotateX(20deg);
             opacity: 0; transition: all 0.5s ease-out;
             cursor: pointer; position: relative;
         }
-        
-        .data-card:hover {
-            transform: translateY(-10px) rotateX(0deg) scale(1.05);
-            box-shadow: 0 0 40px var(--pink);
-            border-color: #fff; z-index: 10;
-        }
+        .data-card:hover { transform: translateY(-10px) rotateX(0deg) scale(1.05); box-shadow: 0 0 40px var(--pink); border-color: #fff; z-index: 10; }
 
-        .dc-title { font-family: 'Orbitron'; color: var(--pink); border-bottom: 2px solid var(--pink); padding-bottom: 10px; margin-bottom: 15px; font-size: 1.2rem; }
-        .dc-list { font-size: 0.8rem; line-height: 1.8; color: #fff; text-align: left; }
+        .dc-title { font-family: 'Orbitron'; color: var(--pink); border-bottom: 2px solid var(--pink); padding-bottom: 10px; margin-bottom: 15px; font-size: 1.1rem; }
+        .dc-list { font-size: 0.75rem; line-height: 1.8; color: #fff; text-align: left; }
         .dc-row { display: flex; justify-content: space-between; border-bottom: 1px dashed rgba(255,255,255,0.1); padding: 5px 0; }
         .dc-l { color: #ff99aa; } .dc-v { font-weight: bold; text-align: right; }
 
-        /* Loading Access Overlay */
-        #access-overlay {
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            z-index: 3000; text-align: center; display: none;
+        /* NEXT BUTTON */
+        .btn-next-page {
+            width: 100%; margin-top: 20px; padding: 15px;
+            background: var(--pink); color: #000; border: none;
+            font-family: 'Orbitron'; font-weight: bold; font-size: 1rem;
+            cursor: pointer; box-shadow: 0 0 30px var(--pink);
+            clip-path: polygon(5% 0, 100% 0, 100% 70%, 95% 100%, 0 100%, 0 30%);
+            animation: pulse 1s infinite;
         }
+
+        #access-overlay { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 3000; text-align: center; display: none; }
         .acc-txt { font-family: 'Orbitron'; font-size: 1.5rem; color: var(--pink); margin-bottom: 10px; text-shadow: 0 0 20px var(--pink); }
         .acc-bar { width: 300px; height: 5px; background: #300; position: relative; }
-        .acc-fill { width: 0%; height: 100%; background: #fff; box-shadow: 0 0 20px #fff; transition: width 2.5s linear; }
+        .acc-fill { width: 0%; height: 100%; background: #fff; box-shadow: 0 0 20px #fff; transition: width 4.5s linear; } /* Extended Time */
 
-        /* Whiteout Flash */
         #flash-white { position: fixed; inset: 0; background: #fff; z-index: 9999; opacity: 0; pointer-events: none; }
 
         /* ANIMATIONS */
@@ -246,11 +251,11 @@
                     <button class="btn-info" onclick="accessData()">GET INFO</button>
                 </div>
                 <div class="bottom-array anim-part" id="p6">
-                    <div class="slider-group"><div class="s-track"><div class="s-nob" style="left:30%"></div></div><div class="s-track"><div class="s-nob" style="left:70%"></div></div><div class="s-track"><div class="s-nob" style="left:50%"></div></div></div>
+                    <div class="radar-unit"><div class="radar-scan"></div></div>
                     <div style="width: 20px; height: 1px; background: var(--pink);"></div>
                     <div class="main-badge">SYS.CORE // V.SHARMA</div>
                     <div style="width: 20px; height: 1px; background: var(--pink);"></div>
-                    <div class="radar-unit"><div class="radar-scan"></div></div>
+                    <div class="slider-group"><div class="s-track"><div class="s-nob" style="left:30%"></div></div><div class="s-track"><div class="s-nob" style="left:70%"></div></div><div class="s-track"><div class="s-nob" style="left:50%"></div></div></div>
                 </div>
             </div>
 
@@ -337,105 +342,62 @@
             </div>
         </div>
 
+        <button class="btn-next-page" onclick="window.location.href='page6.html'">PROCEED TO REASSEMBLY ></button>
+
     </div>
 
     <script>
-        // --- AUDIO ENGINE ---
         const sounds = {
-            grid: new Audio('sfx_grid.mp3'),
-            text: new Audio('sfx_text.mp3'),
-            wave: new Audio('sfx_wave.mp3'),
-            core: new Audio('sfx_core.mp3'),
-            globe: new Audio('sfx_globe.mp3'),
-            bars: new Audio('sfx_bars.mp3'),
-            online: new Audio('sfx_online.mp3'),
-            process: new Audio('sfx_processing.mp3'), // New
-            boom: new Audio('sfx_explosion.mp3'),     // New
-            hover: new Audio('sfx_hover.mp3')         // New
+            grid: new Audio('sfx_grid.mp3'), text: new Audio('sfx_text.mp3'), wave: new Audio('sfx_wave.mp3'),
+            core: new Audio('sfx_core.mp3'), globe: new Audio('sfx_globe.mp3'), bars: new Audio('sfx_bars.mp3'),
+            online: new Audio('sfx_online.mp3'), process: new Audio('sfx_processing.mp3'), boom: new Audio('sfx_explosion.mp3'), hover: new Audio('sfx_hover.mp3')
         };
+        const playSfx = (k) => { try{ sounds[k].currentTime=0; sounds[k].play().catch(e=>{}); }catch(e){} };
 
-        const playSfx = (key) => { try { sounds[key].currentTime=0; sounds[key].play().catch(e=>{}); } catch(e){} };
-
-        // --- INTERACTION: GET INFO ---
-        function accessData() {
-            playSfx('process');
-            
-            // 1. PHASE 1: OVERDRIVE
-            document.getElementById('p_btn').style.display = 'none'; // Hide button
-            document.getElementById('p5').classList.add('reactor-overdrive'); // Fast spin
-            
-            // 2. PHASE 2: LOADING OVERLAY
-            document.getElementById('access-overlay').style.display = 'block';
-            setTimeout(() => {
-                document.getElementById('accFill').style.width = '100%';
-            }, 100);
-
-            // Speed up text
-            const term = document.getElementById('scrollText');
-            let garbage = setInterval(() => {
-                term.innerHTML += "<br>> BYPASSING FIREWALL... ACCESSING CORE... " + Math.random();
-                term.scrollTop = term.scrollHeight;
-            }, 50);
-
-            // 3. PHASE 3: EXPLOSION & REVEAL (after 2.5s)
-            setTimeout(() => {
-                clearInterval(garbage);
-                playSfx('boom');
-                
-                // Flash
-                const flash = document.getElementById('flash-white');
-                flash.style.animation = 'flashAnim 1s forwards';
-
-                // Blur BG
-                document.getElementById('camera-rig').classList.add('blur-mode');
-                document.getElementById('access-overlay').style.display = 'none';
-
-                // Show Cards
-                const layer = document.getElementById('data-reveal-layer');
-                layer.style.display = 'flex';
-                
-                // Trigger Card Animation
-                setTimeout(() => {
-                    const cards = document.querySelectorAll('.data-card');
-                    cards.forEach(c => {
-                        c.style.opacity = '1';
-                        c.style.transform = 'translateY(0) rotateX(0)';
-                        // Add hover sound listener
-                        c.addEventListener('mouseenter', () => playSfx('hover'));
-                    });
-                }, 500);
-
-            }, 2500);
-        }
-
-        // --- INIT CAMERA TOUR ---
         const rig = document.getElementById('camera-rig');
-        const setCamera = (x, y, scale) => { rig.style.transformOrigin = `${x}% ${y}%`; rig.style.transform = `scale(${scale})`; };
-        const showModule = (id) => { const el = document.getElementById(id); if(el) el.classList.add('active'); };
+        const setCamera = (x,y,s) => { rig.style.transformOrigin=`${x}% ${y}%`; rig.style.transform=`scale(${s})`; };
+        const showModule = (id) => { const el=document.getElementById(id); if(el) el.classList.add('active'); };
         const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-        window.onload = async () => {
-            // First Load
-            document.getElementById('loadBar').style.width = "100%";
-            await sleep(2500);
-            document.getElementById('layer-loading').style.opacity = '0';
-            setTimeout(() => document.getElementById('layer-loading').style.display = 'none', 1000);
-            await sleep(500);
-            document.getElementById('main-border').style.opacity = '1';
-            await sleep(1000);
+        function accessData() {
+            playSfx('process');
+            document.getElementById('p_btn').style.display='none';
+            document.getElementById('p5').classList.add('reactor-overdrive');
+            document.getElementById('access-overlay').style.display='block';
+            setTimeout(()=>document.getElementById('accFill').style.width='100%', 100);
 
-            // Tour
-            setCamera(100, 0, 3); playSfx('grid'); showModule('p7'); await sleep(3000);
-            setCamera(100, 50, 3); playSfx('text'); showModule('p8'); await sleep(3000);
-            setCamera(100, 100, 3); playSfx('wave'); showModule('p9'); await sleep(3000);
-            setCamera(50, 50, 2); playSfx('core'); showModule('p5'); showModule('p_btn'); showModule('p4'); showModule('p6'); await sleep(3500);
-            setCamera(0, 0, 3); playSfx('globe'); showModule('p1'); await sleep(3000);
-            setCamera(0, 50, 3); playSfx('bars'); showModule('p2'); await sleep(3000);
-            setCamera(0, 100, 3); showModule('p3'); await sleep(3000);
-            
-            // Full View
-            setCamera(50, 50, 1); playSfx('online');
+            const term = document.getElementById('scrollText');
+            let g = setInterval(()=>{ term.innerHTML+="<br>> ACCESSING... "+Math.random(); term.scrollTop=term.scrollHeight; }, 50);
+
+            setTimeout(()=>{
+                clearInterval(g); playSfx('boom');
+                const f = document.getElementById('flash-white'); f.style.animation='flashAnim 1s forwards';
+                document.getElementById('camera-rig').classList.add('blur-mode');
+                document.getElementById('access-overlay').style.display='none';
+                const l = document.getElementById('data-reveal-layer'); l.style.display='flex';
+                setTimeout(()=>{
+                    document.querySelectorAll('.data-card').forEach(c=>{
+                        c.style.opacity='1'; c.style.transform='translateY(0) rotateX(0)';
+                        c.addEventListener('mouseenter',()=>playSfx('hover'));
+                    });
+                }, 500);
+            }, 4500); // 4.5s Load Time
+        }
+
+        window.onload = async () => {
+            document.getElementById('loadBar').style.width="100%"; await sleep(2500);
+            document.getElementById('layer-loading').style.opacity='0'; setTimeout(()=>document.getElementById('layer-loading').style.display='none', 1000); await sleep(500);
+            document.getElementById('main-border').style.opacity='1'; await sleep(1000);
+
+            setCamera(100,0,3); playSfx('grid'); showModule('p7'); await sleep(3000);
+            setCamera(100,50,3); playSfx('text'); showModule('p8'); await sleep(3000);
+            setCamera(100,100,3); playSfx('wave'); showModule('p9'); await sleep(3000);
+            setCamera(50,50,2); playSfx('core'); showModule('p5'); showModule('p_btn'); showModule('p4'); showModule('p6'); await sleep(3500);
+            setCamera(0,0,3); playSfx('globe'); showModule('p1'); await sleep(3000);
+            setCamera(0,50,3); playSfx('bars'); showModule('p2'); await sleep(3000);
+            setCamera(0,100,3); showModule('p3'); await sleep(3000);
+            setCamera(50,50,1); playSfx('online');
         };
     </script>
 </body>
-</html>
+</html> 
