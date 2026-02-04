@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIOLINA DATABASE | REASSEMBLY</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* --- CORE RESET --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: #050505; color: #fff;
+            font-family: 'Share Tech Mono', monospace;
+            overflow: hidden; height: 100vh; width: 100vw;
+            perspective: 1000px;
+        }
+
+        :root {
+            --pink: #ff003c;
+            --dim: rgba(255, 0, 60, 0.2);
+            --glow: 0 0 20px var(--pink);
+        }
+
+        /* --- BACKGROUND --- */
+        .bg-stars {
+            position: absolute; inset: 0; z-index: -1;
+            background-image: radial-gradient(white 1px, transparent 1px);
+            background-size: 50px 50px; opacity: 0.1;
+        }
+        .vignette {
+            position: fixed; inset: 0; z-index: 10; pointer-events: none;
+            background: radial-gradient(circle at center, transparent 30%, #000 100%);
+        }
+
+        /* --- TEXT LAYER --- */
+        #cmd-text {
+            position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
+            font-family: 'Orbitron'; font-size: 1.2rem; letter-spacing: 4px;
+            color: var(--pink); text-shadow: 0 0 10px var(--pink);
+            z-index: 100; text-align: center;
+        }
+
+        /* --- THE SHARDS (PARTICLES) --- */
+        #shard-container {
+            position: absolute; inset: 0; pointer-events: none; z-index: 50;
+            overflow: hidden;
+        }
+        .shard {
+            position: absolute; width: 4px; height: 40px;
+            background: var(--pink);
+            box-shadow: 0 0 10px var(--pink);
+            opacity: 0;
+        }
+        /* Animation: Fly to center */
+        @keyframes implode {
+            0% { transform: translate(0, 0) rotate(var(--r)); opacity: 1; }
+            100% { top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); opacity: 0; }
+        }
+
+        /* --- THE CORE (HEART) --- */
+        #core-container {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 400px; height: 400px;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; z-index: 60;
+        }
+
+        .wireframe-heart {
+            width: 200px; height: 200px;
+            position: relative;
+            animation: heartbeat 1.5s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+        }
+        
+        .heart-svg {
+            fill: rgba(255, 0, 60, 0.1);
+            stroke: var(--pink);
+            stroke-width: 2;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            filter: drop-shadow(0 0 15px var(--pink));
+        }
+
+        /* Rings around the heart */
+        .h-ring {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            border: 1px solid var(--pink); border-radius: 50%; opacity: 0.5;
+        }
+        .hr1 { width: 300px; height: 300px; border-style: dashed; animation: spin 20s linear infinite; }
+        .hr2 { width: 400px; height: 400px; border: 1px solid rgba(255,0,60,0.3); animation: pulseRing 2s infinite; }
+        .hr3 { width: 500px; height: 500px; border: 1px dotted var(--pink); animation: spinRev 30s linear infinite; }
+
+        /* --- FOOTER UI --- */
+        #footer-ui {
+            position: absolute; bottom: 50px; width: 100%; text-align: center;
+            opacity: 0; transition: opacity 2s; z-index: 100;
+        }
+        .final-status {
+            font-family: 'Orbitron'; font-size: 1.5rem; font-weight: bold;
+            color: #fff; text-shadow: 0 0 20px var(--pink); margin-bottom: 10px;
+        }
+        .sub-status { font-size: 0.8rem; color: var(--pink); letter-spacing: 2px; }
+
+        /* --- FLASH EFFECT --- */
+        #flash {
+            position: fixed; inset: 0; background: #fff; z-index: 9999;
+            opacity: 0; pointer-events: none;
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            15% { transform: scale(1.3); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.15); }
+            60% { transform: scale(1); }
+        }
+        @keyframes drawLine { to { stroke-dashoffset: 0; } }
+        @keyframes spin { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+        @keyframes spinRev { 100% { transform: translate(-50%, -50%) rotate(-360deg); } }
+        @keyframes pulseRing { 0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.2; } 50% { opacity: 0.6; } 100% { transform: translate(-50%, -50%) scale(1.1); opacity: 0; } }
+        @keyframes flashAnim { 0% { opacity: 1; } 100% { opacity: 0; } }
+
+    </style>
+</head>
+<body>
+
+    <div class="bg-stars"></div>
+    <div class="vignette"></div>
+    <div id="flash"></div>
+
+    <div id="cmd-text">WAITING FOR REASSEMBLY...</div>
+
+    <div id="shard-container"></div>
+
+    <div id="core-container">
+        <div class="h-ring hr1"></div>
+        <div class="h-ring hr2"></div>
+        <div class="h-ring hr3"></div>
+
+        <div class="wireframe-heart">
+            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <path class="heart-svg" id="heartPath" d="M100,170 C20,100 0,60 0,40 C0,15 20,0 50,0 C70,0 90,10 100,30 C110,10 130,0 150,0 C180,0 200,15 200,40 C200,60 180,100 100,170 Z" />
+            </svg>
+        </div>
+    </div>
+
+    <div id="footer-ui">
+        <div class="final-status">SYSTEM STATUS: ETERNAL</div>
+        <div class="sub-status">PROJECT VIOLINA: SUCCESSFULLY INTEGRATED</div>
+    </div>
+
+    <script>
+        const sounds = {
+            vacuum: new Audio('sfx_vacuum.mp3'),
+            impact: new Audio('sfx_impact.mp3'),
+            heart: new Audio('sfx_heartbeat.mp3')
+        };
+        sounds.heart.loop = true;
+
+        const cmd = document.getElementById('cmd-text');
+        const shards = document.getElementById('shard-container');
+
+        // 1. GENERATE SHARDS
+        function createShards() {
+            for(let i=0; i<100; i++) {
+                const s = document.createElement('div');
+                s.className = 'shard';
+                
+                // Random Start Position (Off Screen)
+                const angle = Math.random() * Math.PI * 2;
+                const dist = 800 + Math.random() * 400; // Far away
+                const x = 50 + Math.cos(angle) * 50 + '%'; // Center based offset not needed for 'top/left', calculating percent
+                
+                // Simpler Logic: Random Edge
+                const edge = Math.floor(Math.random()*4); // 0:top, 1:right, 2:bottom, 3:left
+                let startX, startY;
+                
+                if(edge === 0) { startX = Math.random()*100; startY = -20; }
+                if(edge === 1) { startX = 120; startY = Math.random()*100; }
+                if(edge === 2) { startX = Math.random()*100; startY = 120; }
+                if(edge === 3) { startX = -20; startY = Math.random()*100; }
+
+                s.style.left = startX + '%';
+                s.style.top = startY + '%';
+                s.style.transform = `rotate(${Math.random()*360}deg)`;
+                
+                // Calculate animation duration based on distance? No, uniform speed looks more "controlled"
+                s.style.animation = `implode 2.5s cubic-bezier(0.7, 0, 1, 1) forwards`;
+                s.style.animationDelay = Math.random() * 0.5 + 's';
+
+                shards.appendChild(s);
+            }
+        }
+
+        window.onload = () => {
+            // SEQUENCE START
+            setTimeout(() => {
+                cmd.innerText = "GATHERING FRAGMENTS...";
+            }, 1000);
+
+            setTimeout(() => {
+                // START VACUUM
+                sounds.vacuum.play().catch(()=>{});
+                cmd.innerText = "REASSEMBLING CORE MEMORY...";
+                createShards();
+            }, 2000);
+
+            setTimeout(() => {
+                // IMPACT
+                sounds.impact.play().catch(()=>{});
+                
+                // Flash
+                const f = document.getElementById('flash');
+                f.style.opacity = '1';
+                f.style.animation = 'flashAnim 2s forwards';
+
+                // Hide Shards & Text
+                shards.style.display = 'none';
+                cmd.style.display = 'none';
+
+                // Show Core
+                const core = document.getElementById('core-container');
+                core.style.opacity = '1';
+                
+                // Animate Heart Drawing
+                document.getElementById('heartPath').style.animation = 'drawLine 3s ease-out forwards';
+                
+            }, 4500); // 2.0s start + 2.5s flight time
+
+            setTimeout(() => {
+                // HEARTBEAT
+                sounds.heart.play().catch(()=>{});
+                document.getElementById('footer-ui').style.opacity = '1';
+            }, 5000);
+        };
+
+    </script>
+</body>
+</html>
