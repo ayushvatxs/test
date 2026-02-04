@@ -7,11 +7,11 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- PERFORMANCE OPTIMIZED GLOBAL --- */
+        /* --- OPTIMIZED GLOBAL --- */
         * { box-sizing: border-box; }
         body {
             margin: 0; padding: 0;
@@ -21,10 +21,10 @@
             height: 100vh;
             color: #fff;
             user-select: none;
-            perspective: 1000px;
+            perspective: 1200px;
         }
 
-        /* --- 1. LIGHTWEIGHT GRID BACKGROUND --- */
+        /* --- 1. LIGHTWEIGHT GRID BG --- */
         #cyberBackground {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 0; background: #020000; overflow: hidden;
@@ -37,7 +37,6 @@
             background-size: 100px 100px;
             transform: rotateX(80deg);
             opacity: 0.4;
-            /* No animation initially to save GPU for UI */
         }
         .floor { bottom: -100px; }
         .ceiling { top: -100px; transform: rotateX(-80deg); }
@@ -57,11 +56,11 @@
         }
         .start-btn:hover { background: #ff4d6d; color: #000; box-shadow: 0 0 60px #ff4d6d; }
 
-        /* --- 3. THE RESTORED UI (HUD) --- */
+        /* --- 3. HUD UI (Restored Design) --- */
         #introOverlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 100; display: none;
-            transition: transform 0.5s ease-in, opacity 0.5s ease-in;
+            /* Performance Fix: No heavy filters here */
         }
 
         /* Edges */
@@ -80,18 +79,17 @@
             z-index: 60;
         }
 
-        /* LEFT PANEL (The 2x2 Grid) */
+        /* LEFT PANEL */
         .hud-left {
             display: flex; flex-direction: column; padding: 25px;
             background: rgba(10, 0, 0, 0.7); border: 1px solid rgba(255, 77, 109, 0.3);
-            backdrop-filter: blur(5px);
+            /* Removed blur to fix lag */
         }
         .sys-header { font-family: 'Orbitron'; font-size: 1.2rem; color: #ff4d6d; border-bottom: 2px solid #ff4d6d; display: inline-block; margin-bottom: 10px; }
         .sys-text { font-family: 'Share Tech Mono'; font-size: 0.8rem; color: #ffb3c1; margin-bottom: 20px; }
         
         .geo-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 90px 90px; gap: 10px; margin-bottom: 30px; }
         .geo-box { border: 1px solid #ff4d6d; background: rgba(50, 0, 0, 0.3); }
-        /* Chamfered Corners */
         .gb-1 { clip-path: polygon(0 0, 100% 0, 100% 80%, 80% 100%, 0 100%); }
         .gb-2 { clip-path: polygon(0 0, 100% 0, 100% 100%, 20% 100%, 0 80%); }
         .gb-3 { clip-path: polygon(0 0, 80% 0, 100% 20%, 100% 100%, 0 100%); }
@@ -101,7 +99,7 @@
         .gauge-circle { width: 60px; height: 60px; border-radius: 50%; border: 1px solid rgba(255, 77, 109, 0.3); display: flex; justify-content: center; align-items: center; color: #ffb3c1; position: relative; }
         .gauge-circle::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid transparent; border-top-color: #ff4d6d; animation: spin 2s linear infinite; }
 
-        /* RIGHT PANEL (Reactor) */
+        /* RIGHT PANEL */
         .hud-right { position: relative; display: flex; justify-content: center; align-items: center; }
         .reactor-outer { position: absolute; width: 480px; height: 480px; border: 2px solid rgba(255, 77, 109, 0.5); border-radius: 50%; border-left: transparent; border-right: transparent; animation: spin 10s linear infinite; }
         .reactor-core {
@@ -119,23 +117,23 @@
             animation: pulse 1.5s infinite; pointer-events: auto; z-index: 200;
         }
         
-        /* Clear Readable Alert */
+        /* ALERT BOX (High Contrast for Readability) */
         .alert-box { 
-            background: rgba(50, 0, 0, 0.8); border: 2px solid red; 
-            padding: 15px; border-radius: 10px; text-align: center;
-            box-shadow: 0 0 30px rgba(255,0,0,0.4);
+            background: rgba(0, 0, 0, 0.9); border: 3px solid red; 
+            padding: 20px; border-radius: 10px; text-align: center;
+            box-shadow: 0 0 50px rgba(255, 0, 0, 0.5);
+            transform: scale(1.1); /* Slightly larger */
         }
-        .alert-main { color: red; font-weight: 900; font-size: 1.8rem; font-family: 'Orbitron'; margin-bottom: 5px; }
-        .alert-sub { color: #fff; font-size: 0.9rem; letter-spacing: 1px; }
+        .alert-main { color: red; font-weight: 900; font-size: 2rem; font-family: 'Orbitron'; margin-bottom: 10px; text-shadow: 0 0 10px red; }
+        .alert-sub { color: #fff; font-size: 1rem; letter-spacing: 2px; }
 
         .scanner-box { width: 100px; height: 140px; border: 2px solid #ff4d6d; border-radius: 30px; position: relative; overflow: hidden; cursor: pointer; background: rgba(0,0,0,0.5); }
         .scan-beam { position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background: rgba(255, 0, 60, 0.8); transition: height 0.1s linear; }
 
-        /* --- 4. MAIN PAGE: THE ENGINE (No Cards, Mechanical Arms) --- */
+        /* --- 4. MAIN PAGE: THE ENGINE (RESCALED) --- */
         #mainContent {
             display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 50; overflow: hidden;
-            /* Blue/Tech Theme for Main Page to contrast Red Intro */
             background: radial-gradient(circle at center, #001122 0%, #000 100%);
             opacity: 0; transition: opacity 1s ease;
         }
@@ -144,82 +142,100 @@
             width: 100%; height: 100%; perspective: 1500px;
             display: flex; justify-content: center; align-items: center;
             transform-style: preserve-3d;
+            transform: scale(0.85); /* ZOOM FIX: Scaled down to fit laptop */
         }
 
-        /* The Spinning Turbine */
+        /* Turbine & Core */
         .turbine {
             position: absolute; width: 300px; height: 300px;
-            border-radius: 50%;
-            border: 10px dashed #00ffff;
+            border-radius: 50%; border: 10px dashed #00ffff;
             box-shadow: 0 0 50px #00ffff;
-            animation: spin 20s linear infinite;
-            transform-style: preserve-3d;
+            animation: spin 20s linear infinite; transform-style: preserve-3d;
         }
         .turbine-core {
-            position: absolute; width: 150px; height: 150px; top: 75px; left: 75px;
+            position: absolute; width: 150px; height: 150px;
             background: #fff; border-radius: 50%;
             box-shadow: 0 0 100px #00ffff;
             animation: pulseCore 2s infinite alternate;
         }
 
-        /* Mechanical Arms (Data Holders) */
+        /* Data Arms */
         .mech-arm {
-            position: absolute;
-            width: 300px; height: 2px; background: #00ffff;
-            top: 50%; left: 50%;
-            transform-origin: 0 50%;
+            position: absolute; width: 300px; height: 2px; background: #00ffff;
+            top: 50%; left: 50%; transform-origin: 0 50%;
             box-shadow: 0 0 10px #00ffff;
         }
         
         .data-plate {
-            position: absolute; right: -320px; top: -75px;
-            width: 300px; height: 150px;
+            position: absolute; right: -300px; top: -75px;
+            width: 280px; height: 150px; /* Compact size */
             background: rgba(0, 20, 40, 0.8);
             border: 1px solid #00ffff;
-            padding: 15px; color: #fff;
-            transform: rotateY(-20deg); /* Angled look */
-            transform-style: preserve-3d;
+            padding: 10px; color: #fff;
+            transform: rotateY(-20deg); transform-style: preserve-3d;
             transition: transform 0.3s;
         }
         .data-plate:hover { transform: rotateY(0deg) scale(1.1); background: rgba(0, 30, 60, 0.95); z-index: 100; border-color: #fff; }
 
-        /* Positioning Arms */
+        /* Arm Positions */
         .arm-1 { transform: rotate(0deg) translateX(150px); }
         .arm-2 { transform: rotate(72deg) translateX(150px); }
         .arm-3 { transform: rotate(144deg) translateX(150px); }
         .arm-4 { transform: rotate(216deg) translateX(150px); }
         .arm-5 { transform: rotate(288deg) translateX(150px); }
 
-        /* Counter-rotate plates so text is straight */
+        /* Counter-rotate for readability */
         .arm-1 .data-plate { transform: rotate(-0deg); }
         .arm-2 .data-plate { transform: rotate(-72deg); }
         .arm-3 .data-plate { transform: rotate(-144deg); }
         .arm-4 .data-plate { transform: rotate(-216deg); }
         .arm-5 .data-plate { transform: rotate(-288deg); }
 
-        .plate-head { font-family: 'Orbitron'; font-size: 1rem; color: #00ffff; border-bottom: 1px solid #00ffff; margin-bottom: 5px; }
-        .plate-row { display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 4px; }
+        .plate-head { font-family: 'Orbitron'; font-size: 0.9rem; color: #00ffff; border-bottom: 1px solid #00ffff; margin-bottom: 5px; }
+        .plate-row { display: flex; justify-content: space-between; font-size: 0.7rem; margin-bottom: 2px; }
         .pv { font-weight: bold; text-shadow: 0 0 5px #fff; }
 
-        /* --- 5. EFFECTS --- */
+        /* --- 5. EFFECTS & TRANSITIONS --- */
+        /* Lag Fix: Shake transform only, no filter blur */
         .shake-container { animation: violentShake 0.4s infinite; }
-        .white-out { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 999; animation: flashOut 1.5s forwards; pointer-events: none; }
         
+        /* Shockwave Effect */
+        .shockwave {
+            position: fixed; top: 50%; left: 50%; width: 10px; height: 10px;
+            background: transparent; border: 50px solid #fff; border-radius: 50%;
+            transform: translate(-50%, -50%); z-index: 999;
+            animation: expandWave 1s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+            pointer-events: none; display: none;
+        }
+        
+        /* Main Entry Zoom */
+        .zoom-enter { animation: zoomIn 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+
         @keyframes warpSpeed { 0% { transform: rotateX(80deg) translateY(0); } 100% { transform: rotateX(80deg) translateY(100px); } }
         @keyframes spin { 100% { transform: rotate(360deg); } }
         @keyframes spinRev { 100% { transform: rotate(-360deg); } }
         @keyframes pulse { 0% { opacity: 0.6; } 100% { opacity: 1; } }
-        @keyframes violentShake { 0% { transform: translate(3px, 3px) rotate(0deg); } 25% { transform: translate(-3px, -3px) rotate(-1deg); } 50% { transform: translate(3px, -3px) rotate(1deg); } 75% { transform: translate(-3px, 3px) rotate(0deg); } }
-        @keyframes flashOut { 0% { opacity: 0; } 20% { opacity: 1; } 100% { opacity: 0; } }
+        /* Simple shake to prevent lag */
+        @keyframes violentShake { 0% { transform: translate(3px, 3px); } 50% { transform: translate(-3px, -3px); } 100% { transform: translate(3px, -3px); } }
+        
         @keyframes pulseCore { 0% { transform: scale(0.9); } 100% { transform: scale(1.1); } }
+        
+        @keyframes expandWave {
+            0% { width: 0; height: 0; border-width: 200px; opacity: 1; }
+            100% { width: 3000px; height: 3000px; border-width: 0; opacity: 0; }
+        }
+        @keyframes zoomIn { 
+            0% { transform: scale(0); opacity: 0; } 
+            100% { transform: scale(0.85); opacity: 1; } 
+        }
 
     </style>
 </head>
 <body>
 
     <div id="cyberBackground">
-        <div class="tunnel-grid floor" id="gridFloor"></div>
-        <div class="tunnel-grid ceiling" id="gridCeiling"></div>
+        <div class="tunnel-grid floor"></div>
+        <div class="tunnel-grid ceiling"></div>
     </div>
 
     <audio id="soundAlert" src="alert.mp3" preload="auto"></audio>
@@ -285,6 +301,8 @@
         </div>
     </div>
 
+    <div id="shockwaveLayer" class="shockwave"></div>
+
     <div id="mainContent">
         <div id="engineContainer">
             <div class="turbine"></div>
@@ -297,6 +315,7 @@
                     <div class="plate-row"><span>DOB</span> <span class="pv">13 FEB 20XX</span></div>
                     <div class="plate-row"><span>ZODIAC</span> <span class="pv">Taurus ♉</span></div>
                     <div class="plate-row"><span>EYES</span> <span class="pv">Deep Espresso</span></div>
+                    <div class="plate-row"><span>HAIR</span> <span class="pv">Black</span></div>
                 </div>
             </div>
 
@@ -306,6 +325,7 @@
                     <div class="plate-row"><span>MET</span> <span class="pv">11 April 2025</span></div>
                     <div class="plate-row"><span>CALL</span> <span class="pv" style="color:#00ffff;">06 HOURS</span></div>
                     <div class="plate-row"><span>DIST</span> <span class="pv">611 KM</span></div>
+                    <div class="plate-row"><span>PICS</span> <span class="pv">489</span></div>
                 </div>
             </div>
 
@@ -315,6 +335,7 @@
                     <div class="plate-row"><span>FOOD</span> <span class="pv">Brinjal / Duck</span></div>
                     <div class="plate-row"><span>DRINK</span> <span class="pv">Red Tea</span></div>
                     <div class="plate-row"><span>MUSIC</span> <span class="pv">Taylor Swift</span></div>
+                    <div class="plate-row"><span>PLACE</span> <span class="pv">My Lap</span></div>
                 </div>
             </div>
 
@@ -324,6 +345,7 @@
                     <div class="plate-row"><span>HAPPY</span> <span class="pv">Dance</span></div>
                     <div class="plate-row"><span>ANGRY</span> <span class="pv">Scolding</span></div>
                     <div class="plate-row"><span>FIX</span> <span class="pv">Treat like Kid</span></div>
+                    <div class="plate-row"><span>SAD</span> <span class="pv">Sleep</span></div>
                 </div>
             </div>
 
@@ -333,6 +355,7 @@
                     <div class="plate-row"><span>SNEEZE</span> <span class="pv">Kitten 🐱</span></div>
                     <div class="plate-row"><span>DRIVE</span> <span class="pv" style="color:red;">SCARY</span></div>
                     <div class="plate-row"><span>TALENT</span> <span class="pv">Singer</span></div>
+                    <div class="plate-row"><span>WALK</span> <span class="pv">Fast</span></div>
                 </div>
             </div>
         </div>
@@ -341,8 +364,6 @@
             <a href="page5_2.html" class="start-btn" style="text-decoration:none; border-color:#00ffff; color:#00ffff;">INITIATE REASSEMBLY ></a>
         </div>
     </div>
-
-    <div id="flashLayer"></div>
 
     <script>
         const soundAlert = document.getElementById('soundAlert');
@@ -355,11 +376,6 @@
             soundGrant.play(); soundGrant.pause();
             document.getElementById('startScreen').style.display = 'none';
             document.getElementById('introOverlay').style.display = 'block';
-            
-            // ANIMATE TUNNEL
-            document.getElementById('gridFloor').style.animation = "warpSpeed 4s linear infinite";
-            document.getElementById('gridCeiling').style.animation = "warpSpeed 4s linear infinite";
-            
             runText();
         }
 
@@ -385,7 +401,7 @@
             document.getElementById('phaseConnect').style.display='none';
             document.getElementById('phaseAlert').style.display='block';
             soundAlert.currentTime = 0; soundAlert.play();
-            // SHAKE CONTAINER, NOT BODY (PREVENTS LAG)
+            // Lag-Free Shake
             document.getElementById('hudBox').classList.add('shake-container');
             
             setTimeout(() => {
@@ -412,32 +428,26 @@
             if(progress<100){ progress=0; scanBeam.style.height="0%"; soundScan.pause(); }
         }
 
-        // --- TRANSITION: THE MELTDOWN ---
+        // --- TRANSITION: THE SHOCKWAVE ---
         function triggerMeltdown() {
             clearInterval(holdTimer); soundScan.pause(); soundGrant.play();
             
-            // 1. Overload HUD
-            document.getElementById('hudBox').classList.add('shake-container');
-            document.getElementById('hudBox').style.filter = "brightness(2) contrast(1.5)";
+            // 1. Shockwave
+            const wave = document.getElementById('shockwaveLayer');
+            wave.style.display = 'block';
             
-            // 2. Flash
+            // 2. Hide HUD Immediately (Prevents overlap glitch)
             setTimeout(() => {
-                const flash = document.createElement('div');
-                flash.className = 'white-out';
-                document.body.appendChild(flash);
-                
                 document.getElementById('introOverlay').style.display = 'none';
-                
-                // 3. Reveal Engine
-                setTimeout(() => {
-                    const main = document.getElementById('mainContent');
-                    main.style.display = 'block';
-                    main.style.opacity = '1';
-                    
-                    // Stop Shake
-                    document.body.style.animation = "none";
-                }, 500);
-            }, 1000);
+            }, 300);
+
+            // 3. Reveal Engine
+            setTimeout(() => {
+                const main = document.getElementById('mainContent');
+                main.style.display = 'block';
+                main.style.opacity = '1';
+                document.getElementById('engineContainer').classList.add('zoom-enter');
+            }, 500);
         }
 
         scanBtn.addEventListener('mousedown', startScan);
@@ -445,13 +455,15 @@
         scanBtn.addEventListener('touchstart', startScan);
         scanBtn.addEventListener('touchend', endScan);
 
-        // --- MOUSE PARALLAX FOR ENGINE ---
+        // Mouse Parallax (Optimized)
         document.addEventListener('mousemove', (e) => {
             const engine = document.getElementById('engineContainer');
             if(engine && document.getElementById('mainContent').style.display === 'block') {
-                let x = (window.innerWidth/2 - e.pageX) / 40;
-                let y = (window.innerHeight/2 - e.pageY) / 40;
-                engine.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+                // Reduced movement divisor for smoothness
+                let x = (window.innerWidth/2 - e.pageX) / 60;
+                let y = (window.innerHeight/2 - e.pageY) / 60;
+                // Add scale to keep it fit
+                engine.style.transform = `scale(0.85) rotateY(${x}deg) rotateX(${y}deg)`;
             }
         });
     </script>
