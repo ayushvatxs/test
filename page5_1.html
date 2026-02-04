@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Memory Server | Violina</title>
+    <title>Violina | Secure Database</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- GLOBAL --- */
+        /* --- CORE --- */
         * { box-sizing: border-box; }
         body {
             margin: 0; padding: 0;
@@ -21,410 +21,375 @@
             height: 100vh;
             color: #fff;
             user-select: none;
-            perspective: 1000px;
         }
 
-        /* --- 1. BACKGROUND GRID (Always Visible) --- */
-        #cyberBackground {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0; background: #000; overflow: hidden;
+        /* COLORS */
+        :root {
+            --theme-pink: #ff0055;
+            --theme-dim: rgba(255, 0, 85, 0.2);
+            --theme-bright: #ff80aa;
         }
-        .tunnel-grid {
+
+        /* --- 1. BACKGROUND (Infinite Grid) --- */
+        #bgLayer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0; background: #050002;
+            perspective: 1000px; overflow: hidden;
+        }
+        .grid-plane {
             position: absolute; left: -50%; width: 200%; height: 200%;
             background: 
-                linear-gradient(rgba(255, 0, 60, 0.2) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 0, 60, 0.2) 1px, transparent 1px);
-            background-size: 100px 100px;
+                linear-gradient(var(--theme-dim) 1px, transparent 1px),
+                linear-gradient(90deg, var(--theme-dim) 1px, transparent 1px);
+            background-size: 60px 60px;
             transform: rotateX(80deg);
             transform-origin: center;
-            opacity: 0.5;
         }
-        .floor { bottom: -100px; animation: gridScroll 2s linear infinite; }
-        .ceiling { top: -100px; transform: rotateX(-80deg); animation: gridScroll 2s linear infinite; }
+        .floor { bottom: -100px; animation: moveGrid 3s linear infinite; }
+        .ceiling { top: -100px; transform: rotateX(-80deg); animation: moveGrid 3s linear infinite; }
         
-        @keyframes gridScroll { 0% { background-position: 0 0; } 100% { background-position: 0 100px; } }
+        @keyframes moveGrid { 0% { background-position: 0 0; } 100% { background-position: 0 60px; } }
 
-        /* --- 2. START SCREEN --- */
-        #startScreen {
+        /* --- 2. INTRO HUD (The Red/Pink Screen) --- */
+        #introUI {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 999;
+            z-index: 10; transition: all 1s ease-in;
             display: flex; justify-content: center; align-items: center;
         }
-        .start-btn {
-            background: rgba(255, 0, 60, 0.1); border: 2px solid #ff4d6d; color: #ff4d6d;
-            padding: 20px 60px; font-family: 'Orbitron'; font-size: 1.5rem; letter-spacing: 4px;
-            cursor: pointer; box-shadow: 0 0 30px #ff4d6d;
-            clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
+
+        /* Layout Grid */
+        .hud-grid {
+            display: grid; grid-template-columns: 350px 1fr; gap: 50px;
+            width: 90%; max-width: 1200px; height: 600px;
+            position: relative; z-index: 20;
         }
 
-        /* --- 3. HUD UI (THE VIDEO REPLICA) --- */
-        #introOverlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 100; transition: transform 1s cubic-bezier(0.7, 0, 0.84, 0), opacity 0.5s ease;
-            transform-origin: center;
+        /* Left Side */
+        .left-panel {
+            border: 1px solid var(--theme-pink);
+            background: rgba(20, 0, 5, 0.8);
+            padding: 20px; display: flex; flex-direction: column;
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 85% 100%, 0 100%);
         }
-
-        /* The Frame (Edges) */
-        .hud-frame { position: absolute; width: 100%; height: 100%; pointer-events: none; z-index: 150; }
-        .hud-bar-top { position: absolute; top: 30px; left: 5%; width: 90%; height: 2px; background: #ff4d6d; box-shadow: 0 0 15px #ff4d6d; transition: 0.3s; }
-        .hud-corner { position: absolute; width: 60px; height: 60px; border: 4px solid #ff4d6d; transition: 0.3s; }
-        .hc-tl { top: 30px; left: 30px; border-right: 0; border-bottom: 0; }
-        .hc-tr { top: 30px; right: 30px; border-left: 0; border-bottom: 0; }
-        .hc-bl { bottom: 30px; left: 30px; border-right: 0; border-top: 0; }
-        .hc-br { bottom: 30px; right: 30px; border-left: 0; border-top: 0; }
-
-        .hud-container {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 95%; max-width: 1200px; height: 600px;
-            display: grid; grid-template-columns: 350px 1fr; gap: 40px;
-            z-index: 60;
-        }
-
-        /* Left Panel */
-        .hud-left {
-            display: flex; flex-direction: column; padding: 25px;
-            background: rgba(20, 0, 0, 0.6); border: 1px solid rgba(255, 77, 109, 0.3);
-            backdrop-filter: blur(5px); transition: 0.3s;
-        }
-        .sys-header { font-family: 'Orbitron'; font-size: 1.2rem; color: #ff4d6d; border-bottom: 2px solid #ff4d6d; margin-bottom: 10px; display: inline-block; transition: 0.3s; }
-        .geo-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 90px 90px; gap: 10px; margin-bottom: 30px; }
-        .geo-box { border: 1px solid #ff4d6d; background: rgba(50, 0, 0, 0.4); transition: 0.3s; }
-        /* Shapes */
-        .gb-1 { clip-path: polygon(0 0, 100% 0, 100% 80%, 80% 100%, 0 100%); }
-        .gb-2 { clip-path: polygon(0 0, 100% 0, 100% 100%, 20% 100%, 0 80%); }
-        .gb-3 { clip-path: polygon(0 0, 80% 0, 100% 20%, 100% 100%, 0 100%); }
-        .gb-4 { clip-path: polygon(20% 0, 100% 0, 100% 100%, 0 100%, 0 20%); }
+        .sys-title { font-family: 'Orbitron'; font-size: 1.2rem; color: var(--theme-pink); border-bottom: 2px solid var(--theme-pink); margin-bottom: 15px; padding-bottom: 5px; }
         
-        .gauge-container { display: flex; gap: 20px; margin-top: auto; }
-        .gauge-circle { width: 60px; height: 60px; border-radius: 50%; border: 1px solid #ff4d6d; display: flex; justify-content: center; align-items: center; color: #fff; position: relative; transition: 0.3s; }
+        .stat-box { border: 1px solid var(--theme-pink); height: 80px; margin-bottom: 10px; position: relative; background: rgba(255,0,85,0.05); }
+        .stat-box::after { content:''; position:absolute; bottom:0; right:0; width:10px; height:10px; background:var(--theme-pink); }
 
-        /* Right Panel (Reactor) */
-        .hud-right { position: relative; display: flex; justify-content: center; align-items: center; }
-        .reactor-outer { position: absolute; width: 500px; height: 500px; border: 2px solid rgba(255, 77, 109, 0.5); border-radius: 50%; border-left: transparent; border-right: transparent; animation: spin 10s linear infinite; transition: 0.3s; }
-        .reactor-inner { position: absolute; width: 400px; height: 400px; border: 1px dashed rgba(255, 255, 255, 0.3); border-radius: 50%; animation: spinRev 15s linear infinite; }
-        .reactor-core {
-            width: 320px; height: 320px; background: rgba(20, 0, 0, 0.95);
-            border: 2px solid #ff4d6d; border-radius: 50%;
+        /* Center Reactor */
+        .reactor-container {
+            position: relative; display: flex; justify-content: center; align-items: center;
+        }
+        .ring-outer {
+            position: absolute; width: 500px; height: 500px;
+            border: 2px solid var(--theme-pink); border-radius: 50%;
+            border-left: transparent; border-right: transparent;
+            animation: spin 10s linear infinite;
+        }
+        .ring-mid {
+            position: absolute; width: 400px; height: 400px;
+            border: 1px dashed var(--theme-pink); border-radius: 50%;
+            animation: spinRev 15s linear infinite;
+        }
+        .ring-inner {
+            width: 300px; height: 300px; border-radius: 50%;
+            border: 5px solid var(--theme-pink);
+            background: rgba(0,0,0,0.9);
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            box-shadow: 0 0 60px rgba(255, 0, 60, 0.3); pointer-events: auto;
-            transition: 0.3s; position: relative; z-index: 100;
+            box-shadow: 0 0 50px var(--theme-pink);
+            position: relative; z-index: 30;
+            transition: all 0.5s;
         }
 
-        .status-text { font-family: 'Orbitron'; font-size: 1.4rem; font-weight: 700; color: #fff; text-shadow: 0 0 10px #ff4d6d; text-align: center; }
+        /* Text & Scan */
+        .main-text { font-family: 'Orbitron'; font-size: 1.5rem; font-weight: 700; text-shadow: 0 0 10px var(--theme-pink); text-align: center; }
         
-        .connect-btn {
-            margin-top: 20px; background: rgba(255,255,255,0.1); border: 1px solid #fff; color: #fff;
-            padding: 12px 30px; font-family: 'Orbitron'; cursor: pointer;
-            animation: pulse 1.5s infinite; pointer-events: auto;
+        .scan-area {
+            width: 100px; height: 140px; border: 2px solid var(--theme-pink);
+            border-radius: 20px; position: relative; overflow: hidden;
+            margin-top: 20px; cursor: pointer;
+        }
+        .scan-line {
+            position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+            background: #fff; box-shadow: 0 0 10px #fff;
+            animation: scanMove 1s linear infinite; display: none;
         }
 
-        /* Scanner */
-        .scanner-box { width: 100px; height: 140px; border: 2px solid #ff4d6d; border-radius: 30px; position: relative; overflow: hidden; cursor: pointer; background: rgba(0,0,0,0.5); transition: 0.3s; }
-        .finger-icon { width: 100%; height: 100%; background: url('https://img.icons8.com/ios/100/ff4d6d/fingerprint.png') center/70% no-repeat; opacity: 0.5; }
-        .scan-beam { position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background: rgba(255, 0, 60, 0.8); transition: height 0.05s linear; box-shadow: 0 0 20px #ff4d6d; }
-
-        /* --- 4. MAIN PAGE (3D CARDS - ALL DATA) --- */
-        #mainContent {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 50; overflow-y: auto; background: #000;
-            opacity: 0; transition: opacity 2s;
+        /* --- 3. TRANSITION EFFECTS --- */
+        .zoom-in-camera {
+            animation: cameraFly 1.5s cubic-bezier(0.7, 0, 0.3, 1) forwards;
+        }
+        @keyframes cameraFly {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(3); opacity: 0.5; }
+            100% { transform: scale(20); opacity: 0; }
         }
 
-        #universe {
-            width: 100%; min-height: 100vh;
-            display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 40px;
-            padding: 50px; perspective: 1200px;
-            transform-style: preserve-3d;
+        /* --- 4. MAIN DASHBOARD (The "After" Screen) --- */
+        #mainDashboard {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 5; display: none; opacity: 0;
+            background: radial-gradient(circle, #1a0005 0%, #000 100%);
+            padding: 40px;
+            transition: opacity 1s ease;
         }
 
-        /* 3D Glass Cards */
-        .data-card {
-            width: 350px; background: rgba(20, 20, 20, 0.8);
-            border: 1px solid #ff4d6d; border-radius: 10px;
-            padding: 20px; color: #fff;
-            box-shadow: 0 0 20px rgba(255, 0, 60, 0.2);
-            transition: transform 0.2s;
-            backface-visibility: hidden;
+        .dashboard-grid {
+            display: grid; 
+            grid-template-columns: 300px 1fr 300px; 
+            grid-template-rows: 100px 1fr 100px;
+            height: 100%; gap: 20px;
         }
-        .data-card:hover { transform: translateZ(50px) scale(1.05); border-color: #fff; box-shadow: 0 0 50px #ff4d6d; z-index: 100; }
 
-        .card-head { font-family: 'Orbitron'; font-size: 1.2rem; color: #ff4d6d; border-bottom: 1px solid #555; padding-bottom: 10px; margin-bottom: 15px; }
-        .card-row { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 8px; border-bottom: 1px dashed #333; padding-bottom: 2px; }
-        .lbl { color: #aaa; } .val { color: #fff; font-weight: bold; text-align: right; }
+        /* Header */
+        .dash-header { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--theme-pink); padding-bottom: 10px; }
+        .header-title { font-family: 'Orbitron'; font-size: 2rem; text-shadow: 0 0 20px var(--theme-pink); }
 
-        /* --- ACCESS GRANTED STATE (GREEN) --- */
-        .access-granted .hud-bar-top, 
-        .access-granted .hud-corner, 
-        .access-granted .geo-box, 
-        .access-granted .gauge-circle,
-        .access-granted .scanner-box { border-color: #00ff00 !important; box-shadow: 0 0 20px #00ff00 !important; background-color: rgba(0, 255, 0, 0.05) !important; }
-        
-        .access-granted .hud-bar-top { background: #00ff00 !important; }
-        .access-granted .sys-header, 
-        .access-granted .status-text { color: #00ff00 !important; text-shadow: 0 0 15px #00ff00 !important; border-color: #00ff00 !important; }
-        
-        .access-granted .reactor-outer,
-        .access-granted .reactor-core { border-color: #00ff00 !important; box-shadow: 0 0 80px #00ff00 !important; }
-        .access-granted .scan-beam { background: #00ff00 !important; box-shadow: 0 0 20px #00ff00 !important; }
+        /* Center Visualization */
+        .dash-center { 
+            grid-column: 2; grid-row: 2; 
+            display: flex; justify-content: center; align-items: center; 
+            position: relative;
+        }
+        .core-sphere {
+            width: 200px; height: 200px; border-radius: 50%;
+            border: 2px solid var(--theme-pink);
+            box-shadow: 0 0 100px var(--theme-pink);
+            animation: pulse 2s infinite;
+            background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,0,85,0.1) 10px, rgba(255,0,85,0.1) 20px);
+        }
+        .orbit-ring {
+            position: absolute; border: 1px solid rgba(255,255,255,0.3); border-radius: 50%;
+        }
+        .o1 { width: 350px; height: 350px; animation: spin 10s linear infinite; border-top-color: var(--theme-pink); }
+        .o2 { width: 500px; height: 500px; animation: spinRev 15s linear infinite; border-bottom-color: var(--theme-pink); }
 
-        /* --- TRANSITIONS --- */
-        .fly-through { transform: scale(5); opacity: 0; filter: blur(10px); }
-        .flash-white { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 999; animation: flashAnim 2s forwards; pointer-events: none; }
+        /* Data Panels */
+        .panel {
+            background: rgba(20, 0, 5, 0.6); border: 1px solid var(--theme-pink);
+            padding: 15px; position: relative;
+            backdrop-filter: blur(5px);
+        }
+        .panel::before { content: ''; position: absolute; top: -2px; left: -2px; width: 10px; height: 10px; border-top: 2px solid #fff; border-left: 2px solid #fff; }
+        .panel::after { content: ''; position: absolute; bottom: -2px; right: -2px; width: 10px; height: 10px; border-bottom: 2px solid #fff; border-right: 2px solid #fff; }
 
+        .panel-title { font-family: 'Orbitron'; color: var(--theme-bright); font-size: 1rem; margin-bottom: 10px; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.2); }
+        .data-row { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 5px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 2px; }
+        .d-label { color: #aaa; } .d-val { color: #fff; font-weight: bold; }
+
+        /* Placement */
+        .p-identity { grid-column: 1; grid-row: 2; align-self: start; }
+        .p-connection { grid-column: 1; grid-row: 2; align-self: end; }
+        .p-likes { grid-column: 3; grid-row: 2; align-self: start; }
+        .p-behavior { grid-column: 3; grid-row: 2; align-self: end; }
+        .p-micro { grid-column: 2; grid-row: 3; align-self: center; width: 100%; display: flex; justify-content: space-around; }
+
+        /* Animations */
         @keyframes spin { 100% { transform: rotate(360deg); } }
         @keyframes spinRev { 100% { transform: rotate(-360deg); } }
-        @keyframes flashAnim { 0% { opacity: 0; } 10% { opacity: 1; } 100% { opacity: 0; } }
-        @keyframes violentShake { 0% { transform: translate(0); } 25% { transform: translate(5px, 5px); } 50% { transform: translate(-5px, -5px); } 75% { transform: translate(5px, -5px); } 100% { transform: translate(0); } }
+        @keyframes scanMove { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(1); opacity: 0.8; } }
+
+        /* Access Granted State */
+        .granted-state {
+            border-color: #fff !important;
+            box-shadow: 0 0 50px #fff, inset 0 0 20px #fff !important;
+            background: rgba(255,255,255,0.2) !important;
+        }
+        .granted-text { color: #fff !important; text-shadow: 0 0 20px #fff !important; }
 
     </style>
 </head>
 <body>
 
-    <div id="cyberBackground">
-        <div class="tunnel-grid floor"></div>
-        <div class="tunnel-grid ceiling"></div>
+    <div id="bgLayer">
+        <div class="grid-plane floor"></div>
+        <div class="grid-plane ceiling"></div>
     </div>
 
     <audio id="soundAlert" src="alert.mp3" preload="auto"></audio>
     <audio id="soundScan" src="scan.mp3" preload="auto" loop></audio>
     <audio id="soundGrant" src="granted.mp3" preload="auto"></audio>
 
-    <div id="startScreen">
-        <button class="start-btn" onclick="startSystem()">INITIALIZE SYSTEM</button>
-    </div>
-
-    <div id="introOverlay">
-        <div class="hud-frame">
-            <div class="hud-bar-top"></div>
-            <div class="hud-corner hc-tl"></div><div class="hud-corner hc-tr"></div>
-            <div class="hud-corner hc-bl"></div><div class="hud-corner hc-br"></div>
-        </div>
-
-        <div class="hud-container">
-            <div class="hud-left">
-                <div>
-                    <div class="sys-header">SYSTEM_LOG</div>
-                    <div style="font-size:0.7rem; color:#fff; opacity:0.8; margin-bottom:15px;">
-                        > MEM_ALLOC: 98%<br>> ENCRYPTION: 256-BIT<br>> PROXY: ACTIVE<br>> LATENCY: 12ms
-                    </div>
-                </div>
-                <div class="geo-grid">
-                    <div class="geo-box gb-1"></div><div class="geo-box gb-2"></div>
-                    <div class="geo-box gb-3"></div><div class="geo-box gb-4"></div>
-                </div>
-                <div class="gauge-container">
-                    <div class="gauge-circle">CPU</div><div class="gauge-circle">RAM</div>
-                </div>
-            </div>
-
-            <div class="hud-right">
-                <div class="reactor-outer"></div>
-                <div class="reactor-inner"></div>
-                <div class="reactor-core">
-                    
-                    <div id="phase1" style="display:flex; flex-direction:column; align-items:center;">
-                        <div class="status-text" id="mainText">SYSTEM STARTUP</div>
-                    </div>
-
-                    <div id="phaseConnect" style="display:none; text-align:center;">
-                        <div class="status-text" style="font-size:1rem;">SERVER READY</div>
-                        <button class="connect-btn" onclick="triggerBreach()">CONNECT CONSOLE</button>
-                    </div>
-
-                    <div id="phaseAlert" style="display:none; text-align:center;">
-                        <i class="fas fa-exclamation-triangle" style="font-size:3rem; color:red; margin-bottom:10px;"></i>
-                        <div class="status-text" style="color:red;">ACCESS DENIED</div>
-                        <div style="font-size:0.8rem; margin-top:5px; border:1px solid red; padding:5px; background:rgba(50,0,0,0.5); color:#fff;">SERVER PROTECTED BY AYUSH</div>
-                    </div>
-
-                    <div id="phaseScan" style="display:none; text-align:center;">
-                        <div class="scanner-box" id="scanBtn">
-                            <div class="finger-icon"></div>
-                            <div class="scan-beam" id="scanBeam"></div>
-                        </div>
-                        <div class="status-text" id="scanText" style="font-size:0.8rem; margin-top:10px;">HOLD TO VERIFY</div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="mainContent">
-        <div style="position:fixed; top:20px; width:100%; text-align:center;">
-            <div style="font-family:'Orbitron'; font-size:2rem; color:#fff; text-shadow:0 0 20px #ff4d6d;">DATABASE UNLOCKED</div>
-        </div>
-
-        <div id="universe">
+    <div id="introUI">
+        <div class="hud-grid">
             
-            <div class="data-card">
-                <div class="card-head">IDENTITY PROTOCOLS</div>
-                <div class="card-row"><span class="lbl">NAME</span> <span class="val">Violina Sharma</span></div>
-                <div class="card-row"><span class="lbl">DOB</span> <span class="val">13 FEB 20XX</span></div>
-                <div class="card-row"><span class="lbl">ZODIAC</span> <span class="val">Taurus ♉</span></div>
-                <div class="card-row"><span class="lbl">EYES</span> <span class="val">Deep Espresso</span></div>
-                <div class="card-row"><span class="lbl">HAIR</span> <span class="val">Black</span></div>
-                <div class="card-row"><span class="lbl">HEIGHT/SHOE</span> <span class="val">7 (Tiny Feet)</span></div>
-                <div class="card-row"><span class="lbl">MARK</span> <span class="val">Mole (Right Forehead)</span></div>
-                <div class="card-row"><span class="lbl">GLASSES</span> <span class="val">YES</span></div>
-                <div class="card-row"><span class="lbl">HAND</span> <span class="val">Right</span></div>
+            <div class="left-panel">
+                <div class="sys-title">SYSTEM_LOG</div>
+                <div style="font-size:0.7rem; margin-bottom:20px;">
+                    > KERNEL: ACTIVE<br>> SECURITY: MAX<br>> PROXY: REROUTED
+                </div>
+                <div class="stat-box"></div>
+                <div class="stat-box"></div>
             </div>
 
-            <div class="data-card">
-                <div class="card-head">CONNECTION LOGS</div>
-                <div class="card-row"><span class="lbl">MET</span> <span class="val">11 April 2025</span></div>
-                <div class="card-row"><span class="lbl">IMPRESSION</span> <span class="val">Gorgeous & Talented</span></div>
-                <div class="card-row"><span class="lbl">DISTANCE</span> <span class="val" style="color:red;">611 KM</span></div>
-                <div class="card-row"><span class="lbl">LONGEST CALL</span> <span class="val" style="color:#00ff00;">06 HOURS</span></div>
-                <div class="card-row"><span class="lbl">PHOTOS SAVED</span> <span class="val">489</span></div>
-                <div class="card-row"><span class="lbl">FIRST SHOW</span> <span class="val">Crime Patrol</span></div>
-            </div>
+            <div class="reactor-container">
+                <div class="ring-outer"></div>
+                <div class="ring-mid"></div>
+                
+                <div class="ring-inner" id="reactorRing">
+                    
+                    <div id="uiStart">
+                        <div class="main-text">SYSTEM STARTUP</div>
+                        <button onclick="startApp()" style="margin-top:20px; background:transparent; border:1px solid #fff; color:#fff; padding:10px 20px; font-family:'Orbitron'; cursor:pointer;">INITIALIZE</button>
+                    </div>
 
-            <div class="data-card">
-                <div class="card-head">PREFERENCES</div>
-                <div class="card-row"><span class="lbl">COLOR</span> <span class="val">Black</span></div>
-                <div class="card-row"><span class="lbl">FLOWER</span> <span class="val">Roses</span></div>
-                <div class="card-row"><span class="lbl">FOOD</span> <span class="val">Brinjal, Chole Chawal, Duck</span></div>
-                <div class="card-row"><span class="lbl">DRINK</span> <span class="val">Red Tea</span></div>
-                <div class="card-row"><span class="lbl">SWEET</span> <span class="val">Kinder Joy / Ice Cream</span></div>
-                <div class="card-row"><span class="lbl">WEATHER</span> <span class="val">Winter (Snow)</span></div>
-                <div class="card-row"><span class="lbl">ARTIST</span> <span class="val">Taylor Swift</span></div>
-                <div class="card-row"><span class="lbl">PLACE</span> <span class="val" style="color:#ff4d6d;">My Lap</span></div>
-                <div class="card-row"><span class="lbl">SLEEP</span> <span class="val">2 Pillows (Head) + 1 (Hand)</span></div>
-            </div>
+                    <div id="uiConnect" style="display:none; text-align:center;">
+                        <div class="main-text" style="font-size:1rem;">SERVER READY</div>
+                        <button onclick="showAccessDenied()" style="margin-top:15px; background:rgba(255,0,85,0.2); border:1px solid var(--theme-pink); color:#fff; padding:10px 20px; font-family:'Orbitron'; cursor:pointer;">CONNECT</button>
+                    </div>
 
-            <div class="data-card">
-                <div class="card-head">BEHAVIORAL DATA</div>
-                <div class="card-row"><span class="lbl">HAPPY</span> <span class="val">Award Winning Dance</span></div>
-                <div class="card-row"><span class="lbl">ANGRY</span> <span class="val">Scolding / "Baad me baat..."</span></div>
-                <div class="card-row"><span class="lbl">FIX</span> <span class="val">Listen > Agree > Laugh</span></div>
-                <div class="card-row"><span class="lbl">SAD</span> <span class="val">Sleep / Quiet</span></div>
-                <div class="card-row"><span class="lbl">COMFORT</span> <span class="val">Treat like a kid</span></div>
-                <div class="card-row"><span class="lbl">LAUGH TRIGGER</span> <span class="val">Weird Faces / Roasts</span></div>
-                <div class="card-row"><span class="lbl">STRESS</span> <span class="val">Sleep / Talk to me</span></div>
-            </div>
+                    <div id="uiDenied" style="display:none; text-align:center;">
+                        <i class="fas fa-exclamation-triangle" style="font-size:3rem; margin-bottom:10px;"></i>
+                        <div class="main-text" style="font-size:1.2rem;">ACCESS DENIED</div>
+                        <div style="font-size:0.8rem; margin-top:5px;">SERVER PROTECTED BY AYUSH</div>
+                    </div>
 
-            <div class="data-card">
-                <div class="card-head">MICRO_OBSERVATIONS</div>
-                <div class="card-row"><span class="lbl">SNEEZE</span> <span class="val">Kitten 🐱</span></div>
-                <div class="card-row"><span class="lbl">LAUGH</span> <span class="val">Giggle</span></div>
-                <div class="card-row"><span class="lbl">WALK</span> <span class="val">Fast</span></div>
-                <div class="card-row"><span class="lbl">TEXTING</span> <span class="val">Typoz Queen</span></div>
-                <div class="card-row"><span class="lbl">COOKING</span> <span class="val">10/10 (Rare)</span></div>
-                <div class="card-row"><span class="lbl">DRIVING</span> <span class="val" style="color:red;">SCARY</span></div>
-                <div class="card-row"><span class="lbl">HYDRATION</span> <span class="val">Queen / Cactus</span></div>
-                <div class="card-row"><span class="lbl">GHOSTS</span> <span class="val">Fears like a kid</span></div>
-                <div class="card-row"><span class="lbl">TALENT</span> <span class="val">Singer (Private)</span></div>
-                <div class="card-row"><span class="lbl">WANT FACE</span> <span class="val">Cute Kid 🥺</span></div>
-                <div class="card-row"><span class="lbl">CONFUSED</span> <span class="val">Stretched Forehead</span></div>
-                <div class="card-row"><span class="lbl">SLANG</span> <span class="val">"Seriously"</span></div>
+                    <div id="uiScan" style="display:none; flex-direction:column; align-items:center;">
+                        <div class="scan-area" id="scanPad">
+                            <div style="width:100%; height:100%; background:url('https://img.icons8.com/ios/100/ff0055/fingerprint.png') center/70% no-repeat; opacity:0.8;"></div>
+                            <div class="scan-line" id="scanBeam"></div>
+                        </div>
+                        <div class="main-text" id="scanStatus" style="font-size:0.8rem; margin-top:10px;">HOLD TO VERIFY</div>
+                    </div>
+
+                </div>
             </div>
 
         </div>
     </div>
 
-    <div id="flashLayer" class="flash-white" style="display:none;"></div>
+    <div id="mainDashboard">
+        <div class="dashboard-grid">
+            
+            <div class="dash-header">
+                <div class="header-title">MEMORY CORE: UNLOCKED</div>
+                <div style="font-family:'Share Tech Mono';">SECURE CONNECTION ESTABLISHED</div>
+            </div>
+
+            <div class="panel p-identity">
+                <div class="panel-title">IDENTITY PROTOCOLS</div>
+                <div class="data-row"><span class="d-label">NAME</span> <span class="d-val">Violina Sharma</span></div>
+                <div class="data-row"><span class="d-label">DOB</span> <span class="d-val">13 FEB 20XX</span></div>
+                <div class="data-row"><span class="d-label">ZODIAC</span> <span class="d-val">Taurus ♉</span></div>
+                <div class="data-row"><span class="d-label">EYES</span> <span class="d-val">Deep Espresso</span></div>
+                <div class="data-row"><span class="d-label">HAIR</span> <span class="d-val">Black</span></div>
+                <div class="data-row"><span class="d-label">MARK</span> <span class="d-val">Mole (Right Forehead)</span></div>
+            </div>
+
+            <div class="panel p-connection">
+                <div class="panel-title">CONNECTION LOGS</div>
+                <div class="data-row"><span class="d-label">MET</span> <span class="d-val">11 April 2025</span></div>
+                <div class="data-row"><span class="d-label">LONGEST CALL</span> <span class="d-val" style="color:#fff; text-shadow:0 0 10px #fff;">06 HOURS</span></div>
+                <div class="data-row"><span class="d-label">DISTANCE</span> <span class="d-val">611 KM</span></div>
+                <div class="data-row"><span class="d-label">DATA</span> <span class="d-val">489 Photos</span></div>
+            </div>
+
+            <div class="dash-center">
+                <div class="core-sphere"></div>
+                <div class="orbit-ring o1"></div>
+                <div class="orbit-ring o2"></div>
+            </div>
+
+            <div class="panel p-likes">
+                <div class="panel-title">PREFERENCES</div>
+                <div class="data-row"><span class="d-label">FOOD</span> <span class="d-val">Brinjal / Duck</span></div>
+                <div class="data-row"><span class="d-label">DRINK</span> <span class="d-val">Red Tea</span></div>
+                <div class="data-row"><span class="d-label">SWEET</span> <span class="d-val">Kinder Joy</span></div>
+                <div class="data-row"><span class="d-label">ARTIST</span> <span class="d-val">Taylor Swift</span></div>
+                <div class="data-row"><span class="d-label">PLACE</span> <span class="d-val" style="color:#ff4d6d;">My Lap</span></div>
+            </div>
+
+            <div class="panel p-behavior">
+                <div class="panel-title">BEHAVIORAL DATA</div>
+                <div class="data-row"><span class="d-label">HAPPY</span> <span class="d-val">Award Dance</span></div>
+                <div class="data-row"><span class="d-label">ANGRY</span> <span class="d-val">Scolding Mode</span></div>
+                <div class="data-row"><span class="d-label">FIX</span> <span class="d-val">Treat like Kid</span></div>
+                <div class="data-row"><span class="d-label">SAD</span> <span class="d-val">Sleep / Quiet</span></div>
+            </div>
+
+            <div class="panel p-micro">
+                <div><span class="d-label">SNEEZE:</span> <span class="d-val">Kitten 🐱</span></div>
+                <div><span class="d-label">DRIVE:</span> <span class="d-val" style="color:red;">SCARY</span></div>
+                <div><span class="d-label">TALENT:</span> <span class="d-val">Singer</span></div>
+                <div><span class="d-label">WALK:</span> <span class="d-val">Fast</span></div>
+            </div>
+
+        </div>
+    </div>
 
     <script>
-        const soundAlert = document.getElementById('soundAlert');
-        const soundScan = document.getElementById('soundScan');
-        const soundGrant = document.getElementById('soundGrant');
+        const sAlert = document.getElementById('soundAlert');
+        const sScan = document.getElementById('soundScan');
+        const sGrant = document.getElementById('soundGrant');
 
-        // --- MOUSE PARALLAX ---
-        document.addEventListener('mousemove', (e) => {
-            const universe = document.getElementById('universe');
-            let x = (window.innerWidth/2 - e.pageX) / 50;
-            let y = (window.innerHeight/2 - e.pageY) / 50;
-            universe.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
-        });
-
-        function startSystem() {
-            soundAlert.play(); soundAlert.pause();
-            soundScan.play(); soundScan.pause();
-            soundGrant.play(); soundGrant.pause();
-            document.getElementById('startScreen').style.display = 'none';
-            document.getElementById('introOverlay').style.display = 'block';
-            runText();
+        function startApp() {
+            document.getElementById('uiStart').style.display = 'none';
+            document.getElementById('uiConnect').style.display = 'block';
         }
 
-        function runText() {
-            const txt = document.getElementById('mainText');
-            const seq = [
-                {t:"SYSTEM STARTUP", d:0}, {t:"INITIALIZING", d:1500},
-                {t:"HEY!", d:3000, s:"3rem"}, {t:"WELCOME TO VIOLINA'S DATABASE", d:5500, s:"1rem"},
-                {t:"LOADING...", d:8000, s:"1.4rem"}, {t:"DECRYPTING SERVER DATA", d:10000},
-                {t:"BYPASSING FIREWALL", d:12500}, {t:"TRYING TO CONNECT", d:14500}, {t:"SERVER READY", d:16500}
-            ];
-            seq.forEach(s => setTimeout(() => {
-                txt.innerText = s.t;
-                if(s.s) txt.style.fontSize = s.s; else txt.style.fontSize = "1.4rem";
-            }, s.d));
+        function showAccessDenied() {
+            document.getElementById('uiConnect').style.display = 'none';
+            document.getElementById('uiDenied').style.display = 'block';
+            sAlert.currentTime = 0; sAlert.play();
+            
+            // Wait 3s then show Scanner
             setTimeout(() => {
-                document.getElementById('phase1').style.display = 'none';
-                document.getElementById('phaseConnect').style.display = 'block';
-            }, 18000);
+                document.getElementById('uiDenied').style.display = 'none';
+                document.getElementById('uiScan').style.display = 'flex';
+            }, 3000);
         }
 
-        function triggerBreach() {
-            document.getElementById('phaseConnect').style.display = 'none';
-            document.getElementById('phaseAlert').style.display = 'block';
-            soundAlert.currentTime = 0; soundAlert.play();
-            // Simple Shake (No Blur)
-            document.body.style.animation = "violentShake 0.5s infinite";
-            setTimeout(() => {
-                document.body.style.animation = "none";
-                document.getElementById('phaseAlert').style.display = 'none';
-                document.getElementById('phaseScan').style.display = 'flex';
-            }, 4000);
-        }
-
-        let holdTimer, progress = 0;
-        const scanBeam = document.getElementById('scanBeam');
-        const scanBtn = document.getElementById('scanBtn');
+        // SCANNER LOGIC
+        const pad = document.getElementById('scanPad');
+        const beam = document.getElementById('scanBeam');
+        let timer;
 
         function startScan(e) {
             e.preventDefault();
-            soundScan.currentTime=0; soundScan.play();
-            holdTimer = setInterval(() => {
-                progress+=4; scanBeam.style.height=progress+"%";
-                if(progress>=100) triggerAccessGranted();
-            }, 50);
-        }
-        function endScan() {
-            clearInterval(holdTimer);
-            if(progress<100){ progress=0; scanBeam.style.height="0%"; soundScan.pause(); }
+            sScan.currentTime=0; sScan.play();
+            beam.style.display = 'block';
+            timer = setTimeout(grantAccess, 2000); // 2 second hold
         }
 
-        // --- THE "VIDEO STYLE" TRANSITION ---
-        function triggerAccessGranted() {
-            clearInterval(holdTimer); soundScan.pause(); soundGrant.play();
+        function stopScan() {
+            clearTimeout(timer);
+            sScan.pause();
+            beam.style.display = 'none';
+        }
+
+        pad.addEventListener('mousedown', startScan);
+        pad.addEventListener('mouseup', stopScan);
+        pad.addEventListener('touchstart', startScan);
+        pad.addEventListener('touchend', stopScan);
+
+        // --- THE TRANSITION (EXACT VIDEO REPLICA) ---
+        function grantAccess() {
+            sScan.pause(); sGrant.play();
             
-            // 1. CHANGE TO GREEN
-            document.body.classList.add('access-granted');
-            document.getElementById('scanText').innerText = "ACCESS GRANTED";
-            document.getElementById('scanText').style.color = "#00ff00";
+            // 1. VISUAL CHANGE (Red -> Green/Bright White)
+            const ring = document.getElementById('reactorRing');
+            const status = document.getElementById('scanStatus');
+            const pad = document.getElementById('scanPad');
             
-            // 2. WAIT 0.5s THEN FLY THROUGH
+            ring.classList.add('granted-state');
+            pad.classList.add('granted-state');
+            status.innerText = "ACCESS GRANTED";
+            status.classList.add('granted-text');
+            
+            // 2. FLY THROUGH (Zoom)
             setTimeout(() => {
-                // Fly Through Effect
-                document.getElementById('introOverlay').classList.add('fly-through');
+                document.getElementById('introUI').classList.add('zoom-in-camera');
                 
-                // Flash
-                document.getElementById('flashLayer').style.display = 'block';
-                
-                // Show Main Content
+                // 3. SHOW DASHBOARD
                 setTimeout(() => {
-                    document.getElementById('introOverlay').style.display = 'none';
-                    document.getElementById('mainContent').style.display = 'block';
-                    document.getElementById('mainContent').style.opacity = '1';
-                }, 1000);
-            }, 800);
+                    document.getElementById('introUI').style.display = 'none';
+                    const dash = document.getElementById('mainDashboard');
+                    dash.style.display = 'block';
+                    setTimeout(() => dash.style.opacity = '1', 50);
+                }, 800); // Sync with zoom
+            }, 1000);
         }
-
-        scanBtn.addEventListener('mousedown', startScan);
-        scanBtn.addEventListener('mouseup', endScan);
-        scanBtn.addEventListener('touchstart', startScan);
-        scanBtn.addEventListener('touchend', endScan);
     </script>
 </body>
 </html>
