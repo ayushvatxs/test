@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIOLINA DATABASE | MAIN CORE</title>
+    <title>VIOLINA DATABASE | CORE V4</title>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
     <style>
-        /* --- CORE --- */
+        /* --- CORE RESET --- */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            background-color: #000; color: #fff;
+            background-color: #050505; color: #fff;
             font-family: 'Share Tech Mono', monospace;
             overflow: hidden; height: 100vh; width: 100vw;
             perspective: 1000px;
@@ -17,267 +17,309 @@
 
         :root {
             --pink: #ff003c;
-            --dim: rgba(255, 0, 60, 0.2);
-            --bg: rgba(10, 0, 5, 0.6);
+            --dim: rgba(255, 0, 60, 0.15);
+            --glow: 0 0 10px var(--pink);
+            --bg-glass: rgba(10, 0, 5, 0.4);
         }
 
-        /* --- BACKGROUND --- */
+        /* --- BACKGROUND (Blue Image Style) --- */
         .bg-grid {
-            position: absolute; inset: 0; z-index: -1; opacity: 0.15;
+            position: absolute; inset: 0; z-index: -1; opacity: 0.2;
             background-image: 
-                linear-gradient(var(--pink) 1px, transparent 1px),
-                linear-gradient(90deg, var(--pink) 1px, transparent 1px);
-            background-size: 40px 40px;
+                linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+        /* Dotted Overlay */
+        .bg-dots {
+            position: absolute; inset: 0; z-index: -1; opacity: 0.3;
+            background-image: radial-gradient(var(--pink) 1px, transparent 1px);
+            background-size: 20px 20px;
         }
 
-        /* --- LAYOUT GRID --- */
-        .main-container {
-            position: absolute; inset: 20px;
+        /* --- MAIN LAYOUT --- */
+        .main-ui {
+            position: absolute; inset: 40px;
             display: grid;
-            grid-template-columns: 300px 1fr 350px;
-            grid-template-rows: 250px 1fr 200px;
-            gap: 15px;
-            padding: 20px;
+            grid-template-columns: 320px 1fr 380px; /* Left, Center, Right */
+            grid-template-rows: 60px 1fr 120px;     /* Top, Main, Bottom */
+            gap: 20px;
         }
 
-        /* --- THE 11 MODULES --- */
-        
-        /* 1. MAIN FRAME */
-        .frame-border {
-            position: absolute; inset: 0; pointer-events: none;
-            border: 4px solid var(--pink);
-            box-shadow: 0 0 30px var(--dim);
-            /* Cut corners using clip-path */
+        /* --- 1. MAIN FRAME BORDER --- */
+        .outer-frame {
+            position: absolute; inset: 20px; pointer-events: none; z-index: 100;
+            border: 3px solid var(--pink);
+            box-shadow: 0 0 25px var(--pink), inset 0 0 20px var(--dim);
+            /* Tech Corners */
             clip-path: polygon(
-                0 10%, 10% 0, 90% 0, 100% 10%, 
-                100% 90%, 90% 100%, 10% 100%, 0 90%
+                0 50px, 50px 0, calc(100% - 50px) 0, 100% 50px,
+                100% calc(100% - 50px), calc(100% - 50px) 100%, 50px 100%, 0 calc(100% - 50px)
             );
-            z-index: 10;
+            opacity: 0; transition: opacity 2s;
         }
 
-        /* COMMON MODULE STYLE */
-        .ui-part {
-            position: relative;
-            background: var(--bg);
-            border: 1px solid var(--pink);
-            box-shadow: 0 0 10px var(--dim);
-            opacity: 0; /* Hidden initially */
-            transform: scale(2.5) translateZ(100px); /* Zoomed IN initially */
-            filter: blur(10px);
-            transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        /* --- ANIMATION BASE CLASS --- */
+        .anim-part {
+            opacity: 0;
+            transform: scale(2) translateZ(50px);
+            filter: blur(8px);
+            transition: all 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .anim-part.active {
+            opacity: 1; transform: scale(1) translateZ(0); filter: blur(0);
+        }
+
+        /* --- LEFT COLUMN MODULES --- */
+        .col-left { grid-column: 1; grid-row: 1 / span 3; display: flex; flex-direction: column; gap: 20px; padding-top: 40px; }
+
+        /* Globe */
+        .mod-globe {
+            width: 100%; height: 200px; position: relative;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .globe-wire {
+            width: 160px; height: 160px; border-radius: 50%;
+            border: 1px solid rgba(255,0,60,0.5);
+            background: repeating-linear-gradient(90deg, transparent 0, transparent 15px, rgba(255,0,60,0.1) 15px, rgba(255,0,60,0.1) 16px);
+            box-shadow: inset 0 0 30px var(--dim);
+            animation: spin 30s linear infinite;
+        }
+        .globe-arc {
+            position: absolute; width: 200px; height: 200px; border-left: 2px solid var(--pink); border-radius: 50%;
+            animation: spinRev 10s linear infinite;
+        }
+
+        /* Progress Bars */
+        .mod-prog { display: flex; flex-direction: column; gap: 10px; }
+        .bar-box {
+            height: 25px; border: 1px solid var(--pink); background: var(--bg-glass);
+            display: flex; align-items: center; padding: 2px; position: relative;
+        }
+        .bar-fill { height: 100%; background: var(--pink); width: 0%; transition: width 1.5s ease-out; opacity: 0.8; }
+        .bar-txt { position: absolute; right: 5px; font-size: 0.6rem; letter-spacing: 1px; }
+
+        /* Histogram */
+        .mod-histo {
+            flex-grow: 1; border-left: 2px solid var(--pink); border-bottom: 2px solid var(--pink);
+            display: flex; align-items: flex-end; justify-content: space-around; padding: 10px;
+            margin-bottom: 20px;
+        }
+        .h-col { width: 15px; background: var(--pink); box-shadow: 0 0 10px var(--pink); animation: bounce 2s infinite alternate; }
+
+        /* --- CENTER COLUMN (REACTOR) --- */
+        .col-center { grid-column: 2; grid-row: 1 / span 3; position: relative; display: flex; flex-direction: column; align-items: center; }
+
+        /* Top Line Detail */
+        .top-line-deco {
+            width: 80%; height: 2px; background: var(--pink); margin-top: 40px; position: relative;
+            box-shadow: 0 0 10px var(--pink);
+        }
+        .top-line-deco::after { content: 'SYSTEM_ANALYSIS // 98%'; position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font-size: 0.6rem; color: var(--pink); background: #000; padding: 0 10px; }
+
+        /* The Main Reactor */
+        .reactor-container {
+            position: relative; margin-top: 60px; width: 500px; height: 500px;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .ring { position: absolute; border-radius: 50%; }
+        /* 1. Outer Bold Segments */
+        .r1 { width: 500px; height: 500px; border: 4px dashed var(--pink); opacity: 0.3; animation: spin 60s linear infinite; }
+        /* 2. Thin Solid */
+        .r2 { width: 440px; height: 440px; border: 1px solid var(--pink); box-shadow: 0 0 15px var(--pink); opacity: 0.8; }
+        /* 3. Thick Segments */
+        .r3 { width: 380px; height: 380px; border: 10px solid transparent; border-top: 10px solid var(--pink); border-bottom: 10px solid var(--pink); animation: spin 10s linear infinite; }
+        /* 4. Dotted */
+        .r4 { width: 320px; height: 320px; border: 2px dotted var(--pink); animation: spinRev 20s linear infinite; }
+        /* 5. Inner Bold */
+        .r5 { width: 240px; height: 240px; border: 5px solid var(--pink); border-left: 5px solid transparent; animation: spin 5s linear infinite; }
+        /* 6. Glowing Core */
+        .r6 { width: 140px; height: 140px; background: radial-gradient(var(--pink), transparent); border: 2px solid #fff; opacity: 0.5; animation: pulse 2s infinite; }
+        /* 7. Detail Ring */
+        .r7 { width: 180px; height: 180px; border: 1px solid #fff; opacity: 0.3; }
+        
+        /* Bottom Connectors (Sliders + Text + Radar) */
+        .bottom-array {
+            position: absolute; bottom: 40px; width: 120%; left: -10%;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
         }
         
-        /* Animation State */
-        .ui-part.visible {
-            opacity: 1;
-            transform: scale(1) translateZ(0);
-            filter: blur(0);
+        /* Sliders (Left side of bottom) */
+        .slider-group { width: 200px; display: flex; flex-direction: column; gap: 8px; }
+        .s-track { width: 100%; height: 1px; background: rgba(255,255,255,0.3); position: relative; }
+        .s-nob { width: 6px; height: 6px; background: var(--pink); position: absolute; top: -2px; box-shadow: 0 0 8px var(--pink); }
+
+        /* The Connecting Line */
+        .connect-line { flex-grow: 1; height: 1px; background: var(--pink); opacity: 0.5; max-width: 50px; }
+
+        /* Text Badge */
+        .main-badge {
+            border: 1px solid var(--pink); color: var(--pink); padding: 8px 30px;
+            font-family: 'Orbitron'; font-weight: bold; font-size: 0.9rem;
+            background: rgba(255,0,60,0.1); clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+            white-space: nowrap;
         }
 
-        /* --- LEFT COLUMN --- */
-        
-        /* 2. GLOBE (Top Left) */
-        #part-globe { 
-            grid-column: 1; grid-row: 1; 
-            border-radius: 20px 0 0 0; border: none; background: transparent; box-shadow: none;
-            display: flex; justify-content: center; align-items: center; 
+        /* Radar (Moved Left of Right Box) */
+        .radar-unit {
+            width: 80px; height: 80px; border: 1px solid var(--pink); border-radius: 50%;
+            background: repeating-radial-gradient(transparent, transparent 9px, rgba(255,0,60,0.2) 10px);
+            position: relative; overflow: hidden; margin-left: 20px;
         }
-        .globe-circle {
-            width: 180px; height: 180px; border-radius: 50%;
-            border: 2px dashed var(--pink);
-            background: repeating-linear-gradient(45deg, transparent 0, transparent 10px, var(--dim) 10px, var(--dim) 12px);
-            animation: spin 20s linear infinite;
-            box-shadow: inset 0 0 40px var(--pink);
+        .radar-scan {
+            position: absolute; inset: 0; background: conic-gradient(transparent 270deg, var(--pink));
+            border-radius: 50%; animation: spin 2s linear infinite; opacity: 0.6;
         }
 
-        /* 3. PROGRESS BARS (Mid Left) */
-        #part-prog { 
-            grid-column: 1; grid-row: 2; 
-            display: flex; flex-direction: column; justify-content: center; gap: 15px; padding: 10px;
-            border: none; background: transparent; box-shadow: none;
+        /* --- RIGHT COLUMN (TECH BOXES) --- */
+        .col-right { grid-column: 3; grid-row: 1 / span 3; display: flex; flex-direction: column; gap: 15px; padding-top: 40px; }
+
+        /* The "Blue Image" Tech Box Style (Opposite Bold Corners) */
+        .tech-box {
+            position: relative; background: var(--bg-glass); border: 1px solid rgba(255,0,60,0.3); padding: 15px;
+            flex-grow: 1; display: flex; flex-direction: column;
         }
-        .p-bar { height: 25px; border: 1px solid var(--pink); display: flex; align-items: center; padding: 2px; position: relative; }
-        .p-fill { height: 100%; background: var(--pink); opacity: 0.7; width: 0; transition: width 2s ease-out; }
-        .p-text { position: absolute; right: 10px; font-size: 0.7rem; color: #fff; }
-
-        /* 4. HISTOGRAM (Bot Left) */
-        #part-histo { 
-            grid-column: 1; grid-row: 3; 
-            display: flex; align-items: flex-end; justify-content: space-around; padding: 20px;
-            border-top: 2px solid var(--pink);
+        /* Top-Left Bold Corner */
+        .tech-box::before {
+            content: ''; position: absolute; top: -1px; left: -1px; width: 20px; height: 20px;
+            border-top: 3px solid var(--pink); border-left: 3px solid var(--pink);
+            box-shadow: -2px -2px 10px var(--pink);
         }
-        .h-bar { width: 20px; background: var(--pink); box-shadow: 0 0 10px var(--pink); animation: eq 1s infinite alternate; }
-
-        /* --- CENTER COLUMN --- */
-
-        /* 5. REACTOR CORE (Center) */
-        #part-core { 
-            grid-column: 2; grid-row: 1 / span 2; 
-            border: none; background: transparent; box-shadow: none;
-            display: flex; justify-content: center; align-items: center; position: relative;
-        }
-        .ring { position: absolute; border-radius: 50%; border: 2px solid var(--pink); }
-        .r1 { width: 500px; height: 500px; border: 2px dashed var(--dim); animation: spin 30s linear infinite; }
-        .r2 { width: 420px; height: 420px; border-width: 5px; border-left: transparent; border-right: transparent; animation: spinRev 10s linear infinite; }
-        .r3 { width: 340px; height: 340px; border: 1px dotted var(--pink); animation: spin 20s linear infinite; }
-        .r4 { width: 260px; height: 260px; border: 10px solid var(--dim); border-top: 10px solid var(--pink); animation: spinRev 5s linear infinite; }
-        .r5 { width: 120px; height: 120px; background: var(--pink); box-shadow: 0 0 60px var(--pink); border-radius: 50%; }
-
-        /* 6. SLIDERS (Bot Center) */
-        #part-slider {
-            grid-column: 2; grid-row: 3;
-            display: flex; flex-direction: column; justify-content: center; gap: 10px; padding: 20px 50px;
-            border: none; background: transparent; box-shadow: none;
-        }
-        .slider-line { width: 100%; height: 2px; background: var(--dim); position: relative; }
-        .slider-nob { width: 10px; height: 10px; background: var(--pink); position: absolute; top: -4px; left: 20%; box-shadow: 0 0 10px var(--pink); }
-
-        /* 7. BADGE (Bot Center Label) */
-        #part-badge {
-            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
-            border: 1px solid var(--pink); padding: 5px 20px; font-size: 0.8rem;
-            background: #000; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+        /* Bottom-Right Bold Corner */
+        .tech-box::after {
+            content: ''; position: absolute; bottom: -1px; right: -1px; width: 20px; height: 20px;
+            border-bottom: 3px solid var(--pink); border-right: 3px solid var(--pink);
+            box-shadow: 2px 2px 10px var(--pink);
         }
 
-        /* --- RIGHT COLUMN --- */
-
-        /* 8. ISO GRID (Top Right) */
-        #part-iso { 
-            grid-column: 3; grid-row: 1; overflow: hidden; position: relative;
-        }
-        .iso-plane {
+        /* Box 1: ISO Grid */
+        .iso-wrap { overflow: hidden; height: 100%; position: relative; }
+        .iso-grid {
             position: absolute; top: 50%; left: 50%; width: 300px; height: 300px;
             background: linear-gradient(var(--pink) 1px, transparent 1px), linear-gradient(90deg, var(--pink) 1px, transparent 1px);
             background-size: 30px 30px;
             transform: translate(-50%, -50%) rotateX(60deg) rotateZ(45deg);
-            box-shadow: 0 0 20px var(--dim);
         }
 
-        /* 9. TEXT BLOCK (Mid Right) */
-        #part-text { 
-            grid-column: 3; grid-row: 2; padding: 15px; font-size: 0.6rem; color: var(--pink);
-            overflow: hidden; line-height: 1.4; opacity: 0.8;
-        }
+        /* Box 2: Text */
+        .text-content { font-size: 0.6rem; color: #ff99aa; line-height: 1.6; opacity: 0.8; }
 
-        /* 10. WAVEFORM (Bot Right Outer) */
-        #part-wave { 
-            grid-column: 3; grid-row: 3; 
-            border-top: 2px solid var(--pink); padding: 10px;
-            display: flex; align-items: center;
-        }
-        .wave-line { width: 100%; height: 1px; background: var(--pink); position: relative; }
-        .wave-line::after { content:''; position: absolute; width: 10px; height: 10px; background: var(--pink); border-radius: 50%; top: -5px; animation: bounce 2s infinite ease-in-out; }
+        /* Box 3: Waveform */
+        .wave-box { display: flex; align-items: center; justify-content: center; height: 100%; }
+        .wave-path { width: 100%; height: 2px; background: var(--pink); position: relative; box-shadow: 0 0 10px var(--pink); }
+        .wave-dot { width: 8px; height: 8px; background: #fff; border-radius: 50%; position: absolute; top: -3px; animation: bounceX 2s infinite ease-in-out; }
 
-        /* 11. RADAR (Bot Right Inner) */
-        #part-radar {
-            position: absolute; bottom: 40px; right: 280px; width: 100px; height: 100px;
-            border: 1px solid var(--pink); border-radius: 50%; background: #000;
-            display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 0 20px var(--pink);
-            z-index: 50;
-        }
-        .radar-sweep { width: 90%; height: 90%; border-radius: 50%; background: conic-gradient(transparent, var(--pink)); animation: spin 2s linear infinite; opacity: 0.5; }
 
-        /* --- ANIMATIONS --- */
+        /* --- ANIMATION KEYFRAMES --- */
         @keyframes spin { 100% { transform: rotate(360deg); } }
         @keyframes spinRev { 100% { transform: rotate(-360deg); } }
-        @keyframes eq { 0% { height: 20%; } 100% { height: 90%; } }
-        @keyframes bounce { 0%, 100% { left: 0%; } 50% { left: 100%; } }
+        @keyframes pulse { 0%, 100% { opacity: 0.3; transform: scale(0.9); } 50% { opacity: 0.8; transform: scale(1); } }
+        @keyframes bounce { 0% { height: 20%; } 100% { height: 90%; } }
+        @keyframes bounceX { 0% { left: 0%; } 50% { left: 100%; } 100% { left: 0%; } }
 
     </style>
 </head>
 <body>
 
     <div class="bg-grid"></div>
+    <div class="bg-dots"></div>
 
-    <div class="main-container">
+    <div class="outer-frame" id="main-border"></div>
+
+    <div class="main-ui">
         
-        <div id="part-frame" class="frame-border ui-part"></div>
+        <div class="col-left">
+            <div class="mod-globe anim-part" id="p1">
+                <div class="globe-arc"></div>
+                <div class="globe-wire"></div>
+                <div style="position:absolute; bottom:10px; font-size:0.6rem;">EARTH.NET // ACTIVE</div>
+            </div>
 
-        <div id="part-globe" class="ui-part">
-            <div class="globe-circle"></div>
-            <div style="position: absolute; font-size: 0.8rem;">EARTH H33<br><span style="font-size:0.6rem; color:#aaa;">NWO ACTIVATED</span></div>
+            <div class="mod-prog anim-part" id="p2">
+                <div class="bar-box"><div class="bar-fill" style="width:85%"></div><div class="bar-txt">SECURE.85</div></div>
+                <div class="bar-box"><div class="bar-fill" style="width:60%"></div><div class="bar-txt">LINK.60</div></div>
+                <div class="bar-box"><div class="bar-fill" style="width:95%"></div><div class="bar-txt">CORE.95</div></div>
+            </div>
+
+            <div class="mod-histo anim-part" id="p3">
+                <div class="h-col" style="height:40%"></div>
+                <div class="h-col" style="height:80%"></div>
+                <div class="h-col" style="height:60%"></div>
+                <div class="h-col" style="height:90%"></div>
+            </div>
         </div>
 
-        <div id="part-prog" class="ui-part">
-            <div class="p-bar"><div class="p-fill" style="width: 90%"></div><div class="p-text">EEVU.054 COMPLETED</div></div>
-            <div class="p-bar"><div class="p-fill" style="width: 75%"></div><div class="p-text">SPAIN.009 COMPLETED</div></div>
-            <div class="p-bar"><div class="p-fill" style="width: 40%"></div><div class="p-text">ODKYO.945 LOADING...</div></div>
+        <div class="col-center">
+            <div class="top-line-deco anim-part" id="p4"></div>
+
+            <div class="reactor-container anim-part" id="p5">
+                <div class="ring r1"></div>
+                <div class="ring r2"></div>
+                <div class="ring r3"></div>
+                <div class="ring r4"></div>
+                <div class="ring r5"></div>
+                <div class="ring r6"></div>
+                <div class="ring r7"></div>
+            </div>
+
+            <div class="bottom-array anim-part" id="p6">
+                <div class="slider-group">
+                    <div class="s-track"><div class="s-nob" style="left:30%"></div></div>
+                    <div class="s-track"><div class="s-nob" style="left:70%"></div></div>
+                    <div class="s-track"><div class="s-nob" style="left:50%"></div></div>
+                </div>
+                
+                <div class="connect-line"></div>
+                
+                <div class="main-badge">SYS.CORE // V.SHARMA</div>
+                
+                <div class="connect-line"></div>
+                
+                <div class="radar-unit">
+                    <div class="radar-scan"></div>
+                </div>
+            </div>
         </div>
 
-        <div id="part-histo" class="ui-part">
-            <div class="h-bar" style="height: 40%"></div>
-            <div class="h-bar" style="height: 80%"></div>
-            <div class="h-bar" style="height: 60%"></div>
-            <div class="h-bar" style="height: 90%"></div>
-        </div>
+        <div class="col-right">
+            <div class="tech-box anim-part" id="p7">
+                <div class="iso-wrap"><div class="iso-grid"></div></div>
+            </div>
 
-        <div id="part-core" class="ui-part">
-            <div class="ring r1"></div>
-            <div class="ring r2"></div>
-            <div class="ring r3"></div>
-            <div class="ring r4"></div>
-            <div class="ring r5"></div>
-        </div>
+            <div class="tech-box anim-part" id="p8">
+                <div class="text-content">
+                    LOREM IPSUM DATA STREAM...<br>
+                    INITIALIZING SECTOR 7G...<br>
+                    ENCRYPTION KEY: VALIDATED.<br>
+                    [SECURE CONNECTION ESTABLISHED]<br>
+                    AWAITING USER INPUT...
+                </div>
+            </div>
 
-        <div id="part-slider" class="ui-part">
-            <div class="slider-line"><div class="slider-nob" style="left:20%"></div></div>
-            <div class="slider-line"><div class="slider-nob" style="left:60%"></div></div>
-            <div class="slider-line"><div class="slider-nob" style="left:80%"></div></div>
-        </div>
-
-        <div id="part-badge" class="ui-part">HUD BY AYUSH</div>
-
-        <div id="part-iso" class="ui-part">
-            <div class="iso-plane"></div>
-        </div>
-
-        <div id="part-text" class="ui-part">
-            LOREM IPSUM DATA STREAM...<br>
-            INITIALIZING SECTOR 7G...<br>
-            ENCRYPTION KEY: VALIDATED.<br>
-            [SECURE CONNECTION ESTABLISHED]<br>
-            <br>
-            WAITING FOR USER INPUT...
-        </div>
-
-        <div id="part-wave" class="ui-part">
-            <div style="font-size:0.6rem; margin-right:10px;">FREQ</div>
-            <div class="wave-line"></div>
-        </div>
-
-        <div id="part-radar" class="ui-part">
-            <div class="radar-sweep"></div>
+            <div class="tech-box anim-part" id="p9" style="flex-grow:0; height:120px;">
+                <div class="wave-box">
+                    <div class="wave-path"><div class="wave-dot"></div></div>
+                </div>
+            </div>
         </div>
 
     </div>
 
     <script>
-        // SEQUENTIAL ZOOM-IN INITIALIZATION
-        window.onload = function() {
-            // Sequence order matching the visual flow
-            const ids = [
-                'part-frame',
-                'part-core',   // Centerpiece
-                'part-globe',  // Top Left
-                'part-iso',    // Top Right
-                'part-prog',   // Mid Left
-                'part-text',   // Mid Right
-                'part-histo',  // Bot Left
-                'part-wave',   // Bot Right
-                'part-slider', // Bot Center
-                'part-radar',  // Detail
-                'part-badge'   // Detail
-            ];
+        window.onload = () => {
+            // 1. Reveal Frame
+            setTimeout(() => { document.getElementById('main-border').style.opacity = '1'; }, 100);
 
-            let delay = 500; // Start delay
+            // 2. Sequential Zoom In
+            const parts = ['p5', 'p4', 'p1', 'p7', 'p2', 'p8', 'p3', 'p9', 'p6'];
+            let delay = 500;
 
-            ids.forEach((id) => {
+            parts.forEach(id => {
                 setTimeout(() => {
                     const el = document.getElementById(id);
-                    if(el) el.classList.add('visible');
+                    if(el) el.classList.add('active');
                 }, delay);
-                delay += 800; // 0.8s gap between each part appearing
+                delay += 400; // Speed of sequence
             });
         };
     </script>
