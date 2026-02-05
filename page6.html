@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIOLINA DATABASE | MACRO REASSEMBLY</title>
+    <title>VIOLINA DATABASE | ULTIMATE REASSEMBLY</title>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
     <style>
         /* --- CORE --- */
@@ -14,7 +14,6 @@
         }
 
         /* --- CAMERA RIG --- */
-        /* Moves the entire scene */
         #camera-rig {
             position: absolute; width: 100%; height: 100%;
             display: flex; justify-content: center; align-items: center;
@@ -24,33 +23,53 @@
             will-change: transform;
         }
 
-        /* CANVAS - The Image */
-        canvas {
-            display: block;
-            filter: drop-shadow(0 0 5px #ff003c);
-            /* Hidden until chaos phase */
-            opacity: 0; transition: opacity 0.5s;
+        /* --- THE IMAGE STACK --- */
+        /* This holds the canvas AND the real image */
+        #visual-stack {
+            position: relative;
+            width: 100vw; height: 100vh; /* Full Screen Canvas Area */
+            display: flex; justify-content: center; align-items: center;
         }
 
-        /* --- UI OVERLAYS --- */
+        /* The Real Image (Hidden until end) */
+        #real-image {
+            position: absolute;
+            width: 350px; /* Match particle block size */
+            height: auto;
+            opacity: 0; /* Starts invisible */
+            transition: opacity 3s ease-in;
+            border: 1px solid rgba(255, 0, 60, 0.5);
+            box-shadow: 0 0 30px rgba(255, 0, 60, 0.2);
+            filter: contrast(1.2) brightness(1.1); /* Make it pop */
+            z-index: 10;
+        }
+
+        /* The Particles */
+        canvas {
+            position: absolute; inset: 0;
+            display: block;
+            z-index: 20; /* Sit on top of image */
+            filter: drop-shadow(0 0 5px #ff003c);
+        }
+
+        /* --- UI TEXTS --- */
         .ui-layer {
             position: absolute; width: 100%; text-align: center; pointer-events: none; z-index: 100;
         }
 
         #intro-text {
-            top: 40%; 
+            top: 45%; 
             color: #ff003c; font-family: 'Orbitron'; font-size: 2rem; letter-spacing: 6px;
             text-shadow: 0 0 20px #ff003c;
             opacity: 1; transition: opacity 0.5s;
         }
 
         #bottom-ui {
-            bottom: 10%; opacity: 0; transition: opacity 2s; pointer-events: auto;
+            bottom: 8%; opacity: 0; transition: opacity 2s; pointer-events: auto;
         }
         .status-main { font-family: 'Orbitron'; font-size: 2.5rem; color: #fff; text-shadow: 0 0 30px #ff003c; margin-bottom: 5px; }
         .status-sub { color: #ff003c; font-size: 1rem; letter-spacing: 4px; margin-bottom: 25px; }
 
-        /* BUTTON */
         .btn-final {
             background: transparent; border: 2px solid #ff003c; color: #ff003c;
             font-family: 'Orbitron'; font-size: 1.2rem; padding: 15px 50px;
@@ -60,10 +79,10 @@
         .btn-final:hover { background: #ff003c; color: #000; box-shadow: 0 0 60px #ff003c; }
 
         /* --- FX --- */
-        .stars { position: fixed; inset: 0; z-index: -1; background: radial-gradient(white 1px, transparent 1px); background-size: 50px 50px; opacity: 0.15; }
-        .vignette { position: fixed; inset: 0; z-index: 10; background: radial-gradient(circle, transparent 10%, #000 130%); pointer-events: none; }
+        .stars { position: fixed; inset: 0; z-index: -1; background: radial-gradient(white 1px, transparent 1px); background-size: 60px 60px; opacity: 0.15; }
+        .vignette { position: fixed; inset: 0; z-index: 5; background: radial-gradient(circle, transparent 30%, #000 130%); pointer-events: none; }
         
-        .ring { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 1px solid #ff003c; border-radius: 50%; opacity: 0; transition: opacity 2s; pointer-events: none; }
+        .ring { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 1px solid #ff003c; border-radius: 50%; opacity: 0; transition: opacity 2s; pointer-events: none; z-index: 5; }
         .r1 { width: 600px; height: 600px; border-style: dashed; animation: spin 60s linear infinite; }
         .r2 { width: 750px; height: 750px; border: 1px solid rgba(255,0,60,0.3); animation: pulse 3s infinite; }
         @keyframes spin { 100% { transform: translate(-50%,-50%) rotate(360deg); } }
@@ -76,12 +95,16 @@
     <div class="stars"></div>
     <div class="vignette"></div>
 
-    <div class="ui-layer" id="intro-text">INITIALIZING...</div>
+    <div class="ui-layer" id="intro-text">INITIALIZING REASSEMBLY...</div>
 
     <div id="camera-rig">
         <div class="ring r1" id="ring1"></div>
         <div class="ring r2" id="ring2"></div>
-        <canvas id="holoCanvas"></canvas>
+        
+        <div id="visual-stack">
+            <img src="violina_reassembly.jpg" id="real-image">
+            <canvas id="holoCanvas"></canvas>
+        </div>
     </div>
 
     <div class="ui-layer" id="bottom-ui">
@@ -92,8 +115,9 @@
 
     <script>
         /* --- CONFIG --- */
-        const IMAGE_URL = 'violina_reassembly.jpg'; 
+        const IMAGE_URL = 'violina_reassembly.jpg';
         const DENSITY = 2; // Particle Density
+        const IMAGE_WIDTH_PX = 350; // The visual size of the image on screen
         
         /* --- AUDIO --- */
         const sfx = {
@@ -109,109 +133,125 @@
         const ctx = canvas.getContext('2d');
         const rig = document.getElementById('camera-rig');
         const txt = document.getElementById('intro-text');
+        const realImg = document.getElementById('real-image');
         
         let particles = [];
-        let activeCluster = -1; 
+        let activeClusterSet = new Set();
         let isFinalized = false;
-        let animationFrameId;
+        let particlesVisible = false;
+
+        // Resize canvas to full screen for chaos effect
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
 
         /* --- IMAGE LOAD --- */
         const img = new Image();
         img.src = IMAGE_URL;
         img.onload = () => {
+            // Set the real image size in CSS to match calculation
+            realImg.style.width = IMAGE_WIDTH_PX + 'px';
+            
+            // Create a temporary canvas to read image data
+            const tempCanvas = document.createElement('canvas');
             const aspect = img.height / img.width;
-            canvas.width = 400; 
-            canvas.height = 400 * aspect;
+            const iW = IMAGE_WIDTH_PX;
+            const iH = IMAGE_WIDTH_PX * aspect;
+            
+            tempCanvas.width = iW;
+            tempCanvas.height = iH;
+            const tCtx = tempCanvas.getContext('2d');
+            tCtx.drawImage(img, 0, 0, iW, iH);
+            const data = tCtx.getImageData(0, 0, iW, iH).data;
 
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // Calculate offset to center the particles on the FULL SCREEN canvas
+            const offsetX = (window.innerWidth - iW) / 2;
+            const offsetY = (window.innerHeight - iH) / 2;
 
             // Generate Particles
-            for(let y=0; y<canvas.height; y+=DENSITY) {
-                for(let x=0; x<canvas.width; x+=DENSITY) {
-                    const i = (y * canvas.width + x) * 4;
+            for(let y=0; y<iH; y+=DENSITY) {
+                for(let x=0; x<iW; x+=DENSITY) {
+                    const i = (y * iW + x) * 4;
                     const brightness = (data[i] + data[i+1] + data[i+2]) / 3;
                     if(brightness > 20) {
-                        const cluster = getCluster(x, y, canvas.width, canvas.height);
-                        particles.push(new Particle(x, y, brightness, cluster));
+                        // Determine Cluster (3x3 grid)
+                        const cx = Math.floor((x / iW) * 3);
+                        const cy = Math.floor((y / iH) * 3);
+                        const cluster = cy * 3 + cx;
+
+                        particles.push(new Particle(
+                            offsetX + x, // Final X (Centered)
+                            offsetY + y, // Final Y (Centered)
+                            brightness, 
+                            cluster
+                        ));
                     }
                 }
             }
             
-            // Start Animation Loop
+            // Animation Loop
             loop();
-            // Start Timeline
+            // Start Logic
             runTimeline();
         };
 
         /* --- PARTICLE ENGINE --- */
         class Particle {
             constructor(tx, ty, brightness, clusterId) {
-                this.tx = tx; // Final Destination X (Inside Canvas)
-                this.ty = ty; // Final Destination Y
+                this.tx = tx; 
+                this.ty = ty; 
                 this.cluster = clusterId;
                 this.color = `rgba(255, 0, 60, ${brightness/255})`;
                 
-                // Start Position: FULL SCREEN RANDOM
-                // We map screen coordinates relative to the canvas center
-                // This ensures particles spawn way off-screen initially
-                const range = 2000; 
-                this.x = (Math.random() - 0.5) * range; 
-                this.y = (Math.random() - 0.5) * range;
+                // Start Position: RANDOM FULL SCREEN
+                // Can be negative (off left) or > width (off right)
+                const spreadX = window.innerWidth * 2;
+                const spreadY = window.innerHeight * 2;
+                
+                this.x = (Math.random() - 0.5) * spreadX + (window.innerWidth/2);
+                this.y = (Math.random() - 0.5) * spreadY + (window.innerHeight/2);
 
-                this.vx = (Math.random() - 0.5) * 15; // Warp Speed
-                this.vy = (Math.random() - 0.5) * 15;
+                // Velocity for Chaos Phase
+                this.vx = (Math.random() - 0.5) * 25;
+                this.vy = (Math.random() - 0.5) * 25;
             }
 
             update() {
+                if(!particlesVisible) return; // Don't move if not started
+
                 if(isFinalized) {
-                    // Jitter
+                    // Jitter in place
                     this.x = this.tx + (Math.random()-0.5)*0.5;
                     this.y = this.ty + (Math.random()-0.5)*0.5;
                     return;
                 }
 
-                // If cluster is active, assemble to target
-                if(this.cluster <= activeCluster && activeCluster > -1) {
+                // If cluster is active, assemble
+                if(activeClusterSet.has(this.cluster)) {
                     const dx = this.tx - this.x;
                     const dy = this.ty - this.y;
-                    this.x += dx * 0.1; // Ease into place
-                    this.y += dy * 0.1;
+                    this.x += dx * 0.15; // Snap speed
+                    this.y += dy * 0.15;
                 } else {
                     // Chaos Mode
                     this.x += this.vx;
                     this.y += this.vy;
-                    // Bounce off heavy boundaries
-                    if(this.x < -1000 || this.x > canvas.width+1000) this.vx *= -1;
-                    if(this.y < -1000 || this.y > canvas.height+1000) this.vy *= -1;
+                    // Bounce off massive boundaries
+                    if(this.x < -1000 || this.x > window.innerWidth+1000) this.vx *= -1;
+                    if(this.y < -1000 || this.y > window.innerHeight+1000) this.vy *= -1;
                 }
             }
 
             draw() {
+                if(!particlesVisible) return;
                 ctx.fillStyle = this.color;
                 ctx.fillRect(this.x, this.y, 1.6, 1.6);
             }
         }
 
-        /* --- CLUSTERING (4x4 Grid for finer control) --- */
-        function getCluster(x, y, w, h) {
-            // Divide image into 9 zones (0-8)
-            const col = Math.floor((x / w) * 3);
-            const row = Math.floor((y / h) * 3);
-            return row * 3 + col;
-        }
-
-        // Camera Targets for 9 zones (in %)
-        const camTargets = [
-            {x:20, y:20}, {x:50, y:20}, {x:80, y:20},
-            {x:20, y:50}, {x:50, y:50}, {x:80, y:50},
-            {x:20, y:80}, {x:50, y:80}, {x:80, y:80}
-        ];
-        // Order to build: Center, Top-Left, Bot-Right, etc.
-        const buildOrder = [4, 0, 8, 2, 6, 1, 7, 3, 5]; 
-
-        /* --- LOOP --- */
         function loop() {
             ctx.clearRect(0,0,canvas.width,canvas.height);
             particles.forEach(p => { p.update(); p.draw(); });
@@ -219,10 +259,18 @@
         }
 
         /* --- TIMELINE --- */
+        const camTargets = [
+            {x:40, y:40}, {x:50, y:40}, {x:60, y:40}, // Top row
+            {x:40, y:50}, {x:50, y:50}, {x:60, y:50}, // Mid row
+            {x:40, y:60}, {x:50, y:60}, {x:60, y:60}  // Bot row
+        ];
+        // Build Order: Center -> Outwards
+        const buildOrder = [4, 1, 7, 3, 5, 0, 2, 6, 8];
+
         async function runTimeline() {
             const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-            // 1. INTRO TEXTS
+            // 1. TEXT PHASE
             await sleep(2000);
             txt.innerText = "LOADING MEMORY FRAGMENTS...";
             await sleep(2000);
@@ -231,36 +279,28 @@
             
             // 2. CHAOS START
             txt.style.opacity = '0';
-            canvas.style.opacity = '1';
+            particlesVisible = true; // Show particles
             sfx.vacuum.play().catch(()=>{});
-            // Particles are visible flying everywhere now
-            await sleep(3000);
+            await sleep(3500);
 
-            // 3. ASSEMBLY SEQUENCE (Zoomed In)
+            // 3. CINEMATIC ASSEMBLY
             rig.style.transform = "scale(4.0)"; // MACRO ZOOM
             
-            // Loop through clusters
             for(let i=0; i<buildOrder.length; i++) {
                 const zone = buildOrder[i];
+                // Move camera to specific zone
+                // We use transformOrigin to pan the zoomed view
+                const t = camTargets[zone];
+                rig.style.transformOrigin = `${t.x}% ${t.y}%`;
                 
-                // Move Camera to Zone
-                const target = camTargets[zone];
-                rig.style.transformOrigin = `${target.x}% ${target.y}%`;
-                
-                // Activate Particles for this zone
-                // We "cheat" by temporarily mapping logic:
-                // We update a global Set, or modify particle logic.
-                // Simple hack: Set activeCluster to a high number? No.
-                // We need to support random access order.
-                // Let's modify the Particle update logic via a Set.
+                // Activate Cluster
                 activeClusterSet.add(zone);
-                
                 try{ sfx.part.currentTime=0; sfx.part.play(); } catch(e){}
                 
-                await sleep(1500); // 1.5s to watch it build
+                await sleep(1200);
             }
 
-            // 4. FINALIZE
+            // 4. FINALIZE & FACE REVEAL
             sfx.vacuum.pause();
             sfx.impact.play().catch(()=>{});
             sfx.heart.play().catch(()=>{});
@@ -270,33 +310,16 @@
             rig.style.transformOrigin = "50% 50%";
             rig.style.transform = "scale(1)";
 
+            // REVEAL REAL IMAGE
+            // This is the magic part: fade in the photo behind the dots
+            await sleep(1000);
+            realImg.style.opacity = '1';
+
             // Show UI
             document.getElementById('ring1').style.opacity = '0.5';
             document.getElementById('ring2').style.opacity = '0.3';
             document.getElementById('bottom-ui').style.opacity = '1';
         }
-
-        // Override Particle Logic for Set-based activation
-        const activeClusterSet = new Set();
-        Particle.prototype.update = function() {
-            if(isFinalized) {
-                this.x = this.tx + (Math.random()-0.5)*0.5;
-                this.y = this.ty + (Math.random()-0.5)*0.5;
-                return;
-            }
-            // Check Set
-            if(activeClusterSet.has(this.cluster)) {
-                const dx = this.tx - this.x;
-                const dy = this.ty - this.y;
-                this.x += dx * 0.12;
-                this.y += dy * 0.12;
-            } else {
-                this.x += this.vx;
-                this.y += this.vy;
-                if(this.x < -1000 || this.x > canvas.width+1000) this.vx *= -1;
-                if(this.y < -1000 || this.y > canvas.height+1000) this.vy *= -1;
-            }
-        };
 
     </script>
 </body>
