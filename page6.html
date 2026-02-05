@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIOLINA DATABASE | FINAL REASSEMBLY</title>
+    <title>VIOLINA DATABASE | CINEMATIC REASSEMBLY</title>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
     <style>
         /* --- CORE --- */
@@ -13,60 +13,49 @@
             font-family: 'Share Tech Mono', monospace; user-select: none;
         }
 
-        /* --- LAYOUT --- */
-        #container {
+        /* --- LAYOUT WRAPPER (CAMERA RIG) --- */
+        #camera-rig {
             position: relative; width: 100%; height: 100%;
             display: flex; justify-content: center; align-items: center;
-            perspective: 1000px;
-        }
-
-        /* CANVAS WRAPPER FOR ZOOM EFFECT */
-        #canvas-stage {
-            position: relative;
-            width: 500px; height: 600px; /* Base size */
             transform-style: preserve-3d;
-            /* Start Zoomed In on chaos */
-            transform: scale(1.8);
-            transition: transform 8s cubic-bezier(0.2, 0.8, 0.2, 1);
+            transform-origin: 50% 50%;
+            transition: transform 2.5s cubic-bezier(0.2, 0.8, 0.2, 1); /* Smooth Camera Moves */
+            will-change: transform;
         }
 
+        /* CANVAS */
         canvas {
             display: block;
-            /* Neon Glow Filter on the whole canvas */
-            filter: drop-shadow(0 0 10px #ff003c); 
+            filter: drop-shadow(0 0 8px #ff003c); /* Neon Glow */
         }
 
-        /* --- UI ELEMENTS --- */
-        .ui-layer {
-            position: absolute; width: 100%; text-align: center; pointer-events: none; z-index: 50;
+        /* --- UI LAYER (Static, sits on top) --- */
+        .ui-overlay {
+            position: absolute; width: 100%; text-align: center; pointer-events: none; z-index: 100;
         }
 
         #top-text {
-            top: 15%; 
-            color: #ff003c; font-family: 'Orbitron'; font-size: 1.2rem; letter-spacing: 4px;
+            top: 20%; 
+            color: #ff003c; font-family: 'Orbitron'; font-size: 1.5rem; letter-spacing: 5px;
             text-shadow: 0 0 20px #ff003c;
-            opacity: 1; transition: opacity 1s;
+            opacity: 0; transition: opacity 1s;
         }
 
         #bottom-ui {
-            bottom: 10%; opacity: 0; transition: opacity 2s;
+            bottom: 10%; width: 100%; text-align: center;
+            opacity: 0; transition: opacity 2s; pointer-events: auto;
         }
-        .status-main { font-family: 'Orbitron'; font-size: 2rem; color: #fff; text-shadow: 0 0 20px #ff003c; margin-bottom: 5px; }
-        .status-sub { color: #ff003c; font-size: 0.9rem; letter-spacing: 3px; }
+        .status-main { font-family: 'Orbitron'; font-size: 2.5rem; color: #fff; text-shadow: 0 0 30px #ff003c; margin-bottom: 10px; }
+        .status-sub { color: #ff003c; font-size: 1rem; letter-spacing: 4px; margin-bottom: 30px; }
 
         /* --- BUTTON --- */
-        #btn-container {
-            position: absolute; bottom: 5%; width: 100%; text-align: center; z-index: 100;
-            opacity: 0; transition: opacity 2s; pointer-events: none;
-        }
         .btn-final {
             background: transparent; border: 2px solid #ff003c; color: #ff003c;
-            font-family: 'Orbitron'; font-size: 1.2rem; padding: 15px 50px;
-            cursor: pointer; pointer-events: auto;
-            box-shadow: 0 0 20px rgba(255, 0, 60, 0.2);
+            font-family: 'Orbitron'; font-size: 1.2rem; padding: 15px 60px;
+            cursor: pointer; box-shadow: 0 0 20px rgba(255, 0, 60, 0.2);
             transition: 0.3s; clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
         }
-        .btn-final:hover { background: #ff003c; color: #000; box-shadow: 0 0 50px #ff003c; }
+        .btn-final:hover { background: #ff003c; color: #000; box-shadow: 0 0 60px #ff003c; }
 
         /* --- BACKGROUND FX --- */
         .stars {
@@ -75,16 +64,16 @@
         }
         .vignette {
             position: fixed; inset: 0; z-index: 10;
-            background: radial-gradient(circle, transparent 30%, #000 100%);
+            background: radial-gradient(circle, transparent 20%, #000 120%);
             pointer-events: none;
         }
 
         /* --- RINGS --- */
         .ring {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            border: 1px solid #ff003c; border-radius: 50%; opacity: 0; transition: opacity 2s;
+            border: 1px solid #ff003c; border-radius: 50%; opacity: 0; transition: opacity 2s; pointer-events: none;
         }
-        .r1 { width: 600px; height: 600px; border-style: dashed; animation: spin 60s linear infinite; }
+        .r1 { width: 550px; height: 550px; border-style: dashed; animation: spin 60s linear infinite; }
         .r2 { width: 700px; height: 700px; border: 1px solid rgba(255,0,60,0.3); animation: pulse 3s infinite; }
 
         @keyframes spin { 100% { transform: translate(-50%,-50%) rotate(360deg); } }
@@ -97,187 +86,188 @@
     <div class="stars"></div>
     <div class="vignette"></div>
 
-    <div id="container">
-        
+    <div class="ui-overlay" id="top-text" style="top: 40%;">INITIALIZING REASSEMBLY PROTOCOL...</div>
+
+    <div id="camera-rig">
         <div class="ring r1" id="ring1"></div>
         <div class="ring r2" id="ring2"></div>
+        <canvas id="holoCanvas"></canvas>
+    </div>
 
-        <div id="canvas-stage">
-            <canvas id="holoCanvas"></canvas>
-        </div>
-
-        <div class="ui-layer" id="top-text">INITIALIZING PARTICLE MATRIX...</div>
-
-        <div class="ui-layer" id="bottom-ui">
-            <div class="status-main">SYSTEM STATUS: ETERNAL</div>
-            <div class="status-sub">PROJECT VIOLINA: SUCCESSFULLY RESTORED</div>
-        </div>
-
-        <div id="btn-container">
-            <button class="btn-final" onclick="window.location.href='page7.html'">FINALIZE PROJECT ></button>
-        </div>
-
+    <div class="ui-overlay" id="bottom-ui">
+        <div class="status-main">SYSTEM STATUS: ETERNAL</div>
+        <div class="status-sub">PROJECT VIOLINA: SUCCESSFULLY RESTORED</div>
+        <button class="btn-final" onclick="window.location.href='page7.html'">FINALIZE PROJECT ></button>
     </div>
 
     <script>
         /* --- CONFIGURATION --- */
-        const IMAGE_URL = 'violina_reassembly.jpg'; // Your image
-        const PARTICLE_DENSITY = 4; // Lower = More particles (Higher CPU), Higher = Fewer
-        const PARTICLE_SIZE = 1.5;  // Size of dots
-        const ANIMATION_SPEED = 0.04; // How fast they fly (0.01 - 0.1)
+        const IMAGE_URL = 'violina_reassembly.jpg'; 
+        const PARTICLE_SIZE = 1.8; // Dot size
+        const DENSITY = 3; // Lower = More particles (Higher CPU)
 
         /* --- AUDIO --- */
         const sfx = {
-            vacuum: new Audio('sfx_vacuum.mp3'),
-            impact: new Audio('sfx_impact.mp3'),
-            heart: new Audio('sfx_heartbeat.mp3')
+            vacuum: new Audio('sfx_vacuum.mp3'), // Wind/Swish
+            impact: new Audio('sfx_impact.mp3'), // Boom
+            heart: new Audio('sfx_heartbeat.mp3') // Pulse
         };
         sfx.heart.loop = true;
 
         /* --- VARIABLES --- */
         const canvas = document.getElementById('holoCanvas');
         const ctx = canvas.getContext('2d');
-        const stage = document.getElementById('canvas-stage');
-        let particlesArray = [];
-        let isAssembled = false;
+        const rig = document.getElementById('camera-rig');
+        
+        let particles = [];
+        let animationState = 'IDLE'; // IDLE, WARP, ASSEMBLE, DONE
 
         /* --- INITIALIZATION --- */
         const img = new Image();
         img.src = IMAGE_URL;
         
         img.onload = function() {
-            // Set canvas size to image size (scaled)
-            // We limit width to 400px to keep particle count manageable
-            const aspectRatio = img.height / img.width;
-            canvas.width = 400;
-            canvas.height = 400 * aspectRatio;
+            // Setup Canvas
+            const aspect = img.height / img.width;
+            canvas.width = 350; // Base width
+            canvas.height = 350 * aspect;
 
-            // Draw image once to read data
+            // Analyze Image
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            
-            // Clear it to start animation
+            const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Generate Particles
-            initParticles(imgData);
+            // Create Particles
+            for (let y = 0; y < canvas.height; y += DENSITY) {
+                for (let x = 0; x < canvas.width; x += DENSITY) {
+                    const i = (y * canvas.width + x) * 4;
+                    const r = data[i], g = data[i+1], b = data[i+2];
+                    const brightness = (r + g + b) / 3;
+
+                    // Only keep visible pixels
+                    if (brightness > 20) {
+                        particles.push(new Particle(x, y, brightness));
+                    }
+                }
+            }
             
-            // Start Sequence
-            startCinematicSequence();
+            // Start the Show
+            runSequence();
         };
 
-        /* --- PARTICLE SYSTEM --- */
+        /* --- PARTICLE CLASS --- */
         class Particle {
             constructor(x, y, brightness) {
-                this.originX = x; // Target X
-                this.originY = y; // Target Y
+                this.targetX = x;
+                this.targetY = y;
+                // Brightness defines opacity (Hologram look)
+                this.color = `rgba(255, 0, 60, ${brightness/255})`; 
                 
-                // Random Start Position (Exploded view)
-                // Spread wide across the screen
-                this.x = (Math.random() * canvas.width * 6) - (canvas.width * 2);
-                this.y = (Math.random() * canvas.height * 6) - (canvas.height * 2);
+                // Start: Random positions all over screen (Chaos)
+                this.x = (Math.random() * canvas.width * 4) - (canvas.width * 1.5);
+                this.y = (Math.random() * canvas.height * 4) - (canvas.height * 1.5);
                 
                 // Physics
-                this.vx = 0; 
-                this.vy = 0;
-                this.friction = 0.94; // Slow down as they approach
-                this.ease = Math.random() * 0.02 + 0.02; // Random speed variation
-
-                // Appearance (Pink Monochrome)
-                // Brightness determines Alpha (Transparency)
-                this.color = `rgba(255, 0, 60, ${brightness/255})`; 
-                this.size = PARTICLE_SIZE;
+                this.vx = (Math.random() - 0.5) * 20; // High speed initially
+                this.vy = (Math.random() - 0.5) * 20;
+                this.friction = 0.95;
+                this.ease = Math.random() * 0.05 + 0.02; 
             }
 
             update() {
-                // Calculate distance to target
-                const dx = this.originX - this.x;
-                const dy = this.originY - this.y;
-                
-                // Move towards target
-                this.x += (dx * this.ease);
-                this.y += (dy * this.ease);
+                if (animationState === 'WARP') {
+                    // Chaos Mode: Fly around fast
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    
+                    // Bounce off "walls" (virtual boundaries) to keep them on screen
+                    if (this.x < -500 || this.x > canvas.width + 500) this.vx *= -1;
+                    if (this.y < -500 || this.y > canvas.height + 500) this.vy *= -1;
 
-                // Jitter effect when close (Hologram noise)
-                if (isAssembled) {
-                    this.x += (Math.random() - 0.5) * 0.5;
-                    this.y += (Math.random() - 0.5) * 0.5;
+                } else if (animationState === 'ASSEMBLE' || animationState === 'DONE') {
+                    // Assembly Mode: Move to target
+                    const dx = this.targetX - this.x;
+                    const dy = this.targetY - this.y;
+                    
+                    this.x += dx * this.ease;
+                    this.y += dy * this.ease;
+
+                    // Jitter when assembled (Alive effect)
+                    if (animationState === 'DONE') {
+                        this.x += (Math.random() - 0.5) * 0.3;
+                        this.y += (Math.random() - 0.5) * 0.3;
+                    }
                 }
             }
 
             draw() {
                 ctx.fillStyle = this.color;
-                ctx.fillRect(this.x, this.y, this.size, this.size);
+                ctx.fillRect(this.x, this.y, PARTICLE_SIZE, PARTICLE_SIZE);
             }
         }
 
-        function initParticles(imgData) {
-            particlesArray = [];
-            for (let y = 0; y < canvas.height; y += PARTICLE_DENSITY) {
-                for (let x = 0; x < canvas.width; x += PARTICLE_DENSITY) {
-                    const index = (y * canvas.width + x) * 4;
-                    const r = imgData.data[index];
-                    const g = imgData.data[index+1];
-                    const b = imgData.data[index+2];
-                    const opacity = imgData.data[index+3];
-
-                    // Brightness formula
-                    const brightness = (r + g + b) / 3;
-
-                    // Only create particles for visible/bright pixels
-                    if (opacity > 128 && brightness > 30) {
-                        particlesArray.push(new Particle(x, y, brightness));
-                    }
-                }
-            }
-        }
-
+        /* --- ANIMATION LOOP --- */
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            for (let i = 0; i < particlesArray.length; i++) {
-                particlesArray[i].update();
-                particlesArray[i].draw();
+            for (let p of particles) {
+                p.update();
+                p.draw();
             }
             requestAnimationFrame(animate);
         }
+        animate(); // Start loop immediately
 
         /* --- CINEMATIC SEQUENCER --- */
-        function startCinematicSequence() {
-            // 1. Start Animation Loop
-            animate();
+        function runSequence() {
+            const txt = document.getElementById('top-text');
 
-            // 2. Trigger Audio & Text
+            // PHASE 1: TEXT ONLY (0s)
+            txt.style.opacity = '1';
+
+            // PHASE 2: CHAOS & SPEED (2.0s)
             setTimeout(() => {
+                txt.innerText = "GATHERING DATA FRAGMENTS...";
+                animationState = 'WARP'; // Particles start flying crazy
                 sfx.vacuum.play().catch(()=>{});
-                document.getElementById('top-text').innerText = "GATHERING DATA FRAGMENTS...";
-            }, 1000);
+            }, 2000);
 
-            // 3. START ASSEMBLY (Zoom Out Camera)
-            // This syncs the particles arriving with the camera pulling back
+            // PHASE 3: ZOOM IN & START ASSEMBLY (5.0s)
             setTimeout(() => {
-                document.getElementById('top-text').innerText = "RECONSTRUCTING HOLOGRAPHIC MATRIX...";
+                txt.style.opacity = '0'; // Hide text
+                animationState = 'ASSEMBLE'; // Particles seek targets
                 
-                // Pull camera back to 1.0 (Reveal face)
-                stage.style.transform = "scale(1)"; 
+                // ZOOM CAMERA TO FACE (Top-Center)
+                rig.style.transformOrigin = "50% 30%"; 
+                rig.style.transform = "scale(2.5)";
                 
-                // Fade in Rings
-                document.getElementById('ring1').style.opacity = '0.5';
-                document.getElementById('ring2').style.opacity = '0.3';
-            }, 2500);
+            }, 5000);
 
-            // 4. IMPACT / FINAL STATE
+            // PHASE 4: PAN CAMERA DOWN (8.0s)
             setTimeout(() => {
-                isAssembled = true; // Enables jitter
-                sfx.vacuum.pause();
+                // PAN TO BOTTOM-RIGHT (Dress/Details)
+                rig.style.transformOrigin = "80% 80%";
+            }, 8000);
+
+            // PHASE 5: FULL REVEAL (11.0s)
+            setTimeout(() => {
+                animationState = 'DONE'; // Jitter mode
                 sfx.impact.play().catch(()=>{});
                 sfx.heart.play().catch(()=>{});
 
-                // UI Updates
-                document.getElementById('top-text').style.opacity = '0'; // Hide loading text
-                document.getElementById('bottom-ui').style.opacity = '1'; // Show Eternal
-                document.getElementById('btn-container').style.opacity = '1'; // Show Button
+                // Zoom Out to Full View
+                rig.style.transformOrigin = "50% 50%";
+                rig.style.transform = "scale(1)";
 
-            }, 8000); // 8 Seconds for full assembly
+                // Show Rings
+                document.getElementById('ring1').style.opacity = '0.5';
+                document.getElementById('ring2').style.opacity = '0.3';
+
+            }, 11000);
+
+            // PHASE 6: FINAL UI (12.5s)
+            setTimeout(() => {
+                document.getElementById('bottom-ui').style.opacity = '1';
+            }, 12500);
         }
 
     </script>
