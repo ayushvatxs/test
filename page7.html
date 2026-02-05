@@ -3,29 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VOGUE: THE VIOLINA EDIT</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400;1,600&family=Montserrat:wght@200;400;800&family=Italiana&display=swap" rel="stylesheet">
+    <title>THE VIOLINA ERA | GLOBAL ICON</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;500;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;800&family=Mrs+Saint+Delafield&display=swap" rel="stylesheet">
     <style>
-        /* --- RESET & BASE --- */
+        /* --- CORE --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background-color: #080808; color: #e0e0e0;
-            font-family: 'Cormorant Garamond', serif;
+            background-color: #000; color: #fff;
+            font-family: 'Inter', sans-serif;
             overflow: hidden; 
         }
 
         :root {
-            --accent: #d4af37; /* Muted Gold */
-            --white: #f5f5f5;
+            --neon: #ff003c;
+            --gold: #d4af37;
+            --paper: #f4f4f4;
             --black: #0a0a0a;
-            --overlay: rgba(0,0,0,0.4);
-        }
-
-        /* --- GRAIN OVERLAY (Film Look) --- */
-        .grain {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
-            pointer-events: none; z-index: 999;
         }
 
         /* --- SCROLL SNAP --- */
@@ -39,143 +32,119 @@
             height: 100vh; width: 100vw;
             scroll-snap-align: start;
             position: relative; overflow: hidden;
-            display: flex;
+            display: flex; flex-direction: column;
+            background: var(--black);
+        }
+
+        /* --- GLOBAL FX --- */
+        .grain {
+            position: fixed; inset: 0; pointer-events: none; z-index: 999; opacity: 0.05;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
         }
 
         /* --- ANIMATIONS --- */
-        .reveal-text { opacity: 0; transform: translateY(50px); transition: 1.2s ease-out; }
-        .active .reveal-text { opacity: 1; transform: translateY(0); }
+        .slide-up { opacity: 0; transform: translateY(50px); transition: 1s ease-out; }
+        .active .slide-up { opacity: 1; transform: translateY(0); }
         
-        .ken-burns { transform: scale(1.2); transition: transform 15s ease-out; width: 100%; height: 100%; object-fit: cover; }
+        .ken-burns { width: 100%; height: 100%; object-fit: cover; transform: scale(1.1); transition: transform 15s ease-out; }
         .active .ken-burns { transform: scale(1.0); }
 
-        /* --- TYPOGRAPHY CLASSES --- */
-        .font-sans { font-family: 'Montserrat', sans-serif; }
-        .font-display { font-family: 'Italiana', serif; }
-        .outline-text {
-            color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.5);
+        /* --- MARQUEE (Scrolling Text) --- */
+        .marquee-container {
+            position: absolute; width: 100%; overflow: hidden; white-space: nowrap;
+            background: var(--neon); color: #fff; padding: 10px 0; z-index: 10;
+            font-family: 'Oswald'; text-transform: uppercase; font-weight: 700; letter-spacing: 2px;
         }
+        .marquee-content { display: inline-block; animation: scrollLeft 20s linear infinite; }
+        @keyframes scrollLeft { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
         /* ================= PAGE 1: THE COVER ================= */
-        #p1 { justify-content: center; align-items: flex-end; }
-        .p1-img { position: absolute; inset: 0; z-index: 0; filter: contrast(1.1) brightness(0.9); }
-        
-        .vogue-title {
-            position: absolute; top: 10px; width: 100%; text-align: center;
-            font-family: 'Italiana', serif; font-size: 21vw; line-height: 0.8;
-            color: #fff; z-index: 2; mix-blend-mode: overlay; opacity: 0.9;
+        #p1 .title {
+            position: absolute; top: -20px; width: 100%; text-align: center;
+            font-family: 'Oswald', sans-serif; font-size: 22vw; font-weight: 700;
+            color: #fff; z-index: 2; mix-blend-mode: overlay; line-height: 1;
         }
-        
-        .cover-lines {
-            position: relative; z-index: 3; width: 100%; padding: 40px;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+        #p1 .headlines {
+            position: absolute; bottom: 50px; left: 30px; z-index: 3;
         }
-        .season { font-family: 'Montserrat'; font-size: 0.9rem; letter-spacing: 5px; margin-bottom: 10px; color: var(--accent); }
-        .headline { font-size: 5rem; font-weight: 400; line-height: 0.9; font-style: italic; margin-bottom: 10px; }
-        .subhead { font-family: 'Montserrat'; font-size: 1rem; max-width: 400px; line-height: 1.5; }
+        .hl-main { font-family: 'Playfair Display'; font-size: 4rem; font-style: italic; line-height: 0.9; margin-bottom: 10px; }
+        .hl-sub { background: #fff; color: #000; padding: 5px 15px; display: inline-block; font-weight: 800; }
 
-        /* ================= PAGE 2: EDITOR'S LETTER ================= */
-        #p2 { background: #121212; display: grid; grid-template-columns: 1fr 1.2fr; }
-        .p2-img-box { position: relative; height: 100%; overflow: hidden; }
-        .p2-img { filter: grayscale(100%); }
-        .p2-content { padding: 80px; display: flex; flex-direction: column; justify-content: center; }
-        .editor-sig { font-family: 'Italiana'; font-size: 4rem; color: var(--accent); margin-bottom: 20px; }
-        .editor-body { font-size: 1.3rem; line-height: 1.6; color: #bbb; text-align: justify; }
-        .editor-body span { font-size: 4rem; float: left; line-height: 0.7; margin-right: 15px; font-style: italic; color: #fff; }
+        /* ================= PAGE 2: TRENDING ================= */
+        #p2 { justify-content: center; align-items: center; background: #fff; color: #000; }
+        .trend-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 90%; height: 80%; }
+        .trend-img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%); transition: 0.5s; }
+        .trend-img:hover { filter: grayscale(0%); }
+        .trend-text { display: flex; flex-direction: column; justify-content: center; padding: 40px; }
+        .hash-tag { font-size: 5rem; font-weight: 800; line-height: 1; color: var(--neon); }
 
-        /* ================= PAGE 3: THE SILHOUETTE ================= */
-        #p3 { background: #000; align-items: center; justify-content: center; }
-        .p3-frame { 
-            position: relative; width: 70%; height: 80%; 
-            border: 1px solid rgba(255,255,255,0.2); 
-        }
-        .p3-img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
-        .p3-overlay-text {
+        /* ================= PAGE 3: THE VLOG (YOUTUBE) ================= */
+        #p3 { background: #000; }
+        .yt-frame { 
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            font-size: 8vw; font-weight: 700; white-space: nowrap;
-            mix-blend-mode: difference; color: #fff; z-index: 10;
+            width: 80%; height: 60%; border: 1px solid #333; overflow: hidden;
+        }
+        .yt-ui {
+            position: absolute; bottom: 20px; left: 20px; right: 20px;
+            display: flex; justify-content: space-between; align-items: center; z-index: 5;
+        }
+        .rec-dot { width: 15px; height: 15px; background: red; border-radius: 50%; animation: blink 1s infinite; }
+        .yt-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; padding: 20px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); z-index: 5;
         }
 
-        /* ================= PAGE 4: GOLDEN HOUR ================= */
-        #p4 { display: flex; flex-direction: column; }
-        .p4-top { height: 60%; position: relative; overflow: hidden; }
-        .p4-bot { height: 40%; background: #fff; color: #000; padding: 40px; display: flex; align-items: center; }
-        .p4-quote { font-size: 2.5rem; font-weight: 600; line-height: 1.1; margin-right: 40px; flex: 2; }
-        .p4-desc { font-family: 'Montserrat'; font-size: 0.8rem; flex: 1; border-left: 2px solid #000; padding-left: 20px; }
-
-        /* ================= PAGE 5: THE DETAILS (Macro) ================= */
-        #p5 { background: #080808; display: grid; grid-template-columns: 1fr 1fr 1fr; }
-        .detail-col { border-right: 1px solid #222; position: relative; overflow: hidden; transition: 0.5s; }
-        .detail-col:hover { flex-grow: 1.5; filter: brightness(1.2); }
-        .detail-col img { width: 100%; height: 100%; object-fit: cover; filter: sepia(30%); }
-        .detail-label { 
-            position: absolute; bottom: 30px; left: 20px; 
-            font-family: 'Montserrat'; font-weight: 800; font-size: 2rem; 
-            transform: rotate(-90deg); transform-origin: left bottom;
-            text-transform: uppercase; color: transparent; -webkit-text-stroke: 1px #fff;
+        /* ================= PAGE 4: GOLDEN RATIO ================= */
+        #p4 { display: flex; align-items: center; justify-content: center; }
+        .face-scan {
+            position: absolute; width: 350px; height: 450px; border: 1px solid rgba(255,255,255,0.3);
+            display: flex; justify-content: center; align-items: center;
+        }
+        .scan-line {
+            position: absolute; top: 0; width: 100%; height: 2px; background: var(--neon);
+            box-shadow: 0 0 10px var(--neon); animation: scan 3s infinite alternate;
+        }
+        .beauty-score {
+            position: absolute; bottom: -60px; font-family: 'Oswald'; font-size: 3rem; color: var(--neon);
         }
 
-        /* ================= PAGE 6: OFF DUTY (Casual) ================= */
-        #p6 { background: #e0e0e0; color: #000; align-items: center; padding: 50px; }
-        .polaroid { 
-            background: #fff; padding: 20px 20px 80px 20px; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3); transform: rotate(-3deg);
-            width: 400px; margin-right: 100px;
-        }
-        .polaroid img { width: 100%; filter: saturate(1.2); }
-        .p6-text h2 { font-size: 5rem; line-height: 0.9; margin-bottom: 20px; }
-        .p6-list { font-family: 'Montserrat'; font-size: 1rem; line-height: 2; border-top: 2px solid #000; padding-top: 20px; }
-
-        /* ================= PAGE 7: CENTERFOLD ================= */
-        #p7 { justify-content: center; align-items: center; }
-        .centerfold-img { width: 95%; height: 95%; object-fit: cover; border: 1px solid var(--accent); }
-        .cf-title {
-            position: absolute; bottom: 100px; width: 100%; text-align: center;
-            font-size: 4rem; font-style: italic; letter-spacing: 5px;
-            text-shadow: 0 0 20px #000;
+        /* ================= PAGE 5: THE VOICE ================= */
+        #p5 { background: #111; display: grid; grid-template-columns: 1.5fr 1fr; }
+        .mic-img { width: 100%; height: 100%; object-fit: cover; filter: sepia(50%); }
+        .lyrics {
+            padding: 50px; display: flex; flex-direction: column; justify-content: center;
+            font-family: 'Mrs Saint Delafield', cursive; font-size: 3rem; color: #ccc;
         }
 
-        /* ================= PAGE 8: THE INTERVIEW ================= */
-        #p8 { background: #111; padding: 60px; display: flex; flex-direction: column; justify-content: center; }
-        .interview-header { font-family: 'Montserrat'; font-size: 0.8rem; color: var(--accent); margin-bottom: 40px; letter-spacing: 3px; }
-        .qa-box { margin-bottom: 40px; border-left: 1px solid #444; padding-left: 30px; }
-        .q { font-family: 'Italiana'; font-size: 2rem; color: #fff; margin-bottom: 10px; }
-        .a { font-family: 'Montserrat'; font-size: 1rem; color: #888; font-weight: 300; max-width: 600px; }
-
-        /* ================= PAGE 9: MOODBOARD ================= */
-        #p9 { background: #000; display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: 1fr 1fr; }
-        .mb-1 { grid-row: 1 / span 2; position: relative; overflow: hidden; border-right: 1px solid #333; }
-        .mb-2 { border-bottom: 1px solid #333; position: relative; overflow: hidden; }
-        .mb-3 { background: #111; display: flex; align-items: center; justify-content: center; text-align: center; padding: 20px; }
-        .mood-text { font-family: 'Italiana'; font-size: 2.5rem; color: var(--accent); }
-
-        /* ================= PAGE 10: ESSENTIALS ================= */
-        #p10 { background: #fff; color: #000; display: flex; align-items: center; }
-        .ess-img { width: 50%; height: 100%; object-fit: cover; }
-        .ess-list { width: 50%; padding: 60px; }
-        .ess-item { 
-            display: flex; justify-content: space-between; border-bottom: 1px solid #ddd;
-            padding: 20px 0; font-family: 'Montserrat'; font-size: 1.2rem;
+        /* ================= PAGE 6: FASHION ICON ================= */
+        #p6 { background: #f4f4f4; color: #000; padding: 40px; }
+        .fashion-spread { display: flex; height: 100%; align-items: flex-end; gap: 20px; }
+        .f-col { flex: 1; height: 80%; position: relative; transition: 0.5s; overflow: hidden; }
+        .f-col:hover { height: 95%; }
+        .f-col img { width: 100%; height: 100%; object-fit: cover; }
+        .f-label {
+            position: absolute; top: 20px; left: -20px; transform: rotate(90deg); transform-origin: left top;
+            font-weight: 800; font-size: 1.5rem; letter-spacing: 2px;
         }
-        .ess-item span:last-child { font-weight: 800; }
 
-        /* ================= PAGE 11: LEGACY ================= */
-        #p11 { background: #050505; display: flex; justify-content: center; align-items: center; padding: 100px; text-align: center; }
-        .legacy-quote { font-size: 4vw; line-height: 1.3; color: #fff; }
-        .legacy-accent { color: var(--accent); font-style: italic; }
-
-        /* ================= PAGE 12: BACK COVER ================= */
-        #p12 { background: #080808; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 60px; text-align: center; }
-        .barcode { font-family: 'Montserrat'; font-weight: 200; letter-spacing: 8px; font-size: 1.5rem; margin-top: 40px; }
+        /* ================= PAGE 7-15: GENERAL STYLES ================= */
+        .quote-page { display: flex; justify-content: center; align-items: center; padding: 100px; text-align: center; }
+        .big-quote { font-family: 'Playfair Display'; font-size: 3.5rem; line-height: 1.2; }
         
+        .split-page { display: grid; grid-template-columns: 1fr 1fr; height: 100vh; }
+        .full-img { width: 100%; height: 100%; object-fit: cover; }
+        .center-text { display: flex; flex-direction: column; justify-content: center; padding: 50px; }
+
+        /* BUTTON */
         .next-btn {
-            background: transparent; border: 1px solid #fff; color: #fff;
-            padding: 20px 60px; font-family: 'Montserrat'; font-size: 1rem; letter-spacing: 3px;
-            cursor: pointer; transition: 0.4s; margin-bottom: 40px;
+            background: var(--neon); color: #fff; padding: 20px 50px; border: none;
+            font-family: 'Oswald'; font-size: 1.5rem; cursor: pointer; transition: 0.3s;
+            clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
         }
-        .next-btn:hover { background: #fff; color: #000; letter-spacing: 5px; }
-        
-        .credits { font-size: 0.7rem; color: #555; letter-spacing: 2px; }
+        .next-btn:hover { background: #fff; color: #000; }
+
+        @keyframes blink { 50% { opacity: 0; } }
+        @keyframes scan { 0% { top: 0%; } 100% { top: 100%; } }
 
     </style>
 </head>
@@ -186,124 +155,186 @@
 <div id="magazine">
 
     <div class="page active" id="p1">
-        <div class="vogue-title">VOGUE</div>
-        <img src="violina_main.jpg" class="cover-img ken-burns">
-        <div class="issue-info">
-            <span>The Icon Issue</span>
-            <span>Est. 2025</span>
-            <span>Vol. 02</span>
-        </div>
-        <div class="cover-lines reveal-text">
-            <div class="season">SPRING / SUMMER</div>
-            <div class="headline">The Art of<br>Violina</div>
-            <div class="subhead">An exclusive look into the mind, style, and soul of a modern muse.</div>
+        <div class="title">VIOLINA</div>
+        <img src="mag_cover.jpg" onerror="this.src='violina_main.jpg'" class="cover-img ken-burns">
+        <div class="headlines slide-up">
+            <div class="hl-sub">THE GLOBAL ISSUE</div>
+            <div class="hl-main">Queen of the<br>Decade</div>
+            <p>WHY THE WORLD IS OBSESSED.</p>
         </div>
     </div>
 
     <div class="page" id="p2">
-        <div class="p2-img-box"><img src="1000216145.jpg" class="p2-img ken-burns"></div>
-        <div class="p2-content reveal-text">
-            <div class="editor-sig">Editor's Note</div>
-            <p class="editor-body"><span>S</span>tyle is not just about what you wear; it is about how you live. This edition is dedicated to a woman who embodies grace, intellect, and a fierce sense of self. From her love for black aesthetics to her hidden musical talents, she is the definition of "Couture Personality".</p>
+        <div class="marquee-container" style="top: 20px;">
+            <div class="marquee-content">
+                BREAKING NEWS: VIOLINA SPOTTED  //  #1 TRENDING WORLDWIDE  //  NEW VLOG COMING SOON  //  THE INTERNET IS BROKEN  //  
+                BREAKING NEWS: VIOLINA SPOTTED  //  #1 TRENDING WORLDWIDE  //  NEW VLOG COMING SOON  //  THE INTERNET IS BROKEN  //
+            </div>
         </div>
-    </div>
-
-    <div class="page" id="p3">
-        <div class="p3-frame reveal-text">
-            <img src="1000216146.jpg" class="p3-img">
-        </div>
-        <div class="p3-overlay-text">UNAPOLOGETIC</div>
-    </div>
-
-    <div class="page" id="p4">
-        <div class="p4-top"><img src="1000216145.jpg" class="ken-burns"></div>
-        <div class="p4-bot reveal-text">
-            <div class="p4-quote">"Elegance is the only beauty that never fades."</div>
-            <div class="p4-desc">PHOTOGRAPHED IN HIGH CONTRAST.<br>WARDROBE: VINTAGE ARCHIVE.</div>
-        </div>
-    </div>
-
-    <div class="page" id="p5">
-        <div class="detail-col"><img src="1000216146.jpg"><div class="detail-label">Vision</div></div>
-        <div class="detail-col"><img src="1000216148.jpg"><div class="detail-label">Spirit</div></div>
-        <div class="detail-col"><img src="violina_main.jpg"><div class="detail-label">Aura</div></div>
-    </div>
-
-    <div class="page" id="p6">
-        <div class="polaroid reveal-text">
-            <img src="1000216148.jpg">
-            <div style="font-family:'Nothing You Could Do', cursive; color:#000; margin-top:10px; text-align:center;">Casual Fridays</div>
-        </div>
-        <div class="p6-text reveal-text">
-            <h2>OFF<br>DUTY.</h2>
-            <div class="p6-list">
-                CURRENT MOOD: RED TEA<br>
-                LISTENING TO: TAYLOR SWIFT<br>
-                LOCATION: 611KM AWAY<br>
-                VIBE: "THANK UUUU"
+        <div class="trend-grid">
+            <img src="mag_candid.jpg" onerror="this.src='1000216148.jpg'" class="trend-img">
+            <div class="trend-text slide-up">
+                <div style="font-family:'Oswald'; color:#888;">SOCIAL MEDIA ANALYSIS</div>
+                <div class="hash-tag">#VIRAL</div>
+                <p style="margin-top: 20px; font-size: 1.2rem;">"Every time she posts, the algorithm changes. She isn't following trends, she is the trend."</p>
             </div>
         </div>
     </div>
 
-    <div class="page" id="p7">
-        <img src="1000216145.jpg" class="centerfold-img ken-burns">
-        <div class="cf-title reveal-text">THE MUSE</div>
+    <div class="page" id="p3">
+        <div class="yt-frame slide-up">
+            <div class="yt-overlay">
+                <div style="font-family:'Oswald'; font-size:1.5rem;">VLOG_001.mp4</div>
+                <div style="color:#ccc;">10M Views • 2 Hours Ago</div>
+            </div>
+            <img src="mag_vlog.jpg" onerror="this.src='1000216145.jpg'" class="ken-burns">
+            <div class="yt-ui">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div class="rec-dot"></div> <span>REC</span>
+                </div>
+                <span>[SUBSCRIBE]</span>
+            </div>
+        </div>
+        <div style="position:absolute; bottom: 80px; width:100%; text-align:center;">
+            <h2 style="font-family:'Playfair Display'; font-size: 3rem;">The Next Big Creator</h2>
+            <p>From studying to superstardom: Her YouTube journey begins soon.</p>
+        </div>
     </div>
 
-    <div class="page" id="p8">
-        <div class="interview-header">CONVERSATIONS WITH V</div>
-        
-        <div class="qa-box reveal-text" style="transition-delay: 0.1s;">
-            <div class="q">On Style?</div>
-            <div class="a">"Black isn't just a color. It's a lifestyle. It's poetic, practical, and powerful."</div>
+    <div class="page" id="p4">
+        <img src="mag_close.jpg" onerror="this.src='1000216146.jpg'" class="cover-img" style="opacity:0.4;">
+        <div class="face-scan slide-up">
+            <img src="mag_close.jpg" onerror="this.src='1000216146.jpg'" style="width:100%; height:100%; object-fit:cover;">
+            <div class="scan-line"></div>
+            <div class="beauty-score">SCORE: 100%</div>
         </div>
-        <div class="qa-box reveal-text" style="transition-delay: 0.2s;">
-            <div class="q">On Travel?</div>
-            <div class="a">"Take me to Switzerland. Give me snow, silence, and a view that steals your breath."</div>
+        <div style="position:absolute; bottom:150px; text-align:center;">
+            <h3>SCIENTIFICALLY PERFECT</h3>
+            <p style="color:#aaa;">Subject: Deep Espresso Eyes. Mole Location: Precise.</p>
         </div>
-        <div class="qa-box reveal-text" style="transition-delay: 0.3s;">
-            <div class="q">On Life?</div>
-            <div class="a">"Be studious, be kind, but don't be afraid to scold someone when they need it."</div>
+    </div>
+
+    <div class="page" id="p5">
+        <div class="lyrics slide-up">
+            "She sings only for the chosen few, <br>but her voice could heal the world."
+            <br><br>
+            <span style="font-family:'Inter'; font-size:1rem; letter-spacing:2px; color:var(--neon);">HIDDEN TALENT UNLOCKED</span>
         </div>
+        <div style="overflow:hidden;">
+            <img src="mag_candid.jpg" onerror="this.src='1000216145.jpg'" class="mic-img ken-burns">
+        </div>
+    </div>
+
+    <div class="page" id="p6">
+        <div style="margin-bottom:30px; border-bottom:2px solid #000; padding-bottom:10px;">
+            <h2 style="font-family:'Oswald'; font-size:3rem;">THE LOOKBOOK</h2>
+        </div>
+        <div class="fashion-spread slide-up">
+            <div class="f-col">
+                <img src="mag_fashion.jpg" onerror="this.src='violina_main.jpg'">
+                <div class="f-label">Couture</div>
+            </div>
+            <div class="f-col">
+                <img src="mag_candid.jpg" onerror="this.src='1000216148.jpg'">
+                <div class="f-label">Off-Duty</div>
+            </div>
+            <div class="f-col">
+                <img src="mag_bw.jpg" onerror="this.src='1000216146.jpg'" style="filter:grayscale(100%);">
+                <div class="f-label">Classic</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page quote-page" id="p7">
+        <div class="big-quote slide-up">
+            "I don't have a dream car. I have a dream life, and she is the main character of it."
+            <br>
+            <span style="font-size:1rem; color:var(--gold); margin-top:20px; display:block;">- A FAN</span>
+        </div>
+    </div>
+
+    <div class="page split-page" id="p8">
+        <div class="center-text slide-up">
+            <h2 style="font-family:'Oswald'; font-size:3rem; color:var(--neon);">FUEL.</h2>
+            <p>How does she maintain that energy?</p>
+            <ul style="margin-top:20px; line-height:2; list-style:none;">
+                <li><strong>Elixir:</strong> Red Tea (Steaming)</li>
+                <li><strong>Sustenance:</strong> Brinjal & Duck</li>
+                <li><strong>Treat:</strong> Kinder Joy (Childlike Wonder)</li>
+                <li><strong>Spice Level:</strong> Moderate</li>
+            </ul>
+        </div>
+        <img src="mag_candid.jpg" onerror="this.src='1000216148.jpg'" class="full-img" style="filter: contrast(1.2);">
     </div>
 
     <div class="page" id="p9">
-        <div class="mb-1"><img src="violina_main.jpg" class="ken-burns"></div>
-        <div class="mb-2"><img src="1000216146.jpg" class="ken-burns" style="filter:sepia(50%)"></div>
-        <div class="mb-3">
-            <div class="mood-text">AESTHETIC<br>OVERLOAD</div>
+        <img src="mag_cover.jpg" onerror="this.src='violina_main.jpg'" class="cover-img" style="filter:brightness(0.3);">
+        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center;" class="slide-up">
+            <h1 style="font-family:'Playfair Display'; font-size:5rem; color:#fff;">DREAM STATE</h1>
+            <p style="letter-spacing:3px;">2 PILLOWS + 1 HAND = PEACE.</p>
         </div>
     </div>
 
-    <div class="page" id="p10">
-        <img src="1000216145.jpg" class="ess-img">
-        <div class="ess-list reveal-text">
-            <h2 style="font-family:'Italiana'; font-size:3rem; margin-bottom:30px;">Essentials</h2>
-            <div class="ess-item"><span>Drink</span><span>Red Tea</span></div>
-            <div class="ess-item"><span>Snack</span><span>Kinder Joy</span></div>
-            <div class="ess-item"><span>Flower</span><span>Roses</span></div>
-            <div class="ess-item"><span>Sign</span><span>Taurus</span></div>
-            <div class="ess-item"><span>Show</span><span>Crime Patrol</span></div>
+    <div class="page quote-page" id="p10" style="background:#fff; color:#000;">
+        <div class="slide-up">
+            <h1 style="font-size:6rem; font-weight:800; line-height:0.8;">NO<br>PHOTOS.</h1>
+            <p style="margin-top:20px; font-style:italic;">"Baad me baat krte h, mujhe padhna hai."</p>
+            <div style="margin-top:40px; border:2px solid #000; padding:10px; display:inline-block;">MODE: STUDIOUS</div>
         </div>
     </div>
 
     <div class="page" id="p11">
-        <div class="legacy-quote reveal-text">
-            "Some people are chapters. <span class="legacy-accent">She is the whole damn book.</span> A story written in laughter, intelligence, and grace."
+        <div style="position:absolute; inset:0; background:linear-gradient(45deg, #000, #222);"></div>
+        <div style="position:absolute; top:30%; width:100%; text-align:center;" class="slide-up">
+            <div style="font-size:10vw; font-family:'Oswald'; color:rgba(255,255,255,0.1);">SWITZERLAND</div>
+            <div style="margin-top:-50px; font-size:2rem; color:var(--gold);">DESTINATION: PENDING</div>
+            <p>The mountains are calling for their Queen.</p>
         </div>
     </div>
 
-    <div class="page" id="p12">
-        <div class="barcode">||| || ||||| || ||| V.SHARMA</div>
-        
-        <div style="flex-grow:1; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-            <h1 style="font-family:'Italiana'; font-size:3rem; margin-bottom:30px;">THE END IS THE BEGINNING</h1>
-            <button class="next-btn" onclick="window.location.href='page8.html'">ENTER MUSICAL PORTRAIT</button>
+    <div class="page quote-page" id="p12">
+        <div class="slide-up">
+            <div style="color:var(--neon); font-size:4rem;">★★★★★</div>
+            <h2 style="font-family:'Playfair Display'; margin-top:20px;">"Gorgeous & Talented"</h2>
+            <p>The First Impression that lasted forever.</p>
         </div>
+    </div>
 
-        <div class="credits">
-            PRODUCED BY V.SHARMA LABS<br>
-            COPYRIGHT © 2025 ALL RIGHTS RESERVED
+    <div class="page" id="p13">
+        <img src="mag_bw.jpg" onerror="this.src='1000216146.jpg'" class="full-img" style="filter:grayscale(100%) contrast(1.5);">
+        <div style="position:absolute; bottom:50px; left:50px;" class="slide-up">
+            <h1 style="font-size:5rem; font-family:'Oswald'; -webkit-text-stroke:2px #fff; color:transparent;">TIMELESS</h1>
+        </div>
+    </div>
+
+    <div class="page split-page" id="p14" style="background:#e0e0e0; color:#000;">
+        <img src="mag_fashion.jpg" onerror="this.src='1000216145.jpg'" class="full-img">
+        <div class="center-text slide-up">
+            <h1>SEASON: WINTER</h1>
+            <h1>WEATHER: SNOW</h1>
+            <h1>VIBE: IMMACULATE</h1>
+            <p style="margin-top:20px;">She thrives in the cold, but her heart is warm.</p>
+        </div>
+    </div>
+
+    <div class="page" id="p15" style="justify-content:center; align-items:center;">
+        <div class="slide-up" style="text-align:center;">
+            <div style="font-family:'Oswald'; font-size:2rem; letter-spacing:10px; margin-bottom:20px;">V.SHARMA</div>
+            <div style="width:200px; height:50px; background:#fff; margin:0 auto 40px auto; display:flex; align-items:center; justify-content:center;">
+                <div style="height:30px; width:2px; background:#000; margin:2px;"></div>
+                <div style="height:30px; width:5px; background:#000; margin:2px;"></div>
+                <div style="height:30px; width:1px; background:#000; margin:2px;"></div>
+                <div style="height:30px; width:8px; background:#000; margin:2px;"></div>
+            </div>
+            
+            <h2 style="margin-bottom:30px;">THE STORY CONTINUES...</h2>
+            
+            <button class="next-btn" onclick="window.location.href='page8.html'">
+                ENTER THE MUSICAL PORTRAIT
+            </button>
+        </div>
+        <div style="position:absolute; bottom:20px; font-size:0.7rem; color:#666;">
+            LIMITED EDITION // VOL 1 // PRICELESS
         </div>
     </div>
 
