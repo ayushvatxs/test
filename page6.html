@@ -17,7 +17,8 @@
 
         :root {
             --pink: #ff003c;
-            --neon-pink: #ff3399;
+            --dim: rgba(255, 0, 60, 0.2);
+            --glow: 0 0 20px var(--pink);
         }
 
         /* --- BACKGROUNDS --- */
@@ -28,15 +29,15 @@
         }
         .vignette {
             position: fixed; inset: 0; z-index: 10; pointer-events: none;
-            background: radial-gradient(circle at center, transparent 30%, #000 100%);
+            background: radial-gradient(circle at center, transparent 40%, #000 100%);
         }
 
         /* --- TEXT LAYER --- */
         #cmd-text {
-            position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
+            position: absolute; top: 15%; left: 50%; transform: translateX(-50%);
             font-family: 'Orbitron'; font-size: 1.2rem; letter-spacing: 4px;
             color: var(--pink); text-shadow: 0 0 10px var(--pink);
-            z-index: 100; text-align: center; transition: opacity 0.5s;
+            z-index: 100; text-align: center; transition: opacity 1s;
         }
 
         /* --- THE PARTICLE IMAGE CONTAINER --- */
@@ -44,51 +45,56 @@
             position: absolute; top: 50%; left: 50%; 
             width: 350px; height: 450px; 
             transform: translate(-50%, -50%);
-            z-index: 60;
-            opacity: 0; transition: opacity 0.5s;
+            z-index: 60; opacity: 0; transition: opacity 1s;
         }
 
-        /* SINGLE IMAGE PARTICLE STYLE */
+        /* SINGLE IMAGE PARTICLE STYLE (Hologram Look) */
         .img-p {
             position: absolute;
             width: 2px; height: 2px;
-            background-color: var(--p-color);
-            box-shadow: 0 0 2px var(--p-color); /* Subtle glow */
+            background-color: var(--pink); /* Always pink */
+            box-shadow: 0 0 3px var(--pink); /* Neon glow */
             border-radius: 50%;
             
-            /* Start Randomly Off Screen */
+            /* Opacity determined by image brightness */
+            opacity: var(--p-opacity); 
+            
+            /* Start Position (Far off screen) */
             left: var(--startX); top: var(--startY);
-            opacity: 0; transform: scale(0.1);
+            transform: scale(0.1) translateZ(-500px);
 
-            /* The fly-in animation config */
-            transition: all 3s cubic-bezier(0.16, 1, 0.3, 1);
-            will-change: left, top, opacity, transform;
+            /* CINEMATIC SLOW ANIMATION */
+            /* 6 seconds duration + extra delays */
+            transition: all 6s cubic-bezier(0.25, 1, 0.5, 1); 
+            will-change: left, top, transform, opacity;
         }
 
         /* ASSEMBLED STATE */
         #particle-image-wrap.assembled .img-p {
             left: var(--targetX) !important;
             top: var(--targetY) !important;
-            opacity: 1; transform: scale(1);
+            transform: scale(1) translateZ(0);
+            /* Final opacity based on image data */
+            opacity: var(--p-opacity) !important; 
         }
         
-        /* Breathing effect */
+        /* Breathing effect for completed hologram */
         #particle-image-wrap.assembled {
-            animation: imageBreathe 5s ease-in-out infinite alternate;
+            animation: imageBreathe 6s ease-in-out infinite alternate;
         }
 
         /* Rings around the image */
         .h-ring {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            border: 1px solid var(--pink); border-radius: 50%; opacity: 0; pointer-events: none; z-index: 55; transition: opacity 1s;
+            border: 1px solid var(--pink); border-radius: 50%; opacity: 0; pointer-events: none; z-index: 55; transition: opacity 3s;
         }
-        .hr1 { width: 500px; height: 500px; border-style: dashed; animation: spin 40s linear infinite; }
-        .hr2 { width: 600px; height: 600px; border: 1px solid rgba(255,0,60,0.3); animation: pulseRing 2s infinite; }
+        .hr1 { width: 550px; height: 550px; border-style: dashed; animation: spin 60s linear infinite; }
+        .hr2 { width: 650px; height: 650px; border: 1px solid rgba(255,0,60,0.3); animation: pulseRing 4s infinite; }
 
         /* --- FOOTER UI --- */
         #footer-ui {
-            position: absolute; bottom: 50px; width: 100%; text-align: center;
-            opacity: 0; transition: opacity 2s; z-index: 100;
+            position: absolute; bottom: 100px; width: 100%; text-align: center;
+            opacity: 0; transition: opacity 3s; z-index: 100;
         }
         .final-status {
             font-family: 'Orbitron'; font-size: 1.5rem; font-weight: bold;
@@ -96,15 +102,26 @@
         }
         .sub-status { font-size: 0.8rem; color: var(--pink); letter-spacing: 2px; }
 
+        /* --- NEXT BUTTON --- */
+        #btn-final-container {
+            position: absolute; bottom: 30px; width: 100%; display: flex; justify-content: center;
+            opacity: 0; transition: opacity 2s; z-index: 110; pointer-events: none;
+        }
+        .btn-final-next {
+            background: var(--pink); color: #000; border: none;
+            font-family: 'Orbitron'; font-weight: bold; font-size: 1.1rem;
+            padding: 15px 50px; cursor: pointer; box-shadow: 0 0 30px var(--pink);
+            clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
+            pointer-events: auto; transition: 0.3s;
+        }
+        .btn-final-next:hover { background: #fff; box-shadow: 0 0 50px #fff; }
+
         #flash { position: fixed; inset: 0; background: #fff; z-index: 9999; opacity: 0; pointer-events: none; }
 
         /* ANIMATIONS */
-        @keyframes imageBreathe {
-            0% { filter: brightness(1); transform: translate(-50%, -50%) scale(1); }
-            100% { filter: brightness(1.2); transform: translate(-50%, -50%) scale(1.02); }
-        }
+        @keyframes imageBreathe { 0% { filter: brightness(1); transform: translate(-50%, -50%) scale(1); } 100% { filter: brightness(1.3); transform: translate(-50%, -50%) scale(1.02); } }
         @keyframes spin { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
-        @keyframes pulseRing { 0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.2; } 50% { opacity: 0.6; } 100% { transform: translate(-50%, -50%) scale(1.1); opacity: 0; } }
+        @keyframes pulseRing { 0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.1; } 50% { opacity: 0.4; } 100% { transform: translate(-50%, -50%) scale(1.1); opacity: 0; } }
         @keyframes flashAnim { 0% { opacity: 1; } 100% { opacity: 0; } }
 
     </style>
@@ -115,7 +132,7 @@
     <div class="vignette"></div>
     <div id="flash"></div>
 
-    <div id="cmd-text">WAITING FOR REASSEMBLY...</div>
+    <div id="cmd-text">INITIALIZING REASSEMBLY PROTOCOL...</div>
 
     <div class="h-ring hr1" id="ring1"></div>
     <div class="h-ring hr2" id="ring2"></div>
@@ -125,6 +142,10 @@
     <div id="footer-ui">
         <div class="final-status">SYSTEM STATUS: ETERNAL</div>
         <div class="sub-status">PROJECT VIOLINA: SUCCESSFULLY RESTORED</div>
+    </div>
+
+    <div id="btn-final-container">
+        <button class="btn-final-next" onclick="window.location.href='#'">FINALIZE PROJECT ></button>
     </div>
 
     <script>
@@ -138,19 +159,18 @@
         const cmd = document.getElementById('cmd-text');
         const particleWrap = document.getElementById('particle-image-wrap');
 
-        // --- IMAGE PROCESSING ENGINE ---
+        // --- HOLOGRAPHIC IMAGE PROCESSING ---
         function processImageAndCreateParticles(imagePath) {
             const img = new Image();
             img.src = imagePath;
-            img.crossOrigin = "Anonymous"; // Fix for some local server issues
+            img.crossOrigin = "Anonymous";
             
             img.onload = () => {
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
                 
-                // Scale down for performance (High particle count = lag)
-                // 200px width provides approx 3000-4000 particles which is perfect
-                const canvasWidth = 200; 
+                // Set resolution (Lower = bigger/fewer dots, Higher = denser dots)
+                const canvasWidth = 180; 
                 const canvasHeight = canvasWidth * (img.height / img.width);
                 canvas.width = canvasWidth;
                 canvas.height = canvasHeight;
@@ -158,8 +178,7 @@
                 ctx.drawImage(img, 0, 0, canvasWidth, canvasHeight);
                 const imgData = ctx.getImageData(0, 0, canvasWidth, canvasHeight).data;
                 
-                // Sampling rate (Density of particles)
-                const sampleRate = 3; 
+                const sampleRate = 2; // Density factor
 
                 for(let y = 0; y < canvasHeight; y += sampleRate) {
                     for(let x = 0; x < canvasWidth; x += sampleRate) {
@@ -167,34 +186,32 @@
                         const r = imgData[index];
                         const g = imgData[index + 1];
                         const b = imgData[index + 2];
-                        const a = imgData[index + 3];
+                        
+                        // Calculate Brightness (0.0 to 1.0)
+                        // We use this to determine opacity instead of color
+                        const brightness = (r + g + b) / 3;
+                        const opacity = brightness / 255;
 
-                        // Brightness Check: Only create particles for visible parts
-                        // This removes the dark background, creating the hologram effect
-                        if (a > 128 && (r + g + b) / 3 > 20) {
+                        // Only create visible particles (threshold 0.1)
+                        if (opacity > 0.1) {
                             const p = document.createElement('div');
                             p.className = 'img-p';
 
-                            // Color Logic: Mix image color with Neon Pink for the "Tech" look
-                            // We boost the Red channel slightly to ensure it fits the theme
-                            p.style.setProperty('--p-color', `rgb(${r}, ${g}, ${b})`);
+                            // Set Opacity Variable based on brightness
+                            p.style.setProperty('--p-opacity', opacity.toFixed(2));
 
-                            // Target Position (Relative %)
-                            const targetXPercent = (x / canvasWidth) * 100;
-                            const targetYPercent = (y / canvasHeight) * 100;
-                            p.style.setProperty('--targetX', targetXPercent + '%');
-                            p.style.setProperty('--targetY', targetYPercent + '%');
+                            // Target Position (%)
+                            p.style.setProperty('--targetX', (x / canvasWidth) * 100 + '%');
+                            p.style.setProperty('--targetY', (y / canvasHeight) * 100 + '%');
 
-                            // Random Start Position (Off Screen Explosion)
+                            // Random Start Position (Far off screen explosion)
                             const angle = Math.random() * Math.PI * 2;
-                            const dist = 150; // Distance off screen
-                            const startX = (Math.cos(angle) * dist) + 50 + 'vw'; 
-                            const startY = (Math.sin(angle) * dist) + 50 + 'vh';
-                            p.style.setProperty('--startX', startX);
-                            p.style.setProperty('--startY', startY);
+                            const dist = 200 + Math.random() * 100; // Far distance
+                            p.style.setProperty('--startX', (Math.cos(angle) * dist) + 50 + 'vw');
+                            p.style.setProperty('--startY', (Math.sin(angle) * dist) + 50 + 'vh');
                             
-                            // Random arrival delay for "swarming" effect
-                            p.style.transitionDelay = (Math.random() * 1.5) + 's';
+                            // Long random delay for slow cinematic gathering (up to 3.5s delay)
+                            p.style.transitionDelay = (Math.random() * 3.5) + 's';
 
                             particleWrap.appendChild(p);
                         }
@@ -203,56 +220,49 @@
                 startSequence();
             };
             
-            img.onerror = () => {
-                cmd.innerText = "IMAGE ERROR: CHECK FILE NAME";
-                cmd.style.color = "red";
-            }
+            img.onerror = () => { cmd.innerText = "ERROR: IMAGE FILE NOT FOUND"; cmd.style.color = "red"; }
         }
 
         function startSequence() {
             setTimeout(() => {
-                cmd.innerText = "GATHERING FRAGMENTS...";
-            }, 1000);
+                cmd.innerText = "GATHERING DATA FRAGMENTS...";
+            }, 1500);
 
             setTimeout(() => {
-                // START VACUUM
+                // START CINEMATIC ASSEMBLY
                 sounds.vacuum.play().catch(()=>{});
-                cmd.innerText = "RECONSTRUCTING CORE MEMORY...";
+                cmd.innerText = "RECONSTRUCTING HOLOGRAPHIC MATRIX...";
                 
-                // Show container
                 particleWrap.style.opacity = '1';
-                // Trigger Assemble
+                // Trigger long transition
                 particleWrap.classList.add('assembled');
                 
-                // Fade in Rings
                 document.getElementById('ring1').style.opacity = '0.5';
-                document.getElementById('ring2').style.opacity = '0.5';
+                document.getElementById('ring2').style.opacity = '0.3';
 
-            }, 2500);
+            }, 3500); // Start later
+
+            // TOTAL ASSEMBLY TIME = Initial Delay (3.5s) + Transition Time (6s) + Max Delay (3.5s) = approx 13s total
 
             setTimeout(() => {
-                // IMPACT (Particles Snap)
+                // IMPACT / FINALIZATION
                 sounds.vacuum.pause();
                 sounds.impact.play().catch(()=>{});
-                
-                // Flash
                 const f = document.getElementById('flash');
-                f.style.animation = 'flashAnim 2s forwards';
-
-                // Hide Text
+                f.style.animation = 'flashAnim 3s forwards'; // Slower flash
                 cmd.style.opacity = '0';
-                
-            }, 5500); // Wait for particles to arrive
+            }, 11000); // Wait for particles to arrive
 
             setTimeout(() => {
-                // ALIVE
+                // REVEAL FINAL UI
                 sounds.heart.play().catch(()=>{});
                 document.getElementById('footer-ui').style.opacity = '1';
-            }, 6000);
+                document.getElementById('btn-final-container').style.opacity = '1';
+            }, 12500);
         }
 
         window.onload = () => {
-            // REMEMBER TO RENAME THE FILE TO violina_main.jpg
+            // Ensure image name is correct
             processImageAndCreateParticles('violina_reassembly.jpg');
         };
 
