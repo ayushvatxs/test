@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIOLINA DATABASE | FINAL CINEMATIC</title>
+    <title>VIOLINA DATABASE | SLOW CINEMATIC</title>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
     <style>
         /* --- CORE --- */
@@ -14,21 +14,19 @@
         }
 
         /* --- CAMERA RIG --- */
-        /* Moves the Canvas for Pan/Zoom */
         #camera-rig {
             position: absolute; width: 100%; height: 100%;
             display: flex; justify-content: center; align-items: center;
             transform-style: preserve-3d;
             transform-origin: 50% 50%;
-            /* Sophisticated easing for cinematic camera movement */
-            transition: transform 2.5s cubic-bezier(0.19, 1, 0.22, 1), transform-origin 2.5s cubic-bezier(0.19, 1, 0.22, 1);
+            /* SLOWED DOWN MOVEMENT (3.5s) */
+            transition: transform 3.5s cubic-bezier(0.19, 1, 0.22, 1), transform-origin 3.5s cubic-bezier(0.19, 1, 0.22, 1);
             will-change: transform, transform-origin;
         }
 
         /* CANVAS - Pure Particles */
         canvas {
             display: block;
-            /* Strong Neon Glow */
             filter: drop-shadow(0 0 4px #ff003c);
             opacity: 0; transition: opacity 1s;
         }
@@ -46,7 +44,7 @@
         }
 
         #bottom-ui {
-            bottom: 8%; opacity: 0; transition: opacity 2s; pointer-events: auto;
+            bottom: 8%; opacity: 0; transition: opacity 3s; pointer-events: auto;
         }
         .status-main { font-family: 'Orbitron'; font-size: 2.5rem; color: #fff; text-shadow: 0 0 30px #ff003c; margin-bottom: 5px; }
         .status-sub { color: #ff003c; font-size: 1rem; letter-spacing: 4px; margin-bottom: 25px; }
@@ -116,7 +114,6 @@
         let isFinalized = false;
         let particlesVisible = false;
 
-        // Auto-Resize for Full Screen Chaos
         function resize() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
@@ -124,12 +121,10 @@
         window.addEventListener('resize', resize);
         resize();
 
-        /* --- IMAGE LOAD & PROCESSING --- */
+        /* --- IMAGE LOAD --- */
         const img = new Image();
         img.src = IMAGE_URL;
         img.onload = () => {
-            // We draw the image onto a temporary canvas to get pixel data
-            // We want the final particle image to be roughly 400px wide in the center
             const finalW = 400;
             const aspect = img.height / img.width;
             const finalH = finalW * aspect;
@@ -141,22 +136,19 @@
             tCtx.drawImage(img, 0, 0, finalW, finalH);
             const data = tCtx.getImageData(0, 0, finalW, finalH).data;
 
-            // Calculate offset to center the particles on the main canvas
             const offsetX = (window.innerWidth - finalW) / 2;
             const offsetY = (window.innerHeight - finalH) / 2;
 
-            // Generate Particles
             for(let y=0; y<finalH; y+=DENSITY) {
                 for(let x=0; x<finalW; x+=DENSITY) {
                     const i = (y * finalW + x) * 4;
                     const brightness = (data[i] + data[i+1] + data[i+2]) / 3;
 
-                    // Threshold: Only create particles for visible pixels
                     if(brightness > 20) {
                         const cluster = getCluster(x, y, finalW, finalH);
                         particles.push(new Particle(
-                            offsetX + x, // Final Position X
-                            offsetY + y, // Final Position Y
+                            offsetX + x, 
+                            offsetY + y, 
                             brightness, 
                             cluster
                         ));
@@ -168,24 +160,23 @@
             runDirectorCut();
         };
 
-        /* --- LOGIC: DIVIDE IMAGE INTO ZONES --- */
-        // Returns an ID (0-8) based on position
+        /* --- CLUSTER LOGIC --- */
         function getCluster(x, y, w, h) {
-            // Normalized coordinates (0.0 to 1.0)
             const nx = x / w;
             const ny = y / h;
             
-            // Special Logic: Is it the Face?
-            // Assuming face is top-center (approx 30% to 70% width, 0% to 50% height)
+            // FACE: Top Center
             if (ny < 0.5 && nx > 0.3 && nx < 0.7) {
-                return 99; // FACE ID
+                return 99; 
             }
-
-            // Otherwise grid logic
-            if(ny > 0.6) return 0; // Bottom (Dress)
-            if(nx < 0.3) return 1; // Left Side
-            if(nx > 0.7) return 2; // Right Side
-            return 3; // Remaining Middle/Top
+            // BODY/DRESS: Bottom
+            if(ny > 0.6) return 0; 
+            // LEFT
+            if(nx < 0.3) return 1; 
+            // RIGHT
+            if(nx > 0.7) return 2; 
+            // MIDDLE/HAIR
+            return 3; 
         }
 
         /* --- PARTICLE CLASS --- */
@@ -194,12 +185,9 @@
                 this.tx = tx; 
                 this.ty = ty;
                 this.cluster = cluster;
-                
-                // Color: STRICTLY PINK. Brightness affects Alpha.
                 this.color = `rgba(255, 0, 60, ${brightness/255})`;
 
-                // Start Position: RANDOM CHAOS (Full Screen)
-                // Spread far beyond screen edges
+                // Random Chaos Position (Full Screen + Spread)
                 const spread = Math.max(window.innerWidth, window.innerHeight) * 1.5;
                 this.x = (Math.random() - 0.5) * spread + (window.innerWidth/2);
                 this.y = (Math.random() - 0.5) * spread + (window.innerHeight/2);
@@ -212,23 +200,19 @@
                 if(!particlesVisible) return;
 
                 if(isFinalized) {
-                    // Slight breathing jitter
                     this.x = this.tx + (Math.random()-0.5)*0.3;
                     this.y = this.ty + (Math.random()-0.5)*0.3;
                     return;
                 }
 
                 if(activeClusters.has(this.cluster)) {
-                    // Assemble
                     const dx = this.tx - this.x;
                     const dy = this.ty - this.y;
-                    this.x += dx * 0.12; // Snap speed
-                    this.y += dy * 0.12;
+                    this.x += dx * 0.1; // Smooth snap
+                    this.y += dy * 0.1;
                 } else {
-                    // Chaos Flight
                     this.x += this.vx;
                     this.y += this.vy;
-                    // Bounce boundaries
                     if(this.x < -1000 || this.x > window.innerWidth+1000) this.vx *= -1;
                     if(this.y < -1000 || this.y > window.innerHeight+1000) this.vy *= -1;
                 }
@@ -247,59 +231,57 @@
             requestAnimationFrame(loop);
         }
 
-        /* --- THE CINEMATIC SEQUENCE --- */
+        /* --- CINEMATIC SEQUENCE --- */
         async function runDirectorCut() {
             const sleep = ms => new Promise(r => setTimeout(r, ms));
 
             // 1. TEXT PHASE
             await sleep(2000);
             txt.innerText = "LOADING MEMORY FRAGMENTS...";
-            await sleep(2000);
+            await sleep(3000);
             txt.innerText = "PREPARING HOLOGRAPHIC MATRIX...";
-            await sleep(2000);
+            await sleep(3000);
             
-            // 2. CHAOS PHASE
+            // 2. CHAOS PHASE (6 Seconds)
             txt.style.opacity = '0';
             canvas.style.opacity = '1';
             particlesVisible = true;
             sfx.vacuum.play().catch(()=>{});
-            await sleep(3500);
+            await sleep(6000); // Extended flight time
 
             // 3. ASSEMBLY PHASE
-            // ZOOM IN to extreme close up (Scale 6.0)
+            // ZOOM IN (Scale 6.0)
             rig.style.transform = "scale(6.0)";
 
-            // Step A: Build Bottom (Dress)
-            // Camera looks at bottom center
+            // Step A: Build Bottom (Dress) (4 Seconds)
             rig.style.transformOrigin = "50% 80%";
-            activeClusters.add(0); // Trigger Bottom Particles
+            activeClusters.add(0);
             try{ sfx.part.currentTime=0; sfx.part.play(); } catch(e){}
-            await sleep(1500);
+            await sleep(4000);
 
-            // Step B: Build Left Side
+            // Step B: Build Left Side (4 Seconds)
             rig.style.transformOrigin = "20% 50%";
             activeClusters.add(1);
             try{ sfx.part.currentTime=0; sfx.part.play(); } catch(e){}
-            await sleep(1500);
+            await sleep(4000);
 
-            // Step C: Build Right Side
+            // Step C: Build Right Side (4 Seconds)
             rig.style.transformOrigin = "80% 50%";
             activeClusters.add(2);
             try{ sfx.part.currentTime=0; sfx.part.play(); } catch(e){}
-            await sleep(1500);
+            await sleep(4000);
 
-            // Step D: Build Middle/Top (Hair/Body)
+            // Step D: Build Middle/Top (Hair) (4 Seconds)
             rig.style.transformOrigin = "50% 30%";
             activeClusters.add(3);
             try{ sfx.part.currentTime=0; sfx.part.play(); } catch(e){}
-            await sleep(1500);
+            await sleep(4000);
 
-            // 4. THE FINALE: FACE REVEAL
-            // Move camera to dead center of face
+            // 4. FACE REVEAL (5 Seconds)
             rig.style.transformOrigin = "50% 40%";
-            activeClusters.add(99); // TRIGGER FACE
+            activeClusters.add(99); 
             try{ sfx.part.currentTime=0; sfx.part.play(); } catch(e){}
-            await sleep(2000); // Admire the face building
+            await sleep(5000);
 
             // 5. ZOOM OUT
             rig.style.transform = "scale(1.0)";
@@ -310,8 +292,9 @@
             sfx.heart.play().catch(()=>{});
             isFinalized = true;
 
-            await sleep(1000);
-            // Show Rings and UI
+            await sleep(2000); // Wait for zoom out to finish
+            
+            // UI
             document.getElementById('ring1').style.opacity = '0.5';
             document.getElementById('ring2').style.opacity = '0.3';
             document.getElementById('bottom-ui').style.opacity = '1';
