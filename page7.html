@@ -6,7 +6,7 @@
     <title>THE VIOLINA ERA | FINAL</title>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bodoni+Moda:ital,wght@0,400;0,900;1,400&family=Syne:wght@400;800&family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        /* --- CORE --- */
+        /* --- CORE OPTIMIZATIONS --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         html, body {
@@ -54,14 +54,14 @@
         @keyframes flashBurst { 0% { opacity: 1; } 100% { opacity: 0; } }
         @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
 
-        /* --- UI ELEMENTS --- */
+        /* --- TICKER --- */
         .ticker-wrap {
             position: absolute; width: 100%; overflow: hidden; background: var(--neon); color: #fff;
             padding: 10px 0; z-index: 10; font-family: 'Anton'; text-transform: uppercase; font-size: 1.5rem; letter-spacing: 2px;
         }
         .ticker { display: inline-block; white-space: nowrap; animation: ticker 20s linear infinite; }
 
-        /* --- PAGE SPECIFIC --- */
+        /* --- PAGE SPECIFIC STYLES --- */
         /* P1: COVER */
         #p1 .masthead { position: absolute; top: -10px; width: 100%; text-align: center; font-family: 'Anton'; font-size: 25vw; line-height: 0.8; z-index: 2; mix-blend-mode: overlay; }
         .main-head { font-family: 'Bodoni Moda'; font-size: 5rem; font-weight: 900; font-style: italic; line-height: 0.9; margin-bottom: 20px; }
@@ -79,20 +79,21 @@
         /* P4: FACE CARD */
         .scan-frame { position: absolute; width: 80%; height: 80%; border: 1px solid rgba(255,255,255,0.5); }
 
-        /* P5: PAPARAZZI (FIXED SCALING) */
+        /* P5: PAPARAZZI (GRID GAP FIXED) */
         #p5 { 
             display: grid; 
+            /* 1fr calculates space AFTER the gap is subtracted, preventing overflow */
             grid-template-columns: 1fr 1fr; 
-            grid-template-rows: 50% 50%; /* Force exact half split */
-            height: 100vh; 
-            height: 100dvh; /* Mobile viewport fix */
-            width: 100vw; 
-            gap: 0; padding: 0; margin: 0; /* Remove all spacing causing overflow */
+            grid-template-rows: 1fr 1fr; 
+            height: 100%; width: 100%; 
+            gap: 3px; /* Creates the white lines */
+            background: #fff; /* Gap color */
+            padding: 3px; /* Outer border */
         }
         .pap-img { 
             width: 100%; height: 100%; 
             object-fit: cover; 
-            display: block; /* Remove inline spacing */
+            display: block; 
             filter: grayscale(100%); transition: 0.3s; 
         }
         .pap-img:hover { filter: grayscale(0%); }
