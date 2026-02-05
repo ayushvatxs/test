@@ -2,16 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE VIOLINA ERA | THE TAKEOVER</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>THE VIOLINA ERA | SMOOTH EDITION</title>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bodoni+Moda:ital,wght@0,400;0,900;1,400&family=Syne:wght@400;800&family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        /* --- CORE --- */
+        /* --- CORE OPTIMIZATION --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            background-color: #000; color: #fff; font-family: 'Syne', sans-serif; 
-            overflow: hidden; /* Prevent body scroll, handle in #magazine */
-            overscroll-behavior: none; /* Prevents rubber-banding/bounce */
+        
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden; /* Lock body, scroll the container */
+            background-color: #000;
+            color: #fff;
+            font-family: 'Syne', sans-serif;
         }
 
         :root {
@@ -19,43 +23,38 @@
             --gold: #d4af37;
             --black: #050505;
             --yt-red: #ff0000;
-            --spotify-green: #1db954;
         }
 
-        /* --- SCROLL SNAP (FIXED) --- */
+        /* --- SCROLL CONTAINER (FIXED) --- */
         #magazine {
-            height: 100vh; 
-            height: 100dvh; /* Better for mobile */
-            width: 100vw;
-            overflow-y: scroll; 
+            height: 100%;
+            width: 100%;
+            overflow-y: scroll;
             scroll-snap-type: y mandatory;
             scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch; 
-            touch-action: pan-y;
+            -webkit-overflow-scrolling: touch; /* iOS Smooth Scroll */
+            /* Removed 'overscroll-behavior' to allow natural bounce */
         }
 
         .page {
-            height: 100vh;
-            height: 100dvh;
-            width: 100vw;
+            height: 100%;
+            width: 100%;
             scroll-snap-align: start;
-            /* scroll-snap-stop: always; <-- REMOVED THIS TO FIX LAG */
-            position: relative; overflow: hidden;
+            scroll-snap-stop: always;
+            position: relative; 
+            overflow: hidden;
             display: flex; flex-direction: column;
             background: var(--black);
+            /* Hardware Acceleration for smoother rendering */
+            transform: translateZ(0);
+            will-change: transform; 
         }
 
-        /* --- FX --- */
-        .grain {
-            position: fixed; inset: 0; pointer-events: none; z-index: 999; opacity: 0.05;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-        }
-
-        /* --- ANIMATIONS --- */
-        .rise-up { opacity: 0; transform: translateY(80px); transition: 1s cubic-bezier(0.2, 1, 0.3, 1); }
+        /* --- ANIMATIONS (OPTIMIZED) --- */
+        .rise-up { opacity: 0; transform: translateY(50px); transition: 0.8s ease-out; }
         .active .rise-up { opacity: 1; transform: translateY(0); }
         
-        .zoom-slow { width: 100%; height: 100%; object-fit: cover; transform: scale(1.1); transition: transform 20s ease-out; }
+        .zoom-slow { width: 100%; height: 100%; object-fit: cover; transform: scale(1.1); transition: transform 10s ease-out; }
         .active .zoom-slow { transform: scale(1.0); }
 
         .flash-effect { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 50; }
@@ -72,7 +71,7 @@
         }
         .ticker { display: inline-block; white-space: nowrap; animation: ticker 20s linear infinite; }
 
-        /* --- PAGE SPECIFIC STYLES --- */
+        /* --- PAGE STYLES --- */
         /* COVER */
         #p1 .masthead { position: absolute; top: -10px; width: 100%; text-align: center; font-family: 'Anton'; font-size: 25vw; line-height: 0.8; z-index: 2; mix-blend-mode: overlay; }
         .main-head { font-family: 'Bodoni Moda'; font-size: 5rem; font-weight: 900; font-style: italic; line-height: 0.9; margin-bottom: 20px; }
@@ -90,82 +89,64 @@
         /* FACE CARD */
         .scan-frame { position: absolute; width: 80%; height: 80%; border: 1px solid rgba(255,255,255,0.5); }
 
-        /* PAPARAZZI (FIXED SCALING) */
+        /* PAPARAZZI (FIXED) */
         #p5 { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            grid-template-rows: 1fr 1fr; /* Force 2 equal rows */
-            height: 100%; /* Force full height */
-            gap: 2px; /* Small gap */
-            padding: 2px;
+            display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;
+            height: 100%; width: 100%; gap: 2px; padding: 2px;
         }
         .pap-img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%); transition: 0.3s; }
         .pap-img:hover { filter: grayscale(0%); }
 
         /* SOCIAL MEDIA PAGES */
-        /* YOUTUBE TRENDING */
         #p20 { background: #121212; font-family: 'Roboto', sans-serif; padding: 20px; }
         .yt-header { display: flex; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
         .yt-logo { font-weight: 900; letter-spacing: -1px; font-size: 1.5rem; display: flex; align-items: center; gap: 5px; }
         .yt-logo span { color: var(--yt-red); }
-        /* Allow internal scroll but prevent trapping */
-        .trending-grid { 
-            display: flex; flex-direction: column; gap: 20px; 
-            height: 100%; overflow-y: auto; padding-bottom: 100px;
-            overscroll-behavior: contain; /* Prevents scrolling parent when end reached */
-        }
-        .video-card { display: flex; gap: 15px; align-items: flex-start; }
+        .trending-grid { display: flex; flex-direction: column; gap: 20px; height: 100%; overflow-y: auto; padding-bottom: 100px; }
+        .video-card { display: flex; gap: 15px; flex-shrink: 0; }
         .vid-thumb { width: 160px; height: 90px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
-        .vid-info h3 { font-size: 1rem; margin-bottom: 5px; color: #fff; line-height: 1.2; }
-        .rank { font-size: 1.5rem; color: #fff; font-weight: 900; margin-right: 10px; opacity: 0.5; width: 20px; text-align: center; }
+        .vid-info h3 { font-size: 1rem; margin-bottom: 5px; color: #fff; }
+        .rank { font-size: 1.5rem; color: #fff; font-weight: 900; margin-right: 15px; opacity: 0.5; }
 
         /* INSTAGRAM FEED */
         #p21 { background: #000; align-items: center; justify-content: center; }
-        .phone-frame { 
-            width: 90%; max-width: 400px; height: 80%; 
-            border: 4px solid #333; border-radius: 20px; 
-            overflow: hidden; background: #000; position: relative; 
-            display: flex; flex-direction: column; 
-        }
-        .insta-stats { display: flex; justify-content: space-around; padding: 10px 0; border-bottom: 1px solid #222; }
-        .stat-box { text-align: center; }
-        .stat-num { font-weight: bold; font-size: 1.1rem; }
-        .stat-label { font-size: 0.8rem; color: #aaa; }
-        .insta-grid { 
-            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; 
-            overflow-y: auto; overscroll-behavior: contain;
-        }
+        .phone-frame { width: 95%; max-width: 400px; height: 85%; border: 4px solid #333; border-radius: 20px; overflow: hidden; background: #000; position: relative; display:flex; flex-direction:column; }
+        .insta-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; overflow-y: auto; padding-bottom: 50px; }
         .insta-square { width: 100%; aspect-ratio: 1; object-fit: cover; }
         .insta-story { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #d62976; padding: 2px; flex-shrink: 0; }
         .insta-story img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid #000; }
 
-        /* NEW: SPOTIFY (FIXED LAG) */
+        /* NEW: SPOTIFY (LAG FIX) */
         #p23 { background: linear-gradient(to bottom, #444, #000); align-items: center; justify-content: center; font-family: 'Roboto', sans-serif; }
-        .spot-card { width: 90%; max-width: 350px; text-align: center; }
-        .spot-img { width: 250px; height: 250px; object-fit: cover; box-shadow: 0 20px 40px rgba(0,0,0,0.5); margin-bottom: 30px; border-radius: 10px; }
-        .spot-bar { width: 100%; height: 4px; background: #555; margin: 20px 0; position: relative; border-radius: 2px; }
-        .spot-fill { width: 30%; height: 100%; background: #fff; border-radius: 2px; }
+        .spot-card { width: 90%; text-align: center; }
+        .spot-img { width: 250px; height: 250px; object-fit: cover; box-shadow: 0 20px 40px rgba(0,0,0,0.5); margin-bottom: 30px; border-radius:10px;}
+        .spot-bar { width: 100%; height: 4px; background: #555; margin: 20px 0; position: relative; }
+        .spot-fill { width: 30%; height: 100%; background: #fff; }
 
-        /* NEW: LOCK SCREEN */
+        /* NEW: LOCK SCREEN (LAG FIX - REMOVED BLUR) */
         #p24 { background-image: url('mag_cover.jpg'); background-size: cover; background-position: center; align-items: center; justify-content: center; }
-        .backdrop { position: absolute; inset: 0; backdrop-filter: blur(10px); background: rgba(0,0,0,0.4); }
-        .notif-stack { position: relative; z-index: 10; width: 90%; max-width: 350px; display: flex; flex-direction: column; gap: 10px; }
-        .notif { background: rgba(255,255,255,0.9); border-radius: 12px; padding: 15px; color: #000; display: flex; gap: 10px; align-items: center; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.6); /* Replaced heavy blur with dark overlay */ }
+        .notif-stack { position: relative; z-index: 10; width: 90%; display: flex; flex-direction: column; gap: 10px; }
+        .notif { background: rgba(255,255,255,0.95); border-radius: 12px; padding: 15px; color: #000; display: flex; gap: 10px; align-items: center; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
         .notif-icon { width: 30px; height: 30px; border-radius: 5px; }
 
-        /* BUTTON */
+        /* BUTTONS */
         .next-btn {
             background: #fff; color: #000; padding: 25px 60px; border: none; font-size: 1.2rem;
             font-family: 'Syne'; font-weight: 800; cursor: pointer; transition: 0.3s; width: 100%; margin-top: 20px;
         }
         .next-btn:hover { background: var(--neon); color: #fff; }
+        
+        /* BACK TO TOP BUTTON */
+        .top-btn {
+            background: transparent; border: 1px solid #666; color: #666; padding: 10px 20px; 
+            margin-top: 20px; font-size: 0.8rem; cursor: pointer;
+        }
 
         @keyframes blink { 50% { opacity: 0; } }
     </style>
 </head>
 <body>
-
-<div class="grain"></div>
 
 <div id="magazine">
 
@@ -202,7 +183,7 @@
 
     <div class="page" id="p4" data-sound="sfx_flash.mp3">
         <div class="flash-effect single"></div>
-        <img src="mag_beauty.jpg" class="zoom-slow">
+        <img src="mag_zoomed.jpg" class="zoom-slow">
         <div class="scan-frame"></div>
         <div style="position: absolute; bottom: 100px; width: 100%; text-align: center;" class="rise-up">
             <h1 style="font-family:'Anton'; font-size: 4rem; color: var(--neon);">100%</h1>
@@ -212,8 +193,8 @@
 
     <div class="page" id="p5" data-sound="sfx_shutter.mp3">
         <div class="flash-effect paparazzi"></div>
-        <img src="mag_candid.jpg" class="pap-img">
-        <img src="mag_carpet.jpg" class="pap-img">
+        <img src="mag_denim.jpg" class="pap-img">
+        <img src="mag_crowd.jpg" class="pap-img">
         <img src="mag_cover.jpg" class="pap-img">
         <img src="mag_beauty.jpg" class="pap-img">
         <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; color: #000; padding: 20px; font-weight: 800; font-size: 2rem; white-space: nowrap;">
@@ -459,7 +440,10 @@
         <div class="rise-up" style="text-align: center; width: 100%;">
             <div style="font-family:'Anton'; font-size: 2rem; color: #000;">V.ERA</div>
             <h1 style="font-size: 3rem; font-family:'Bodoni Moda'; margin: 30px 0;">The Show Must Go On.</h1>
+            
             <button class="next-btn" onclick="window.location.href='page8.html'">ENTER THE MUSICAL PORTRAIT ></button>
+            <button class="top-btn" onclick="document.getElementById('magazine').scrollTo(0,0);">↑ BACK TO TOP</button>
+            
             <div style="font-size: 0.8rem; color: #888; margin-top: 50px;">VOL 1 // THE VIRAL ISSUE // 2025</div>
         </div>
     </div>
