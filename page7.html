@@ -3,22 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE VIOLINA ERA | GLOBAL ICON</title>
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;500;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;800&family=Mrs+Saint+Delafield&display=swap" rel="stylesheet">
+    <title>THE VIOLINA ERA | BREAKING THE INTERNET</title>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bodoni+Moda:ital,wght@0,400;0,900;1,400&family=Syne:wght@400;800&display=swap" rel="stylesheet">
     <style>
         /* --- CORE --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background-color: #000; color: #fff;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Syne', sans-serif;
             overflow: hidden; 
         }
 
         :root {
             --neon: #ff003c;
-            --gold: #d4af37;
-            --paper: #f4f4f4;
-            --black: #0a0a0a;
+            --white: #fff;
+            --overlay: rgba(0,0,0,0.3);
         }
 
         /* --- SCROLL SNAP --- */
@@ -33,308 +32,249 @@
             scroll-snap-align: start;
             position: relative; overflow: hidden;
             display: flex; flex-direction: column;
-            background: var(--black);
-        }
-
-        /* --- GLOBAL FX --- */
-        .grain {
-            position: fixed; inset: 0; pointer-events: none; z-index: 999; opacity: 0.05;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            background: #050505;
         }
 
         /* --- ANIMATIONS --- */
-        .slide-up { opacity: 0; transform: translateY(50px); transition: 1s ease-out; }
-        .active .slide-up { opacity: 1; transform: translateY(0); }
+        .rise-up { opacity: 0; transform: translateY(80px); transition: 1s cubic-bezier(0.2, 1, 0.3, 1); }
+        .active .rise-up { opacity: 1; transform: translateY(0); }
         
-        .ken-burns { width: 100%; height: 100%; object-fit: cover; transform: scale(1.1); transition: transform 15s ease-out; }
-        .active .ken-burns { transform: scale(1.0); }
+        .zoom-slow { width: 100%; height: 100%; object-fit: cover; transform: scale(1.1); transition: transform 20s ease-out; }
+        .active .zoom-slow { transform: scale(1.0); }
 
-        /* --- MARQUEE (Scrolling Text) --- */
-        .marquee-container {
-            position: absolute; width: 100%; overflow: hidden; white-space: nowrap;
-            background: var(--neon); color: #fff; padding: 10px 0; z-index: 10;
-            font-family: 'Oswald'; text-transform: uppercase; font-weight: 700; letter-spacing: 2px;
+        /* --- UI ELEMENTS --- */
+        .ticker-wrap {
+            position: absolute; width: 100%; overflow: hidden; background: var(--neon); color: #fff;
+            padding: 10px 0; z-index: 10; font-family: 'Anton'; text-transform: uppercase; font-size: 1.5rem; letter-spacing: 2px;
         }
-        .marquee-content { display: inline-block; animation: scrollLeft 20s linear infinite; }
-        @keyframes scrollLeft { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .ticker { display: inline-block; white-space: nowrap; animation: ticker 20s linear infinite; }
+        @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
 
         /* ================= PAGE 1: THE COVER ================= */
-        #p1 .title {
-            position: absolute; top: -20px; width: 100%; text-align: center;
-            font-family: 'Oswald', sans-serif; font-size: 22vw; font-weight: 700;
-            color: #fff; z-index: 2; mix-blend-mode: overlay; line-height: 1;
+        #p1 .masthead {
+            position: absolute; top: -10px; width: 100%; text-align: center;
+            font-family: 'Anton', sans-serif; font-size: 25vw; line-height: 0.8;
+            color: #fff; z-index: 2; mix-blend-mode: overlay;
         }
-        #p1 .headlines {
-            position: absolute; bottom: 50px; left: 30px; z-index: 3;
+        #p1 .cover-lines {
+            position: absolute; bottom: 40px; left: 30px; z-index: 5;
         }
-        .hl-main { font-family: 'Playfair Display'; font-size: 4rem; font-style: italic; line-height: 0.9; margin-bottom: 10px; }
-        .hl-sub { background: #fff; color: #000; padding: 5px 15px; display: inline-block; font-weight: 800; }
+        .main-head { font-family: 'Bodoni Moda'; font-size: 5rem; font-weight: 900; font-style: italic; line-height: 0.9; margin-bottom: 20px; }
+        .badge { background: #fff; color: #000; padding: 5px 15px; font-weight: 800; display: inline-block; transform: rotate(-2deg); }
 
-        /* ================= PAGE 2: TRENDING ================= */
-        #p2 { justify-content: center; align-items: center; background: #fff; color: #000; }
-        .trend-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 90%; height: 80%; }
-        .trend-img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%); transition: 0.5s; }
-        .trend-img:hover { filter: grayscale(0%); }
-        .trend-text { display: flex; flex-direction: column; justify-content: center; padding: 40px; }
-        .hash-tag { font-size: 5rem; font-weight: 800; line-height: 1; color: var(--neon); }
+        /* ================= PAGE 2: THE INTERNET BREAK ================= */
+        #p2 { background: #fff; color: #000; justify-content: center; align-items: center; text-align: center; padding: 40px; }
+        .viral-stat { font-size: 8rem; font-family: 'Anton'; line-height: 1; color: var(--neon); }
+        .viral-desc { font-size: 2rem; font-weight: 800; margin-bottom: 40px; }
+        .tweet-box { border: 2px solid #000; padding: 20px; margin: 10px auto; max-width: 600px; text-align: left; }
 
-        /* ================= PAGE 3: THE VLOG (YOUTUBE) ================= */
+        /* ================= PAGE 3: FUTURE YOUTUBER ================= */
         #p3 { background: #000; }
-        .yt-frame { 
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 80%; height: 60%; border: 1px solid #333; overflow: hidden;
-        }
         .yt-ui {
-            position: absolute; bottom: 20px; left: 20px; right: 20px;
-            display: flex; justify-content: space-between; align-items: center; z-index: 5;
+            position: absolute; bottom: 50px; left: 50px; z-index: 5;
         }
-        .rec-dot { width: 15px; height: 15px; background: red; border-radius: 50%; animation: blink 1s infinite; }
-        .yt-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; padding: 20px;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); z-index: 5;
-        }
+        .rec-tag { color: red; font-weight: 800; animation: blink 1s infinite; margin-bottom: 10px; display: block; }
+        .sub-count { font-family: 'Anton'; font-size: 4rem; line-height: 1; }
 
-        /* ================= PAGE 4: GOLDEN RATIO ================= */
+        /* ================= PAGE 4: THE FACE CARD ================= */
         #p4 { display: flex; align-items: center; justify-content: center; }
-        .face-scan {
-            position: absolute; width: 350px; height: 450px; border: 1px solid rgba(255,255,255,0.3);
-            display: flex; justify-content: center; align-items: center;
+        .scan-frame {
+            position: absolute; width: 80%; height: 80%; border: 1px solid rgba(255,255,255,0.5);
         }
-        .scan-line {
-            position: absolute; top: 0; width: 100%; height: 2px; background: var(--neon);
-            box-shadow: 0 0 10px var(--neon); animation: scan 3s infinite alternate;
-        }
-        .beauty-score {
-            position: absolute; bottom: -60px; font-family: 'Oswald'; font-size: 3rem; color: var(--neon);
+        .analysis-text {
+            position: absolute; bottom: -80px; width: 100%; text-align: center;
+            font-family: 'Bodoni Moda'; font-size: 3rem; font-style: italic;
         }
 
-        /* ================= PAGE 5: THE VOICE ================= */
-        #p5 { background: #111; display: grid; grid-template-columns: 1.5fr 1fr; }
-        .mic-img { width: 100%; height: 100%; object-fit: cover; filter: sepia(50%); }
-        .lyrics {
-            padding: 50px; display: flex; flex-direction: column; justify-content: center;
-            font-family: 'Mrs Saint Delafield', cursive; font-size: 3rem; color: #ccc;
+        /* ================= PAGE 5: PAPARAZZI ================= */
+        #p5 { background: #111; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; }
+        .pap-shot { position: relative; overflow: hidden; filter: grayscale(100%) contrast(1.2); transition: 0.3s; }
+        .pap-shot:hover { filter: grayscale(0%); }
+        .pap-flash {
+            position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none;
         }
+        .active .pap-flash { animation: flash 0.5s 3; }
 
-        /* ================= PAGE 6: FASHION ICON ================= */
-        #p6 { background: #f4f4f4; color: #000; padding: 40px; }
-        .fashion-spread { display: flex; height: 100%; align-items: flex-end; gap: 20px; }
-        .f-col { flex: 1; height: 80%; position: relative; transition: 0.5s; overflow: hidden; }
-        .f-col:hover { height: 95%; }
-        .f-col img { width: 100%; height: 100%; object-fit: cover; }
-        .f-label {
-            position: absolute; top: 20px; left: -20px; transform: rotate(90deg); transform-origin: left top;
-            font-weight: 800; font-size: 1.5rem; letter-spacing: 2px;
-        }
-
-        /* ================= PAGE 7-15: GENERAL STYLES ================= */
-        .quote-page { display: flex; justify-content: center; align-items: center; padding: 100px; text-align: center; }
-        .big-quote { font-family: 'Playfair Display'; font-size: 3.5rem; line-height: 1.2; }
+        /* ================= PAGE 6: THE QUOTE ================= */
+        #p6 { justify-content: center; align-items: center; padding: 60px; text-align: center; }
+        .huge-quote { font-family: 'Bodoni Moda'; font-size: 4vw; line-height: 1.2; }
         
-        .split-page { display: grid; grid-template-columns: 1fr 1fr; height: 100vh; }
-        .full-img { width: 100%; height: 100%; object-fit: cover; }
-        .center-text { display: flex; flex-direction: column; justify-content: center; padding: 50px; }
+        /* ================= PAGE 7: STYLE ICON ================= */
+        #p7 { background: #f0f0f0; color: #000; padding: 40px; display: flex; align-items: flex-end; }
+        .style-img { position: absolute; top:0; right:0; width: 60%; height: 100%; object-fit: cover; }
+        .style-txt { position: relative; z-index: 2; width: 50%; }
+        .big-serif { font-family: 'Bodoni Moda'; font-size: 6rem; line-height: 0.8; }
 
-        /* BUTTON */
+        /* ================= PAGE 8: FAN THEORY ================= */
+        #p8 { background: #050505; justify-content: center; align-items: center; }
+        .theory-box { border: 1px solid #333; padding: 60px; max-width: 800px; text-align: center; background: #0a0a0a; }
+        
+        /* ================= PAGE 15: BACK COVER ================= */
+        #p15 { background: #fff; color: #000; justify-content: space-between; padding: 60px; }
         .next-btn {
-            background: var(--neon); color: #fff; padding: 20px 50px; border: none;
-            font-family: 'Oswald'; font-size: 1.5rem; cursor: pointer; transition: 0.3s;
-            clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
+            background: #000; color: #fff; padding: 25px 60px; border: none; font-size: 1.2rem;
+            font-family: 'Syne'; font-weight: 800; cursor: pointer; transition: 0.3s; width: 100%;
         }
-        .next-btn:hover { background: #fff; color: #000; }
+        .next-btn:hover { background: var(--neon); }
 
         @keyframes blink { 50% { opacity: 0; } }
-        @keyframes scan { 0% { top: 0%; } 100% { top: 100%; } }
+        @keyframes flash { 0% { opacity: 1; } 100% { opacity: 0; } }
 
     </style>
 </head>
 <body>
 
-<div class="grain"></div>
-
 <div id="magazine">
 
     <div class="page active" id="p1">
-        <div class="title">VIOLINA</div>
-        <img src="mag_cover.jpg" onerror="this.src='violina_main.jpg'" class="cover-img ken-burns">
-        <div class="headlines slide-up">
-            <div class="hl-sub">THE GLOBAL ISSUE</div>
-            <div class="hl-main">Queen of the<br>Decade</div>
-            <p>WHY THE WORLD IS OBSESSED.</p>
+        <div class="masthead">ICON</div>
+        <img src="mag_cover.jpg" onerror="this.src='violina_main.jpg'" class="zoom-slow" style="position:absolute; inset:0; z-index:0;">
+        <div class="cover-lines rise-up">
+            <div class="badge">SPECIAL EDITION</div>
+            <div class="main-head">She is the<br>Moment.</div>
+            <p style="font-size: 1.2rem; letter-spacing: 1px;">THE INTERNET'S NEW OBSESSION EXPLAINED.</p>
         </div>
     </div>
 
     <div class="page" id="p2">
-        <div class="marquee-container" style="top: 20px;">
-            <div class="marquee-content">
-                BREAKING NEWS: VIOLINA SPOTTED  //  #1 TRENDING WORLDWIDE  //  NEW VLOG COMING SOON  //  THE INTERNET IS BROKEN  //  
-                BREAKING NEWS: VIOLINA SPOTTED  //  #1 TRENDING WORLDWIDE  //  NEW VLOG COMING SOON  //  THE INTERNET IS BROKEN  //
+        <div class="rise-up">
+            <div class="viral-stat">#1</div>
+            <div class="viral-desc">TRENDING WORLDWIDE</div>
+            <div class="tweet-box">
+                <strong>@User1293:</strong> "I don't know who she is but I'm obsessed. How is someone this perfect??"
             </div>
-        </div>
-        <div class="trend-grid">
-            <img src="mag_candid.jpg" onerror="this.src='1000216148.jpg'" class="trend-img">
-            <div class="trend-text slide-up">
-                <div style="font-family:'Oswald'; color:#888;">SOCIAL MEDIA ANALYSIS</div>
-                <div class="hash-tag">#VIRAL</div>
-                <p style="margin-top: 20px; font-size: 1.2rem;">"Every time she posts, the algorithm changes. She isn't following trends, she is the trend."</p>
+            <div class="tweet-box">
+                <strong>@FashionDaily:</strong> "Forget the runway. Violina just posted a selfie and ended modeling forever."
+            </div>
+            <div class="tweet-box">
+                <strong>@SimpNation:</strong> "If she starts a YouTube channel, it's over for everyone else."
             </div>
         </div>
     </div>
 
     <div class="page" id="p3">
-        <div class="yt-frame slide-up">
-            <div class="yt-overlay">
-                <div style="font-family:'Oswald'; font-size:1.5rem;">VLOG_001.mp4</div>
-                <div style="color:#ccc;">10M Views • 2 Hours Ago</div>
-            </div>
-            <img src="mag_vlog.jpg" onerror="this.src='1000216145.jpg'" class="ken-burns">
-            <div class="yt-ui">
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <div class="rec-dot"></div> <span>REC</span>
-                </div>
-                <span>[SUBSCRIBE]</span>
-            </div>
-        </div>
-        <div style="position:absolute; bottom: 80px; width:100%; text-align:center;">
-            <h2 style="font-family:'Playfair Display'; font-size: 3rem;">The Next Big Creator</h2>
-            <p>From studying to superstardom: Her YouTube journey begins soon.</p>
+        <img src="mag_vlog.jpg" onerror="this.src='1000216145.jpg'" class="zoom-slow" style="opacity: 0.6;">
+        <div class="yt-ui rise-up">
+            <span class="rec-tag">● REC 00:04:20</span>
+            <div class="sub-count">10M SUBSCRIBERS</div>
+            <p style="font-size: 1.5rem; color: #ccc;">(Projected Day 1 Stats)</p>
+            <h2 style="margin-top: 20px; font-family:'Bodoni Moda';">"The Vlogs are coming..."</h2>
         </div>
     </div>
 
     <div class="page" id="p4">
-        <img src="mag_close.jpg" onerror="this.src='1000216146.jpg'" class="cover-img" style="opacity:0.4;">
-        <div class="face-scan slide-up">
-            <img src="mag_close.jpg" onerror="this.src='1000216146.jpg'" style="width:100%; height:100%; object-fit:cover;">
-            <div class="scan-line"></div>
-            <div class="beauty-score">SCORE: 100%</div>
+        <img src="mag_beauty.jpg" onerror="this.src='1000216146.jpg'" class="zoom-slow">
+        <div class="scan-frame"></div>
+        <div class="analysis-text rise-up">
+            "The Face Card Never Declines."
         </div>
-        <div style="position:absolute; bottom:150px; text-align:center;">
-            <h3>SCIENTIFICALLY PERFECT</h3>
-            <p style="color:#aaa;">Subject: Deep Espresso Eyes. Mole Location: Precise.</p>
+        <div style="position: absolute; top: 100px; right: 50px; text-align: right;" class="rise-up">
+            <h1 style="font-family:'Anton'; font-size: 4rem; color: var(--neon);">100%</h1>
+            <p>LETHAL VISUALS</p>
         </div>
     </div>
 
     <div class="page" id="p5">
-        <div class="lyrics slide-up">
-            "She sings only for the chosen few, <br>but her voice could heal the world."
-            <br><br>
-            <span style="font-family:'Inter'; font-size:1rem; letter-spacing:2px; color:var(--neon);">HIDDEN TALENT UNLOCKED</span>
-        </div>
-        <div style="overflow:hidden;">
-            <img src="mag_candid.jpg" onerror="this.src='1000216145.jpg'" class="mic-img ken-burns">
+        <div class="pap-flash"></div>
+        <div class="pap-shot"><img src="mag_candid.jpg" onerror="this.src='1000216148.jpg'" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="pap-shot"><img src="mag_fashion.jpg" onerror="this.src='violina_main.jpg'" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="pap-shot"><img src="mag_cover.jpg" onerror="this.src='1000216145.jpg'" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="pap-shot"><img src="mag_beauty.jpg" onerror="this.src='1000216146.jpg'" style="width:100%; height:100%; object-fit:cover;"></div>
+        
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; color: #000; padding: 20px; font-weight: 800; font-size: 2rem;">
+            SPOTTED EVERYWHERE
         </div>
     </div>
 
     <div class="page" id="p6">
-        <div style="margin-bottom:30px; border-bottom:2px solid #000; padding-bottom:10px;">
-            <h2 style="font-family:'Oswald'; font-size:3rem;">THE LOOKBOOK</h2>
-        </div>
-        <div class="fashion-spread slide-up">
-            <div class="f-col">
-                <img src="mag_fashion.jpg" onerror="this.src='violina_main.jpg'">
-                <div class="f-label">Couture</div>
-            </div>
-            <div class="f-col">
-                <img src="mag_candid.jpg" onerror="this.src='1000216148.jpg'">
-                <div class="f-label">Off-Duty</div>
-            </div>
-            <div class="f-col">
-                <img src="mag_bw.jpg" onerror="this.src='1000216146.jpg'" style="filter:grayscale(100%);">
-                <div class="f-label">Classic</div>
-            </div>
+        <div class="huge-quote rise-up">
+            "She didn't chase the spotlight.<br>The spotlight got lost looking for her."
         </div>
     </div>
 
-    <div class="page quote-page" id="p7">
-        <div class="big-quote slide-up">
-            "I don't have a dream car. I have a dream life, and she is the main character of it."
-            <br>
-            <span style="font-size:1rem; color:var(--gold); margin-top:20px; display:block;">- A FAN</span>
+    <div class="page" id="p7">
+        <img src="mag_fashion.jpg" onerror="this.src='violina_main.jpg'" class="style-img">
+        <div class="style-txt rise-up">
+            <p style="letter-spacing: 2px; font-weight: 800;">FASHION WEEK REPORT</p>
+            <div class="big-serif">The New<br>Standard.</div>
+            <p style="margin-top: 20px; line-height: 1.6;">Designers are scrapping their collections. If Violina isn't wearing it, it's not fashion. It's just fabric.</p>
         </div>
     </div>
 
-    <div class="page split-page" id="p8">
-        <div class="center-text slide-up">
-            <h2 style="font-family:'Oswald'; font-size:3rem; color:var(--neon);">FUEL.</h2>
-            <p>How does she maintain that energy?</p>
-            <ul style="margin-top:20px; line-height:2; list-style:none;">
-                <li><strong>Elixir:</strong> Red Tea (Steaming)</li>
-                <li><strong>Sustenance:</strong> Brinjal & Duck</li>
-                <li><strong>Treat:</strong> Kinder Joy (Childlike Wonder)</li>
-                <li><strong>Spice Level:</strong> Moderate</li>
-            </ul>
+    <div class="page" id="p8">
+        <div class="theory-box rise-up">
+            <h2 style="font-family:'Anton'; font-size: 3rem; color: var(--neon); margin-bottom: 20px;">CONSPIRACY THEORY #4</h2>
+            <p style="font-size: 1.5rem; line-height: 1.6;">"Is she actually real? No one can be this photogenic from every angle. Critics suggest she might be a government experiment to lower global stress levels."</p>
         </div>
-        <img src="mag_candid.jpg" onerror="this.src='1000216148.jpg'" class="full-img" style="filter: contrast(1.2);">
     </div>
 
     <div class="page" id="p9">
-        <img src="mag_cover.jpg" onerror="this.src='violina_main.jpg'" class="cover-img" style="filter:brightness(0.3);">
-        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center;" class="slide-up">
-            <h1 style="font-family:'Playfair Display'; font-size:5rem; color:#fff;">DREAM STATE</h1>
-            <p style="letter-spacing:3px;">2 PILLOWS + 1 HAND = PEACE.</p>
+        <img src="mag_beauty.jpg" onerror="this.src='1000216146.jpg'" class="zoom-slow" style="filter: brightness(0.6) contrast(1.2);">
+        <div style="position: absolute; bottom: 100px; width: 100%; text-align: center;" class="rise-up">
+            <h1 style="font-family:'Bodoni Moda'; font-size: 5rem; color: #fff;">Hypnotic.</h1>
+            <p>DO NOT LOOK DIRECTLY FOR MORE THAN 5 SECONDS.</p>
         </div>
     </div>
 
-    <div class="page quote-page" id="p10" style="background:#fff; color:#000;">
-        <div class="slide-up">
-            <h1 style="font-size:6rem; font-weight:800; line-height:0.8;">NO<br>PHOTOS.</h1>
-            <p style="margin-top:20px; font-style:italic;">"Baad me baat krte h, mujhe padhna hai."</p>
-            <div style="margin-top:40px; border:2px solid #000; padding:10px; display:inline-block;">MODE: STUDIOUS</div>
-        </div>
-    </div>
-
-    <div class="page" id="p11">
-        <div style="position:absolute; inset:0; background:linear-gradient(45deg, #000, #222);"></div>
-        <div style="position:absolute; top:30%; width:100%; text-align:center;" class="slide-up">
-            <div style="font-size:10vw; font-family:'Oswald'; color:rgba(255,255,255,0.1);">SWITZERLAND</div>
-            <div style="margin-top:-50px; font-size:2rem; color:var(--gold);">DESTINATION: PENDING</div>
-            <p>The mountains are calling for their Queen.</p>
-        </div>
-    </div>
-
-    <div class="page quote-page" id="p12">
-        <div class="slide-up">
-            <div style="color:var(--neon); font-size:4rem;">★★★★★</div>
-            <h2 style="font-family:'Playfair Display'; margin-top:20px;">"Gorgeous & Talented"</h2>
-            <p>The First Impression that lasted forever.</p>
-        </div>
-    </div>
-
-    <div class="page" id="p13">
-        <img src="mag_bw.jpg" onerror="this.src='1000216146.jpg'" class="full-img" style="filter:grayscale(100%) contrast(1.5);">
-        <div style="position:absolute; bottom:50px; left:50px;" class="slide-up">
-            <h1 style="font-size:5rem; font-family:'Oswald'; -webkit-text-stroke:2px #fff; color:transparent;">TIMELESS</h1>
-        </div>
-    </div>
-
-    <div class="page split-page" id="p14" style="background:#e0e0e0; color:#000;">
-        <img src="mag_fashion.jpg" onerror="this.src='1000216145.jpg'" class="full-img">
-        <div class="center-text slide-up">
-            <h1>SEASON: WINTER</h1>
-            <h1>WEATHER: SNOW</h1>
-            <h1>VIBE: IMMACULATE</h1>
-            <p style="margin-top:20px;">She thrives in the cold, but her heart is warm.</p>
-        </div>
-    </div>
-
-    <div class="page" id="p15" style="justify-content:center; align-items:center;">
-        <div class="slide-up" style="text-align:center;">
-            <div style="font-family:'Oswald'; font-size:2rem; letter-spacing:10px; margin-bottom:20px;">V.SHARMA</div>
-            <div style="width:200px; height:50px; background:#fff; margin:0 auto 40px auto; display:flex; align-items:center; justify-content:center;">
-                <div style="height:30px; width:2px; background:#000; margin:2px;"></div>
-                <div style="height:30px; width:5px; background:#000; margin:2px;"></div>
-                <div style="height:30px; width:1px; background:#000; margin:2px;"></div>
-                <div style="height:30px; width:8px; background:#000; margin:2px;"></div>
+    <div class="page" id="p10" style="background: #222;">
+        <div class="ticker-wrap" style="top: 40%;">
+            <div class="ticker">
+                UPLOAD COMPLETE  //  VLOG 1 LIVE  //  SERVER CRASH IMMINENT  //  UPLOAD COMPLETE  //  VLOG 1 LIVE  //
             </div>
-            
-            <h2 style="margin-bottom:30px;">THE STORY CONTINUES...</h2>
+        </div>
+        <div style="text-align: center; margin-top: 0px;" class="rise-up">
+            <h1 style="font-size: 4rem; font-weight: 800;">THE YOUTUBE TAKEOVER</h1>
+            <p>"I'm just documenting my life." - Violina</p>
+            <p style="color: #888;">(And changing ours in the process)</p>
+        </div>
+    </div>
+
+    <div class="page" id="p11" style="justify-content: center; align-items: center; background: #fff; color: #000;">
+        <div class="rise-up" style="text-align: center;">
+            <div style="font-family:'Anton'; font-size: 10rem; line-height: 0.8;">GOAT</div>
+            <p style="font-size: 1.5rem; letter-spacing: 5px; margin-top: 20px;">GREATEST OF ALL TIME</p>
+        </div>
+    </div>
+
+    <div class="page" id="p12">
+        <img src="mag_candid.jpg" onerror="this.src='1000216148.jpg'" class="zoom-slow" style="filter: grayscale(100%);">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 4px solid #fff; padding: 40px;" class="rise-up">
+            <h1 style="font-family:'Bodoni Moda'; font-size: 3rem;">CINEMA.</h1>
+        </div>
+    </div>
+
+    <div class="page" id="p13" style="background: #0a0a0a; padding: 60px;">
+        <div class="rise-up">
+            <h2 style="font-family:'Anton'; font-size: 4rem; color: #333;">INFLUENCE</h2>
+            <h2 style="font-family:'Anton'; font-size: 4rem; color: #555;">INFLUENCE</h2>
+            <h2 style="font-family:'Anton'; font-size: 4rem; color: #777;">INFLUENCE</h2>
+            <h2 style="font-family:'Anton'; font-size: 4rem; color: #fff;">VIOLINA</h2>
+            <p style="margin-top: 30px; font-size: 1.2rem; max-width: 500px;">She wears a hoodie? Hoodies sell out. She drinks tea? Coffee stocks crash. This isn't influence, it's power.</p>
+        </div>
+    </div>
+
+    <div class="page" id="p14" style="background: var(--neon); color: #fff; justify-content: center; align-items: center;">
+        <div class="rise-up" style="text-align: center;">
+            <h1 style="font-size: 4rem; font-weight: 800;">WHO IS SHE?</h1>
+            <p style="font-size: 1.5rem;">The world wants to know everything.</p>
+            <p style="font-size: 1.5rem;">She tells them nothing.</p>
+        </div>
+    </div>
+
+    <div class="page" id="p15">
+        <div style="font-family:'Anton'; font-size: 2rem; color: #000;">V.ERA</div>
+        
+        <div class="rise-up" style="text-align: center; width: 100%;">
+            <h1 style="font-size: 3rem; font-family:'Bodoni Moda'; margin-bottom: 20px;">The Show Must Go On.</h1>
+            <p style="margin-bottom: 40px; color: #666;">Experience the sound of her soul.</p>
             
             <button class="next-btn" onclick="window.location.href='page8.html'">
-                ENTER THE MUSICAL PORTRAIT
+                ENTER THE MUSICAL PORTRAIT >
             </button>
         </div>
-        <div style="position:absolute; bottom:20px; font-size:0.7rem; color:#666;">
-            LIMITED EDITION // VOL 1 // PRICELESS
+
+        <div style="font-size: 0.8rem; color: #888;">
+            VOL 1 // THE VIRAL ISSUE // 2025
         </div>
     </div>
 
