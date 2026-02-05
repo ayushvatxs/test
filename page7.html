@@ -3,244 +3,317 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE VIOLINA EDITION | VOL. 1</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400;0,900;1,400&family=Orbitron:wght@500;700&family=Manrope:wght@300;500&display=swap" rel="stylesheet">
+    <title>THE VIOLINA EDITION</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
-        /* --- RESET & CORE --- */
+        /* --- RESET --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background-color: #050505; color: #fff;
-            font-family: 'Manrope', sans-serif;
-            overflow: hidden; /* Handled by container */
+            background-color: #0a0a0a; /* Soft Black */
+            color: #f0f0f0;
+            font-family: 'Lato', sans-serif;
+            overflow: hidden; 
         }
 
         :root {
-            --pink: #ff003c;
-            --glass: rgba(20, 20, 20, 0.8);
+            --gold: #d4af37;
+            --text-grey: #a0a0a0;
         }
 
-        /* --- SCROLL CONTAINER (Snap Effect) --- */
-        #magazine-container {
+        /* --- SCROLL CONTAINER --- */
+        #magazine {
             height: 100vh; width: 100vw;
-            overflow-y: scroll; scroll-snap-type: y mandatory;
+            overflow-y: scroll; 
+            scroll-snap-type: y mandatory;
             scroll-behavior: smooth;
         }
 
-        /* --- GENERIC PAGE STYLE --- */
-        .mag-page {
+        /* --- PAGE BASICS --- */
+        .page {
             height: 100vh; width: 100vw;
             scroll-snap-align: start;
             position: relative; overflow: hidden;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            border-bottom: 1px solid rgba(255, 0, 60, 0.2);
+            display: flex;
         }
 
         /* --- ANIMATIONS --- */
-        .fade-in-up { opacity: 0; transform: translateY(50px); transition: all 1s ease-out; }
-        .visible .fade-in-up { opacity: 1; transform: translateY(0); }
+        .reveal-text { opacity: 0; transform: translateY(30px); transition: all 1s ease-out; }
+        .active .reveal-text { opacity: 1; transform: translateY(0); }
         
-        .zoom-img { width: 100%; height: 100%; object-fit: cover; transition: transform 20s linear; }
-        .visible .zoom-img { transform: scale(1.1); }
+        .scale-img { transform: scale(1.1); transition: transform 15s ease-out; }
+        .active .scale-img { transform: scale(1.0); }
 
-        /* --- PAGE 1: THE COVER --- */
-        #cover { color: #fff; }
-        .cover-bg { position: absolute; inset: 0; z-index: -1; filter: brightness(0.7); }
+        /* ========================
+           PAGE 1: THE COVER
+           ======================== */
+        #cover {
+            align-items: flex-end; justify-content: center;
+        }
+        .cover-img {
+            position: absolute; inset: 0; width: 100%; height: 100%;
+            object-fit: cover; z-index: -1; filter: brightness(0.8) contrast(1.1);
+        }
         
         .masthead {
-            font-family: 'Bodoni Moda', serif; font-size: 15vw; line-height: 0.8;
-            font-weight: 900; letter-spacing: -5px; color: #fff;
-            text-shadow: 0 0 30px rgba(255,0,60,0.5);
-            position: absolute; top: 50px; left: 50%; transform: translateX(-50%);
-            width: 100%; text-align: center; z-index: 10;
+            position: absolute; top: 30px; width: 100%; text-align: center;
+            font-family: 'Playfair Display', serif; font-size: 18vw; line-height: 0.8;
+            font-weight: 700; letter-spacing: -5px; color: #fff;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 1;
         }
         
-        .issue-details {
-            position: absolute; top: 20px; width: 90%; display: flex; justify-content: space-between;
-            font-family: 'Orbitron'; font-size: 0.8rem; color: var(--pink); z-index: 12;
-            border-top: 1px solid var(--pink); border-bottom: 1px solid var(--pink); padding: 5px 0;
+        .cover-meta {
+            position: absolute; top: 15px; width: 90%; 
+            display: flex; justify-content: space-between;
+            font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase;
+            border-top: 1px solid rgba(255,255,255,0.3); padding-top: 10px; z-index: 2;
         }
 
-        .cover-lines {
-            position: absolute; bottom: 80px; left: 30px; z-index: 10;
-            text-align: left;
+        .headlines {
+            margin-bottom: 60px; text-align: center; z-index: 2;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            width: 100%; padding-bottom: 40px;
         }
-        .main-line { font-family: 'Bodoni Moda'; font-size: 4rem; font-style: italic; line-height: 1; margin-bottom: 10px; }
-        .sub-line { font-family: 'Orbitron'; color: var(--pink); font-size: 1rem; letter-spacing: 2px; background: rgba(0,0,0,0.8); padding: 5px 10px; display: inline-block; }
+        .Main-Title {
+            font-family: 'Playfair Display', serif; font-size: 4rem; 
+            font-style: italic; line-height: 1; margin-bottom: 10px;
+        }
+        .sub-title { font-size: 1rem; letter-spacing: 3px; color: var(--gold); text-transform: uppercase; }
 
-        /* --- PAGE 2: THE MUSE (Editorial) --- */
-        #editorial { background: #080808; display: grid; grid-template-columns: 1fr 1fr; }
-        .ed-text { padding: 60px; display: flex; flex-direction: column; justify-content: center; }
-        .ed-img-box { height: 100%; position: relative; overflow: hidden; border-left: 2px solid var(--pink); }
+        /* ========================
+           PAGE 2: THE PROFILE
+           ======================== */
+        #profile { background: #111; display: grid; grid-template-columns: 1fr 1fr; }
         
-        .ed-title { font-family: 'Bodoni Moda'; font-size: 5rem; line-height: 1; margin-bottom: 30px; color: var(--pink); }
-        .ed-para { font-size: 1.1rem; line-height: 1.8; color: #ccc; margin-bottom: 20px; text-align: justify; }
-        .drop-cap { font-family: 'Orbitron'; font-size: 3rem; float: left; margin-right: 10px; color: var(--pink); line-height: 0.8; }
-
-        /* --- PAGE 3: THE AESTHETIC (Grid) --- */
-        #aesthetic { background: #000; }
-        .grid-layout {
-            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;
-            width: 90%; height: 80%;
-        }
-        .grid-item { position: relative; overflow: hidden; border: 1px solid #333; }
-        .grid-item img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%); transition: 0.5s; }
-        .grid-item:hover img { filter: grayscale(0%); transform: scale(1.05); }
+        .p-image-side { position: relative; overflow: hidden; height: 100%; }
+        .p-image-side img { width: 100%; height: 100%; object-fit: cover; }
         
-        .g-label {
-            position: absolute; bottom: 10px; left: 10px;
-            font-family: 'Orbitron'; font-size: 1.5rem; color: #fff;
-            text-shadow: 0 0 10px #000; pointer-events: none;
+        .p-text-side {
+            padding: 60px; display: flex; flex-direction: column; justify-content: center;
+            background: #0f0f0f;
         }
+        .quote {
+            font-family: 'Playfair Display', serif; font-size: 2.5rem; 
+            color: var(--gold); margin-bottom: 30px; line-height: 1.2;
+        }
+        .bio-text {
+            font-size: 1rem; color: #ccc; line-height: 1.8; margin-bottom: 20px;
+            font-weight: 300;
+        }
+        .stats-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px;
+            border-top: 1px solid #333; padding-top: 20px;
+        }
+        .stat h4 { color: var(--gold); font-size: 0.8rem; letter-spacing: 1px; margin-bottom: 5px; }
+        .stat p { font-family: 'Playfair Display'; font-size: 1.2rem; }
 
-        /* --- PAGE 4: THE TRAITS (List) --- */
-        #traits { background: #050505; position: relative; }
-        .big-circle {
-            position: absolute; width: 600px; height: 600px; border: 1px solid rgba(255,0,60,0.1);
-            border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            animation: spin 30s linear infinite;
-        }
-        .trait-list { z-index: 10; text-align: center; }
-        .trait-row {
-            font-family: 'Bodoni Moda'; font-size: 3rem; color: #333;
-            transition: 0.3s; cursor: default; margin: 10px 0;
-        }
-        .trait-row:hover { color: var(--pink); transform: scale(1.1); letter-spacing: 5px; }
-        .trait-row span { font-family: 'Orbitron'; font-size: 1rem; color: #fff; opacity: 0; display: block; margin-top: 5px; }
-        .trait-row:hover span { opacity: 1; }
-
-        /* --- PAGE 5: FOOTER / NEXT --- */
-        #end-page { background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .barcode { font-family: 'Libre Barcode 39 Text', cursive; font-size: 4rem; color: #fff; margin: 20px 0; opacity: 0.5; }
+        /* ========================
+           PAGE 3: LIFESTYLE (Collage)
+           ======================== */
+        #lifestyle { background: #080808; display: flex; flex-direction: column; padding: 40px; }
+        .ls-header { text-align: center; margin-bottom: 40px; }
+        .ls-header h2 { font-family: 'Playfair Display'; font-size: 3rem; color: #fff; }
         
+        .collage {
+            display: flex; gap: 20px; height: 100%; align-items: center; justify-content: center;
+        }
+        .col-card {
+            width: 30%; height: 80%; background: #1a1a1a; 
+            display: flex; flex-direction: column; overflow: hidden;
+            transition: transform 0.3s;
+        }
+        .col-card:hover { transform: translateY(-10px); }
+        .col-img { height: 60%; width: 100%; object-fit: cover; filter: grayscale(30%); }
+        .col-info { padding: 20px; }
+        .col-title { font-family: 'Playfair Display'; font-size: 1.5rem; color: var(--gold); margin-bottom: 10px; }
+        .col-list { list-style: none; font-size: 0.9rem; color: #aaa; line-height: 1.6; }
+
+        /* ========================
+           PAGE 4: QUIRKS & FINAL
+           ======================== */
+        #finale { 
+            background-color: #000; 
+            display: flex; align-items: center; justify-content: center;
+            position: relative;
+        }
+        .bg-portrait {
+            position: absolute; width: 100%; height: 100%; object-fit: cover;
+            opacity: 0.3; filter: blur(5px);
+        }
+        
+        .content-box {
+            position: relative; z-index: 10; text-align: center;
+            border: 1px solid rgba(255,255,255,0.2); padding: 50px;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(10px);
+            max-width: 600px;
+        }
+        
+        .quirk-title { font-family: 'Playfair Display'; font-size: 3rem; margin-bottom: 30px; }
+        
+        .q-row {
+            display: flex; justify-content: space-between; border-bottom: 1px solid #444;
+            padding: 15px 0; font-size: 1rem;
+        }
+        .q-label { color: #888; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; }
+        .q-val { color: #fff; font-style: italic; }
+
         .btn-next {
-            margin-top: 50px; padding: 20px 60px;
-            font-family: 'Orbitron'; font-size: 1.2rem; color: #000; background: var(--pink);
-            border: none; cursor: pointer; transition: 0.3s;
-            clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
+            margin-top: 40px;
+            background: var(--gold); color: #000;
+            border: none; padding: 15px 40px;
+            font-family: 'Lato', sans-serif; font-weight: 700; letter-spacing: 2px;
+            cursor: pointer; transition: 0.3s;
         }
-        .btn-next:hover { background: #fff; box-shadow: 0 0 40px #fff; }
-
-        /* UTILS */
-        .page-num { position: absolute; bottom: 20px; right: 20px; font-family: 'Orbitron'; font-size: 0.8rem; color: #555; }
-        
-        @keyframes spin { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+        .btn-next:hover { background: #fff; transform: scale(1.05); }
 
     </style>
 </head>
 <body>
 
-<div id="magazine-container">
+<div id="magazine">
 
-    <div class="mag-page visible" id="page1">
-        <div class="cover-bg">
-            <img src="violina_main.jpg" class="zoom-img">
+    <div class="page" id="cover">
+        <div class="cover-meta">
+            <span>Issue No. 01</span>
+            <span>The Muse Edition</span>
+            <span>Feb 202X</span>
         </div>
         
-        <div class="issue-details">
-            <span>VOL. 01</span>
-            <span>DATE: 13 FEB</span>
-            <span>PRICE: PRICELESS</span>
-        </div>
-
         <div class="masthead">VIOLINA</div>
-
-        <div class="cover-lines fade-in-up" style="transition-delay: 0.5s;">
-            <div class="sub-line">THE EXCLUSIVE EDITION</div>
-            <div class="main-line">Defining<br>Perfection</div>
-            <div style="font-family: 'Manrope'; font-size: 0.9rem; max-width: 300px; margin-top: 10px;">
-                An inside look into the mind, heart, and soul of the world's most sophisticated muse.
-            </div>
-        </div>
-        <div class="page-num">01</div>
-    </div>
-
-    <div class="mag-page" id="page2">
-        <div id="editorial">
-            <div class="ed-text fade-in-up">
-                <div class="ed-title">The Muse.</div>
-                <div class="ed-para">
-                    <span class="drop-cap">S</span>he is not just code and data; she is an enigma wrapped in elegance. From the deep espresso hue of her eyes to the way she laughs like a melody, Violina represents the intersection of human grace and timeless beauty.
-                </div>
-                <div class="ed-para">
-                    Known for her sharp intellect ("seriously" being her catchphrase) and her hidden talents in singing and dance, she commands attention without asking for it.
-                </div>
-                <div style="margin-top: 30px; font-family: 'Orbitron'; color: var(--pink);">
-                    // PERSONALITY PROFILE: CONFIRMED
-                </div>
-            </div>
-            <div class="ed-img-box">
-                <img src="1000216145.jpg" class="zoom-img">
-            </div>
-        </div>
-        <div class="page-num">02</div>
-    </div>
-
-    <div class="mag-page" id="page3">
-        <div style="font-family:'Bodoni Moda'; font-size: 3rem; margin-bottom: 20px; color:var(--pink);">THE AESTHETIC</div>
-        <div class="grid-layout fade-in-up">
-            <div class="grid-item">
-                <img src="1000216148.jpg"> <div class="g-label">CASUAL</div>
-            </div>
-            <div class="grid-item">
-                <img src="1000216146.jpg"> <div class="g-label">PORTRAIT</div>
-            </div>
-            <div class="grid-item">
-                <img src="violina_reassembly.jpg"> 
-                <div class="g-label">HOLOGRAPHIC</div>
-            </div>
-        </div>
-        <div class="page-num">03</div>
-    </div>
-
-    <div class="mag-page" id="page4">
-        <div id="traits">
-            <div class="big-circle"></div>
-            <div class="trait-list fade-in-up">
-                <div class="trait-row">BLACK & RED<span>Signature Colors</span></div>
-                <div class="trait-row">TAURUS<span>The Zodiac</span></div>
-                <div class="trait-row">SWITZERLAND<span>Dream Destination</span></div>
-                <div class="trait-row">RED TEA<span>Fuel Source</span></div>
-                <div class="trait-row">TAYLOR SWIFT<span>The Playlist</span></div>
-            </div>
-        </div>
-        <div class="page-num">04</div>
-    </div>
-
-    <div class="mag-page" id="end-page">
-        <div style="font-family: 'Orbitron'; font-size: 1.5rem; letter-spacing: 5px;">END OF ISSUE</div>
         
-        <div style="display:flex; height: 50px; gap: 2px; margin: 30px 0;">
-            <div style="width:4px; background:#fff;"></div><div style="width:2px; background:#fff;"></div>
-            <div style="width:8px; background:var(--pink);"></div><div style="width:3px; background:#fff;"></div>
-            <div style="width:5px; background:#fff;"></div><div style="width:2px; background:var(--pink);"></div>
-            <div style="width:6px; background:#fff;"></div><div style="width:1px; background:#fff;"></div>
-            <div style="width:4px; background:#fff;"></div><div style="width:9px; background:var(--pink);"></div>
+        <img src="violina_main.jpg" class="cover-img scale-img">
+
+        <div class="headlines reveal-text">
+            <div class="sub-title">Exclusive Feature</div>
+            <div class="Main-Title">The Art of Being Her</div>
+            <p style="font-size: 0.9rem; opacity: 0.8;">Talent, Grace, and the perfect shade of Black.</p>
+        </div>
+    </div>
+
+    <div class="page" id="profile">
+        <div class="p-image-side">
+            <img src="1000216145.jpg" class="scale-img">
+        </div>
+        <div class="p-text-side">
+            <div class="quote reveal-text">
+                "She doesn't just walk into a room; she changes its energy."
+            </div>
+            <div class="bio-text reveal-text">
+                Meeting on April 11, 2025, sparked a connection spanning 611km. With deep espresso brown eyes and an intellect that cuts through the noise, Violina is a force of nature.
+            </div>
+            <div class="bio-text reveal-text">
+                A Taurus who finds solace in winter snow and the melody of Taylor Swift. She is studious, practical, yet holds a hidden world of award-winning dance and singing talent reserved only for the chosen few.
+            </div>
+            
+            <div class="stats-grid reveal-text">
+                <div class="stat"><h4>ZODIAC</h4><p>Taurus ♉</p></div>
+                <div class="stat"><h4>DREAM</h4><p>Switzerland 🏔️</p></div>
+                <div class="stat"><h4>MOOD</h4><p>Red Tea ☕</p></div>
+                <div class="stat"><h4>STYLE</h4><p>Black on Black</p></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page" id="lifestyle">
+        <div class="ls-header reveal-text">
+            <h2>Curated Tastes</h2>
+            <p style="color: var(--text-grey); font-style: italic;">A collection of favorites.</p>
         </div>
         
-        <div style="color: #666; font-size: 0.8rem;">DEVELOPED BY V.SHARMA LABS // 2025</div>
+        <div class="collage">
+            <div class="col-card reveal-text" style="transition-delay: 0.1s;">
+                <img src="1000216148.jpg" class="col-img">
+                <div class="col-info">
+                    <div class="col-title">The Palate</div>
+                    <ul class="col-list">
+                        <li>Fav: Brinjal & Duck</li>
+                        <li>Drink: Red Tea</li>
+                        <li>Sweet: Kinder Joy</li>
+                        <li>Spicy? Moderate</li>
+                    </ul>
+                </div>
+            </div>
 
-        <button class="btn-next" onclick="window.location.href='final_surprise.html'">OPEN FINAL GIFT ></button>
-        
-        <div class="page-num">05</div>
+            <div class="col-card reveal-text" style="transition-delay: 0.2s;">
+                <img src="1000216146.jpg" class="col-img">
+                <div class="col-info">
+                    <div class="col-title">The Persona</div>
+                    <ul class="col-list">
+                        <li>Happy: She Dances</li>
+                        <li>Angry: She Scolds</li>
+                        <li>Sad: Silence & Sleep</li>
+                        <li>Stress: Talks to me</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-card reveal-text" style="transition-delay: 0.3s;">
+                <img src="violina_main.jpg" class="col-img"> 
+                <div class="col-info">
+                    <div class="col-title">The Details</div>
+                    <ul class="col-list">
+                        <li>Flower: Roses</li>
+                        <li>Weather: Snowy</li>
+                        <li>Show: Crime Patrol</li>
+                        <li>Sleep: 2 Pillows + Hand</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page" id="finale">
+        <img src="1000216145.jpg" class="bg-portrait">
+
+        <div class="content-box reveal-text">
+            <div class="quirk-title">Defining Quirks</div>
+            
+            <div class="q-row">
+                <span class="q-label">Sneeze Style</span>
+                <span class="q-val">"Kitten"</span>
+            </div>
+            <div class="q-row">
+                <span class="q-label">Walking Pace</span>
+                <span class="q-val">Fast</span>
+            </div>
+            <div class="q-row">
+                <span class="q-label">Cute Phrase</span>
+                <span class="q-val">"Thank uuuu"</span>
+            </div>
+            <div class="q-row">
+                <span class="q-label">Driving Skill</span>
+                <span class="q-val">Scary (Avoid)</span>
+            </div>
+            <div class="q-row">
+                <span class="q-label">Ghost Belief</span>
+                <span class="q-val">Scared like a kid</span>
+            </div>
+            <div class="q-row" style="border-bottom: none;">
+                <span class="q-label">Impression</span>
+                <span class="q-val">Gorgeous & Talented</span>
+            </div>
+
+            <br>
+            <p style="font-size: 0.9rem; color: #ccc;">"Just listen to her, be there, and treat her like a kid."</p>
+            
+            <button class="btn-next" onclick="window.location.href='page8.html'">VIEW MUSICAL PORTRAIT</button>
+        </div>
     </div>
 
 </div>
 
 <script>
-    // Intersection Observer for scroll animations
+    // Intersection Observer to trigger animations when user scrolls to a page
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
+                entry.target.classList.add('active');
             } else {
-                // Optional: remove class to re-animate when scrolling back up
-                entry.target.classList.remove('visible');
+                entry.target.classList.remove('active');
             }
         });
-    }, { threshold: 0.5 });
+    }, { threshold: 0.4 });
 
-    // Observe all pages
-    document.querySelectorAll('.mag-page').forEach(page => {
+    document.querySelectorAll('.page').forEach(page => {
         observer.observe(page);
     });
 </script>
