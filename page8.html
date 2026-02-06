@@ -40,9 +40,22 @@
             color: #e0c097; /* Vintage Gold */
             font-family: 'Playfair Display', serif;
             font-size: 2rem;
-            margin: 50px 0 40px; /* Top spacing */
+            margin: 50px 0 10px; /* Reduced bottom margin for sub-text */
             font-style: italic;
             text-shadow: 0 0 15px rgba(224, 192, 151, 0.4);
+            z-index: 2;
+            position: relative;
+        }
+
+        /* --- NEW SUB-TEXT --- */
+        .cinema-subtext {
+            text-align: center;
+            color: #e0c097;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            margin-bottom: 40px;
+            opacity: 0.8;
             z-index: 2;
             position: relative;
         }
@@ -149,8 +162,6 @@
         .bar:nth-child(2) { height: 18px; animation-delay: 0.1s; }
         .bar:nth-child(3) { height: 12px; animation-delay: 0.2s; }
 
-        /* Removed .music-icon style as requested */
-
         @keyframes bounce { 
             0%, 100% { height: 5px; } 
             50% { height: 20px; } 
@@ -211,6 +222,7 @@
     <div class="film-grain"></div>
 
     <div class="cinema-header">A Musical Portrait 🎬</div>
+    <div class="cinema-subtext">🎵 Tap any frame to hear the story... </div>
 
     <div class="strip-container">
         <div class="film-track scroll-left" id="track1"></div>
@@ -256,6 +268,7 @@
         const overlay = document.getElementById('overlay');
         const modalImg = document.getElementById('modalImg');
         const modalCaption = document.getElementById('modalCaption');
+        const nextBtn = document.querySelector('.next-btn'); // Grab the arrow button
         let currentAudio = null;
 
         // --- GENERATE STRIPS ---
@@ -278,6 +291,9 @@
             track1.style.animationPlayState = 'paused';
             track2.style.animationPlayState = 'paused';
 
+            // HIDE ARROW
+            nextBtn.style.display = 'none';
+
             modalImg.src = `p${data.id}.jpg`;
             modalCaption.innerText = data.caption;
             overlay.classList.add('active');
@@ -289,6 +305,10 @@
 
         function closeModal() {
             overlay.classList.remove('active');
+            
+            // SHOW ARROW AGAIN
+            nextBtn.style.display = 'flex';
+
             track1.style.animationPlayState = 'running';
             track2.style.animationPlayState = 'running';
 
