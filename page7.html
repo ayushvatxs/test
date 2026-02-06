@@ -47,7 +47,7 @@
         .zoom-slow { width: 100%; height: 100%; object-fit: cover; transform: scale(1.1); transition: transform 10s ease-out; }
         .active .zoom-slow { transform: scale(1.0); }
 
-        /* --- 7 FLASHES (2.1 Seconds) --- */
+        /* --- FLASH EFFECT (7 Flashes) --- */
         .flash-effect { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 50; }
         
         .active .flash-effect.paparazzi { animation: flashBurst 0.3s 7; } 
@@ -444,23 +444,51 @@
         'sfx_notification.mp3': new Audio('sfx_notification.mp3')
     };
 
+    let activeTimeouts = []; // Tracks burst sounds
+
     function playAudio(key) {
+        let audioKey = key;
         let isBurst = (key === 'sfx_burst');
-        let audioKey = isBurst ? 'sfx_notification.mp3' : key;
-        const sourceAudio = audioLibrary[audioKey];
+        if (key === 'sfx_burst') audioKey = 'sfx_notification.mp3';
+        
+        const audio = audioLibrary[audioKey];
+        if (!audio) return;
 
-        if (!sourceAudio) return;
+        // Reset the audio to 0 so it replays even if it finished previously
+        audio.pause();
+        audio.currentTime = 0;
 
-        // Clone node allows overlapping sounds (Polyphony)
         if (isBurst) {
-            // Burst Logic: Play 3 distinct clones
-            const a1 = sourceAudio.cloneNode(); a1.play().catch(()=>{});
-            setTimeout(() => { const a2 = sourceAudio.cloneNode(); a2.play().catch(()=>{}); }, 250);
-            setTimeout(() => { const a3 = sourceAudio.cloneNode(); a3.play().catch(()=>{}); }, 500);
+            // Play 3 times using clones so they overlap
+            audio.play().catch(()=>{});
+            
+            activeTimeouts.push(setTimeout(() => { 
+                const clone = audio.cloneNode(); 
+                clone.play().catch(()=>{}); 
+            }, 250));
+            
+            activeTimeouts.push(setTimeout(() => { 
+                const clone = audio.cloneNode(); 
+                clone.play().catch(()=>{}); 
+            }, 500));
         } else {
-            // Normal Logic: Reset and play
-            sourceAudio.currentTime = 0;
-            sourceAudio.play().catch(() => {});
+            // Normal Play
+            audio.play().catch((e) => console.log(e));
+        }
+    }
+
+    function stopAudio(key) {
+        // Stop bursts immediately
+        activeTimeouts.forEach(id => clearTimeout(id));
+        activeTimeouts = [];
+
+        let audioKey = key;
+        if (key === 'sfx_burst') audioKey = 'sfx_notification.mp3';
+        
+        const audio = audioLibrary[audioKey];
+        if (audio) {
+            audio.pause();
+            audio.currentTime = 0; // Rewind to start
         }
     }
 
@@ -483,15 +511,22 @@
 
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('active');
-                const soundFile = entry.target.getAttribute('data-sound');
-                if (soundFile) playAudio(soundFile);
+            const soundFile = entry.target.getAttribute('data-sound');
+            if (soundFile) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    playAudio(soundFile);
+                } else {
+                    entry.target.classList.remove('active');
+                    stopAudio(soundFile);
+                }
             } else {
-                entry.target.classList.remove('active');
+                // If page has no sound, just handle visual
+                if (entry.isIntersecting) entry.target.classList.add('active');
+                else entry.target.classList.remove('active');
             }
         });
-    }, { threshold: 0.2 }); // Triggers earlier (20% visibility) to fix lag
+    }, { threshold: 0.4 });
 
     document.querySelectorAll('.page').forEach(page => { observer.observe(page); });
 </script>
