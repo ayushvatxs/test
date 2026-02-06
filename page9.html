@@ -10,121 +10,131 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             height: 100vh; width: 100vw; overflow: hidden;
-            background-color: #050505; /* Deep Obsidian */
+            background-color: #000;
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
             font-family: 'Montserrat', sans-serif;
         }
 
-        /* --- 1. CSS-ONLY BRICK WALL (No Images to Break) --- */
-        .wall {
+        /* --- 1. THE STREET BACKGROUND (High Res, Darkened) --- */
+        .street-bg {
             position: absolute; inset: 0;
-            background-color: #080808;
-            background-image: 
-                linear-gradient(335deg, rgba(0,0,0,0.8) 23px, transparent 23px),
-                linear-gradient(155deg, rgba(0,0,0,0.8) 23px, transparent 23px),
-                linear-gradient(335deg, rgba(0,0,0,0.8) 23px, transparent 23px),
-                linear-gradient(155deg, rgba(0,0,0,0.8) 23px, transparent 23px);
-            background-size: 58px 58px;
-            background-position: 0px 2px, 4px 35px, 29px 31px, 34px 6px;
+            /* Using a reliable Unsplash ID for a Rainy Neon Street */
+            background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), 
+                              url('https://images.unsplash.com/photo-1555685812-4b943f3e9943?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
             z-index: 0;
         }
-        
-        /* Dark overlay for mood */
-        .wall::after {
-            content: ''; position: absolute; inset: 0;
-            background: radial-gradient(circle at center, transparent 0%, #000 90%);
-        }
 
-        /* --- 2. CSS RAIN EFFECT --- */
+        /* --- 2. CSS-ONLY RAIN (NO IMAGES TO BREAK) --- */
         .rain {
             position: absolute; inset: 0; z-index: 1;
-            background: repeating-linear-gradient(transparent, transparent 50px, rgba(255,255,255,0.03) 50px, rgba(255,255,255,0.03) 52px);
-            background-size: 100% 100%;
-            animation: rain-fall 1s linear infinite;
-            opacity: 0.4;
+            background: 
+                linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.25) 100%), 
+                linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.25) 100%);
+            background-size: 2px 30px, 1px 15px; /* Raindrop sizes */
+            background-position: 0 0, 50px 0;
+            animation: rain-fall 0.6s linear infinite;
+            opacity: 0.6;
             pointer-events: none;
         }
-        @keyframes rain-fall { 0% { background-position: 0 0; } 100% { background-position: 0 200px; } }
+
+        /* Second layer of rain for depth */
+        .rain::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.15) 100%);
+            background-size: 3px 40px;
+            background-position: 100px 0;
+            animation: rain-fall 0.4s linear infinite;
+        }
+
+        @keyframes rain-fall {
+            from { background-position: 0 -100px, 50px -100px; }
+            to { background-position: 0 100vh, 50px 100vh; }
+        }
 
         /* --- 3. THE GRAND MARQUEE --- */
         .marquee-board {
             position: relative; z-index: 10;
-            background: #000;
+            background: #050505;
             padding: 40px 60px;
-            border: 8px solid #111;
+            border: 6px solid #222;
             border-radius: 20px;
-            box-shadow: 0 0 60px rgba(0,0,0,0.9);
+            box-shadow: 
+                0 0 50px rgba(0,0,0,1),
+                0 0 100px rgba(212, 175, 55, 0.2); /* Gold ambient glow */
             text-align: center;
-            min-width: 300px;
+            min-width: 320px;
             min-height: 250px;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transform: perspective(1000px) rotateX(5deg); /* 3D tilt */
         }
 
-        /* Golden Bulbs Border */
+        /* Flashing Bulbs Border */
         .marquee-board::before {
-            content: ''; position: absolute; inset: -15px;
-            border: 4px dotted #d4af37; /* Gold Bulbs */
+            content: ''; position: absolute; inset: -12px;
+            border: 4px dotted #d4af37; 
             border-radius: 25px;
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
-            animation: bulb-flicker 2s infinite;
+            box-shadow: 0 0 15px #d4af37;
+            animation: bulb-flicker 1.5s infinite alternate;
         }
 
-        /* --- THE TEXT REVEAL ANIMATION --- */
+        /* --- TEXT ANIMATION --- */
         .text-container { position: relative; height: 120px; display: flex; align-items: center; justify-content: center; width: 100%; }
 
-        /* STATE 1: NOW SHOWING */
+        /* NOW SHOWING */
         .text-initial {
             position: absolute;
             font-family: 'Montserrat', sans-serif;
             font-weight: 900;
-            font-size: 3rem;
-            color: #333; /* Dimmed */
+            font-size: 2.5rem;
+            color: #444; /* Dimmed */
             text-shadow: none;
             letter-spacing: 5px;
-            animation: text-switch-out 0.5s forwards 2.5s; /* Disappear after 2.5s */
+            animation: text-switch-out 0.1s forwards 2.5s;
         }
 
-        /* STATE 2: VIOLINA (GOLD) */
+        /* VIOLINA */
         .text-final {
             position: absolute;
             font-family: 'Monoton', cursive;
             font-size: 6rem;
-            color: #d4af37; /* Gold */
+            color: #d4af37;
             text-transform: uppercase;
-            opacity: 0; /* Start hidden */
+            opacity: 0;
             letter-spacing: 2px;
             animation: 
-                flicker-in 2s forwards 3s, /* Appear at 3s */
-                neon-glow 1.5s infinite alternate 5s; /* Steady glow after 5s */
+                flicker-in 2s forwards 2.6s, 
+                neon-glow 1.5s infinite alternate 4.6s;
         }
 
         .top-label {
-            color: #fff; letter-spacing: 4px; font-size: 1rem; margin-bottom: 20px; opacity: 0.7;
+            color: #fff; letter-spacing: 4px; font-size: 1rem; margin-bottom: 20px; opacity: 0.8; text-shadow: 0 0 5px #fff;
         }
 
         /* --- SOLD OUT STAMP --- */
         .sold-out {
             position: absolute;
-            bottom: -30px; right: -40px;
+            bottom: -20px; right: -40px;
             font-family: 'Permanent Marker', cursive;
             font-size: 3.5rem;
-            color: #ff003c; /* Neon Red */
+            color: #ff003c;
             border: 5px solid #ff003c;
             padding: 5px 30px;
-            transform: rotate(-15deg) scale(2); /* Start big */
+            transform: rotate(-12deg) scale(3);
             opacity: 0;
             background: #000;
-            box-shadow: 0 0 30px #ff003c;
-            animation: stamp-slam 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 5.5s; /* Slam at 5.5s */
+            box-shadow: 0 0 40px #ff003c;
+            animation: stamp-slam 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 5s;
         }
 
         /* --- ENTER BUTTON --- */
         .enter-btn {
             margin-top: 80px;
-            background: transparent;
+            background: rgba(0,0,0,0.6);
             color: #fff;
-            border: 1px solid rgba(255,255,255,0.3);
+            border: 1px solid rgba(255,255,255,0.5);
             padding: 15px 40px;
             font-family: 'Montserrat', sans-serif;
             letter-spacing: 4px;
@@ -132,17 +142,13 @@
             transition: 0.3s;
             z-index: 10;
             opacity: 0;
-            animation: fade-in 1s forwards 6s; /* Appear last */
+            animation: fade-in 1s forwards 5.5s;
+            backdrop-filter: blur(5px);
         }
-        .enter-btn:hover { background: #d4af37; border-color: #d4af37; color: #000; box-shadow: 0 0 20px #d4af37; }
+        .enter-btn:hover { background: #d4af37; border-color: #d4af37; color: #000; box-shadow: 0 0 30px #d4af37; }
 
-        /* --- ANIMATION KEYFRAMES --- */
-        
-        @keyframes text-switch-out {
-            0% { opacity: 1; color: #fff; text-shadow: 0 0 10px #fff; }
-            50% { opacity: 0.5; color: #333; text-shadow: none; }
-            100% { opacity: 0; transform: scale(0.9); }
-        }
+        /* --- ANIMATIONS --- */
+        @keyframes text-switch-out { to { opacity: 0; } }
 
         @keyframes flicker-in {
             0% { opacity: 0; }
@@ -162,30 +168,30 @@
         }
 
         @keyframes stamp-slam {
-            0% { opacity: 0; transform: rotate(-15deg) scale(3); }
-            100% { opacity: 1; transform: rotate(-15deg) scale(1); }
+            0% { opacity: 0; transform: rotate(-12deg) scale(3); }
+            100% { opacity: 1; transform: rotate(-12deg) scale(1); }
         }
 
         @keyframes bulb-flicker {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
+            0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; }
         }
 
         @keyframes fade-in { to { opacity: 1; } }
 
         /* Responsive */
         @media (max-width: 600px) {
-            .text-initial { font-size: 2rem; }
+            .text-initial { font-size: 1.5rem; }
             .text-final { font-size: 3.5rem; }
             .sold-out { font-size: 2rem; bottom: -20px; right: -10px; }
-            .marquee-board { width: 90%; padding: 20px; }
+            .marquee-board { min-width: 90%; padding: 30px 10px; }
         }
 
     </style>
 </head>
 <body>
 
-    <div class="wall"></div>
+    <div class="street-bg"></div>
+
     <div class="rain"></div>
 
     <div class="marquee-board">
