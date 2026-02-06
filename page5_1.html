@@ -2,29 +2,64 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>System Login | V.SHARMA</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        /* --- RESET & CORE --- */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            background-color: #000; color: #fff;
+            background-color: #000;
+            color: #ff003c;
             font-family: 'Share Tech Mono', monospace;
-            overflow: hidden; height: 100vh; user-select: none;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            user-select: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         :root {
-            --pink: #ff003c;
-            --glass: rgba(20, 0, 5, 0.85);
+            --pink: #ff003c; /* Neon Red/Pink */
+            --dark: #0a0002;
+            --grid-color: rgba(255, 0, 60, 0.2);
         }
 
-        /* --- 1. START SCREEN --- */
+        /* --- 1. ROTATION MESSAGE (Mobile Only) --- */
+        #rotate-msg {
+            position: fixed; inset: 0; z-index: 10000;
+            background: rgba(0,0,0,0.95);
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            justify-content: center; align-items: center;
+            text-align: center;
+        }
+        .rotate-content {
+            border: 2px solid var(--pink);
+            padding: 30px;
+            border-radius: 10px;
+            position: relative;
+            box-shadow: 0 0 20px var(--pink);
+        }
+        .rotate-icon { font-size: 3rem; animation: spin 2s linear infinite; margin-bottom: 20px; }
+        .rotate-text { font-family: 'Orbitron'; font-size: 1.2rem; margin-bottom: 20px; color: #fff; }
+        .close-rotate {
+            position: absolute; top: -15px; right: -15px;
+            width: 30px; height: 30px;
+            background: var(--pink); color: #000;
+            border: none; font-weight: bold; font-size: 1.2rem;
+            cursor: pointer; clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%);
+        }
+
+        /* --- 2. START SCREEN --- */
         #start-screen {
-            position: fixed; inset: 0; z-index: 9999;
-            background: radial-gradient(circle, #200000 0%, #000 100%);
+            position: fixed; inset: 0; z-index: 9000;
+            background: #000;
             display: flex; justify-content: center; align-items: center;
         }
         .btn-start {
@@ -37,200 +72,295 @@
         }
         .btn-start:hover { background: var(--pink); color: #000; box-shadow: 0 0 60px var(--pink); }
 
-        /* --- 2. MAIN UI LAYER --- */
-        #ui-layer { position: fixed; inset: 0; display: none; }
+        /* --- 3. TUNNEL BACKGROUND --- */
+        #ui-layer { position: fixed; inset: 0; display: none; width: 100%; height: 100%; }
 
-        /* Background */
-        .bg-grid {
-            position: absolute; width: 200%; height: 200%; left: -50%; top: -50%;
-            background: 
-                linear-gradient(rgba(255, 0, 60, 0.15) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 0, 60, 0.15) 1px, transparent 1px);
-            background-size: 80px 80px;
-            transform: perspective(500px) rotateX(60deg);
-            animation: gridMove 4s linear infinite; z-index: 0;
+        .tunnel-grid {
+            position: absolute; width: 200%; height: 100vh; left: -50%;
+            perspective: 500px;
+            overflow: hidden;
+            z-index: 0;
         }
-        @keyframes gridMove { 0% { transform: perspective(500px) rotateX(60deg) translateY(0); } 100% { transform: perspective(500px) rotateX(60deg) translateY(80px); } }
-
-        /* Particles */
-        #particles { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
-        .fly-item {
-            position: absolute; color: rgba(255, 0, 60, 0.5); font-weight: bold;
-            animation: fly 3s linear infinite;
-        }
-        @keyframes fly {
-            0% { transform: translate3d(var(--tx), var(--ty), -800px); opacity: 0; }
-            20% { opacity: 1; }
-            100% { transform: translate3d(var(--ex), var(--ty), 500px); opacity: 0; }
-        }
-
-        /* Frame */
-        .border-top { position: absolute; top: 30px; left: 5%; width: 90%; height: 2px; background: var(--pink); box-shadow: 0 0 10px var(--pink); }
-        .corner { position: absolute; width: 60px; height: 60px; border: 4px solid var(--pink); box-shadow: 0 0 10px var(--pink); }
-        .tl { top: 30px; left: 30px; border-right: 0; border-bottom: 0; }
-        .tr { top: 30px; right: 30px; border-left: 0; border-bottom: 0; }
-        .bl { bottom: 30px; left: 30px; border-right: 0; border-top: 0; }
-        .br { bottom: 30px; right: 30px; border-left: 0; border-top: 0; }
-
-        /* GRID CONTENT */
-        .content-grid {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 90%; height: 600px; z-index: 10;
-            display: grid; grid-template-columns: 350px 1fr; gap: 50px;
-        }
-
-        /* --- LEFT PANEL --- */
-        .panel-left {
-            display: flex; flex-direction: column; padding: 25px;
-            background: var(--glass); border: 1px solid rgba(255,0,60,0.3);
-        }
-        .header {
-            font-family: 'Orbitron'; font-size: 1.2rem; color: var(--pink);
-            border-bottom: 2px solid var(--pink); margin-bottom: 10px; display: inline-block;
-        }
-        .logs { font-size: 0.8rem; color: #ff99aa; line-height: 1.6; margin-bottom: 25px; }
-
-        .box-container {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; height: 160px; margin-bottom: 25px;
-        }
-        .box { border: 1px solid var(--pink); background: rgba(50,0,0,0.3); }
-        .b1 { clip-path: polygon(0 0, 100% 0, 100% 80%, 80% 100%, 0 100%); }
-        .b2 { clip-path: polygon(0 0, 100% 0, 100% 100%, 20% 100%, 0 80%); }
-        .b3 { clip-path: polygon(0 0, 80% 0, 100% 20%, 100% 100%, 0 100%); }
-        .b4 { clip-path: polygon(20% 0, 100% 0, 100% 100%, 0 100%, 0 20%); }
-
-        .gauges { display: flex; gap: 20px; }
-        .circle-gauge {
-            width: 50px; height: 50px; border-radius: 50%; border: 1px solid var(--pink);
-            display: flex; justify-content: center; align-items: center; font-size: 0.7rem; position: relative;
-        }
-        .circle-gauge::after { content:''; position: absolute; inset: -3px; border-radius: 50%; border: 2px solid transparent; border-top-color: var(--pink); animation: spin 2s linear infinite; }
-
-        /* --- RIGHT PANEL --- */
-        .panel-right { display: flex; justify-content: center; align-items: center; position: relative; }
-        .reactor-outer { position: absolute; width: 450px; height: 450px; border: 2px solid var(--pink); border-radius: 50%; border-left: transparent; border-right: transparent; animation: spin 10s linear infinite; }
-        .reactor-core {
-            width: 300px; height: 300px; background: #000;
-            border: 4px solid var(--pink); border-radius: 50%;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            box-shadow: 0 0 60px var(--pink); z-index: 20; position: relative;
-        }
-
-        .status-text { font-family: 'Orbitron'; font-size: 1.4rem; font-weight: bold; text-shadow: 0 0 10px var(--pink); text-align: center; }
         
-        .btn-connect {
-            margin-top: 20px; background: rgba(255,255,255,0.1); border: 1px solid #fff; color: #fff;
-            padding: 10px 30px; font-family: 'Orbitron'; cursor: pointer; animation: pulse 1s infinite;
+        /* Ceiling & Floor Grids */
+        .grid-plane {
+            position: absolute; width: 100%; height: 50%;
+            background: 
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px),
+                linear-gradient(0deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 50px 50px;
+            transform-style: preserve-3d;
         }
-        .alert { color: red; text-align: center; animation: shake 0.5s infinite; }
+        .grid-top { top: 0; transform: rotateX(60deg); transform-origin: bottom; animation: gridMove 5s linear infinite; border-bottom: 2px solid var(--pink); }
+        .grid-bottom { bottom: 0; transform: rotateX(-60deg); transform-origin: top; animation: gridMove 5s linear infinite; border-top: 2px solid var(--pink); }
 
-        .scanner-ui {
-            width: 90px; height: 130px; border: 2px solid var(--pink); border-radius: 20px;
-            position: relative; overflow: hidden; margin-top: 15px; cursor: pointer;
-            background: rgba(0,0,0,0.5);
+        @keyframes gridMove { from { background-position: 0 0; } to { background-position: 0 50px; } }
+
+        /* --- 4. MAIN UI LAYOUT --- */
+        .main-frame {
+            position: absolute; inset: 20px;
+            border: 2px solid rgba(255,0,60,0.3);
+            z-index: 10;
+            display: flex;
+            align-items: center;
         }
-        .fingerprint { width: 100%; height: 100%; background: url('https://img.icons8.com/ios/100/ff003c/fingerprint.png') center/60% no-repeat; opacity: 0.7; }
-        .laser { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: #fff; box-shadow: 0 0 15px #fff; display: none; animation: scanMove 1s linear infinite; }
 
+        /* Corner Brackets */
+        .corner { position: absolute; width: 50px; height: 50px; border: 5px solid var(--pink); box-shadow: 0 0 15px var(--pink); }
+        .tl { top: -2px; left: -2px; border-right: 0; border-bottom: 0; }
+        .tr { top: -2px; right: -2px; border-left: 0; border-bottom: 0; }
+        .bl { bottom: -2px; left: -2px; border-right: 0; border-top: 0; }
+        .br { bottom: -2px; right: -2px; border-left: 0; border-top: 0; }
+
+        /* Top/Bottom Decorative Lines */
+        .deco-line { position: absolute; height: 4px; background: var(--pink); left: 10%; right: 10%; box-shadow: 0 0 10px var(--pink); }
+        .line-top { top: 10px; }
+        .line-bottom { bottom: 10px; }
+
+
+        /* --- LEFT PANEL (SYSTEM LOG) --- */
+        .panel-left {
+            width: 350px;
+            margin-left: 80px;
+            border: 1px solid rgba(255,0,60,0.4);
+            background: rgba(0,0,0,0.7);
+            padding: 20px;
+            position: relative;
+            backdrop-filter: blur(5px);
+        }
+        .panel-header {
+            font-family: 'Orbitron'; font-size: 1.2rem; 
+            border-bottom: 2px solid var(--pink);
+            display: inline-block; padding-bottom: 5px; margin-bottom: 15px;
+            text-shadow: 0 0 10px var(--pink);
+        }
+        .stat-list { font-size: 0.9rem; color: #ff99aa; line-height: 1.8; margin-bottom: 30px; }
+
+        /* The 4 Rectangles */
+        .grid-boxes {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 30px;
+        }
+        .g-box {
+            height: 60px;
+            border: 1px solid var(--pink);
+            background: rgba(255,0,60,0.05);
+            /* Cut Corners logic */
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+        }
+
+        /* The Circles (CPU/RAM) */
+        .gauges { display: flex; gap: 15px; }
+        .gauge-circle {
+            width: 50px; height: 50px; border-radius: 50%;
+            border: 1px solid var(--pink);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.7rem; color: #fff;
+            box-shadow: inset 0 0 10px rgba(255,0,60,0.3);
+            position: relative;
+        }
+        .gauge-circle::before {
+            content:''; position: absolute; inset: 4px; border-radius: 50%;
+            border: 2px solid transparent; border-top-color: var(--pink); border-right-color: var(--pink);
+            animation: spin 3s linear infinite;
+        }
+
+        /* --- RIGHT PANEL (THE CIRCLE) --- */
+        .panel-right {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column; /* Allow button below */
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .main-circle {
+            width: 450px; height: 450px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,0,60,0.3);
+            position: relative;
+            display: flex; justify-content: center; align-items: center;
+        }
+        
+        /* Outer Rings */
+        .ring-1 { position: absolute; inset: -20px; border: 2px dashed var(--pink); border-radius: 50%; animation: spin 20s linear infinite; opacity: 0.5; }
+        .ring-2 { position: absolute; inset: 20px; border: 1px solid var(--pink); border-radius: 50%; box-shadow: 0 0 20px var(--pink); }
+        .ring-3 { position: absolute; inset: 100px; border: 4px solid var(--pink); border-radius: 50%; border-left-color: transparent; border-right-color: transparent; animation: spin 4s linear infinite; }
+
+        .core-text {
+            font-family: 'Orbitron'; font-size: 1.5rem; letter-spacing: 2px;
+            text-shadow: 0 0 15px var(--pink); text-align: center; z-index: 20;
+        }
+
+        /* Floating Text */
+        .float-text { position: absolute; color: rgba(255,0,60,0.4); font-size: 0.8rem; animation: float 4s ease-in-out infinite; }
+
+        /* --- BUTTONS & STATES --- */
+        .btn-action {
+            margin-top: 15px; background: transparent; border: 1px solid #fff; color: #fff;
+            padding: 10px 30px; font-family: 'Share Tech Mono'; cursor: pointer;
+            transition: 0.3s; font-size: 1rem;
+        }
+        .btn-action:hover { background: #fff; color: #000; }
+
+        .scanner {
+            width: 100px; height: 140px; border: 2px solid var(--pink); border-radius: 10px;
+            margin-top: 10px; position: relative; overflow: hidden; cursor: pointer;
+            background: rgba(0,0,0,0.6);
+        }
+        .fingerprint { width: 100%; height: 100%; background: url('https://img.icons8.com/ios/100/ff003c/fingerprint.png') center/70% no-repeat; opacity: 0.6; }
+        .laser { position: absolute; width: 100%; height: 2px; background: #fff; box-shadow: 0 0 10px #fff; top: 0; animation: scan 1.5s linear infinite; display: none; }
+
+        /* --- FINAL BUTTON (Below Circle) --- */
+        #final-btn-container {
+            margin-top: 40px; /* Space below circle */
+            display: none; /* Hidden initially */
+            animation: fadeIn 1s forwards;
+        }
+        .btn-proceed {
+            color: #fff; text-decoration: none; border: 1px solid var(--pink);
+            padding: 15px 40px; font-family: 'Orbitron'; font-size: 1.2rem;
+            letter-spacing: 3px; background: rgba(0,0,0,0.8);
+            box-shadow: 0 0 15px var(--pink); transition: 0.3s;
+        }
+        .btn-proceed:hover { background: var(--pink); color: #000; box-shadow: 0 0 40px var(--pink); }
+
+        /* --- ANIMATIONS --- */
         @keyframes spin { 100% { transform: rotate(360deg); } }
-        @keyframes pulse { 0% { opacity: 0.6; } 100% { opacity: 1; } }
-        @keyframes shake { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -1px); } 100% { transform: translate(1px, -1px); } }
-        @keyframes scanMove { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes scan { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- RESPONSIVE / MOBILE --- */
+        @media (max-width: 900px) {
+            .content-grid { grid-template-columns: 1fr; }
+            .panel-left { display: none; } /* Hide log on small screens to focus on circle */
+            .main-circle { width: 300px; height: 300px; }
+        }
 
     </style>
 </head>
 <body>
 
+    <div id="rotate-msg">
+        <div class="rotate-content">
+            <button class="close-rotate" onclick="closeRotateMsg()">×</button>
+            <div class="rotate-icon"><i class="fas fa-mobile-alt"></i></div>
+            <div class="rotate-text">ROTATE DEVICE<br>FOR BETTER EXPERIENCE</div>
+        </div>
+    </div>
+
     <div id="start-screen">
         <button class="btn-start" onclick="initialize()">INITIALIZE SYSTEM</button>
     </div>
 
-    <script>
-        const audio = {
-            scan: new Audio('scan.mp3'),
-            alert: new Audio('alert.mp3'),
-            grant: new Audio('granted.mp3')
-        };
-        audio.scan.loop = true; 
-    </script>
-
     <div id="ui-layer">
-        <div class="bg-grid"></div>
-        <div id="particles"></div>
+        
+        <div class="tunnel-grid">
+            <div class="grid-plane grid-top"></div>
+            <div class="grid-plane grid-bottom"></div>
+        </div>
 
-        <div class="border-top"></div>
-        <div class="corner tl"></div><div class="corner tr"></div>
-        <div class="corner bl"></div><div class="corner br"></div>
+        <div class="main-frame">
+            <div class="corner tl"></div><div class="corner tr"></div>
+            <div class="corner bl"></div><div class="corner br"></div>
+            <div class="deco-line line-top"></div>
+            <div class="deco-line line-bottom"></div>
 
-        <div class="content-grid">
             <div class="panel-left">
-                <div class="header">SYSTEM_LOG</div>
-                <div class="logs">
-                    > MEM_ALLOC: 98%<br>> ENCRYPTION: 256-BIT<br>> PROXY: REROUTED<br>> LATENCY: 12ms
+                <div class="panel-header">SYSTEM_LOG</div>
+                <div class="stat-list">
+                    > MEM_ALLOC: 98%<br>
+                    > ENCRYPTION: AES-256<br>
+                    > PROXY_CHAIN: ACTIVE<br>
+                    > LATENCY: 12ms
                 </div>
-                <div class="box-container">
-                    <div class="box b1"></div><div class="box b2"></div>
-                    <div class="box b3"></div><div class="box b4"></div>
+                <div class="grid-boxes">
+                    <div class="g-box"></div><div class="g-box"></div>
+                    <div class="g-box"></div><div class="g-box"></div>
                 </div>
                 <div class="gauges">
-                    <div class="circle-gauge">CPU</div><div class="circle-gauge">RAM</div>
+                    <div class="gauge-circle">CPU</div>
+                    <div class="gauge-circle">RAM</div>
                 </div>
             </div>
 
             <div class="panel-right">
-                <div class="reactor-outer"></div>
-                <div class="reactor-core">
+                
+                <div class="float-text" style="top: 20%; left: 10%;">0101</div>
+                <div class="float-text" style="top: 80%; right: 10%;">HEX</div>
+                <div class="float-text" style="top: 15%; right: 20%;">NULL</div>
+
+                <div class="main-circle">
+                    <div class="ring-1"></div>
+                    <div class="ring-2"></div>
+                    <div class="ring-3"></div>
                     
-                    <div id="p1" style="display:flex; justify-content:center; align-items:center; width:100%;">
-                        <div class="status-text" id="seqText">SYSTEM STARTUP</div>
+                    <div id="p1" class="core-text">SYSTEM STARTUP</div>
+                    
+                    <div id="p2" style="display:none; text-align:center; z-index:20;">
+                        <div class="core-text" style="font-size:1.2rem;">SERVER READY</div>
+                        <button class="btn-action" onclick="triggerDeny()">CONNECT ></button>
                     </div>
 
-                    <div id="p2" style="display:none; text-align:center;">
-                        <div class="status-text" style="font-size:1rem;">SERVER READY</div>
-                        <button class="btn-connect" onclick="triggerDeny()">CONNECT CONSOLE</button>
+                    <div id="p3" style="display:none; text-align:center; z-index:20;">
+                        <i class="fas fa-exclamation-triangle" style="font-size:3rem; color:red; margin-bottom:10px;"></i>
+                        <div class="core-text" style="color:red;">ACCESS DENIED</div>
+                        <div style="font-size:0.8rem; margin-top:5px; border:1px solid red; padding:2px 5px; display:inline-block;">PROTECTED BY AYUSH</div>
                     </div>
 
-                    <div id="p3" style="display:none;" class="alert">
-                        <i class="fas fa-exclamation-triangle" style="font-size:3rem; margin-bottom:10px;"></i>
-                        <div class="status-text" style="color:red;">ACCESS DENIED</div>
-                        <div style="font-size:0.8rem; margin-top:5px; border:1px solid red; padding:5px;">SERVER PROTECTED BY AYUSH</div>
-                    </div>
-
-                    <div id="p4" style="display:none; flex-direction:column; align-items:center;">
-                        <div class="scanner-ui" id="scanPad">
+                    <div id="p4" style="display:none; flex-direction:column; align-items:center; z-index:20;">
+                        <div class="scanner" id="scanPad">
                             <div class="fingerprint"></div>
                             <div class="laser" id="laser"></div>
                         </div>
-                        <div class="status-text" id="scanText" style="font-size:0.8rem; margin-top:10px;">HOLD TO VERIFY</div>
+                        <div class="core-text" style="font-size:0.9rem; margin-top:10px;">HOLD TO VERIFY</div>
                     </div>
 
-                    <div id="p5" style="display:none; text-align:center;">
-                        <div class="status-text" style="margin-bottom:15px;">ACCESS GRANTED</div>
-                        <a href="page5_2.html" class="btn-start" style="text-decoration:none; font-size:1rem;">PROCEED TO DATABASE ></a>
-                    </div>
+                    <div id="p5" class="core-text" style="display:none;">ACCESS GRANTED</div>
 
                 </div>
+
+                <div id="final-btn-container">
+                    <a href="page5_2.html" class="btn-proceed">PROCEED TO DATABASE ></a>
+                </div>
+
             </div>
         </div>
     </div>
 
     <script>
-        // Particles
-        const partContainer = document.getElementById('particles');
-        setInterval(() => {
-            const el = document.createElement('div');
-            el.className = 'fly-item';
-            el.innerText = Math.random() > 0.5 ? '0101' : 'HEX';
-            let x = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 400 + 300);
-            let y = (Math.random() - 0.5) * 600;
-            el.style.setProperty('--tx', x + 'px'); el.style.setProperty('--ty', y + 'px');
-            el.style.setProperty('--ex', (x * 1.5) + 'px');
-            partContainer.appendChild(el);
-            setTimeout(() => el.remove(), 4000);
-        }, 400);
+        // --- AUDIO SETUP ---
+        const audio = {
+            scan: new Audio('scan.mp3'),
+            alert: new Audio('alert.mp3'),
+            grant: new Audio('granted.mp3')
+        };
+        audio.scan.loop = true;
 
-        // 1. Initialize
+        // --- ROTATION CHECKER ---
+        function checkRotation() {
+            // Check if mobile (screen width < 768px) and portrait (height > width)
+            if (window.innerWidth < 768 && window.innerHeight > window.innerWidth) {
+                document.getElementById('rotate-msg').style.display = 'flex';
+            } else {
+                document.getElementById('rotate-msg').style.display = 'none';
+            }
+        }
+        
+        // Run on load and resize
+        window.addEventListener('load', checkRotation);
+        window.addEventListener('resize', checkRotation);
+
+        function closeRotateMsg() {
+            document.getElementById('rotate-msg').style.display = 'none';
+        }
+
+
+        // --- MAIN LOGIC ---
+
         function initialize() {
+            // Prime audio
             audio.alert.play().catch(()=>{}); audio.alert.pause();
             audio.scan.play().catch(()=>{}); audio.scan.pause();
             audio.grant.play().catch(()=>{}); audio.grant.pause();
@@ -240,19 +370,13 @@
             runSequence();
         }
 
-        // 2. Full Sequence (Slower)
         function runSequence() {
-            const txt = document.getElementById('seqText');
+            const txt = document.getElementById('p1');
             const seq = [
-                "SYSTEM STARTUP",
-                "INITIALIZING...",
-                "HEY!",
-                "WELCOME TO VIOLINA'S DATABASE",
-                "LOADING...",
-                "DECRYPTING DATA...",
-                "BYPASSING FIREWALL...",
-                "TRYING TO CONNECT...",
-                "SERVER READY"
+                "SYSTEM STARTUP", "INITIALIZING...", "HEY!", 
+                "WELCOME TO VIOLINA'S DATABASE", "LOADING...", 
+                "DECRYPTING DATA...", "BYPASSING FIREWALL...", 
+                "TRYING TO CONNECT..."
             ];
             
             let i = 0;
@@ -265,10 +389,9 @@
                     txt.innerText = seq[i];
                     i++;
                 }
-            }, 1800); // 1.8 seconds per message
+            }, 1500);
         }
 
-        // 3. Deny
         function triggerDeny() {
             document.getElementById('p2').style.display = 'none';
             document.getElementById('p3').style.display = 'block';
@@ -280,18 +403,17 @@
             }, 3000);
         }
 
-        // 4. Scan
+        // Scanner Logic
         const pad = document.getElementById('scanPad');
         const laser = document.getElementById('laser');
         let scanTimer;
 
         pad.addEventListener('mousedown', startScan);
         pad.addEventListener('mouseup', stopScan);
-        pad.addEventListener('touchstart', startScan);
+        pad.addEventListener('touchstart', (e) => { e.preventDefault(); startScan(); });
         pad.addEventListener('touchend', stopScan);
 
-        function startScan(e) {
-            e.preventDefault();
+        function startScan() {
             laser.style.display = 'block';
             audio.scan.currentTime = 0; audio.scan.play();
             scanTimer = setTimeout(grantAccess, 2000);
@@ -303,13 +425,17 @@
             audio.scan.pause();
         }
 
-        // 5. Grant
         function grantAccess() {
             audio.scan.pause(); audio.grant.play();
-            // Removed green effect class addition here
             document.getElementById('p4').style.display = 'none';
+            
+            // Show Granted inside circle
             document.getElementById('p5').style.display = 'block';
+            
+            // Show Button below circle
+            document.getElementById('final-btn-container').style.display = 'block';
         }
+
     </script>
 </body>
 </html>
