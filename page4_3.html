@@ -318,20 +318,25 @@
             observer.observe(el);
         });
 
-        // --- 4. AUDIO ---
-        const audio = document.getElementById('bgMusic');
-        audio.volume = 0.5;
+     // --- 4. AUDIO ---
+const audio = document.getElementById('bgMusic');
+audio.volume = 0.5;
 
-        function playAudio() {
-            audio.play().catch(e => console.log("Waiting for interaction"));
-            document.removeEventListener('click', playAudio);
-            document.removeEventListener('touchstart', playAudio);
-            document.removeEventListener('scroll', playAudio);
-        }
+function playAudio() {
+    // This forces the audio to play as soon as the user touches the screen
+    audio.play().then(() => {
+        console.log("Playback started!");
+        // Once it starts playing, we remove the listeners so it doesn't try to restart
+        window.removeEventListener('touchstart', playAudio);
+        window.removeEventListener('click', playAudio);
+    }).catch(e => {
+        console.log("Playback failed:", e);
+    });
+}
 
-        document.addEventListener('click', playAudio);
-        document.addEventListener('touchstart', playAudio);
-        document.addEventListener('scroll', playAudio);
+// iPads prefer 'touchstart' over 'click'
+window.addEventListener('touchstart', playAudio, { once: true });
+window.addEventListener('click', playAudio, { once: true });
 
     </script>
 </body>
