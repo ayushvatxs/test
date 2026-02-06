@@ -12,6 +12,8 @@
         html, body {
             height: 100%; width: 100%; overflow: hidden;
             background-color: #000; color: #fff; font-family: 'Syne', sans-serif;
+            /* Prevent iPad rubber-banding */
+            overscroll-behavior: none;
         }
 
         :root {
@@ -19,6 +21,43 @@
             --gold: #d4af37;
             --black: #050505;
             --yt-red: #ff0000;
+        }
+
+        /* --- 1. ORIENTATION OVERLAY (Horizontal Fix) --- */
+        #rotate-overlay {
+            position: fixed; inset: 0; z-index: 9999;
+            background: #000; color: var(--neon);
+            display: none; /* Hidden by default */
+            flex-direction: column; justify-content: center; align-items: center;
+            text-align: center;
+        }
+        .rotate-icon { font-size: 4rem; margin-bottom: 20px; animation: rotatePhone 2s infinite; }
+        @keyframes rotatePhone { 0% { transform: rotate(0deg); } 50% { transform: rotate(-90deg); } 100% { transform: rotate(0deg); } }
+
+        /* Show only in Landscape */
+        @media (orientation: landscape) {
+            #rotate-overlay { display: flex; }
+        }
+
+        /* --- 2. SOUND TOGGLE POPUP (iPad Unlocker) --- */
+        #sound-popup {
+            position: fixed; bottom: 30px; right: 30px; z-index: 10000;
+            background: rgba(255, 255, 255, 0.95); color: #000;
+            padding: 20px 30px; border-radius: 50px;
+            box-shadow: 0 0 30px var(--neon);
+            display: flex; gap: 15px; align-items: center;
+            transform: translateY(100px); opacity: 0; transition: 0.5s;
+        }
+        #sound-popup.visible { transform: translateY(0); opacity: 1; }
+        
+        .btn-enable-sound {
+            background: var(--neon); color: #fff; border: none;
+            padding: 10px 25px; font-family: 'Anton'; font-size: 1.2rem;
+            cursor: pointer; border-radius: 30px;
+        }
+        .btn-close-popup {
+            background: transparent; border: 1px solid #000; width: 30px; height: 30px;
+            border-radius: 50%; cursor: pointer; font-weight: bold;
         }
 
         /* --- SCROLL CONTAINER --- */
@@ -47,16 +86,13 @@
         .zoom-slow { width: 100%; height: 100%; object-fit: cover; transform: scale(1.1); transition: transform 10s ease-out; }
         .active .zoom-slow { transform: scale(1.0); }
 
-        /* --- FLASH EFFECT (7 Flashes / 2.1s) --- */
+        /* --- FLASH EFFECT --- */
         .flash-effect { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 50; }
-        
         .active .flash-effect.paparazzi { animation: flashBurst 0.3s 7; } 
         .active .flash-effect.single { animation: flashBurst 0.2s 1; }
 
         @keyframes flashBurst { 
-            0% { opacity: 0.8; } 
-            50% { opacity: 0; } 
-            100% { opacity: 0; } 
+            0% { opacity: 0.8; } 50% { opacity: 0; } 100% { opacity: 0; } 
         }
         @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
 
@@ -133,389 +169,421 @@
 </head>
 <body>
 
-<div id="magazine">
-
-    <div class="page active" id="p1" data-sound="sfx_page.mp3">
-        <div class="masthead">ICON</div>
-        <img src="mag_candid2.jpg" class="zoom-slow" style="position:absolute; inset:0; z-index:0; width: 100%; height: 100%; object-fit: cover; object-position: top center;">
-        <div class="cover-lines rise-up" style="position:absolute; bottom:40px; left:30px; z-index:5;">
-            <div style="background: #fff; color: #000; padding: 5px 15px; font-weight: 800; display: inline-block;">SPECIAL EDITION</div>
-            <div class="main-head">She is the<br>Moment.</div>
-            <p style="font-size: 1.2rem; letter-spacing: 1px;">THE INTERNET'S NEW OBSESSION.</p>
-        </div>
+    <div id="rotate-overlay">
+        <div class="rotate-icon">⟳</div>
+        <div style="font-family:'Orbitron'; font-size: 1.5rem;">ROTATE DEVICE<br>FOR BETTER EXPERIENCE</div>
     </div>
 
-    <div class="page" id="p2" data-sound="sfx_page.mp3">
-        <div class="rise-up">
-            <div class="viral-stat">#1</div>
-            <div style="font-size: 2rem; font-weight: 800; margin-bottom: 40px;">TRENDING WORLDWIDE</div>
-            <div class="tweet-box"><strong>@Adam:</strong> "I don't know who she is but I'm obsessed. How is someone this perfect??"</div>
-            <div class="tweet-box"><strong>@FashionDaily:</strong> "Forget the runway. Violina just posted a selfie and ended modeling forever."</div>
-            <div class="tweet-box"><strong>@GenZ Captures:</strong> "If she starts a YouTube channel, it's over for everyone else."</div>
-            <div class="tweet-box"><strong>@TheAlgorithm:</strong> "Violina isn't following the trends; she is the trend."</div>
-        </div>
+    <div id="sound-popup">
+        <div style="font-weight:bold;">ENABLE AUDIO EXPERIENCE?</div>
+        <button class="btn-enable-sound" onclick="unlockAudio()">TURN ON</button>
+        <button class="btn-close-popup" onclick="closePopup()">X</button>
     </div>
 
-    <div class="page" id="p3" data-sound="sfx_page.mp3">
-        <img src="mag_vlog.jpg" class="zoom-slow" style="opacity: 0.6;">
-        <div class="yt-ui rise-up">
-            <span class="rec-tag">● REC 00:04:20</span>
-            <div class="sub-count">10M SUBSCRIBERS</div>
-            <p style="font-size: 1.5rem; color: #ccc;">(Projected Day 1 Stats)</p>
-            <h2 style="margin-top: 20px; font-family:'Bodoni Moda';">"The Vlogs are coming..."</h2>
-        </div>
-    </div>
+    <div id="magazine">
 
-    <div class="page" id="p4" data-sound="sfx_flash.mp3">
-        <div class="flash-effect single"></div>
-        <img src="mag_beauty.jpg" class="zoom-slow">
-        <div class="scan-frame"></div>
-        <div style="position: absolute; bottom: 100px; width: 100%; text-align: center;" class="rise-up">
-            <h1 style="font-family:'Anton'; font-size: 4rem; color: var(--neon);">100%</h1>
-            <p>LETHAL VISUALS. FACE CARD NEVER DECLINES.</p>
-        </div>
-    </div>
-
-    <div class="page" id="p5" data-sound="sfx_shutter.mp3">
-        <div class="flash-effect paparazzi"></div>
-        <img src="mag_candid.jpg" class="pap-img">
-        <img src="mag_carpet.jpg" class="pap-img">
-        <img src="mag_cover.jpg" class="pap-img">
-        <img src="mag_beauty.jpg" class="pap-img">
-        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; color: #000; padding: 20px; font-weight: 800; font-size: 2rem; white-space: nowrap;">
-            SPOTTED EVERYWHERE
-        </div>
-    </div>
-
-    <div class="page" id="p6" data-sound="sfx_page.mp3" style="justify-content: center; align-items: center;">
-        <div class="rise-up" style="font-family: 'Bodoni Moda'; font-size: 4vw; line-height: 1.2; text-align: center; padding: 40px;">
-            "She didn't chase the spotlight.<br>The spotlight got lost looking for her."
-        </div>
-    </div>
-
-    <div class="page" id="p7" data-sound="sfx_page.mp3" style="background: #f0f0f0; color: #000; padding: 40px; display: flex; align-items: flex-end;">
-        <img src="mag_fashion.jpg" style="position: absolute; top:0; right:0; width: 60%; height: 100%; object-fit: cover;">
-        <div style="position: relative; z-index: 2; width: 50%;" class="rise-up">
-            <p style="letter-spacing: 2px; font-weight: 800;">FASHION WEEK</p>
-            <div style="font-family: 'Bodoni Moda'; font-size: 6rem; line-height: 0.8;">The New<br>Standard.</div>
-        </div>
-    </div>
-
-    <div class="page" id="p8" data-sound="sfx_page.mp3" style="justify-content: center; align-items: center;">
-        <div style="border: 1px solid #333; padding: 60px; max-width: 800px; text-align: center; background: #0a0a0a;" class="rise-up">
-            <h2 style="font-family:'Anton'; font-size: 3rem; color: var(--neon); margin-bottom: 20px;">CONSPIRACY THEORY #4</h2>
-            <p style="font-size: 1.5rem; line-height: 1.6;">"Is she actually real? No one can be this photogenic from every angle. Critics suggest she might be a government experiment to lower global stress levels."</p>
-        </div>
-    </div>
-
-    <div class="page" id="p9" data-sound="sfx_page.mp3">
-        <img src="mag_eyes.jpg" class="zoom-slow" style="filter: brightness(0.6) contrast(1.2);">
-        <div style="position: absolute; bottom: 100px; width: 100%; text-align: center;" class="rise-up">
-            <h1 style="font-family:'Bodoni Moda'; font-size: 5rem; color: #fff;">Hypnotic.</h1>
-            <p>DO NOT LOOK DIRECTLY FOR MORE THAN 5 SECONDS.</p>
-        </div>
-    </div>
-
-    <div class="page" id="p10" style="background: #222;" data-sound="sfx_page.mp3">
-        <div class="ticker-wrap" style="top: 40%;">
-            <div class="ticker">
-                UPLOAD COMPLETE  //  VLOG 1 LIVE  //  SERVER CRASH IMMINENT  //  UPLOAD COMPLETE  //  VLOG 1 LIVE  //
+        <div class="page active" id="p1" data-sound="sfx_page.mp3">
+            <div class="masthead">ICON</div>
+            <img src="mag_candid2.jpg" class="zoom-slow" style="position:absolute; inset:0; z-index:0; width: 100%; height: 100%; object-fit: cover; object-position: top center;">
+            <div class="cover-lines rise-up" style="position:absolute; bottom:40px; left:30px; z-index:5;">
+                <div style="background: #fff; color: #000; padding: 5px 15px; font-weight: 800; display: inline-block;">SPECIAL EDITION</div>
+                <div class="main-head">She is the<br>Moment.</div>
+                <p style="font-size: 1.2rem; letter-spacing: 1px;">THE INTERNET'S NEW OBSESSION.</p>
             </div>
         </div>
-        <div style="text-align: center; margin-top: 50px;" class="rise-up">
-            <h1 style="font-size: 4rem; font-weight: 800;">THE YOUTUBE TAKEOVER</h1>
-            <p style="color: #888;">(And changing ours in the process)</p>
-        </div>
-    </div>
 
-    <div class="page" id="p11" style="justify-content: center; align-items: center; background: #fff; color: #000;" data-sound="sfx_page.mp3">
-        <div class="rise-up" style="text-align: center;">
-            <div style="font-family:'Anton'; font-size: 10rem; line-height: 0.8;">GOAT</div>
-            <p style="font-size: 1.5rem; letter-spacing: 5px; margin-top: 20px;">GREATEST OF ALL TIME</p>
+        <div class="page" id="p2" data-sound="sfx_page.mp3">
+            <div class="rise-up">
+                <div class="viral-stat">#1</div>
+                <div style="font-size: 2rem; font-weight: 800; margin-bottom: 40px;">TRENDING WORLDWIDE</div>
+                <div class="tweet-box"><strong>@Adam:</strong> "I don't know who she is but I'm obsessed. How is someone this perfect??"</div>
+                <div class="tweet-box"><strong>@FashionDaily:</strong> "Forget the runway. Violina just posted a selfie and ended modeling forever."</div>
+                <div class="tweet-box"><strong>@GenZ Captures:</strong> "If she starts a YouTube channel, it's over for everyone else."</div>
+                <div class="tweet-box"><strong>@TheAlgorithm:</strong> "Violina isn't following the trends; she is the trend."</div>
+            </div>
         </div>
-    </div>
 
-    <div class="page" id="p12" data-sound="sfx_page.mp3">
-        <img src="mag_bw.jpg" class="zoom-slow" style="filter: grayscale(100%);">
-        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 4px solid #fff; padding: 40px;" class="rise-up">
-            <h1 style="font-family:'Bodoni Moda'; font-size: 3rem;">CINEMA.</h1>
+        <div class="page" id="p3" data-sound="sfx_page.mp3">
+            <img src="mag_vlog.jpg" class="zoom-slow" style="opacity: 0.6;">
+            <div class="yt-ui rise-up">
+                <span class="rec-tag">● REC 00:04:20</span>
+                <div class="sub-count">10M SUBSCRIBERS</div>
+                <p style="font-size: 1.5rem; color: #ccc;">(Projected Day 1 Stats)</p>
+                <h2 style="margin-top: 20px; font-family:'Bodoni Moda';">"The Vlogs are coming..."</h2>
+            </div>
         </div>
-    </div>
 
-    <div class="page" id="p13" style="background: #0a0a0a; padding: 60px;" data-sound="sfx_page.mp3">
-        <div class="rise-up">
-            <h2 style="font-family:'Anton'; font-size: 4rem; color: #333;">INFLUENCE</h2>
-            <h2 style="font-family:'Anton'; font-size: 4rem; color: #555;">INFLUENCE</h2>
-            <h2 style="font-family:'Anton'; font-size: 4rem; color: #777;">INFLUENCE</h2>
-            <h2 style="font-family:'Anton'; font-size: 4rem; color: #fff;">VIOLINA</h2>
-            <p style="margin-top: 30px; font-size: 1.2rem; max-width: 500px;">She wears a hoodie? Hoodies sell out. She drinks tea? Coffee stocks crash. This isn't influence, it's power.</p>
+        <div class="page" id="p4" data-sound="sfx_flash.mp3">
+            <div class="flash-effect single"></div>
+            <img src="mag_beauty.jpg" class="zoom-slow">
+            <div class="scan-frame"></div>
+            <div style="position: absolute; bottom: 100px; width: 100%; text-align: center;" class="rise-up">
+                <h1 style="font-family:'Anton'; font-size: 4rem; color: var(--neon);">100%</h1>
+                <p>LETHAL VISUALS. FACE CARD NEVER DECLINES.</p>
+            </div>
         </div>
-    </div>
 
-    <div class="page" id="p14" style="background: var(--neon); color: #fff; justify-content: center; align-items: center;" data-sound="sfx_page.mp3">
-        <div class="rise-up" style="text-align: center;">
-            <h1 style="font-size: 4rem; font-weight: 800;">WHO IS SHE?</h1>
-            <p style="font-size: 1.5rem;">The world wants to know everything.</p>
+        <div class="page" id="p5" data-sound="sfx_shutter.mp3">
+            <div class="flash-effect paparazzi"></div>
+            <img src="mag_candid.jpg" class="pap-img">
+            <img src="mag_carpet.jpg" class="pap-img">
+            <img src="mag_cover.jpg" class="pap-img">
+            <img src="mag_beauty.jpg" class="pap-img">
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; color: #000; padding: 20px; font-weight: 800; font-size: 2rem; white-space: nowrap;">
+                SPOTTED EVERYWHERE
+            </div>
         </div>
-    </div>
 
-    <div class="page" id="p15" data-sound="sfx_page.mp3">
-        <img src="mag_cover.jpg" style="width:100%; height:60%; object-fit:cover;">
-        <div class="rise-up" style="padding: 40px; text-align: center;">
-            <div style="font-family:'Anton'; font-size: 3rem; color: var(--gold);">TIMES SQUARE</div>
-            <p style="font-size: 1.2rem;">All Screens. One Face.</p>
+        <div class="page" id="p6" data-sound="sfx_page.mp3" style="justify-content: center; align-items: center;">
+            <div class="rise-up" style="font-family: 'Bodoni Moda'; font-size: 4vw; line-height: 1.2; text-align: center; padding: 40px;">
+                "She didn't chase the spotlight.<br>The spotlight got lost looking for her."
+            </div>
         </div>
-    </div>
 
-    <div class="page" id="p16" data-sound="sfx_page.mp3" style="background: #fff; color: #000; justify-content: center; align-items: center;">
-        <div style="text-align: center;" class="rise-up">
-            <div style="font-family: 'Bodoni Moda'; font-size: 4rem; margin-bottom: 20px; letter-spacing: -2px;">GUCCI</div>
-            <img src="mag_luxury.jpg" style="width: 300px; margin: 20px 0;">
-            <div style="font-size: 1.5rem; letter-spacing: 5px;">THE NEW MUSE</div>
-            <p style="font-family:'Bodoni Moda'; margin-top: 15px; color: #555; max-width: 300px; margin-left: auto; margin-right: auto;">"The face of the new century. Timeless. Elegant. Unapologetic. The Violina Collection."</p>
+        <div class="page" id="p7" data-sound="sfx_page.mp3" style="background: #f0f0f0; color: #000; padding: 40px; display: flex; align-items: flex-end;">
+            <img src="mag_fashion.jpg" style="position: absolute; top:0; right:0; width: 60%; height: 100%; object-fit: cover;">
+            <div style="position: relative; z-index: 2; width: 50%;" class="rise-up">
+                <p style="letter-spacing: 2px; font-weight: 800;">FASHION WEEK</p>
+                <div style="font-family: 'Bodoni Moda'; font-size: 6rem; line-height: 0.8;">The New<br>Standard.</div>
+            </div>
         </div>
-    </div>
 
-    <div class="page" id="p17" data-sound="sfx_shutter.mp3">
-        <div class="flash-effect paparazzi"></div>
-        <img src="mag_carpet.jpg" class="zoom-slow" style="opacity: 0.7;">
-        <div style="position: absolute; bottom: 15%; left: 5%;" class="rise-up">
-            <div style="font-family: 'Anton'; font-size: 6rem; line-height: 0.8; color: var(--gold); mix-blend-mode: exclusion;">MET GALA</div>
-            <p style="font-size: 1.2rem; margin-top: 10px; max-width: 80%;">"Critics are speechless. The red dress that stopped the show."</p>
+        <div class="page" id="p8" data-sound="sfx_page.mp3" style="justify-content: center; align-items: center;">
+            <div style="border: 1px solid #333; padding: 60px; max-width: 800px; text-align: center; background: #0a0a0a;" class="rise-up">
+                <h2 style="font-family:'Anton'; font-size: 3rem; color: var(--neon); margin-bottom: 20px;">CONSPIRACY THEORY #4</h2>
+                <p style="font-size: 1.5rem; line-height: 1.6;">"Is she actually real? No one can be this photogenic from every angle. Critics suggest she might be a government experiment to lower global stress levels."</p>
+            </div>
         </div>
-    </div>
 
-    <div class="page" id="p18" data-sound="sfx_page.mp3" style="background: #f4f4f4; color: #000;">
-        <div style="padding: 40px;" class="rise-up">
-            <h1 style="font-family:'Anton'; font-size: 4rem;">"UNBOTHERED"</h1>
-            <p>Paparazzi caught her getting tea. She didn't even blink.</p>
+        <div class="page" id="p9" data-sound="sfx_page.mp3">
+            <img src="mag_eyes.jpg" class="zoom-slow" style="filter: brightness(0.6) contrast(1.2);">
+            <div style="position: absolute; bottom: 100px; width: 100%; text-align: center;" class="rise-up">
+                <h1 style="font-family:'Bodoni Moda'; font-size: 5rem; color: #fff;">Hypnotic.</h1>
+                <p>DO NOT LOOK DIRECTLY FOR MORE THAN 5 SECONDS.</p>
+            </div>
         </div>
-        <img src="mag_candid2.jpg" style="flex-grow: 1; object-fit: cover; filter: sepia(30%);">
-    </div>
 
-    <div class="page" id="p19" data-sound="sfx_page.mp3">
-        <img src="mag_eyes.jpg" class="zoom-slow" style="filter: contrast(1.3);">
-        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 1px solid #fff; padding: 20px;" class="rise-up">
-            <div style="font-family:'Bodoni Moda'; font-size: 2rem;">"A gaze that starts wars."</div>
-        </div>
-    </div>
-
-    <div class="page" id="p20">
-        <div class="yt-header">
-            <div class="yt-logo"><span>▼</span>YouTube Trending</div>
-        </div>
-        <div class="trending-grid rise-up" style="padding: 0 40px;">
-            <div class="video-card">
-                <div class="rank">1</div>
-                <img src="mag_vlog.jpg" class="vid-thumb">
-                <div class="vid-info">
-                    <h3>A Day In My Life (Revealing Secrets)</h3>
-                    <p>Violina Vlogs • 45M views • 2 hours ago</p>
+        <div class="page" id="p10" style="background: #222;" data-sound="sfx_page.mp3">
+            <div class="ticker-wrap" style="top: 40%;">
+                <div class="ticker">
+                    UPLOAD COMPLETE  //  VLOG 1 LIVE  //  SERVER CRASH IMMINENT  //  UPLOAD COMPLETE  //  VLOG 1 LIVE  //
                 </div>
             </div>
-            <div class="video-card">
-                <div class="rank">2</div>
-                <img src="mag_fashion.jpg" class="vid-thumb">
-                <div class="vid-info">
-                    <h3>My Gucci Photoshoot (Behind Scenes)</h3>
-                    <p>Violina Vlogs • 22M views • 5 hours ago</p>
-                </div>
+            <div style="text-align: center; margin-top: 50px;" class="rise-up">
+                <h1 style="font-size: 4rem; font-weight: 800;">THE YOUTUBE TAKEOVER</h1>
+                <p style="color: #888;">(And changing ours in the process)</p>
             </div>
-            <div class="video-card">
-                <div class="rank">3</div>
-                <img src="mag_candid.jpg" class="vid-thumb">
-                <div class="vid-info">
-                    <h3>Q&A: Addressing the Rumors</h3>
-                    <p>Violina Vlogs • 18M views • 1 day ago</p>
-                </div>
+        </div>
+
+        <div class="page" id="p11" style="justify-content: center; align-items: center; background: #fff; color: #000;" data-sound="sfx_page.mp3">
+            <div class="rise-up" style="text-align: center;">
+                <div style="font-family:'Anton'; font-size: 10rem; line-height: 0.8;">GOAT</div>
+                <p style="font-size: 1.5rem; letter-spacing: 5px; margin-top: 20px;">GREATEST OF ALL TIME</p>
             </div>
-            <div class="video-card">
-                <div class="rank">4</div>
-                <img src="mag_beauty.jpg" class="vid-thumb">
-                <div class="vid-info">
-                    <h3>Skincare Routine (Finally)</h3>
-                    <p>Violina Vlogs • 15M views • 1 day ago</p>
-                </div>
+        </div>
+
+        <div class="page" id="p12" data-sound="sfx_page.mp3">
+            <img src="mag_bw.jpg" class="zoom-slow" style="filter: grayscale(100%);">
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 4px solid #fff; padding: 40px;" class="rise-up">
+                <h1 style="font-family:'Bodoni Moda'; font-size: 3rem;">CINEMA.</h1>
             </div>
-            <div class="video-card">
-                <div class="rank">5</div>
-                <img src="mag_carpet.jpg" class="vid-thumb">
-                <div class="vid-info">
-                    <h3>Met Gala Preparation Vlog</h3>
-                    <p>Violina Vlogs • 12M views • 2 days ago</p>
-                </div>
+        </div>
+
+        <div class="page" id="p13" style="background: #0a0a0a; padding: 60px;" data-sound="sfx_page.mp3">
+            <div class="rise-up">
+                <h2 style="font-family:'Anton'; font-size: 4rem; color: #333;">INFLUENCE</h2>
+                <h2 style="font-family:'Anton'; font-size: 4rem; color: #555;">INFLUENCE</h2>
+                <h2 style="font-family:'Anton'; font-size: 4rem; color: #777;">INFLUENCE</h2>
+                <h2 style="font-family:'Anton'; font-size: 4rem; color: #fff;">VIOLINA</h2>
+                <p style="margin-top: 30px; font-size: 1.2rem; max-width: 500px;">She wears a hoodie? Hoodies sell out. She drinks tea? Coffee stocks crash. This isn't influence, it's power.</p>
             </div>
-             <div class="video-card">
-                <div class="rank">6</div>
-                <img src="mag_cover.jpg" class="vid-thumb">
-                <div class="vid-info">
-                    <h3>Reacting to Fan Edits</h3>
-                    <p>Violina Vlogs • 10M views • 2 days ago</p>
+        </div>
+
+        <div class="page" id="p14" style="background: var(--neon); color: #fff; justify-content: center; align-items: center;" data-sound="sfx_page.mp3">
+            <div class="rise-up" style="text-align: center;">
+                <h1 style="font-size: 4rem; font-weight: 800;">WHO IS SHE?</h1>
+                <p style="font-size: 1.5rem;">The world wants to know everything.</p>
+            </div>
+        </div>
+
+        <div class="page" id="p15" data-sound="sfx_page.mp3">
+            <img src="mag_cover.jpg" style="width:100%; height:60%; object-fit:cover;">
+            <div class="rise-up" style="padding: 40px; text-align: center;">
+                <div style="font-family:'Anton'; font-size: 3rem; color: var(--gold);">TIMES SQUARE</div>
+                <p style="font-size: 1.2rem;">All Screens. One Face.</p>
+            </div>
+        </div>
+
+        <div class="page" id="p16" data-sound="sfx_page.mp3" style="background: #fff; color: #000; justify-content: center; align-items: center;">
+            <div style="text-align: center;" class="rise-up">
+                <div style="font-family: 'Bodoni Moda'; font-size: 4rem; margin-bottom: 20px; letter-spacing: -2px;">GUCCI</div>
+                <img src="mag_luxury.jpg" style="width: 300px; margin: 20px 0;">
+                <div style="font-size: 1.5rem; letter-spacing: 5px;">THE NEW MUSE</div>
+                <p style="font-family:'Bodoni Moda'; margin-top: 15px; color: #555; max-width: 300px; margin-left: auto; margin-right: auto;">"The face of the new century. Timeless. Elegant. Unapologetic. The Violina Collection."</p>
+            </div>
+        </div>
+
+        <div class="page" id="p17" data-sound="sfx_shutter.mp3">
+            <div class="flash-effect paparazzi"></div>
+            <img src="mag_carpet.jpg" class="zoom-slow" style="opacity: 0.7;">
+            <div style="position: absolute; bottom: 15%; left: 5%;" class="rise-up">
+                <div style="font-family: 'Anton'; font-size: 6rem; line-height: 0.8; color: var(--gold); mix-blend-mode: exclusion;">MET GALA</div>
+                <p style="font-size: 1.2rem; margin-top: 10px; max-width: 80%;">"Critics are speechless. The red dress that stopped the show."</p>
+            </div>
+        </div>
+
+        <div class="page" id="p18" data-sound="sfx_page.mp3" style="background: #f4f4f4; color: #000;">
+            <div style="padding: 40px;" class="rise-up">
+                <h1 style="font-family:'Anton'; font-size: 4rem;">"UNBOTHERED"</h1>
+                <p>Paparazzi caught her getting tea. She didn't even blink.</p>
+            </div>
+            <img src="mag_candid2.jpg" style="flex-grow: 1; object-fit: cover; filter: sepia(30%);">
+        </div>
+
+        <div class="page" id="p19" data-sound="sfx_page.mp3">
+            <img src="mag_eyes.jpg" class="zoom-slow" style="filter: contrast(1.3);">
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 1px solid #fff; padding: 20px;" class="rise-up">
+                <div style="font-family:'Bodoni Moda'; font-size: 2rem;">"A gaze that starts wars."</div>
+            </div>
+        </div>
+
+        <div class="page" id="p20">
+            <div class="yt-header">
+                <div class="yt-logo"><span>▼</span>YouTube Trending</div>
+            </div>
+            <div class="trending-grid rise-up" style="padding: 0 40px;">
+                <div class="video-card">
+                    <div class="rank">1</div>
+                    <img src="mag_vlog.jpg" class="vid-thumb">
+                    <div class="vid-info">
+                        <h3>A Day In My Life (Revealing Secrets)</h3>
+                        <p>Violina Vlogs • 45M views • 2 hours ago</p>
+                    </div>
+                </div>
+                <div class="video-card">
+                    <div class="rank">2</div>
+                    <img src="mag_fashion.jpg" class="vid-thumb">
+                    <div class="vid-info">
+                        <h3>My Gucci Photoshoot (Behind Scenes)</h3>
+                        <p>Violina Vlogs • 22M views • 5 hours ago</p>
+                    </div>
+                </div>
+                <div class="video-card">
+                    <div class="rank">3</div>
+                    <img src="mag_candid.jpg" class="vid-thumb">
+                    <div class="vid-info">
+                        <h3>Q&A: Addressing the Rumors</h3>
+                        <p>Violina Vlogs • 18M views • 1 day ago</p>
+                    </div>
+                </div>
+                <div class="video-card">
+                    <div class="rank">4</div>
+                    <img src="mag_beauty.jpg" class="vid-thumb">
+                    <div class="vid-info">
+                        <h3>Skincare Routine (Finally)</h3>
+                        <p>Violina Vlogs • 15M views • 1 day ago</p>
+                    </div>
+                </div>
+                <div class="video-card">
+                    <div class="rank">5</div>
+                    <img src="mag_carpet.jpg" class="vid-thumb">
+                    <div class="vid-info">
+                        <h3>Met Gala Preparation Vlog</h3>
+                        <p>Violina Vlogs • 12M views • 2 days ago</p>
+                    </div>
+                </div>
+                 <div class="video-card">
+                    <div class="rank">6</div>
+                    <img src="mag_cover.jpg" class="vid-thumb">
+                    <div class="vid-info">
+                        <h3>Reacting to Fan Edits</h3>
+                        <p>Violina Vlogs • 10M views • 2 days ago</p>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="page" id="p21">
-        <div class="phone-frame rise-up">
-            <div style="padding: 15px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-weight:bold;">violina_official</span>
-                <span>...</span>
+        <div class="page" id="p21">
+            <div class="phone-frame rise-up">
+                <div style="padding: 15px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight:bold;">violina_official</span>
+                    <span>...</span>
+                </div>
+                <div class="insta-stats">
+                    <div class="stat-box"><div class="stat-num">582</div><div class="stat-label">Posts</div></div>
+                    <div class="stat-box"><div class="stat-num">100M</div><div class="stat-label">Followers</div></div>
+                    <div class="stat-box"><div class="stat-num">0</div><div class="stat-label">Following</div></div>
+                </div>
+                <div style="padding: 10px; display:flex; gap:10px; overflow-x: auto; flex-shrink: 0;">
+                    <div class="insta-story"><img src="mag_cover.jpg"></div>
+                    <div class="insta-story"><img src="mag_beauty.jpg"></div>
+                    <div class="insta-story"><img src="mag_fashion.jpg"></div>
+                    <div class="insta-story"><img src="mag_vlog.jpg"></div>
+                </div>
+                <div class="insta-grid">
+                    <img src="mag_fashion.jpg" class="insta-square">
+                    <img src="mag_candid.jpg" class="insta-square">
+                    <img src="mag_beauty.jpg" class="insta-square">
+                    <img src="mag_cover.jpg" class="insta-square">
+                    <img src="mag_vlog.jpg" class="insta-square">
+                    <img src="mag_candid2.jpg" class="insta-square">
+                    <img src="mag_luxury.jpg" class="insta-square">
+                    <img src="mag_bw.jpg" class="insta-square">
+                    <img src="mag_eyes.jpg" class="insta-square">
+                    <img src="mag_carpet.jpg" class="insta-square">
+                    <img src="mag_candid.jpg" class="insta-square">
+                    <img src="mag_cover.jpg" class="insta-square">
+                </div>
             </div>
-            <div class="insta-stats">
-                <div class="stat-box"><div class="stat-num">582</div><div class="stat-label">Posts</div></div>
-                <div class="stat-box"><div class="stat-num">100M</div><div class="stat-label">Followers</div></div>
-                <div class="stat-box"><div class="stat-num">0</div><div class="stat-label">Following</div></div>
-            </div>
-            <div style="padding: 10px; display:flex; gap:10px; overflow-x: auto; flex-shrink: 0;">
-                <div class="insta-story"><img src="mag_cover.jpg"></div>
-                <div class="insta-story"><img src="mag_beauty.jpg"></div>
-                <div class="insta-story"><img src="mag_fashion.jpg"></div>
-                <div class="insta-story"><img src="mag_vlog.jpg"></div>
-            </div>
-            <div class="insta-grid">
-                <img src="mag_fashion.jpg" class="insta-square">
-                <img src="mag_candid.jpg" class="insta-square">
-                <img src="mag_beauty.jpg" class="insta-square">
-                <img src="mag_cover.jpg" class="insta-square">
-                <img src="mag_vlog.jpg" class="insta-square">
-                <img src="mag_candid2.jpg" class="insta-square">
-                <img src="mag_luxury.jpg" class="insta-square">
-                <img src="mag_bw.jpg" class="insta-square">
-                <img src="mag_eyes.jpg" class="insta-square">
-                <img src="mag_carpet.jpg" class="insta-square">
-                <img src="mag_candid.jpg" class="insta-square">
-                <img src="mag_cover.jpg" class="insta-square">
+            <div style="margin-top:20px; font-family:'Anton'; font-size:2rem; text-align:center;">SHE IS THE FEED.</div>
+        </div>
+
+        <div class="page" id="p23" data-sound="sfx_notification.mp3">
+            <div class="spot-card rise-up">
+                <div style="font-weight: bold; margin-bottom: 20px;">PLAYING FROM ARTIST</div>
+                <img src="mag_cover.jpg" class="spot-img">
+                <div style="font-size: 2rem; font-weight: bold;">"The Muse"</div>
+                <div style="color: #bbb;">Violina • Top Hits</div>
+                <div class="spot-bar"><div class="spot-fill"></div></div>
+                <div style="font-size: 3rem;">⏮ ⏸ ⏭</div>
             </div>
         </div>
-        <div style="margin-top:20px; font-family:'Anton'; font-size:2rem; text-align:center;">SHE IS THE FEED.</div>
-    </div>
 
-    <div class="page" id="p23" data-sound="sfx_notification.mp3">
-        <div class="spot-card rise-up">
-            <div style="font-weight: bold; margin-bottom: 20px;">PLAYING FROM ARTIST</div>
-            <img src="mag_cover.jpg" class="spot-img">
-            <div style="font-size: 2rem; font-weight: bold;">"The Muse"</div>
-            <div style="color: #bbb;">Violina • Top Hits</div>
-            <div class="spot-bar"><div class="spot-fill"></div></div>
-            <div style="font-size: 3rem;">⏮ ⏸ ⏭</div>
-        </div>
-    </div>
-
-    <div class="page" id="p24" data-sound="sfx_burst">
-        <div class="backdrop"></div>
-        <div class="notif-stack rise-up">
-            <div style="font-size: 5rem; text-align: center; margin-bottom: 40px; font-weight: 300;">11:11</div>
-            <div class="notif">
-                <div class="notif-icon" style="background: red;"></div>
-                <div><strong>YouTube</strong><br>Violina just uploaded: "My Truth"</div>
-            </div>
-            <div class="notif">
-                <div class="notif-icon" style="background: linear-gradient(45deg, purple, orange);"></div>
-                <div><strong>Instagram</strong><br>@violina_official started a live video</div>
-            </div>
-            <div class="notif">
-                <div class="notif-icon" style="background: #fff; color: #000; text-align: center; font-weight: bold;">N</div>
-                <div><strong>News</strong><br>TRENDING: Who is the girl in the red dress?</div>
+        <div class="page" id="p24" data-sound="sfx_burst">
+            <div class="backdrop"></div>
+            <div class="notif-stack rise-up">
+                <div style="font-size: 5rem; text-align: center; margin-bottom: 40px; font-weight: 300;">11:11</div>
+                <div class="notif">
+                    <div class="notif-icon" style="background: red;"></div>
+                    <div><strong>YouTube</strong><br>Violina just uploaded: "My Truth"</div>
+                </div>
+                <div class="notif">
+                    <div class="notif-icon" style="background: linear-gradient(45deg, purple, orange);"></div>
+                    <div><strong>Instagram</strong><br>@violina_official started a live video</div>
+                </div>
+                <div class="notif">
+                    <div class="notif-icon" style="background: #fff; color: #000; text-align: center; font-weight: bold;">N</div>
+                    <div><strong>News</strong><br>TRENDING: Who is the girl in the red dress?</div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="page" id="p25" style="background: #fff; color: #000; justify-content: center; align-items: center; padding: 40px;" data-sound="sfx_page.mp3">
-        <div class="rise-up" style="text-align: center; width: 100%;">
-            <div style="font-family:'Anton'; font-size: 2rem; color: #000;">V.ERA</div>
-            <h1 style="font-size: 3rem; font-family:'Bodoni Moda'; margin: 30px 0;">The Show Must Go On.</h1>
-            
-            <button class="next-btn" onclick="window.location.href='page8.html'">ENTER THE MUSICAL PORTRAIT ></button>
-            <button class="top-btn" onclick="document.getElementById('magazine').scrollTo(0,0);">↑ BACK TO TOP</button>
-            
-            <div style="font-size: 0.8rem; color: #888; margin-top: 50px;">VOL 1 // THE VIRAL ISSUE // 2025</div>
-        </div>
-    </div>
-
-</div>
-
-<script>
-    /* --- STABLE AUDIO ENGINE --- */
-    const audioLibrary = {
-        'sfx_page.mp3': new Audio('sfx_page.mp3'),
-        'sfx_shutter.mp3': new Audio('sfx_shutter.mp3'),
-        'sfx_flash.mp3': new Audio('sfx_flash.mp3'),
-        'sfx_notification.mp3': new Audio('sfx_notification.mp3')
-    };
-
-    // Preload audio objects
-    const audioCache = {};
-    Object.keys(audioLibrary).forEach(key => {
-        audioCache[key] = audioLibrary[key];
-    });
-
-    let burstTimeouts = [];
-
-    // SILENT UNLOCK: Runs once on first touch. Volume 0.0001 (Imperceptible but active)
-    function unlockAudio() {
-        Object.values(audioCache).forEach(audio => {
-            audio.volume = 0.0001; 
-            const playPromise = audio.play();
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    audio.pause();
-                    audio.currentTime = 0;
-                    audio.volume = 1.0; 
-                }).catch(() => {});
-            }
-        });
-        window.removeEventListener('touchstart', unlockAudio);
-        window.removeEventListener('click', unlockAudio);
-    }
-
-    window.addEventListener('touchstart', unlockAudio);
-    window.addEventListener('click', unlockAudio);
-
-    function playAudio(key) {
-        let audioKey = key;
-        let isBurst = (key === 'sfx_burst');
-        
-        if (isBurst) audioKey = 'sfx_notification.mp3';
-
-        const baseAudio = audioCache[audioKey];
-        if (!baseAudio) return;
-
-        // Clear previous bursts
-        burstTimeouts.forEach(id => clearTimeout(id));
-        burstTimeouts = [];
-
-        if (isBurst) {
-            // Burst Logic: Clone nodes for overlap
-            const s1 = baseAudio.cloneNode(); s1.volume = 1.0; s1.play().catch(()=>{});
-            burstTimeouts.push(setTimeout(() => { const s2 = baseAudio.cloneNode(); s2.volume = 1.0; s2.play().catch(()=>{}); }, 250));
-            burstTimeouts.push(setTimeout(() => { const s3 = baseAudio.cloneNode(); s3.volume = 1.0; s3.play().catch(()=>{}); }, 500));
-        } else {
-            // Normal Logic: Clone node (Corrects "Page Turn" cut-off issue)
-            const clone = baseAudio.cloneNode();
-            clone.volume = 1.0;
-            clone.play().catch((e) => {});
-        }
-    }
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('active');
+        <div class="page" id="p25" style="background: #fff; color: #000; justify-content: center; align-items: center; padding: 40px;" data-sound="sfx_page.mp3">
+            <div class="rise-up" style="text-align: center; width: 100%;">
+                <div style="font-family:'Anton'; font-size: 2rem; color: #000;">V.ERA</div>
+                <h1 style="font-size: 3rem; font-family:'Bodoni Moda'; margin: 30px 0;">The Show Must Go On.</h1>
                 
-                // Play Sound
-                const soundFile = entry.target.getAttribute('data-sound');
-                if (soundFile) {
-                    playAudio(soundFile);
-                }
-            } else {
-                entry.target.classList.remove('active');
-            }
-        });
-    }, { threshold: 0.2 }); // Trigger early to avoid lag
+                <button class="next-btn" onclick="window.location.href='page8.html'">ENTER THE MUSICAL PORTRAIT ></button>
+                <button class="top-btn" onclick="document.getElementById('magazine').scrollTo(0,0);">↑ BACK TO TOP</button>
+                
+                <div style="font-size: 0.8rem; color: #888; margin-top: 50px;">VOL 1 // THE VIRAL ISSUE // 2025</div>
+            </div>
+        </div>
 
-    document.querySelectorAll('.page').forEach(page => { observer.observe(page); });
-</script>
+    </div>
+
+    <script>
+        // --- 1. SINGLE AUDIO MANAGER ---
+        // This ensures only ONE sound plays at a time.
+        
+        let audioEnabled = false;
+        let currentAudio = null;
+        let burstTimeouts = [];
+
+        // Define your exact files
+        const soundMap = {
+            'sfx_page.mp3': 'sfx_page.mp3',
+            'sfx_shutter.mp3': 'sfx_shutter.mp3',
+            'sfx_flash.mp3': 'sfx_flash.mp3',
+            'sfx_notification.mp3': 'sfx_notification.mp3',
+            'sfx_burst': 'sfx_notification.mp3' // Special case
+        };
+
+        // --- 2. USER INTERACTION: ENABLE SOUND ---
+        function unlockAudio() {
+            // Play silent buffer to unlock browser audio engine
+            const silent = new Audio(soundMap['sfx_page.mp3']);
+            silent.volume = 0.01;
+            silent.play().then(() => {
+                silent.pause();
+                audioEnabled = true;
+                closePopup();
+                // Play first page sound immediately if we are on P1
+                playOneSound('sfx_page.mp3'); 
+            }).catch(e => console.log("Audio still locked"));
+        }
+
+        function closePopup() {
+            document.getElementById('sound-popup').classList.remove('visible');
+        }
+
+        // Show popup after a slight delay
+        setTimeout(() => {
+            document.getElementById('sound-popup').classList.add('visible');
+        }, 1000);
+
+
+        // --- 3. SMART PLAYER LOGIC ---
+        function playOneSound(key) {
+            if (!audioEnabled) return;
+
+            // STOP Previous Sound
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
+            
+            // CLEAR Previous Bursts
+            burstTimeouts.forEach(t => clearTimeout(t));
+            burstTimeouts = [];
+
+            // IDENTIFY New Sound
+            let filename = soundMap[key];
+            if (!filename) return;
+
+            // PLAY New Sound
+            currentAudio = new Audio(filename);
+            currentAudio.volume = 1.0;
+            currentAudio.play().catch(e => {});
+
+            // SPECIAL BURST LOGIC (For Page 24)
+            if (key === 'sfx_burst') {
+                // Schedule overlapping sounds (Burst)
+                burstTimeouts.push(setTimeout(() => {
+                    let s2 = new Audio(filename); s2.play().catch(()=>{});
+                }, 200));
+                burstTimeouts.push(setTimeout(() => {
+                    let s3 = new Audio(filename); s3.play().catch(()=>{});
+                }, 400));
+            }
+        }
+
+
+        // --- 4. SCROLL OBSERVER ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    
+                    // GET SOUND KEY
+                    const soundKey = entry.target.getAttribute('data-sound');
+                    if (soundKey) {
+                        playOneSound(soundKey);
+                    } else {
+                        // If page has no sound, stop previous anyway (silence)
+                        if(currentAudio) {
+                            currentAudio.pause();
+                        }
+                    }
+                } else {
+                    entry.target.classList.remove('active');
+                }
+            });
+        }, { threshold: 0.4 }); // Wait until 40% of page is visible to avoid accidental triggers
+
+        document.querySelectorAll('.page').forEach(page => { observer.observe(page); });
+
+    </script>
 
 </body>
 </html>
