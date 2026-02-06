@@ -44,7 +44,7 @@
 
         @keyframes fall { to { transform: translateY(110vh); } }
 
-        /* --- THE MARQUEE BOARD (BIGGER) --- */
+        /* --- THE MARQUEE BOARD (ADJUSTED SIZE) --- */
         .marquee-board {
             position: relative; z-index: 10;
             background: rgba(0,0,0,0.9); 
@@ -54,10 +54,10 @@
             box-shadow: 0 0 50px #000, 0 0 30px rgba(212, 175, 55, 0.15);
             text-align: center;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            margin-bottom: 80px; 
+            margin-bottom: 40px; /* Reduced margin here, added to button instead */
             
-            /* SCALED UP SIZE (1.5x) */
-            transform: scale(1.5); 
+            /* SCALED DOWN SLIGHTLY (1.3x instead of 1.5x) */
+            transform: scale(1.3); 
         }
 
         .marquee-board::before {
@@ -82,11 +82,10 @@
             white-space: nowrap;
         }
 
-        /* 2. VIOLINA'S BIRTHDAY (Replaces text) */
+        /* 2. VIOLINA'S BIRTHDAY */
         .text-final {
             position: absolute;
             font-family: 'Monoton', cursive;
-            /* Font size adjusted to fit long text */
             font-size: 2.2rem; 
             color: #d4af37;
             text-transform: uppercase;
@@ -117,7 +116,7 @@
             white-space: nowrap; z-index: 20;
         }
 
-        /* --- BUTTON --- */
+        /* --- BUTTON (MOVED DOWN) --- */
         .enter-btn {
             position: relative; z-index: 10;
             background: rgba(0,0,0,0.5);
@@ -131,6 +130,9 @@
             opacity: 0;
             animation: fade-in 1s forwards 5.5s;
             transform: scale(0.9);
+            
+            /* ADDED MARGIN TO PUSH DOWN */
+            margin-top: 60px; 
         }
         .enter-btn:hover { background: #d4af37; color: #000; border-color: #d4af37; box-shadow: 0 0 25px #d4af37; }
 
@@ -147,10 +149,12 @@
 
         /* Mobile Adjustments */
         @media (max-width: 600px) {
-            .marquee-board { transform: scale(1.1); margin-bottom: 50px; }
+            /* Adjusted scale for mobile too */
+            .marquee-board { transform: scale(1.0); margin-bottom: 30px; } 
             .text-initial { font-size: 1.2rem; }
-            .text-final { font-size: 1.5rem; } /* Smaller for mobile to fit text */
+            .text-final { font-size: 1.5rem; } 
             .sold-out { font-size: 1.8rem; bottom: -20px; right: -20px; }
+            .enter-btn { margin-top: 40px; }
         }
     </style>
 </head>
