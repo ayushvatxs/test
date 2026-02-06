@@ -97,7 +97,7 @@
         .top-line-deco { width: 80%; height: 2px; background: var(--pink); margin-top: 40px; position: relative; box-shadow: 0 0 10px var(--pink); }
         .top-line-deco::after { content: 'SYSTEM_ANALYSIS // 98%'; position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font-size: 0.6rem; color: var(--pink); background: #000; padding: 0 10px; }
 
-        /* [UPDATE 1]: Increased Reactor Size via Scale */
+        /* REACTOR */
         .reactor-container { 
             position: relative; margin-top: 50px; 
             width: 280px; height: 280px; 
@@ -114,7 +114,7 @@
         .r7 { width: 120px; height: 120px; border: 1px solid #fff; opacity: 0.3; }
         .r8 { width: 40px; height: 40px; background: #fff; border-radius: 50%; opacity: 0.8; box-shadow: 0 0 20px #fff; }
 
-        /* [UPDATE 2]: White Light for Overdrive */
+        /* Overdrive Effect */
         .reactor-overdrive .ring { 
             animation-duration: 0.2s !important; 
             border-color: #ffffff !important; 
@@ -142,13 +142,21 @@
 
         /* --- RIGHT COLUMN --- */
         .col-right { grid-column: 3; grid-row: 1 / span 3; display: flex; flex-direction: column; gap: 15px; padding-top: 40px; }
-        .tech-box { position: relative; background: var(--bg-glass); border: 1px solid rgba(255,0,60,0.3); padding: 15px; flex-grow: 1; display: flex; flex-direction: column; }
+        .tech-box { position: relative; background: var(--bg-glass); border: 1px solid rgba(255,0,60,0.3); padding: 15px; flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
         .tech-box::before { content: ''; position: absolute; top: -1px; left: -1px; width: 20px; height: 20px; border-top: 3px solid var(--pink); border-left: 3px solid var(--pink); box-shadow: -2px -2px 10px var(--pink); }
         .tech-box::after { content: ''; position: absolute; bottom: -1px; right: -1px; width: 20px; height: 20px; border-bottom: 3px solid var(--pink); border-right: 3px solid var(--pink); box-shadow: 2px 2px 10px var(--pink); }
 
         .iso-wrap { overflow: hidden; height: 100%; position: relative; }
         .iso-grid { position: absolute; top: 50%; left: 50%; width: 300px; height: 300px; background: linear-gradient(var(--pink) 1px, transparent 1px), linear-gradient(90deg, var(--pink) 1px, transparent 1px); background-size: 30px 30px; transform: translate(-50%, -50%) rotateX(60deg) rotateZ(45deg); }
-        .text-content { font-size: 0.6rem; color: #ff99aa; line-height: 1.6; opacity: 0.8; }
+        
+        /* [FIX 1]: Scroll Text Overflow */
+        .text-content { 
+            font-size: 0.6rem; color: #ff99aa; line-height: 1.6; opacity: 0.8; 
+            overflow: hidden; /* Ensures text stays inside */
+            height: 100%;
+            display: flex; flex-direction: column; justify-content: flex-end;
+        }
+
         .wave-box { display: flex; align-items: center; justify-content: center; height: 100%; }
         .wave-path { width: 100%; height: 2px; background: var(--pink); position: relative; box-shadow: 0 0 10px var(--pink); }
         .wave-dot { width: 8px; height: 8px; background: #fff; border-radius: 50%; position: absolute; top: -3px; animation: bounceX 2s infinite ease-in-out; }
@@ -180,14 +188,12 @@
         .dc-row { display: flex; justify-content: space-between; border-bottom: 1px dashed rgba(255,255,255,0.1); padding: 5px 0; }
         .dc-l { color: #ff99aa; } .dc-v { font-weight: bold; text-align: right; }
 
-        /* [UPDATE 3]: STATIC NEXT BUTTON */
         .btn-next-page {
             width: 100%; margin-top: 20px; padding: 15px;
             background: var(--pink); color: #000; border: none;
             font-family: 'Orbitron'; font-weight: bold; font-size: 1rem;
             cursor: pointer; box-shadow: 0 0 30px var(--pink);
             clip-path: polygon(5% 0, 100% 0, 100% 70%, 95% 100%, 0 100%, 0 30%);
-            /* No animation here for static look */
         }
 
         #access-overlay { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 3000; text-align: center; display: none; }
