@@ -20,7 +20,7 @@
         /* --- VINTAGE FILTER --- */
         .film-overlay {
             position: absolute; inset: 0; pointer-events: none; z-index: 100;
-            background: rgba(255, 240, 200, 0.03);
+            background: rgba(255, 240, 200, 0.02);
             box-shadow: inset 0 0 150px rgba(0,0,0,1);
         }
         .film-overlay::before {
@@ -53,13 +53,13 @@
             z-index: 10;
         }
 
-        /* HER PHOTO */
+        /* HER PHOTO - Centered and Protected */
         .star-photo {
-            height: 55vh; border: 10px solid #fff;
+            height: 55vh; border: 8px solid #fff;
             box-shadow: 0 0 80px rgba(255,255,255,0.1);
             filter: grayscale(100%) contrast(1.1); margin-bottom: 20px;
             z-index: 20; position: relative;
-            background: #000; /* Keeps photo solid backing */
+            background: #000;
         }
 
         .title-card { text-align: center; text-transform: uppercase; z-index: 20; }
@@ -71,26 +71,30 @@
             position: absolute; inset: 0; pointer-events: none; z-index: 5; overflow: hidden;
         }
 
-        /* The styles for the generated reviews */
+        /* Generated Reviews */
         .dynamic-review {
             position: absolute;
             font-family: 'Courier Prime', monospace;
             text-transform: uppercase;
-            color: rgba(255, 255, 255, 0.4);
+            color: rgba(255, 255, 255, 0.5); /* Higher contrast */
             white-space: nowrap;
-            font-size: 1rem;
-            opacity: 0; /* Start hidden */
-            animation: flash-review 4s forwards;
+            opacity: 0; 
+            /* Slower animation: 7 seconds total duration */
+            animation: slow-reveal 7s forwards; 
         }
         
-        /* Highlight specific gold reviews */
-        .gold-review { color: #d4af37; text-shadow: 0 0 10px rgba(212, 175, 55, 0.5); font-weight: bold; opacity: 1; }
+        .gold-review { 
+            color: #d4af37; 
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.6); 
+            font-weight: bold; 
+            opacity: 1; 
+        }
 
         /* --- BUTTON --- */
         .next-reel-btn {
             margin-top: 30px; background: transparent; border: 1px solid #fff; color: #fff;
             padding: 10px 30px; font-family: 'Courier Prime'; cursor: pointer;
-            opacity: 0; z-index: 30; animation: fade-in 2s forwards 7s; transition: 0.3s;
+            opacity: 0; z-index: 30; animation: fade-in 2s forwards 8s; transition: 0.3s;
         }
         .next-reel-btn:hover { background: #fff; color: #000; }
 
@@ -100,12 +104,12 @@
         @keyframes fade-out { to { opacity: 0; visibility: hidden; } }
         @keyframes fade-in { to { opacity: 1; } }
 
-        /* The Flash Effect for Text */
-        @keyframes flash-review {
-            0% { opacity: 0; transform: scale(0.9); }
-            10% { opacity: 1; transform: scale(1); } /* Appear fast */
-            80% { opacity: 1; } /* Stay */
-            100% { opacity: 0; transform: scale(1.1); filter: blur(4px); } /* Fade out */
+        /* Slower, more readable animation */
+        @keyframes slow-reveal {
+            0% { opacity: 0; transform: scale(0.95); }
+            10% { opacity: 1; transform: scale(1); } /* Fade in quickly */
+            80% { opacity: 1; transform: scale(1); } /* Stay visible for a LONG time */
+            100% { opacity: 0; transform: scale(1.05) translateY(-5px); } /* Fade out gently */
         }
 
         /* Responsive */
@@ -147,7 +151,7 @@
     </div>
 
     <script>
-        // --- 1. COUNTDOWN LOGIC ---
+        // --- COUNTDOWN ---
         const countEl = document.getElementById('count');
         let timeLeft = 3;
         const timer = setInterval(() => {
@@ -156,7 +160,7 @@
             else clearInterval(timer);
         }, 1000);
 
-        // --- 2. THE 50+ REVIEWS DATABASE ---
+        // --- REVIEWS DATA ---
         const reviews = [
             { text: "A MASTERPIECE - VOGUE", type: "gold" },
             { text: "★★★★★ - THE NY TIMES", type: "gold" },
@@ -210,57 +214,57 @@
             { text: "ICON BEHAVIOR - TUMBLR", type: "normal" }
         ];
 
-        // --- 3. THE STORM ENGINE ---
+        // --- STORM ENGINE ---
         const sky = document.getElementById('review-sky');
 
         function spawnReview() {
-            // Pick random review
             const data = reviews[Math.floor(Math.random() * reviews.length)];
             const el = document.createElement('div');
             el.innerText = data.text;
             el.classList.add('dynamic-review');
             if(data.type === 'gold') el.classList.add('gold-review');
 
-            // --- SMART POSITIONING (AVOID CENTER) ---
-            // We want to avoid the center 40% of the screen (where the photo is)
-            let top, left;
-            let safe = false;
+            // --- STRICT WIDE CLEARANCE LOGIC ---
+            // We force text to appear ONLY in the outer 15% edges.
+            // Center 70% width and 70% height is completely OFF LIMITS.
             
-            // Try 10 times to find a safe spot, otherwise just place it
-            for(let i=0; i<10; i++) {
-                top = Math.random() * 90; // 0-90% height
-                left = Math.random() * 80 + 10; // 10-90% width
-                
-                // Check if inside the "Danger Zone" (Center Box)
-                // Approx center box: Left 30-70%, Top 20-80%
-                if (left > 25 && left < 75 && top > 20 && top < 80) {
-                    safe = false; // It's in the middle, try again
-                } else {
-                    safe = true;
-                    break;
-                }
+            let top, left;
+            const side = Math.floor(Math.random() * 4); // 0=Top, 1=Bottom, 2=Left, 3=Right
+
+            if (side === 0) { // Top Zone
+                top = Math.random() * 15; // 0-15%
+                left = Math.random() * 90 + 5;
+            } else if (side === 1) { // Bottom Zone
+                top = Math.random() * 15 + 80; // 80-95%
+                left = Math.random() * 90 + 5;
+            } else if (side === 2) { // Left Zone
+                top = Math.random() * 90 + 5;
+                left = Math.random() * 15; // 0-15%
+            } else { // Right Zone
+                top = Math.random() * 90 + 5;
+                left = Math.random() * 15 + 80; // 80-95%
             }
 
             el.style.top = top + '%';
             el.style.left = left + '%';
             
-            // Random Font Size variation
-            const size = Math.random() * 0.8 + 0.8; // 0.8rem to 1.6rem
+            // Varied Sizes for depth
+            const size = Math.random() * 0.6 + 0.8; // 0.8rem to 1.4rem
             el.style.fontSize = size + 'rem';
 
             sky.appendChild(el);
 
-            // Remove element after animation ends to keep DOM clean
-            setTimeout(() => { el.remove(); }, 4000);
+            // Clean up after animation finishes (7000ms)
+            setTimeout(() => { el.remove(); }, 7000);
         }
 
-        // Start the storm after the countdown (4s delay)
+        // Start slower storm (Wait 4.1s for intro)
         setTimeout(() => {
-            // Spawn a new review every 200ms
-            setInterval(spawnReview, 300);
+            // Slower Spawn Rate: New review every 0.8 seconds (was 0.3)
+            setInterval(spawnReview, 800);
         }, 4100);
 
-        // Optional Audio
+        // Audio
         const audio = new Audio('sfx_projector.mp3');
         audio.loop = true;
         window.addEventListener('click', () => { audio.play().catch(()=>{}); }, {once:true});
