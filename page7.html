@@ -40,17 +40,16 @@
             will-change: transform;
         }
 
-        /* --- COMMON ANIMATIONS --- */
+        /* --- ANIMATIONS --- */
         .rise-up { opacity: 0; transform: translateY(50px); transition: 0.8s ease-out; }
         .active .rise-up { opacity: 1; transform: translateY(0); }
         
         .zoom-slow { width: 100%; height: 100%; object-fit: cover; transform: scale(1.1); transition: transform 10s ease-out; }
         .active .zoom-slow { transform: scale(1.0); }
 
-        /* --- FLASH EFFECT (UPDATED) --- */
+        /* --- 7 FLASHES (2.1 Seconds) --- */
         .flash-effect { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 50; }
         
-        /* UPDATED: 7 Flashes, faster speed (0.3s per flash) */
         .active .flash-effect.paparazzi { animation: flashBurst 0.3s 7; } 
         .active .flash-effect.single { animation: flashBurst 0.2s 1; }
 
@@ -69,42 +68,26 @@
         .ticker { display: inline-block; white-space: nowrap; animation: ticker 20s linear infinite; }
 
         /* --- PAGE SPECIFIC STYLES --- */
-        /* P1: COVER */
         #p1 .masthead { position: absolute; top: -10px; width: 100%; text-align: center; font-family: 'Anton'; font-size: 25vw; line-height: 0.8; z-index: 2; mix-blend-mode: overlay; }
         .main-head { font-family: 'Bodoni Moda'; font-size: 5rem; font-weight: 900; font-style: italic; line-height: 0.9; margin-bottom: 20px; }
         
-        /* P2: TRENDING */
         #p2 { background: #fff; color: #000; justify-content: center; align-items: center; text-align: center; padding: 40px; }
         .viral-stat { font-size: 8rem; font-family: 'Anton'; line-height: 1; color: var(--neon); }
         .tweet-box { border: 2px solid #000; padding: 20px; margin: 10px auto; max-width: 600px; text-align: left; }
 
-        /* P3: YOUTUBE */
         #p3 .yt-ui { position: absolute; bottom: 50px; left: 50px; z-index: 5; }
         .rec-tag { color: red; font-weight: 800; animation: blink 1s infinite; }
         .sub-count { font-family: 'Anton'; font-size: 4rem; line-height: 1; }
 
-        /* P4: FACE CARD */
         .scan-frame { position: absolute; width: 80%; height: 80%; border: 1px solid rgba(255,255,255,0.5); }
 
-        /* P5: PAPARAZZI */
         #p5 { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            grid-template-rows: 1fr 1fr; 
-            height: 100%; width: 100%; 
-            gap: 3px; 
-            background: #fff; 
-            padding: 3px;
+            display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; 
+            height: 100%; width: 100%; gap: 3px; background: #fff; padding: 3px;
         }
-        .pap-img { 
-            width: 100%; height: 100%; 
-            object-fit: cover; 
-            display: block; 
-            filter: grayscale(100%); transition: 0.3s; 
-        }
+        .pap-img { width: 100%; height: 100%; object-fit: cover; display: block; filter: grayscale(100%); transition: 0.3s; }
         .pap-img:hover { filter: grayscale(0%); }
 
-        /* SOCIAL MEDIA PAGES */
         #p20 { background: #121212; font-family: 'Roboto', sans-serif; padding: 20px; }
         .yt-header { display: flex; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
         .yt-logo { font-weight: 900; letter-spacing: -1px; font-size: 1.5rem; display: flex; align-items: center; gap: 5px; }
@@ -115,7 +98,6 @@
         .vid-info h3 { font-size: 1rem; margin-bottom: 5px; color: #fff; }
         .rank { font-size: 1.5rem; color: #fff; font-weight: 900; margin-right: 15px; opacity: 0.5; }
 
-        /* INSTAGRAM */
         #p21 { background: #000; align-items: center; justify-content: center; }
         .phone-frame { width: 95%; max-width: 400px; height: 85%; border: 4px solid #333; border-radius: 20px; overflow: hidden; background: #000; position: relative; display:flex; flex-direction:column; }
         .insta-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; overflow-y: auto; padding-bottom: 50px; }
@@ -123,21 +105,18 @@
         .insta-story { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #d62976; padding: 2px; flex-shrink: 0; }
         .insta-story img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid #000; }
 
-        /* SPOTIFY */
         #p23 { background: linear-gradient(to bottom, #444, #000); align-items: center; justify-content: center; font-family: 'Roboto', sans-serif; }
         .spot-card { width: 90%; text-align: center; }
         .spot-img { width: 250px; height: 250px; object-fit: cover; box-shadow: 0 20px 40px rgba(0,0,0,0.5); margin-bottom: 30px; border-radius:10px;}
         .spot-bar { width: 100%; height: 4px; background: #555; margin: 20px 0; position: relative; }
         .spot-fill { width: 30%; height: 100%; background: #fff; }
 
-        /* LOCK SCREEN */
         #p24 { background-image: url('mag_cover.jpg'); background-size: cover; background-position: center; align-items: center; justify-content: center; }
         .backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.6); }
         .notif-stack { position: relative; z-index: 10; width: 90%; display: flex; flex-direction: column; gap: 10px; }
         .notif { background: rgba(255,255,255,0.95); border-radius: 12px; padding: 15px; color: #000; display: flex; gap: 10px; align-items: center; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
         .notif-icon { width: 30px; height: 30px; border-radius: 5px; }
 
-        /* BUTTONS */
         .next-btn {
             background: #fff; color: #000; padding: 25px 60px; border: none; font-size: 1.2rem;
             font-family: 'Syne'; font-weight: 800; cursor: pointer; transition: 0.3s; width: 100%; margin-top: 20px;
@@ -466,53 +445,41 @@
     };
 
     function playAudio(key) {
-        let audioKey = key;
-        let isBurst = false;
+        let isBurst = (key === 'sfx_burst');
+        let audioKey = isBurst ? 'sfx_notification.mp3' : key;
+        const sourceAudio = audioLibrary[audioKey];
 
-        // Custom Key Mapping
-        if (key === 'sfx_burst') {
-            audioKey = 'sfx_notification.mp3';
-            isBurst = true;
-        }
+        if (!sourceAudio) return;
 
-        const audio = audioLibrary[audioKey];
-        if (!audio) return;
-
-        // Reset and Play
-        audio.pause();
-        audio.currentTime = 0;
-        audio.play().catch(() => {});
-
-        // Burst Mode Logic (3 times)
+        // Clone node allows overlapping sounds (Polyphony)
         if (isBurst) {
-            setTimeout(() => { audio.currentTime = 0; audio.play().catch(() => {}); }, 300);
-            setTimeout(() => { audio.currentTime = 0; audio.play().catch(() => {}); }, 600);
+            // Burst Logic: Play 3 distinct clones
+            const a1 = sourceAudio.cloneNode(); a1.play().catch(()=>{});
+            setTimeout(() => { const a2 = sourceAudio.cloneNode(); a2.play().catch(()=>{}); }, 250);
+            setTimeout(() => { const a3 = sourceAudio.cloneNode(); a3.play().catch(()=>{}); }, 500);
+        } else {
+            // Normal Logic: Reset and play
+            sourceAudio.currentTime = 0;
+            sourceAudio.play().catch(() => {});
         }
     }
 
-    // iPad/iPhone Unlocker: Plays silent audio on first touch to enable subsequent sounds
-    window.addEventListener('touchstart', function() {
-        Object.values(audioLibrary).forEach(sound => {
-            sound.volume = 0; // Mute
-            sound.play().then(() => {
-                sound.pause();
-                sound.currentTime = 0;
-                sound.volume = 1; // Unmute
-            }).catch(() => {});
-        });
-    }, { once: true });
-    
-    // Also add click for desktop fallback
-    window.addEventListener('click', function() {
+    // iPad/iPhone Unlocker: Plays silent audio on first touch
+    const unlockAudio = () => {
         Object.values(audioLibrary).forEach(sound => {
             sound.volume = 0; 
             sound.play().then(() => {
-                sound.pause();
+                sound.pause(); 
                 sound.currentTime = 0;
                 sound.volume = 1;
-            }).catch(() => {});
+            }).catch(()=>{});
         });
-    }, { once: true });
+        window.removeEventListener('click', unlockAudio);
+        window.removeEventListener('touchstart', unlockAudio);
+    };
+
+    window.addEventListener('click', unlockAudio);
+    window.addEventListener('touchstart', unlockAudio);
 
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -524,7 +491,7 @@
                 entry.target.classList.remove('active');
             }
         });
-    }, { threshold: 0.4 });
+    }, { threshold: 0.2 }); // Triggers earlier (20% visibility) to fix lag
 
     document.querySelectorAll('.page').forEach(page => { observer.observe(page); });
 </script>
