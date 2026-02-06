@@ -7,22 +7,30 @@
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
     
     <style>
+        /* --- SCALING & FULL SCREEN FIX --- */
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden; /* Prevents horizontal zooming */
+        }
+
         body {
             background: linear-gradient(180deg, #ffe6ee 0%, #f8bbd0 100%);
-            font-family: 'Fredoka', sans-serif; /* Applies rounded font everywhere */
+            font-family: 'Fredoka', sans-serif;
             text-align: center;
             color: #880e4f;
-            min-height: 100vh;
+            
+            /* Center content vertically and horizontally */
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
-            padding-top: 15px;
-            padding-bottom: 20px;
-            margin: 0;
+            justify-content: center; 
+            
+            /* Remove fixed padding that pushes content off-center */
+            padding: 10px; 
             box-sizing: border-box;
-            overflow-x: hidden;
-            position: relative;
         }
 
         /* --- BACKGROUND PARTICLES --- */
@@ -59,9 +67,8 @@
         /* --- HEADER --- */
         h1 {
             font-family: 'Fredoka', sans-serif;
-            font-weight: 600; /* Bold and round */
+            font-weight: 600;
             color: #4facfe;
-            /* Decreased size as requested */
             font-size: clamp(2rem, 7vw, 2.8rem); 
             margin: 5px 0 5px 0;
             line-height: 1.2;
@@ -78,15 +85,14 @@
             z-index: 10;
         }
 
-        /* --- TIMER (Increased Size) --- */
+        /* --- TIMER --- */
         .timer-box {
             background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(5px);
-            padding: 15px; /* More padding */
+            padding: 15px;
             border-radius: 20px;
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
             width: 90%;
-            /* Increased max-width for a bigger box */
             max-width: 400px; 
             border: 3px solid #fff;
             z-index: 10;
@@ -104,7 +110,7 @@
         .time-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px; /* More space */
+            gap: 10px;
             justify-content: center;
         }
         
@@ -117,13 +123,13 @@
 
         .time-unit {
             background: #fff;
-            padding: 10px; /* Bigger internal boxes */
+            padding: 10px;
             border-radius: 12px;
             min-width: 65px;
         }
 
         .number {
-            font-size: 1.4rem; /* Bigger numbers */
+            font-size: 1.4rem;
             font-weight: 600;
             color: #d81b60;
             display: block;
@@ -137,7 +143,6 @@
         /* --- PHOTOS --- */
         .photo-container {
             position: relative;
-            /* Keeps safe distance so message doesn't overlap */
             height: 250px; 
             width: 100%;
             max-width: 400px;
