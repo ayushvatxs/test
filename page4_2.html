@@ -334,6 +334,7 @@
     <div class="next-btn">
         <a href="page4_3.html" class="arrow-link">&#10095;</a>
     </div>
+    <audio id="popSound" src="pop.mp3"></audio>
 
     <script>
         // --- YOUR WISH LIST ---
@@ -356,6 +357,10 @@
         const text = document.getElementById('wishText');
 
         function openJar() {
+            // --- NEW: Play Sound Here ---
+            const sound = document.getElementById('popSound');
+            sound.currentTime = 0; // Rewind to start (in case clicked quickly)
+            sound.play().catch(e => console.log("Audio blocked"));
             // 1. Shake Jar
             jar.classList.add('shake-jar');
 
