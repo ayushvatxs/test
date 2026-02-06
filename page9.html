@@ -3,165 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THEATER NIGHT</title>
+    <title>THE GRAND PREMIERE</title>
     <link href="https://fonts.googleapis.com/css2?family=Monoton&family=Montserrat:wght@400;900&family=Permanent+Marker&display=swap" rel="stylesheet">
     <style>
         /* --- RESET --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-            background-color: #000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            height: 100vh; width: 100vw; overflow: hidden;
+            background-color: #050505; /* Deep Obsidian */
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
             font-family: 'Montserrat', sans-serif;
         }
 
-        /* --- 1. THE VINTAGE STREET BACKGROUND --- */
-        .street-bg {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            /* Moody Cinema Exterior Image */
-            background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1517604931442-71053e3e2e3c?q=80&w=2070&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center;
+        /* --- 1. CSS-ONLY BRICK WALL (No Images to Break) --- */
+        .wall {
+            position: absolute; inset: 0;
+            background-color: #080808;
+            background-image: 
+                linear-gradient(335deg, rgba(0,0,0,0.8) 23px, transparent 23px),
+                linear-gradient(155deg, rgba(0,0,0,0.8) 23px, transparent 23px),
+                linear-gradient(335deg, rgba(0,0,0,0.8) 23px, transparent 23px),
+                linear-gradient(155deg, rgba(0,0,0,0.8) 23px, transparent 23px);
+            background-size: 58px 58px;
+            background-position: 0px 2px, 4px 35px, 29px 31px, 34px 6px;
             z-index: 0;
-            filter: contrast(1.2) brightness(0.8);
+        }
+        
+        /* Dark overlay for mood */
+        .wall::after {
+            content: ''; position: absolute; inset: 0;
+            background: radial-gradient(circle at center, transparent 0%, #000 90%);
         }
 
-        /* --- 2. THE RAIN ANIMATION --- */
+        /* --- 2. CSS RAIN EFFECT --- */
         .rain {
-            position: absolute;
-            left: 0; width: 100%; height: 100%;
-            z-index: 1;
-            background-image: url('https://i.imgur.com/71O2R4c.png'); /* Transparent rain texture */
-            animation: rain-fall 0.5s linear infinite;
-            opacity: 0.6;
+            position: absolute; inset: 0; z-index: 1;
+            background: repeating-linear-gradient(transparent, transparent 50px, rgba(255,255,255,0.03) 50px, rgba(255,255,255,0.03) 52px);
+            background-size: 100% 100%;
+            animation: rain-fall 1s linear infinite;
+            opacity: 0.4;
             pointer-events: none;
         }
+        @keyframes rain-fall { 0% { background-position: 0 0; } 100% { background-position: 0 200px; } }
 
-        @keyframes rain-fall {
-            0% { background-position: 0 0; }
-            100% { background-position: 20% 100%; }
-        }
-
-        /* --- 3. THE MARQUEE BOARD --- */
-        .marquee-container {
-            position: relative;
-            z-index: 5;
-            background: #111;
-            border: 8px solid #333;
-            border-radius: 10px;
+        /* --- 3. THE GRAND MARQUEE --- */
+        .marquee-board {
+            position: relative; z-index: 10;
+            background: #000;
             padding: 40px 60px;
-            box-shadow: 
-                0 0 20px #000,
-                0 0 50px rgba(255, 0, 85, 0.3);
+            border: 8px solid #111;
+            border-radius: 20px;
+            box-shadow: 0 0 60px rgba(0,0,0,0.9);
             text-align: center;
-            transform: rotate(-2deg); /* Slight angle for realism */
+            min-width: 300px;
+            min-height: 250px;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
 
-        /* The glowing bulbs around the border */
-        .marquee-container::after {
-            content: '';
+        /* Golden Bulbs Border */
+        .marquee-board::before {
+            content: ''; position: absolute; inset: -15px;
+            border: 4px dotted #d4af37; /* Gold Bulbs */
+            border-radius: 25px;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+            animation: bulb-flicker 2s infinite;
+        }
+
+        /* --- THE TEXT REVEAL ANIMATION --- */
+        .text-container { position: relative; height: 120px; display: flex; align-items: center; justify-content: center; width: 100%; }
+
+        /* STATE 1: NOW SHOWING */
+        .text-initial {
             position: absolute;
-            inset: -15px;
-            border: 4px dotted #ffeb3b;
-            border-radius: 15px;
-            box-shadow: 0 0 20px #ffeb3b;
-            opacity: 0.5;
-        }
-
-        .top-text {
-            color: #fff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 3rem;
+            color: #333; /* Dimmed */
+            text-shadow: none;
             letter-spacing: 5px;
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-            text-shadow: 0 0 10px #fff;
+            animation: text-switch-out 0.5s forwards 2.5s; /* Disappear after 2.5s */
         }
 
-        .neon-name {
+        /* STATE 2: VIOLINA (GOLD) */
+        .text-final {
+            position: absolute;
             font-family: 'Monoton', cursive;
             font-size: 6rem;
-            color: #ff0055; /* Pink Neon */
+            color: #d4af37; /* Gold */
             text-transform: uppercase;
-            line-height: 1;
-            text-shadow: 
-                0 0 10px #ff0055,
-                0 0 40px #ff0055,
-                0 0 80px #ff0055;
-            animation: buzz 3s infinite;
+            opacity: 0; /* Start hidden */
+            letter-spacing: 2px;
+            animation: 
+                flicker-in 2s forwards 3s, /* Appear at 3s */
+                neon-glow 1.5s infinite alternate 5s; /* Steady glow after 5s */
         }
 
-        /* --- 4. SOLD OUT STAMP --- */
+        .top-label {
+            color: #fff; letter-spacing: 4px; font-size: 1rem; margin-bottom: 20px; opacity: 0.7;
+        }
+
+        /* --- SOLD OUT STAMP --- */
         .sold-out {
             position: absolute;
-            bottom: -20px;
-            right: -30px;
+            bottom: -30px; right: -40px;
             font-family: 'Permanent Marker', cursive;
-            font-size: 3rem;
-            color: #ffe600;
-            border: 4px solid #ffe600;
-            padding: 5px 20px;
-            transform: rotate(-15deg);
-            text-shadow: 0 0 10px rgba(0,0,0,0.5);
-            background: rgba(0,0,0,0.8);
-            box-shadow: 0 0 20px #ffe600;
-            animation: stamp-pulse 2s infinite;
+            font-size: 3.5rem;
+            color: #ff003c; /* Neon Red */
+            border: 5px solid #ff003c;
+            padding: 5px 30px;
+            transform: rotate(-15deg) scale(2); /* Start big */
+            opacity: 0;
+            background: #000;
+            box-shadow: 0 0 30px #ff003c;
+            animation: stamp-slam 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 5.5s; /* Slam at 5.5s */
         }
 
-        /* --- BUTTON TO ENTER --- */
+        /* --- ENTER BUTTON --- */
         .enter-btn {
-            margin-top: 50px;
-            z-index: 5;
+            margin-top: 80px;
             background: transparent;
             color: #fff;
-            border: 2px solid rgba(255,255,255,0.5);
-            padding: 15px 30px;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 15px 40px;
             font-family: 'Montserrat', sans-serif;
-            letter-spacing: 3px;
+            letter-spacing: 4px;
             cursor: pointer;
-            backdrop-filter: blur(5px);
             transition: 0.3s;
+            z-index: 10;
+            opacity: 0;
+            animation: fade-in 1s forwards 6s; /* Appear last */
         }
-        .enter-btn:hover {
-            background: #fff;
-            color: #000;
-            box-shadow: 0 0 20px #fff;
+        .enter-btn:hover { background: #d4af37; border-color: #d4af37; color: #000; box-shadow: 0 0 20px #d4af37; }
+
+        /* --- ANIMATION KEYFRAMES --- */
+        
+        @keyframes text-switch-out {
+            0% { opacity: 1; color: #fff; text-shadow: 0 0 10px #fff; }
+            50% { opacity: 0.5; color: #333; text-shadow: none; }
+            100% { opacity: 0; transform: scale(0.9); }
         }
 
-        /* --- ANIMATIONS --- */
-        @keyframes buzz {
+        @keyframes flicker-in {
+            0% { opacity: 0; }
+            10% { opacity: 0; }
+            11% { opacity: 1; text-shadow: 0 0 10px #d4af37; }
+            15% { opacity: 0; }
+            20% { opacity: 0; }
+            21% { opacity: 1; text-shadow: 0 0 20px #d4af37, 0 0 40px #d4af37; }
+            25% { opacity: 0.2; }
+            30% { opacity: 1; text-shadow: 0 0 10px #d4af37; }
+            100% { opacity: 1; text-shadow: 0 0 20px #d4af37, 0 0 60px #d4af37; }
+        }
+
+        @keyframes neon-glow {
+            from { text-shadow: 0 0 20px #d4af37, 0 0 40px #d4af37; }
+            to { text-shadow: 0 0 30px #d4af37, 0 0 80px #d4af37; }
+        }
+
+        @keyframes stamp-slam {
+            0% { opacity: 0; transform: rotate(-15deg) scale(3); }
+            100% { opacity: 1; transform: rotate(-15deg) scale(1); }
+        }
+
+        @keyframes bulb-flicker {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.9; text-shadow: 0 0 20px #ff0055; }
-            52% { opacity: 0.4; } /* Flicker */
-            54% { opacity: 1; }
+            50% { opacity: 0.6; }
         }
 
-        @keyframes stamp-pulse {
-            0%, 100% { transform: rotate(-15deg) scale(1); }
-            50% { transform: rotate(-15deg) scale(1.05); }
-        }
+        @keyframes fade-in { to { opacity: 1; } }
 
         /* Responsive */
         @media (max-width: 600px) {
-            .neon-name { font-size: 3.5rem; }
-            .sold-out { font-size: 2rem; right: -10px; bottom: -10px; }
+            .text-initial { font-size: 2rem; }
+            .text-final { font-size: 3.5rem; }
+            .sold-out { font-size: 2rem; bottom: -20px; right: -10px; }
+            .marquee-board { width: 90%; padding: 20px; }
         }
 
     </style>
 </head>
 <body>
 
-    <div class="street-bg"></div>
-
+    <div class="wall"></div>
     <div class="rain"></div>
 
-    <div class="marquee-container">
-        <div class="top-text">TONIGHT'S PREMIERE</div>
-        <div class="neon-name">VIOLINA</div>
+    <div class="marquee-board">
+        <div class="top-label">TONIGHT'S PREMIERE</div>
+        
+        <div class="text-container">
+            <div class="text-initial">NOW SHOWING</div>
+            <div class="text-final">VIOLINA</div>
+        </div>
+
         <div class="sold-out">SOLD OUT</div>
     </div>
 
