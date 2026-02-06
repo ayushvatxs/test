@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>VIOLINA DATABASE | FINAL CINEMATIC</title>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
     <style>
@@ -11,6 +11,8 @@
         body {
             background-color: #000; overflow: hidden; height: 100vh; width: 100vw;
             font-family: 'Share Tech Mono', monospace; user-select: none;
+            /* Prevents scroll bounce on iPad */
+            position: fixed; top: 0; left: 0;
         }
 
         /* --- CAMERA RIG --- */
@@ -43,13 +45,15 @@
             color: #ff003c; font-family: 'Orbitron'; font-size: 2rem; letter-spacing: 6px;
             text-shadow: 0 0 20px #ff003c;
             opacity: 1; transition: opacity 0.5s;
+            padding: 0 20px; /* Safety padding for mobile */
         }
 
         #bottom-ui {
             bottom: 8%; opacity: 0; transition: opacity 2s; pointer-events: auto;
+            width: 100%; display: flex; flex-direction: column; align-items: center;
         }
-        .status-main { font-family: 'Orbitron'; font-size: 2.5rem; color: #fff; text-shadow: 0 0 30px #ff003c; margin-bottom: 5px; }
-        .status-sub { color: #ff003c; font-size: 1rem; letter-spacing: 4px; margin-bottom: 25px; }
+        .status-main { font-family: 'Orbitron'; font-size: clamp(1.5rem, 5vw, 2.5rem); color: #fff; text-shadow: 0 0 30px #ff003c; margin-bottom: 5px; }
+        .status-sub { color: #ff003c; font-size: clamp(0.8rem, 3vw, 1rem); letter-spacing: 4px; margin-bottom: 25px; text-align: center; }
 
         .btn-final {
             background: transparent; border: 2px solid #ff003c; color: #ff003c;
@@ -66,6 +70,13 @@
         .ring { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 1px solid #ff003c; border-radius: 50%; opacity: 0; transition: opacity 2s; pointer-events: none; z-index: 5; }
         .r1 { width: 600px; height: 600px; border-style: dashed; animation: spin 60s linear infinite; }
         .r2 { width: 750px; height: 750px; border: 1px solid rgba(255,0,60,0.3); animation: pulse 3s infinite; }
+        
+        /* Mobile adjustment for rings */
+        @media (max-width: 768px) {
+            .r1 { width: 90vw; height: 90vw; }
+            .r2 { width: 110vw; height: 110vw; }
+        }
+
         @keyframes spin { 100% { transform: translate(-50%,-50%) rotate(360deg); } }
         @keyframes pulse { 0% { transform: translate(-50%,-50%) scale(0.95); opacity:0.1; } 50% { opacity:0.3; } 100% { transform: translate(-50%,-50%) scale(1.05); opacity:0.1; } }
 
@@ -93,8 +104,12 @@
     <script>
         /* --- CONFIG --- */
         const IMAGE_URL = 'violina_reassembly.jpg';
-        const DENSITY = 2; // Particle Density
-        const PARTICLE_SIZE = 1.6;
+        const DENSITY = 2; 
+        
+        // [FIX 1] Dynamic Particle Size based on Pixel Ratio (Retina Fix)
+        // If it's a retina screen (iPad), use larger particles so they are visible
+        const dpr = window.devicePixelRatio || 1;
+        const PARTICLE_SIZE = dpr > 1 ? 2.5 : 1.6; 
         
         /* --- AUDIO --- */
         const sfx = {
@@ -115,11 +130,19 @@
         let activeClusters = new Set();
         let isFinalized = false;
         let particlesVisible = false;
+        let imgDataContext = null; // Store for resize logic
 
-        // Auto-Resize for Full Screen Chaos
+        // [FIX 2] Robust Resize Handling for Canvas Resolution
         function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            canvas.width = window.innerWidth * dpr;
+            canvas.height = window.innerHeight * dpr;
+            canvas.style.width = window.innerWidth + 'px';
+            canvas.style.height = window.innerHeight + 'px';
+            ctx.scale(dpr, dpr);
+            
+            // If image is already loaded, we might need to regenerate particles 
+            // BUT for this specific animation, it's safer to just let them fly 
+            // rather than resetting and ruining the flow.
         }
         window.addEventListener('resize', resize);
         resize();
@@ -128,9 +151,11 @@
         const img = new Image();
         img.src = IMAGE_URL;
         img.onload = () => {
-            // We draw the image onto a temporary canvas to get pixel data
-            // We want the final particle image to be roughly 400px wide in the center
-            const finalW = 400;
+            // [FIX 3] Dynamic Image Sizing
+            // Instead of hardcoded 400, we calculate a width that fits the screen
+            // Laptop: ~400px. Mobile: ~300px (so it doesn't overflow edges when zooming)
+            let finalW = Math.min(window.innerWidth * 0.8, 400); 
+            
             const aspect = img.height / img.width;
             const finalH = finalW * aspect;
 
@@ -141,7 +166,7 @@
             tCtx.drawImage(img, 0, 0, finalW, finalH);
             const data = tCtx.getImageData(0, 0, finalW, finalH).data;
 
-            // Calculate offset to center the particles on the main canvas
+            // Center particles
             const offsetX = (window.innerWidth - finalW) / 2;
             const offsetY = (window.innerHeight - finalH) / 2;
 
@@ -151,12 +176,11 @@
                     const i = (y * finalW + x) * 4;
                     const brightness = (data[i] + data[i+1] + data[i+2]) / 3;
 
-                    // Threshold: Only create particles for visible pixels
                     if(brightness > 20) {
                         const cluster = getCluster(x, y, finalW, finalH);
                         particles.push(new Particle(
-                            offsetX + x, // Final Position X
-                            offsetY + y, // Final Position Y
+                            offsetX + x, 
+                            offsetY + y, 
                             brightness, 
                             cluster
                         ));
@@ -168,23 +192,15 @@
             runDirectorCut();
         };
 
-        /* --- LOGIC: DIVIDE IMAGE INTO ZONES --- */
-        // Returns an ID (0-8) based on position
         function getCluster(x, y, w, h) {
-            // Normalized coordinates (0.0 to 1.0)
             const nx = x / w;
             const ny = y / h;
             
-            // Special Logic: Is it the Face?
-            if (ny < 0.5 && nx > 0.3 && nx < 0.7) {
-                return 99; // FACE ID
-            }
-
-            // Grid logic
-            if(ny > 0.6) return 0; // Bottom (Dress)
-            if(nx < 0.3) return 1; // Left Side
-            if(nx > 0.7) return 2; // Right Side
-            return 3; // Remaining Middle/Top
+            if (ny < 0.5 && nx > 0.3 && nx < 0.7) return 99; // Face
+            if(ny > 0.6) return 0; // Bottom
+            if(nx < 0.3) return 1; // Left
+            if(nx > 0.7) return 2; // Right
+            return 3; // Top/Middle
         }
 
         /* --- PARTICLE CLASS --- */
@@ -194,11 +210,8 @@
                 this.ty = ty;
                 this.cluster = cluster;
                 
-                // Color: STRICTLY PINK. Brightness affects Alpha.
                 this.color = `rgba(255, 0, 60, ${brightness/255})`;
 
-                // Start Position: RANDOM CHAOS (Full Screen)
-                // Spread far beyond screen edges
                 const spread = Math.max(window.innerWidth, window.innerHeight) * 1.5;
                 this.x = (Math.random() - 0.5) * spread + (window.innerWidth/2);
                 this.y = (Math.random() - 0.5) * spread + (window.innerHeight/2);
@@ -211,23 +224,19 @@
                 if(!particlesVisible) return;
 
                 if(isFinalized) {
-                    // Slight breathing jitter
                     this.x = this.tx + (Math.random()-0.5)*0.3;
                     this.y = this.ty + (Math.random()-0.5)*0.3;
                     return;
                 }
 
                 if(activeClusters.has(this.cluster)) {
-                    // Assemble
                     const dx = this.tx - this.x;
                     const dy = this.ty - this.y;
-                    this.x += dx * 0.12; // Snap speed
+                    this.x += dx * 0.12; 
                     this.y += dy * 0.12;
                 } else {
-                    // Chaos Flight
                     this.x += this.vx;
                     this.y += this.vy;
-                    // Bounce boundaries
                     if(this.x < -1000 || this.x > window.innerWidth+1000) this.vx *= -1;
                     if(this.y < -1000 || this.y > window.innerHeight+1000) this.vy *= -1;
                 }
@@ -246,9 +255,14 @@
             requestAnimationFrame(loop);
         }
 
-        /* --- THE CINEMATIC SEQUENCE --- */
+        /* --- CINEMATIC SEQUENCE --- */
         async function runDirectorCut() {
             const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+            // [FIX 4] Adaptive Zoom
+            // If screen is narrow (iPad/Phone), zoom less so we don't lose context
+            const isSmallScreen = window.innerWidth < 900;
+            const ZOOM_LEVEL = isSmallScreen ? 3.5 : 5.5;
 
             // 1. TEXT PHASE
             await sleep(2000);
@@ -257,47 +271,42 @@
             txt.innerText = "PREPARING HOLOGRAPHIC MATRIX...";
             await sleep(3000);
             
-            // 2. CHAOS PHASE (4 Seconds)
+            // 2. CHAOS PHASE
             txt.style.opacity = '0';
             canvas.style.opacity = '1';
             particlesVisible = true;
             sfx.vacuum.play().catch(()=>{});
-            await sleep(4000); // Shorter Chaos
+            await sleep(4000);
 
             // 3. ASSEMBLY PHASE
-            // ZOOM IN (Scale 5.5 - slightly reduced to fit particles in view)
-            rig.style.transform = "scale(5.5)";
+            rig.style.transform = `scale(${ZOOM_LEVEL})`;
 
-            // Step A: Build Bottom (Dress)
-            // Center is 50/50. Zooming 5.5x means 50/70 is safer for bottom than 50/80
+            // Step A: Bottom
             rig.style.transformOrigin = "50% 70%"; 
             activeClusters.add(0);
             try{ sfx.part.currentTime=0; sfx.part.play(); } catch(e){}
             await sleep(4000);
 
-            // Step B: Build Left Side
-            // 42% pushes it left just enough without losing center
-            rig.style.transformOrigin = "42% 55%";
+            // Step B: Left
+            // Adjusted percentages for safer framing on narrow screens
+            rig.style.transformOrigin = isSmallScreen ? "45% 55%" : "42% 55%";
             activeClusters.add(1);
             try{ sfx.part.currentTime=0; sfx.part.play(); } catch(e){}
             await sleep(4000);
 
-            // Step C: Build Right Side
-            // 58% pushes right
-            rig.style.transformOrigin = "58% 55%";
+            // Step C: Right
+            rig.style.transformOrigin = isSmallScreen ? "55% 55%" : "58% 55%";
             activeClusters.add(2);
             try{ sfx.part.currentTime=0; sfx.part.play(); } catch(e){}
             await sleep(4000);
 
-            // Step D: Build Middle/Top (Hair)
-            // 40% height shows the forehead/hair area
+            // Step D: Middle/Top
             rig.style.transformOrigin = "50% 40%";
             activeClusters.add(3);
             try{ sfx.part.currentTime=0; sfx.part.play(); } catch(e){}
             await sleep(4000);
 
-            // 4. THE FINALE: FACE REVEAL
-            // Dead center on face (approx 48% height)
+            // 4. FACE REVEAL
             rig.style.transformOrigin = "50% 48%";
             activeClusters.add(99); 
             try{ sfx.part.currentTime=0; sfx.part.play(); } catch(e){}
