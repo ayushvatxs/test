@@ -22,6 +22,12 @@ body{
   display:flex;
   justify-content:center;
   padding:12px;
+  
+  /* --- FIXES FOR IPAD FULL SCREEN --- */
+  min-height: 100vh;       /* Forces the page to fill the screen height */
+  align-items: center;     /* Centers the content vertically */
+  overflow-x: hidden;      /* Prevents horizontal scrolling/zooming out caused by blobs */
+  /* ---------------------------------- */
 }
 
   .blob{
@@ -55,6 +61,7 @@ body{
   display:flex;
   flex-direction:column;
   align-items:center;
+  position: relative; /* Helps contain absolute elements if needed */
 }
 
 /* TITLE */
@@ -119,7 +126,7 @@ body{
   .balloon-sticker{
   position: absolute;
   top: -120px;        /* move up/down */
-  right: -22px;      /* move left/right */
+  right: -22px;       /* move left/right */
   width: 120px;
   pointer-events: none;
   z-index: 3;
@@ -225,18 +232,15 @@ body{
 <div class="blob peach"></div>
 
 
-  <!-- TITLE -->
   <div class="title">
   🎈 HAPPY BIRTHDAY
 </div>
 
 
-  <!-- LEFT PHOTO -->
   <div class="photo photo-left">
     <img src="photo-left.jpg" alt="">
   </div>
 
-  <!-- MESSAGE BOX -->
   <div class="center-box">
     <img src="balloon.png" class="balloon-sticker" alt="balloons">
 
@@ -259,12 +263,10 @@ body{
 </p>
   </div>
 
-  <!-- RIGHT PHOTO -->
   <div class="photo photo-right">
     <img src="photo-right.jpg" alt="">
   </div>
 
-  <!-- CLICKABLE ARROW -->
   <a href="page3.html" class="arrow-wrap" style="display:block; text-decoration:none;">
     <div class="arrow"></div>
   </a>
