@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>THE VIOLINA ERA | FINAL</title>
+    <title>THE VIOLINA ERA | FINAL GOLD</title>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bodoni+Moda:ital,wght@0,400;0,900;1,400&family=Syne:wght@400;800&family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        /* --- CORE OPTIMIZATIONS --- */
+        /* --- CORE --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         html, body {
@@ -47,7 +47,7 @@
         .zoom-slow { width: 100%; height: 100%; object-fit: cover; transform: scale(1.1); transition: transform 10s ease-out; }
         .active .zoom-slow { transform: scale(1.0); }
 
-        /* --- FLASH EFFECT (7 Flashes) --- */
+        /* --- FLASH EFFECT (7 Flashes / 2.1s) --- */
         .flash-effect { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 50; }
         
         .active .flash-effect.paparazzi { animation: flashBurst 0.3s 7; } 
@@ -60,14 +60,14 @@
         }
         @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
 
-        /* --- TICKER --- */
+        /* --- UI ELEMENTS --- */
         .ticker-wrap {
             position: absolute; width: 100%; overflow: hidden; background: var(--neon); color: #fff;
             padding: 10px 0; z-index: 10; font-family: 'Anton'; text-transform: uppercase; font-size: 1.5rem; letter-spacing: 2px;
         }
         .ticker { display: inline-block; white-space: nowrap; animation: ticker 20s linear infinite; }
 
-        /* --- PAGE SPECIFIC STYLES --- */
+        /* --- PAGE STYLES --- */
         #p1 .masthead { position: absolute; top: -10px; width: 100%; text-align: center; font-family: 'Anton'; font-size: 25vw; line-height: 0.8; z-index: 2; mix-blend-mode: overlay; }
         .main-head { font-family: 'Bodoni Moda'; font-size: 5rem; font-weight: 900; font-style: italic; line-height: 0.9; margin-bottom: 20px; }
         
@@ -436,94 +436,103 @@
 </div>
 
 <script>
-    /* --- AUDIO ENGINE --- */
-    const audioLibrary = {
+    // --- ROBUST AUDIO ENGINE ---
+    const sounds = {
         'sfx_page.mp3': new Audio('sfx_page.mp3'),
         'sfx_shutter.mp3': new Audio('sfx_shutter.mp3'),
         'sfx_flash.mp3': new Audio('sfx_flash.mp3'),
         'sfx_notification.mp3': new Audio('sfx_notification.mp3')
     };
 
-    let activeTimeouts = []; // Tracks burst sounds
+    // Preload audio objects
+    const audioCache = {};
+    Object.keys(sounds).forEach(key => {
+        audioCache[key] = sounds[key];
+    });
+
+    let burstTimeouts = [];
 
     function playAudio(key) {
         let audioKey = key;
         let isBurst = (key === 'sfx_burst');
-        if (key === 'sfx_burst') audioKey = 'sfx_notification.mp3';
         
-        const audio = audioLibrary[audioKey];
-        if (!audio) return;
+        // Map burst to notification sound
+        if (isBurst) audioKey = 'sfx_notification.mp3';
 
-        // Reset the audio to 0 so it replays even if it finished previously
-        audio.pause();
-        audio.currentTime = 0;
+        const baseAudio = audioCache[audioKey];
+        if (!baseAudio) return;
+
+        // Clear any pending bursts if a new sound triggers
+        burstTimeouts.forEach(id => clearTimeout(id));
+        burstTimeouts = [];
 
         if (isBurst) {
-            // Play 3 times using clones so they overlap
-            audio.play().catch(()=>{});
-            
-            activeTimeouts.push(setTimeout(() => { 
-                const clone = audio.cloneNode(); 
-                clone.play().catch(()=>{}); 
+            // BURST MODE: Play 3 times with delays using CLONES (Polyphony)
+            // Clone 1
+            const s1 = baseAudio.cloneNode();
+            s1.volume = 1.0;
+            s1.play().catch(()=>{});
+
+            // Clone 2
+            burstTimeouts.push(setTimeout(() => { 
+                const s2 = baseAudio.cloneNode();
+                s2.volume = 1.0;
+                s2.play().catch(()=>{}); 
             }, 250));
-            
-            activeTimeouts.push(setTimeout(() => { 
-                const clone = audio.cloneNode(); 
-                clone.play().catch(()=>{}); 
+
+            // Clone 3
+            burstTimeouts.push(setTimeout(() => { 
+                const s3 = baseAudio.cloneNode();
+                s3.volume = 1.0;
+                s3.play().catch(()=>{}); 
             }, 500));
+
         } else {
-            // Normal Play
-            audio.play().catch((e) => console.log(e));
+            // NORMAL MODE: Use CloneNode to allow overlap (fixes Page Turn cut-off)
+            const clone = baseAudio.cloneNode();
+            clone.volume = 1.0;
+            clone.play().catch((e) => console.log("Audio play error:", e));
         }
     }
 
-    function stopAudio(key) {
-        // Stop bursts immediately
-        activeTimeouts.forEach(id => clearTimeout(id));
-        activeTimeouts = [];
-
-        let audioKey = key;
-        if (key === 'sfx_burst') audioKey = 'sfx_notification.mp3';
-        
-        const audio = audioLibrary[audioKey];
-        if (audio) {
-            audio.pause();
-            audio.currentTime = 0; // Rewind to start
-        }
-    }
-
-    // iPad/iPhone Unlocker: Plays silent audio on first touch
-    const unlockAudio = () => {
-        Object.values(audioLibrary).forEach(sound => {
-            sound.volume = 0; 
-            sound.play().then(() => {
-                sound.pause(); 
-                sound.currentTime = 0;
-                sound.volume = 1;
-            }).catch(()=>{});
+    // --- SILENT UNLOCKER FOR IOS/IPAD ---
+    function unlockAudio() {
+        // Play all sounds silently for a split second to 'warm up' the context
+        Object.values(audioCache).forEach(audio => {
+            audio.volume = 0.0001; // Effectively silent but active
+            const playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    audio.pause();
+                    audio.currentTime = 0;
+                    audio.volume = 1.0; // Reset volume for actual use
+                }).catch(() => {});
+            }
         });
-        window.removeEventListener('click', unlockAudio);
+        
+        // Remove listeners once unlocked
         window.removeEventListener('touchstart', unlockAudio);
-    };
+        window.removeEventListener('click', unlockAudio);
+    }
 
-    window.addEventListener('click', unlockAudio);
     window.addEventListener('touchstart', unlockAudio);
+    window.addEventListener('click', unlockAudio);
 
+    // --- SCROLL OBSERVER ---
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-            const soundFile = entry.target.getAttribute('data-sound');
-            if (soundFile) {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
+            if (entry.isIntersecting) {
+                entry.target.classList.add('active');
+                
+                // Play Sound
+                const soundFile = entry.target.getAttribute('data-sound');
+                if (soundFile) {
                     playAudio(soundFile);
-                } else {
-                    entry.target.classList.remove('active');
-                    stopAudio(soundFile);
                 }
             } else {
-                // If page has no sound, just handle visual
-                if (entry.isIntersecting) entry.target.classList.add('active');
-                else entry.target.classList.remove('active');
+                entry.target.classList.remove('active');
+                // We do NOT stop audio here anymore. 
+                // Letting clones finish naturally prevents the "choppy" audio bug.
             }
         });
     }, { threshold: 0.4 });
