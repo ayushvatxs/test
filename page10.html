@@ -3,137 +3,201 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE PREMIERE</title>
-    <link href="https://fonts.googleapis.com/css2?family=Limelight&family=Montserrat:wght@300&display=swap" rel="stylesheet">
+    <title>THE FEATURE FILM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Limelight&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        /* --- RESET --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background-color: #050505;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-        }
-
-        /* --- THE PROJECTOR BEAM --- */
-        .beam {
-            position: absolute;
-            top: -20%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60vw;
-            height: 100vh;
-            background: linear-gradient(to bottom, rgba(255,255,255,0.4) 0%, transparent 80%);
-            clip-path: polygon(40% 0%, 60% 0%, 100% 100%, 0% 100%);
-            pointer-events: none;
-            z-index: 1;
-            opacity: 0.5;
-            animation: flicker-light 0.1s infinite alternate;
-        }
-
-        /* --- THE MOVIE SCREEN --- */
-        .screen-container {
-            position: relative;
-            width: 80%;
-            max-width: 800px;
-            aspect-ratio: 16/9;
-            background: #000;
-            border: 10px solid #111;
-            border-radius: 10px;
-            box-shadow: 0 0 100px rgba(255, 255, 255, 0.2);
-            overflow: hidden;
-            z-index: 2;
-        }
-
-        .movie-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            /* Using the B&W photo for cinematic effect */
-            filter: grayscale(100%) contrast(1.2);
-            animation: slight-zoom 20s infinite alternate;
-        }
-
-        /* --- OLD FILM GRAIN OVERLAY --- */
-        .grain-overlay {
-            position: absolute;
-            inset: 0;
-            background-image: url("https://www.transparenttextures.com/patterns/stardust.png");
-            opacity: 0.3;
-            animation: grain-move 0.5s steps(5) infinite;
-            pointer-events: none;
-        }
-
-        /* --- TEXT --- */
-        .subtitle {
-            margin-top: 40px;
+            background-color: #111;
+            height: 100vh; width: 100vw; overflow: hidden;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            color: #e0e0e0;
             font-family: 'Limelight', cursive;
-            font-size: 2rem;
-            letter-spacing: 5px;
+        }
+
+        /* --- VINTAGE FILM FILTER (The "Old Look") --- */
+        .film-overlay {
+            position: absolute; inset: 0; pointer-events: none; z-index: 100;
+            background: rgba(255, 240, 200, 0.05); /* Slight Sepia Tint */
+            box-shadow: inset 0 0 150px rgba(0,0,0,0.9); /* Vignette */
+        }
+
+        /* Moving Scratches/Grain */
+        .film-overlay::before {
+            content: ""; position: absolute; inset: 0;
+            background-image: url("https://www.transparenttextures.com/patterns/stardust.png");
+            opacity: 0.4;
+            animation: grain-dance 0.2s steps(4) infinite;
+        }
+
+        /* Vertical Jitter (Projector Shake) */
+        .projector-shake {
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            animation: vertical-jitter 3s infinite;
+        }
+
+        /* --- 1. THE COUNTDOWN LEADER --- */
+        .countdown-container {
+            position: absolute; inset: 0;
+            background: #222;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 50;
+            /* Hide after countdown ends */
+            animation: fade-out 0.1s forwards 4s; 
+        }
+
+        .countdown-circle {
+            width: 300px; height: 300px;
+            border: 4px solid #fff;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            position: relative;
+        }
+
+        /* The Sweeping Hand of the clock */
+        .countdown-circle::after {
+            content: ''; position: absolute; top: 0; left: 50%;
+            width: 2px; height: 50%;
+            background: #fff;
+            transform-origin: bottom center;
+            animation: clock-sweep 1s infinite linear;
+        }
+
+        .countdown-number {
+            font-size: 10rem; color: #fff;
+            font-family: 'Courier Prime', monospace;
+        }
+
+        /* --- 2. THE MAIN REVEAL --- */
+        .main-content {
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            opacity: 0; /* Hidden initially */
+            animation: fade-in 0.5s forwards 4.1s; /* Appear after countdown */
+        }
+
+        .star-photo {
+            height: 60vh;
+            border: 10px solid #fff;
+            box-shadow: 0 0 50px rgba(255,255,255,0.2);
+            filter: grayscale(100%) contrast(1.2);
+            margin-bottom: 30px;
+        }
+
+        .title-card {
             text-align: center;
-            opacity: 0;
-            animation: fade-in 3s forwards 1s;
-            z-index: 3;
+            text-transform: uppercase;
+        }
+
+        .production-text {
+            font-family: 'Courier Prime', monospace;
+            font-size: 1rem; letter-spacing: 5px; margin-bottom: 10px;
+        }
+
+        .star-name {
+            font-size: 5rem; letter-spacing: 2px;
+            text-shadow: 0 0 20px #fff;
         }
 
         /* --- NEXT BUTTON --- */
-        .exit-btn {
-            position: absolute;
-            bottom: 30px;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.8rem;
-            color: #555;
-            background: none;
-            border: none;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            transition: 0.3s;
-            z-index: 10;
+        .next-reel-btn {
+            margin-top: 30px;
+            background: transparent; border: 1px solid #fff; color: #fff;
+            padding: 10px 30px; font-family: 'Courier Prime'; cursor: pointer;
+            opacity: 0;
+            animation: fade-in 2s forwards 6s; /* Appear last */
         }
-        .exit-btn:hover { color: #fff; }
+        .next-reel-btn:hover { background: #fff; color: #000; }
+
 
         /* --- ANIMATIONS --- */
-        @keyframes flicker-light {
-            0% { opacity: 0.3; }
-            100% { opacity: 0.5; }
+        @keyframes grain-dance {
+            0% { transform: translate(0,0); }
+            25% { transform: translate(-5px, 5px); }
+            50% { transform: translate(5px, -5px); }
+            75% { transform: translate(-5px, -5px); }
+            100% { transform: translate(5px, 5px); }
         }
 
-        @keyframes grain-move {
-            0% { background-position: 0 0; }
-            100% { background-position: 10px 10px; }
+        @keyframes vertical-jitter {
+            0% { transform: translateY(0); }
+            2% { transform: translateY(2px); }
+            4% { transform: translateY(-2px); }
+            6% { transform: translateY(0); }
+            90% { transform: translateY(0); }
+            92% { transform: translateY(3px); }
+            100% { transform: translateY(0); }
         }
 
-        @keyframes slight-zoom {
-            0% { transform: scale(1.0); }
-            100% { transform: scale(1.1); }
-        }
+        @keyframes clock-sweep { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes fade-out { to { opacity: 0; visibility: hidden; } }
+        @keyframes fade-in { to { opacity: 1; } }
 
-        @keyframes fade-in {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
+        /* Responsive */
+        @media (max-width: 600px) {
+            .star-name { font-size: 3rem; }
+            .countdown-circle { width: 200px; height: 200px; }
+            .countdown-number { font-size: 6rem; }
         }
 
     </style>
 </head>
 <body>
 
-    <div class="beam"></div>
+    <div class="film-overlay"></div>
 
-    <div class="screen-container">
-        <div class="grain-overlay"></div>
-        <img src="mag_bw.jpg" onerror="this.src='mag_cover.jpg'" class="movie-img">
+    <div class="projector-shake">
+
+        <div class="countdown-container">
+            <div class="countdown-circle">
+                <div class="countdown-number" id="count">3</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="title-card">
+                <div class="production-text">A VIOLINA PRODUCTION</div>
+            </div>
+            
+            <img src="mag_bw.jpg" onerror="this.src='mag_cover.jpg'" class="star-photo">
+            
+            <div class="title-card">
+                <div class="production-text">STARRING</div>
+                <div class="star-name">VIOLINA</div>
+            </div>
+
+            <button class="next-reel-btn" onclick="window.location.href='page11.html'">
+                START CREDIT SCENE >
+            </button>
+        </div>
+
     </div>
 
-    <div class="subtitle">STARRING HER.</div>
+    <script>
+        // Simple Countdown Script
+        const countEl = document.getElementById('count');
+        let timeLeft = 3;
 
-    <button class="exit-btn" onclick="window.location.href='final.html'">
-        End Credits >
-    </button>
+        const timer = setInterval(() => {
+            timeLeft--;
+            if (timeLeft > 0) {
+                countEl.innerText = timeLeft;
+            } else {
+                clearInterval(timer);
+            }
+        }, 1000);
+
+        // Optional Audio Hook (Projector Sound)
+        const audio = new Audio('sfx_projector.mp3');
+        audio.loop = true;
+        // Try playing on click interaction if browser blocked auto-play
+        window.addEventListener('click', () => { audio.play().catch(()=>{}); }, {once:true});
+    </script>
 
 </body>
 </html>
