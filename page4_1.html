@@ -16,7 +16,7 @@
             height: 100%;
             margin: 0;
             padding: 0;
-            overflow-x: hidden; /* FIX: Prevents horizontal scrolling/zooming */
+            overflow-x: hidden;
         }
 
         body {
@@ -27,7 +27,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            /* justify-content: center; Optional: helps center content vertically if short */
+            justify-content: center; /* Vertically center content */
             color: #4a4a4a;
             position: relative;
         }
@@ -67,15 +67,15 @@
         /* --- HEADER --- */
         .header {
             text-align: center;
-            margin-top: 30px;
-            margin-bottom: 20px;
+            margin-bottom: 30px; /* More space */
             z-index: 2;
             animation: fadeInDown 1s ease;
-            width: 90%; /* Prevent text hitting edges */
+            width: 90%;
+            margin-top: 20px;
         }
 
         .title {
-            font-size: 2rem;
+            font-size: 2.8rem; /* BIGGER FONT */
             font-weight: 700;
             color: #ff4d6d;
             margin: 0;
@@ -83,7 +83,7 @@
         }
 
         .subtitle {
-            font-size: 1rem;
+            font-size: 1.2rem; /* BIGGER FONT */
             color: #888;
             margin-top: 5px;
         }
@@ -91,13 +91,16 @@
         /* --- MAIN LAYOUT CONTAINER (Mind Map Grid) --- */
         .mind-map-container {
             display: grid;
-            grid-template-columns: 1fr auto 1fr; /* Left cards, Photo, Right cards */
-            grid-template-rows: auto auto; /* Top cards, Bottom cards */
-            gap: 20px;
+            grid-template-columns: 1fr auto 1fr; 
+            grid-template-rows: auto auto; 
+            gap: 30px; /* MORE GAP */
             align-items: center;
             justify-items: center;
             width: 95%;
-            max-width: 500px;
+            
+            /* INCREASED SIZE FOR IPAD */
+            max-width: 750px; /* Was 500px */
+            
             margin-bottom: 40px;
             z-index: 2;
             position: relative;
@@ -106,10 +109,13 @@
         /* --- CENTRAL PHOTO --- */
         .center-photo-wrapper {
             grid-column: 2;
-            grid-row: 1 / span 2; /* Spans both rows in the center */
+            grid-row: 1 / span 2; 
             position: relative;
-            width: 140px;
-            height: 140px;
+            
+            /* BIGGER PHOTO */
+            width: 180px; /* Was 140px */
+            height: 180px; /* Was 140px */
+            
             z-index: 5;
             animation: zoomIn 1s ease;
         }
@@ -119,50 +125,40 @@
             height: 100%;
             border-radius: 50%;
             object-fit: cover;
-            /* Snowy glass border effect around photo */
-            border: 5px solid rgba(255, 255, 255, 0.6);
+            border: 6px solid rgba(255, 255, 255, 0.6);
             box-shadow: 
                 0 10px 30px rgba(255, 77, 109, 0.3),
                 inset 0 0 20px rgba(255, 255, 255, 0.5);
             backdrop-filter: blur(5px);
         }
 
-        /* --- CARD STYLES (Snowy Glass) --- */
+        /* --- CARD STYLES --- */
         .ingredient-card {
             width: 100%;
-            max-width: 160px;
-            height: 160px;
+            
+            /* BIGGER CARDS */
+            max-width: 200px; /* Was 160px */
+            height: 200px;    /* Was 160px */
+            
             perspective: 1000px;
             cursor: pointer;
             position: relative;
         }
 
-        /* Connecting Lines (Pseudo-elements) */
+        /* Connecting Lines - Adjusted for bigger size */
         .ingredient-card::before {
             content: '';
             position: absolute;
             z-index: -1;
             background: rgba(255, 77, 109, 0.4);
-            height: 2px;
+            height: 3px; /* Thicker lines */
             transition: all 0.5s ease;
         }
 
-        /* Top Left Card Line */
-        .card-tl::before {
-            width: 60px; right: -30px; top: 50%; transform: rotate(30deg);
-        }
-        /* Top Right Card Line */
-        .card-tr::before {
-            width: 60px; left: -30px; top: 50%; transform: rotate(-30deg);
-        }
-        /* Bottom Left Card Line */
-        .card-bl::before {
-            width: 60px; right: -30px; top: 50%; transform: rotate(-30deg);
-        }
-        /* Bottom Right Card Line */
-        .card-br::before {
-            width: 60px; left: -30px; top: 50%; transform: rotate(30deg);
-        }
+        .card-tl::before { width: 70px; right: -35px; top: 50%; transform: rotate(30deg); }
+        .card-tr::before { width: 70px; left: -35px; top: 50%; transform: rotate(-30deg); }
+        .card-bl::before { width: 70px; right: -35px; top: 50%; transform: rotate(-30deg); }
+        .card-br::before { width: 70px; left: -35px; top: 50%; transform: rotate(30deg); }
 
 
         .card-inner {
@@ -170,69 +166,55 @@
             width: 100%;
             height: 100%;
             text-align: center;
-            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy flip */
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             transform-style: preserve-3d;
-            border-radius: 20px;
+            border-radius: 25px; /* Rounder corners */
         }
 
         .ingredient-card.flipped .card-inner {
             transform: rotateY(180deg);
         }
 
-        /* FRONT & BACK COMMON STYLES - SNOWY GLASS */
         .card-front, .card-back {
             position: absolute;
             width: 100%;
             height: 100%;
             -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
-            border-radius: 20px;
+            border-radius: 25px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 15px;
+            padding: 20px; /* More padding */
             box-sizing: border-box;
-            
-            /* THE SNOWY GLASS EFFECT */
-            background: rgba(255, 255, 255, 0.25); /* More transparent */
-            box-shadow: 
-                0 8px 32px 0 rgba(255, 77, 109, 0.15),
-                inset 0 0 15px rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(12px); /* Stronger blur */
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 8px 32px 0 rgba(255, 77, 109, 0.15), inset 0 0 15px rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.4); /* Subtle icy border */
+            border: 1px solid rgba(255, 255, 255, 0.4);
         }
 
-        .card-front {
-            /* Slight pink tint on front */
-            background: linear-gradient(145deg, rgba(255,255,255,0.3), rgba(255, 230, 235, 0.3));
-        }
-
-        .card-back {
-            transform: rotateY(180deg);
-            /* Slight gold tint on back for readability */
-            background: linear-gradient(145deg, rgba(255,255,255,0.4), rgba(255, 245, 230, 0.4));
-            border: 1px solid rgba(255, 200, 210, 0.6);
-        }
+        .card-front { background: linear-gradient(145deg, rgba(255,255,255,0.3), rgba(255, 230, 235, 0.3)); }
+        .card-back { transform: rotateY(180deg); background: linear-gradient(145deg, rgba(255,255,255,0.4), rgba(255, 245, 230, 0.4)); border: 1px solid rgba(255, 200, 210, 0.6); }
 
         /* Content Styling */
         .percent {
-            font-size: 1.8rem;
+            font-size: 2.2rem; /* Bigger */
             font-weight: 700;
             color: #ff4d6d;
             text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
         }
 
         .label {
-            font-size: 0.9rem;
+            font-size: 1.1rem; /* Bigger */
             font-weight: 600;
             color: #444;
-            margin-top: 8px;
+            margin-top: 10px;
         }
 
         .tap-hint {
-            font-size: 0.65rem;
+            font-size: 0.8rem;
             color: #ff4d6d;
             margin-top: 12px;
             opacity: 0.8;
@@ -240,9 +222,9 @@
         }
 
         .note-text {
-            font-size: 0.75rem;
+            font-size: 0.9rem; /* Bigger for readability */
             color: #333;
-            line-height: 1.5;
+            line-height: 1.6;
             font-weight: 500;
         }
 
@@ -250,18 +232,18 @@
         .footer-container {
             text-align: center;
             z-index: 2;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         .math-joke {
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             color: #777;
             font-style: italic;
             margin-bottom: 20px;
             padding: 0 20px;
         }
 
-        /* --- BOTTOM ARROW NAVIGATION --- */
+        /* --- BOTTOM ARROW --- */
         .next-arrow-container {
             display: flex;
             justify-content: center;
@@ -271,7 +253,7 @@
         }
 
         .next-arrow {
-            font-size: 2.5rem;
+            font-size: 3rem; /* Bigger arrow */
             color: #ff4d6d;
             text-decoration: none;
             animation: bounceArrow 2s infinite;
@@ -284,20 +266,34 @@
         @keyframes pulse { 0% { opacity: 0.5; transform: scale(1); } 50% { opacity: 1; transform: scale(1.05); } 100% { opacity: 0.5; transform: scale(1); } }
         @keyframes bounceArrow { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-15px); } 60% { transform: translateY(-7px); } }
 
-        /* --- MOBILE TWEAKS (Keep it neat on small screens) --- */
-        @media (max-width: 380px) {
-             .mind-map-container {
-                grid-template-columns: 1fr 1fr; /* 2x2 grid */
-                grid-template-rows: auto auto auto; /* Photo on top row */
+        /* --- MOBILE TWEAKS (Scale down for phones) --- */
+        @media (max-width: 480px) {
+            .header { margin-top: 10px; margin-bottom: 10px; }
+            .title { font-size: 1.8rem; } /* Back to smaller size on phone */
+            
+            .mind-map-container {
+                max-width: 350px; /* Force smaller width on phone */
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: auto auto auto;
                 gap: 15px;
             }
+            
             .center-photo-wrapper {
-                grid-column: 1 / span 2; /* Photo takes full width on top */
+                grid-column: 1 / span 2;
                 grid-row: 1;
+                width: 120px; height: 120px; /* Smaller photo */
                 margin-bottom: 10px;
             }
-            /* Hide connecting lines on very small screens as they break layout */
-            .ingredient-card::before { display: none; }
+
+            .ingredient-card {
+                max-width: 145px; height: 145px; /* Smaller cards */
+            }
+            
+            .ingredient-card::before { display: none; } /* Hide lines on mobile */
+            
+            .percent { font-size: 1.6rem; }
+            .label { font-size: 0.8rem; }
+            .note-text { font-size: 0.75rem; }
         }
     </style>
 </head>
