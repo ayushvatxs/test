@@ -2,196 +2,279 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>The Main Event | Violina</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE GRAND PREMIERE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Monoton&family=Montserrat:wght@400;900&family=Permanent+Marker&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --neon-gold: #e0c097;
-            --dark-bg: #0a0a0a;
-        }
-
+        /* --- RESET --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            margin: 0;
-            background: var(--dark-bg);
+            height: 100vh; width: 100vw; overflow: hidden;
+            background-color: #020202;
             font-family: 'Montserrat', sans-serif;
-            color: #fff;
-            overflow-x: hidden;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
+            perspective: 1000px; /* For 3D depth */
         }
 
-        /* --- VINTAGE GRAIN (MATCHING PAGE 6) --- */
-        .film-grain {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 10;
-            opacity: 0.12;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        /* --- 1. CSS CITY SCENE (DRAWN WITH CODE, NO IMAGES) --- */
+        .scene-container {
+            position: absolute; inset: 0;
+            z-index: 0;
+            background: linear-gradient(to bottom, #050505 0%, #1a1a1a 100%);
+            overflow: hidden;
         }
 
-        /* --- CITY RAIN EFFECT --- */
-        .rain-overlay {
-            position: fixed;
-            inset: 0;
-            background: linear-gradient(to bottom, rgba(10,10,10,0) 0%, rgba(10,10,10,0.8) 100%);
+        /* The Fog/Glow of City Lights */
+        .fog-lights {
+            position: absolute; top: 0; left: 0; width: 100%; height: 60%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255, 0, 85, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(0, 212, 255, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 50% 90%, rgba(212, 175, 55, 0.1) 0%, transparent 50%);
+            filter: blur(30px);
+        }
+
+        /* The City Skyline (Silhouettes) */
+        .skyline {
+            position: absolute; bottom: 40%; left: 0; width: 100%; height: 20%;
+            background: 
+                linear-gradient(to top, #000 0%, transparent 100%),
+                repeating-linear-gradient(90deg, #0a0a0a 0px, #0a0a0a 40px, transparent 40px, transparent 60px),
+                repeating-linear-gradient(90deg, #050505 0px, #050505 30px, transparent 30px, transparent 90px);
+            opacity: 0.8;
             z-index: 1;
+        }
+
+        /* The Wet Street (Reflective Floor) */
+        .wet-street {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 40%;
+            background: 
+                linear-gradient(to bottom, #000 0%, #111 100%),
+                repeating-linear-gradient(90deg, transparent 0, transparent 48%, rgba(255,255,255,0.02) 50%, transparent 52%);
+            transform-origin: top;
+            transform: scaleY(1.5); /* Stretch perspective */
+            filter: blur(1px);
+            z-index: 2;
+        }
+
+        /* Street Reflections */
+        .wet-street::after {
+            content: ''; position: absolute; inset: 0;
+            background: 
+                radial-gradient(ellipse at 50% 0%, rgba(255, 0, 85, 0.2) 0%, transparent 60%), /* Red Reflection */
+                radial-gradient(ellipse at 20% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 30%); /* White puddle */
+            opacity: 0.6;
+        }
+
+        /* --- 2. HEAVY RAIN --- */
+        .rain-container {
+            position: absolute; inset: 0; z-index: 5;
             pointer-events: none;
         }
+        
+        .rain-layer {
+            position: absolute; inset: 0;
+            background-image: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 100%);
+            background-size: 2px 50px;
+            background-repeat: repeat-y;
+            opacity: 0;
+            animation: rain-fall 0.6s linear infinite;
+        }
 
-        /* --- MARQUEE CONTAINER --- */
-        .marquee-container {
-            position: relative;
-            z-index: 5;
-            text-align: center;
-            padding: 40px;
-            border: 4px solid #222;
+        /* Multiple rain layers for depth */
+        .rain-1 { background-position: 10% 0; animation-delay: 0s; opacity: 0.3; }
+        .rain-2 { background-position: 30% -50px; animation-delay: 0.2s; opacity: 0.2; }
+        .rain-3 { background-position: 60% -20px; animation-delay: 0.4s; opacity: 0.3; }
+        .rain-4 { background-position: 85% -80px; animation-delay: 0.1s; opacity: 0.2; }
+
+        @keyframes rain-fall {
+            0% { transform: translateY(-100px); }
+            100% { transform: translateY(100vh); }
+        }
+
+        /* --- 3. THE MARQUEE BOARD --- */
+        .marquee-wrapper {
+            position: relative; z-index: 10;
+            transform: translateY(-20px); /* Lift above street */
+        }
+
+        .marquee-board {
             background: #000;
-            box-shadow: 0 0 50px rgba(0,0,0,1), inset 0 0 20px rgba(224, 192, 151, 0.05);
+            padding: 50px 80px;
+            border: 8px solid #1a1a1a;
+            border-radius: 20px;
+            box-shadow: 
+                0 20px 60px rgba(0,0,0,1),
+                0 0 100px rgba(212, 175, 55, 0.15); /* Gold glow haze */
+            text-align: center;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            min-width: 350px;
         }
 
-        /* The Outer Bulbs */
-        .marquee-container::before {
-            content: "";
+        /* Flashing Bulbs Border */
+        .marquee-board::before {
+            content: ''; position: absolute; inset: -15px;
+            border: 5px dotted #d4af37; /* Gold dots */
+            border-radius: 25px;
+            box-shadow: 0 0 25px #d4af37;
+            animation: bulb-flicker 2s infinite alternate;
+        }
+
+        /* --- TEXT ANIMATION --- */
+        .text-container { 
+            position: relative; 
+            height: 120px; 
+            width: 100%;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* 1. NOW SHOWING */
+        .text-initial {
             position: absolute;
-            inset: -15px;
-            border: 2px solid #333;
-            background-image: radial-gradient(#444 2px, transparent 2px);
-            background-size: 20px 20px;
-            z-index: -1;
-        }
-
-        .label {
-            font-size: 0.9rem;
-            letter-spacing: 5px;
-            color: #666;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-        }
-
-        /* --- THE NEON NAME --- */
-        .neon-name {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(3rem, 10vw, 6rem);
-            color: #111; /* Off state */
-            text-transform: uppercase;
-            margin: 0;
-            transition: color 0.2s;
-            position: relative;
-        }
-
-        /* The "On" State with Flickering */
-        .neon-name.active {
-            color: var(--neon-gold);
-            text-shadow: 
-                0 0 10px rgba(224, 192, 151, 0.8),
-                0 0 30px rgba(224, 192, 151, 0.4),
-                0 0 80px rgba(224, 192, 151, 0.2);
-            animation: flicker 3s infinite alternate;
-        }
-
-        .sub-text {
-            margin-top: 20px;
-            font-size: 1.2rem;
-            font-style: italic;
-            color: #888;
-            font-family: 'Playfair Display', serif;
-            opacity: 0;
-            transform: translateY(10px);
-            transition: all 1s ease 1.5s;
-        }
-
-        .sub-text.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* --- ANIMATIONS --- */
-        @keyframes flicker {
-            0%, 18%, 22%, 25%, 53%, 57%, 100% {
-                text-shadow: 
-                    0 0 10px rgba(224, 192, 151, 0.8),
-                    0 0 30px rgba(224, 192, 151, 0.4),
-                    0 0 80px rgba(224, 192, 151, 0.2);
-                color: var(--neon-gold);
-            }
-            20%, 24%, 55% {        
-                text-shadow: none;
-                color: #222;
-            }
-        }
-
-        /* --- CTA BUTTON --- */
-        .final-btn {
-            margin-top: 60px;
-            padding: 15px 40px;
-            background: transparent;
-            border: 1px solid var(--neon-gold);
-            color: var(--neon-gold);
-            text-decoration: none;
             font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 2.5rem;
+            color: #666; /* Off */
+            letter-spacing: 6px;
+            animation: text-switch-out 0.1s forwards 2.5s;
+        }
+
+        /* 2. VIOLINA */
+        .text-final {
+            position: absolute;
+            font-family: 'Monoton', cursive;
+            font-size: 6rem;
+            color: #d4af37; /* Gold */
             text-transform: uppercase;
-            letter-spacing: 3px;
-            font-size: 0.8rem;
-            z-index: 10;
-            transition: all 0.4s;
             opacity: 0;
+            letter-spacing: 3px;
+            white-space: nowrap;
+            /* Animation Sequence: Hidden -> Flicker On -> Steady Glow */
+            animation: 
+                flicker-in 2s forwards 2.6s, 
+                neon-glow 1.5s infinite alternate 4.6s;
         }
 
-        .final-btn.visible {
-            opacity: 1;
+        .top-label {
+            color: #fff; letter-spacing: 4px; font-size: 0.9rem; margin-bottom: 20px; opacity: 0.8; text-shadow: 0 0 5px #fff;
         }
 
-        .final-btn:hover {
-            background: var(--neon-gold);
-            color: #000;
-            box-shadow: 0 0 20px rgba(224, 192, 151, 0.4);
+        /* 3. SOLD OUT STAMP */
+        .sold-out {
+            position: absolute;
+            bottom: -30px; right: -40px;
+            font-family: 'Permanent Marker', cursive;
+            font-size: 3.5rem;
+            color: #ff003c; /* Red */
+            border: 5px solid #ff003c;
+            padding: 5px 30px;
+            transform: rotate(-12deg) scale(3);
+            opacity: 0;
+            background: #000;
+            box-shadow: 0 0 40px #ff003c;
+            z-index: 12;
+            animation: stamp-slam 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 5s;
+        }
+
+        /* --- ENTER BUTTON --- */
+        .enter-btn {
+            margin-top: 60px;
+            background: rgba(0,0,0,0.5);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 15px 40px;
+            font-family: 'Montserrat', sans-serif;
+            letter-spacing: 4px;
+            cursor: pointer;
+            transition: 0.3s;
+            z-index: 20;
+            opacity: 0;
+            animation: fade-in 1s forwards 5.5s;
+            backdrop-filter: blur(5px);
+        }
+        .enter-btn:hover { background: #d4af37; border-color: #d4af37; color: #000; box-shadow: 0 0 30px #d4af37; }
+
+        /* --- KEYFRAMES --- */
+        @keyframes text-switch-out { to { opacity: 0; } }
+
+        @keyframes flicker-in {
+            0% { opacity: 0; }
+            10% { opacity: 0; }
+            11% { opacity: 1; text-shadow: 0 0 10px #d4af37; }
+            15% { opacity: 0; }
+            20% { opacity: 0; }
+            21% { opacity: 1; text-shadow: 0 0 20px #d4af37; }
+            25% { opacity: 0.2; }
+            30% { opacity: 1; text-shadow: 0 0 10px #d4af37; }
+            100% { opacity: 1; text-shadow: 0 0 20px #d4af37, 0 0 60px #d4af37; }
+        }
+
+        @keyframes neon-glow {
+            from { text-shadow: 0 0 20px #d4af37, 0 0 40px #d4af37; }
+            to { text-shadow: 0 0 30px #d4af37, 0 0 80px #d4af37; }
+        }
+
+        @keyframes stamp-slam {
+            0% { opacity: 0; transform: rotate(-12deg) scale(3); }
+            100% { opacity: 1; transform: rotate(-12deg) scale(1); }
+        }
+
+        @keyframes bulb-flicker {
+            0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; }
+        }
+
+        @keyframes fade-in { to { opacity: 1; } }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .text-initial { font-size: 1.5rem; }
+            .text-final { font-size: 3rem; }
+            .sold-out { font-size: 2rem; bottom: -20px; right: -10px; }
+            .marquee-board { padding: 30px 20px; min-width: 90%; }
         }
 
     </style>
 </head>
 <body>
 
-    <div class="film-grain"></div>
-    <div class="rain-overlay"></div>
-
-    <div class="label">Premiere Night</div>
-
-    <div class="marquee-container">
-        <h1 class="neon-name" id="mainName">Now Showing</h1>
-        <div class="sub-text" id="subText">A Masterpiece in Every Frame</div>
+    <div class="scene-container">
+        <div class="fog-lights"></div>
+        <div class="skyline"></div>
+        <div class="wet-street"></div>
     </div>
 
-    <a href="page8.html" class="final-btn" id="nextBtn">Admission: One Only</a>
+    <div class="rain-container">
+        <div class="rain-layer rain-1"></div>
+        <div class="rain-layer rain-2"></div>
+        <div class="rain-layer rain-3"></div>
+        <div class="rain-layer rain-4"></div>
+    </div>
+
+    <div class="marquee-wrapper">
+        <div class="marquee-board">
+            <div class="top-label">TONIGHT'S PREMIERE</div>
+            
+            <div class="text-container">
+                <div class="text-initial">NOW SHOWING</div>
+                <div class="text-final">VIOLINA</div>
+            </div>
+
+            <div class="sold-out">SOLD OUT</div>
+        </div>
+    </div>
+
+    <button class="enter-btn" onclick="window.location.href='page10.html'">
+        ENTER THEATER >
+    </button>
 
     <script>
-        window.onload = () => {
-            const nameElement = document.getElementById('mainName');
-            const subText = document.getElementById('subText');
-            const nextBtn = document.getElementById('nextBtn');
-
-            // 1. Initial Flicker and Reveal
-            setTimeout(() => {
-                // Mimic a sign struggling to turn on
-                nameElement.style.color = "#333";
-                
-                setTimeout(() => {
-                    nameElement.innerText = "VIOLINA";
-                    nameElement.classList.add('active');
-                    subText.classList.add('visible');
-                    nextBtn.classList.add('visible');
-                }, 1000);
-
-            }, 1500);
-        };
+        const audio = new Audio('rain_city.mp3');
+        audio.loop = true;
+        // Try to auto-play (browsers might block until click)
+        window.addEventListener('click', () => { audio.play().catch(()=>{}); }, {once:true});
     </script>
+
 </body>
 </html>
