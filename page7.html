@@ -47,10 +47,9 @@
         .zoom-slow { width: 100%; height: 100%; object-fit: cover; transform: scale(1.1); transition: transform 10s ease-out; }
         .active .zoom-slow { transform: scale(1.0); }
 
-        /* --- FLASH EFFECT --- */
+        /* --- FLASH EFFECT (7 Flashes / 2.1s) --- */
         .flash-effect { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 50; }
         
-        /* 7 Flashes */
         .active .flash-effect.paparazzi { animation: flashBurst 0.3s 7; } 
         .active .flash-effect.single { animation: flashBurst 0.2s 1; }
 
@@ -68,7 +67,7 @@
         }
         .ticker { display: inline-block; white-space: nowrap; animation: ticker 20s linear infinite; }
 
-        /* --- PAGE SPECIFIC STYLES --- */
+        /* --- PAGE STYLES --- */
         #p1 .masthead { position: absolute; top: -10px; width: 100%; text-align: center; font-family: 'Anton'; font-size: 25vw; line-height: 0.8; z-index: 2; mix-blend-mode: overlay; }
         .main-head { font-family: 'Bodoni Moda'; font-size: 5rem; font-weight: 900; font-style: italic; line-height: 0.9; margin-bottom: 20px; }
         
@@ -437,7 +436,7 @@
 </div>
 
 <script>
-    /* --- SIMPLE & STABLE AUDIO ENGINE --- */
+    /* --- STABLE AUDIO ENGINE --- */
     const audioLibrary = {
         'sfx_page.mp3': new Audio('sfx_page.mp3'),
         'sfx_shutter.mp3': new Audio('sfx_shutter.mp3'),
@@ -445,42 +444,57 @@
         'sfx_notification.mp3': new Audio('sfx_notification.mp3')
     };
 
-    let userInteracted = false;
+    // Preload audio objects
+    const audioCache = {};
+    Object.keys(audioLibrary).forEach(key => {
+        audioCache[key] = audioLibrary[key];
+    });
 
-    // Listen for initial interaction to unlock audio
-    function enableAudio() {
-        if (userInteracted) return;
-        userInteracted = true;
-        window.removeEventListener('click', enableAudio);
-        window.removeEventListener('touchstart', enableAudio);
+    let burstTimeouts = [];
+
+    // SILENT UNLOCK: Runs once on first touch. Volume 0.0001 (Imperceptible but active)
+    function unlockAudio() {
+        Object.values(audioCache).forEach(audio => {
+            audio.volume = 0.0001; 
+            const playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    audio.pause();
+                    audio.currentTime = 0;
+                    audio.volume = 1.0; 
+                }).catch(() => {});
+            }
+        });
+        window.removeEventListener('touchstart', unlockAudio);
+        window.removeEventListener('click', unlockAudio);
     }
-    window.addEventListener('click', enableAudio);
-    window.addEventListener('touchstart', enableAudio);
+
+    window.addEventListener('touchstart', unlockAudio);
+    window.addEventListener('click', unlockAudio);
 
     function playAudio(key) {
-        if (!userInteracted) return; // Prevent startup noise
-
         let audioKey = key;
         let isBurst = (key === 'sfx_burst');
+        
         if (isBurst) audioKey = 'sfx_notification.mp3';
 
-        const baseAudio = audioLibrary[audioKey];
+        const baseAudio = audioCache[audioKey];
         if (!baseAudio) return;
 
-        // Use cloning for everything to ensure overlap & reliability
-        // This fixes the page turn "cutting out" issue
-        const soundClone = baseAudio.cloneNode();
-        soundClone.volume = 1.0;
-        soundClone.play().catch(()=>{});
+        // Clear previous bursts
+        burstTimeouts.forEach(id => clearTimeout(id));
+        burstTimeouts = [];
 
         if (isBurst) {
-            // Play 2 more times for burst effect
-            setTimeout(() => { 
-                const s2 = baseAudio.cloneNode(); s2.play().catch(()=>{}); 
-            }, 250);
-            setTimeout(() => { 
-                const s3 = baseAudio.cloneNode(); s3.play().catch(()=>{}); 
-            }, 500);
+            // Burst Logic: Clone nodes for overlap
+            const s1 = baseAudio.cloneNode(); s1.volume = 1.0; s1.play().catch(()=>{});
+            burstTimeouts.push(setTimeout(() => { const s2 = baseAudio.cloneNode(); s2.volume = 1.0; s2.play().catch(()=>{}); }, 250));
+            burstTimeouts.push(setTimeout(() => { const s3 = baseAudio.cloneNode(); s3.volume = 1.0; s3.play().catch(()=>{}); }, 500));
+        } else {
+            // Normal Logic: Clone node (Corrects "Page Turn" cut-off issue)
+            const clone = baseAudio.cloneNode();
+            clone.volume = 1.0;
+            clone.play().catch((e) => {});
         }
     }
 
@@ -488,13 +502,17 @@
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('active');
+                
+                // Play Sound
                 const soundFile = entry.target.getAttribute('data-sound');
-                if (soundFile) playAudio(soundFile);
+                if (soundFile) {
+                    playAudio(soundFile);
+                }
             } else {
                 entry.target.classList.remove('active');
             }
         });
-    }, { threshold: 0.4 });
+    }, { threshold: 0.2 }); // Trigger early to avoid lag
 
     document.querySelectorAll('.page').forEach(page => { observer.observe(page); });
 </script>
