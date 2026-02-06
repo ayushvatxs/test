@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE PREMIERE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Limelight&family=Montserrat:wght@300&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #050505;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+
+        /* --- THE PROJECTOR BEAM --- */
+        .beam {
+            position: absolute;
+            top: -20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60vw;
+            height: 100vh;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.4) 0%, transparent 80%);
+            clip-path: polygon(40% 0%, 60% 0%, 100% 100%, 0% 100%);
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.5;
+            animation: flicker-light 0.1s infinite alternate;
+        }
+
+        /* --- THE MOVIE SCREEN --- */
+        .screen-container {
+            position: relative;
+            width: 80%;
+            max-width: 800px;
+            aspect-ratio: 16/9;
+            background: #000;
+            border: 10px solid #111;
+            border-radius: 10px;
+            box-shadow: 0 0 100px rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        .movie-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* Using the B&W photo for cinematic effect */
+            filter: grayscale(100%) contrast(1.2);
+            animation: slight-zoom 20s infinite alternate;
+        }
+
+        /* --- OLD FILM GRAIN OVERLAY --- */
+        .grain-overlay {
+            position: absolute;
+            inset: 0;
+            background-image: url("https://www.transparenttextures.com/patterns/stardust.png");
+            opacity: 0.3;
+            animation: grain-move 0.5s steps(5) infinite;
+            pointer-events: none;
+        }
+
+        /* --- TEXT --- */
+        .subtitle {
+            margin-top: 40px;
+            font-family: 'Limelight', cursive;
+            font-size: 2rem;
+            letter-spacing: 5px;
+            text-align: center;
+            opacity: 0;
+            animation: fade-in 3s forwards 1s;
+            z-index: 3;
+        }
+
+        /* --- NEXT BUTTON --- */
+        .exit-btn {
+            position: absolute;
+            bottom: 30px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.8rem;
+            color: #555;
+            background: none;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: 0.3s;
+            z-index: 10;
+        }
+        .exit-btn:hover { color: #fff; }
+
+        /* --- ANIMATIONS --- */
+        @keyframes flicker-light {
+            0% { opacity: 0.3; }
+            100% { opacity: 0.5; }
+        }
+
+        @keyframes grain-move {
+            0% { background-position: 0 0; }
+            100% { background-position: 10px 10px; }
+        }
+
+        @keyframes slight-zoom {
+            0% { transform: scale(1.0); }
+            100% { transform: scale(1.1); }
+        }
+
+        @keyframes fade-in {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="beam"></div>
+
+    <div class="screen-container">
+        <div class="grain-overlay"></div>
+        <img src="mag_bw.jpg" onerror="this.src='mag_cover.jpg'" class="movie-img">
+    </div>
+
+    <div class="subtitle">STARRING HER.</div>
+
+    <button class="exit-btn" onclick="window.location.href='final.html'">
+        End Credits >
+    </button>
+
+</body>
+</html>
