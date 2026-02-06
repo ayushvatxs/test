@@ -10,24 +10,27 @@
 <style>
 :root{
   --pink:#ffe6ef;
-  --frame:#ffc6dd;
+  --frame:#ffffff; /* White Frame */
 }
 
 *{box-sizing:border-box}
 
+/* --- SCALING FIX --- */
+html, body {
+  width: 100%;
+  overflow-x: hidden; /* Forces browser to cut off overflowing blobs instead of zooming out */
+  margin: 0; 
+  padding: 0;
+}
+
 body{
-  margin:0;
   background:var(--pink);
   font-family:system-ui,-apple-system,"Segoe UI",Roboto;
   display:flex;
   justify-content:center;
+  align-items: center;     /* Centers vertically */
+  min-height: 100vh;       /* Full Height */
   padding:12px;
-  
-  /* --- FIXES FOR IPAD FULL SCREEN --- */
-  min-height: 100vh;       /* Forces the page to fill the screen height */
-  align-items: center;     /* Centers the content vertically */
-  overflow-x: hidden;      /* Prevents horizontal scrolling/zooming out caused by blobs */
-  /* ---------------------------------- */
 }
 
   .blob{
@@ -61,7 +64,7 @@ body{
   display:flex;
   flex-direction:column;
   align-items:center;
-  position: relative; /* Helps contain absolute elements if needed */
+  position: relative; 
 }
 
 /* TITLE */
@@ -80,11 +83,11 @@ body{
 
 /* PHOTOS */
 .photo{
-  width:160px;
+  width:160px; /* REVERTED TO ORIGINAL SIZE */
   aspect-ratio:3/4;
   background:#fff;
   border-radius:14px;
-  border:5px solid var(--frame);
+  border:5px solid var(--frame); 
   overflow:hidden;
   box-shadow:0 12px 28px rgba(0,0,0,.08);
 }
@@ -95,14 +98,14 @@ body{
   object-fit:cover;
 }
 
-/* LEFT PHOTO – MOVED UP */
+/* LEFT PHOTO */
 .photo-left{
   align-self:flex-start;
   margin-bottom:12px;
-  margin-top:-6px; /* moved UP slightly */
+  margin-top:-6px; 
 }
 
-/* MESSAGE BOX – TALLER */
+/* MESSAGE BOX */
 .center-box{
   width:92%;
   max-width:380px;
@@ -110,11 +113,10 @@ body{
   backdrop-filter:blur(12px);
   border-radius:22px;
   box-shadow:0 22px 40px rgba(0,0,0,.08);
-  padding:34px 22px; /* increased height */
+  padding:34px 22px; 
   text-align:center;
   margin-bottom:14px;
-
-  position: relative;   /* ✅ ADD THIS */
+  position: relative;   
 }
 
 .center-box p{
@@ -125,12 +127,11 @@ body{
 
   .balloon-sticker{
   position: absolute;
-  top: -120px;        /* move up/down */
-  right: -22px;       /* move left/right */
+  top: -120px;       
+  right: -22px;      
   width: 120px;
   pointer-events: none;
   z-index: 3;
-
   animation: balloon-float 4s ease-in-out infinite;
 }
 
@@ -149,7 +150,7 @@ body{
 
 /* CLICKABLE ARROW */
 .arrow-wrap{
-  margin-top:6px; /* moved UP */
+  margin-top:6px; 
   cursor:pointer;
 }
 
@@ -210,11 +211,9 @@ body{
 
 /* MOBILE */
 @media(max-width:480px){
-  .photo{width:140px}
+  .photo{width:140px;} /* REVERTED TO ORIGINAL SIZE */
   .center-box{width:94%}
 }
-
-
 
 </style>
 </head>
@@ -272,9 +271,6 @@ body{
   </a>
 
 </div>
-  
-
-
 
 </body>
 </html>
