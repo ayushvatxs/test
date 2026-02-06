@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>THE VIOLINA ERA | FINAL</title>
-    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bodoni+Moda:ital,wght@0,400;0,900;1,400&family=Syne:wght@400;800&family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bodoni+Moda:ital,wght@0,400;0,900;1,400&family=Syne:wght@400;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* --- CORE --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -21,9 +22,10 @@
             --gold: #d4af37;
             --black: #050505;
             --yt-red: #ff0000;
+            --insta-blue: #0095f6;
         }
 
-        /* --- 1. ROTATE OVERLAY (LAPTOP FIX) --- */
+        /* --- 1. ROTATE OVERLAY --- */
         #rotate-overlay {
             position: fixed; inset: 0; z-index: 11000;
             background: rgba(5, 5, 5, 0.98); 
@@ -37,8 +39,8 @@
         .btn-overlay-close { background: transparent; border: 1px solid #fff; color: #fff; padding: 15px 40px; font-family: 'Syne'; font-weight: bold; cursor: pointer; font-size: 1rem; }
         @keyframes rotatePhone { 0% { transform: rotate(0deg); } 50% { transform: rotate(-90deg); } 100% { transform: rotate(0deg); } }
 
-        /* FIX: Only show if landscape AND it's a touch device (hover: none) */
-        @media (orientation: landscape) and (hover: none) {
+        /* iPad Pro Landscape Detection */
+        @media (orientation: landscape) and (max-width: 1366px) and (hover: none) {
             #rotate-overlay { display: flex; }
         }
 
@@ -90,47 +92,92 @@
         .ticker-wrap { position: absolute; width: 100%; overflow: hidden; background: var(--neon); color: #fff; padding: 10px 0; z-index: 10; font-family: 'Anton'; text-transform: uppercase; font-size: 1.5rem; letter-spacing: 2px; }
         .ticker { display: inline-block; white-space: nowrap; animation: ticker 20s linear infinite; }
 
-        /* Content Styles */
-        #p1 .masthead { position: absolute; top: -10px; width: 100%; text-align: center; font-family: 'Anton'; font-size: 25vw; line-height: 0.8; z-index: 2; mix-blend-mode: overlay; }
+        /* --- CONTENT STYLES --- */
+        
+        /* P1 Cover: Black Icon Text */
+        #p1 .masthead { 
+            position: absolute; top: -10px; width: 100%; text-align: center; 
+            font-family: 'Anton'; font-size: 25vw; line-height: 0.8; z-index: 2; 
+            color: #000; /* UPDATED: Solid Black */
+        }
         .main-head { font-family: 'Bodoni Moda'; font-size: 5rem; font-weight: 900; font-style: italic; line-height: 0.9; margin-bottom: 20px; }
+        
         #p2 { background: #fff; color: #000; justify-content: center; align-items: center; text-align: center; padding: 40px; }
         .viral-stat { font-size: 8rem; font-family: 'Anton'; line-height: 1; color: var(--neon); }
         .tweet-box { border: 2px solid #000; padding: 20px; margin: 10px auto; max-width: 600px; text-align: left; }
+
         #p3 .yt-ui { position: absolute; bottom: 50px; left: 50px; z-index: 5; }
         .rec-tag { color: red; font-weight: 800; animation: blink 1s infinite; }
         .sub-count { font-family: 'Anton'; font-size: 4rem; line-height: 1; }
+
         .scan-frame { position: absolute; width: 80%; height: 80%; border: 1px solid rgba(255,255,255,0.5); }
+
         #p5 { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; height: 100%; width: 100%; gap: 3px; background: #fff; padding: 3px; }
         .pap-img { width: 100%; height: 100%; object-fit: cover; display: block; filter: grayscale(100%); transition: 0.3s; }
         .pap-img:hover { filter: grayscale(0%); }
+
         #p20 { background: #121212; font-family: 'Roboto', sans-serif; padding: 20px; }
         .yt-header { display: flex; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
         .yt-logo { font-weight: 900; letter-spacing: -1px; font-size: 1.5rem; display: flex; align-items: center; gap: 5px; }
-        .yt-logo span { color: var(--yt-red); }
         .trending-grid { display: flex; flex-direction: column; gap: 20px; height: 100%; overflow-y: auto; padding-bottom: 100px; }
         .video-card { display: flex; gap: 15px; flex-shrink: 0; }
         .vid-thumb { width: 160px; height: 90px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
         .vid-info h3 { font-size: 1rem; margin-bottom: 5px; color: #fff; }
         .rank { font-size: 1.5rem; color: #fff; font-weight: 900; margin-right: 15px; opacity: 0.5; }
-        #p21 { background: #000; align-items: center; justify-content: center; }
-        .phone-frame { width: 95%; max-width: 400px; height: 85%; border: 4px solid #333; border-radius: 20px; overflow: hidden; background: #000; position: relative; display:flex; flex-direction:column; }
-        .insta-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; overflow-y: auto; padding-bottom: 50px; }
+
+        /* --- INSTAGRAM REAL UI FIX --- */
+        #p21 { background: #000; align-items: center; justify-content: center; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        .phone-frame { width: 95%; max-width: 400px; height: 85%; border: 1px solid #333; border-radius: 30px; overflow: hidden; background: #000; position: relative; display:flex; flex-direction:column; }
+        
+        .insta-header { padding: 10px 15px; border-bottom: 1px solid #262626; display:flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 1.1rem; }
+        
+        .insta-profile-section { padding: 15px; display: flex; align-items: center; gap: 20px; }
+        .insta-pfp { width: 80px; height: 80px; border-radius: 50%; padding: 2px; border: 2px solid #333; }
+        .insta-pfp img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+        
+        .insta-stats-group { display: flex; flex: 1; justify-content: space-around; text-align: center; }
+        .i-stat-num { font-weight: bold; font-size: 1.1rem; display: block; }
+        .i-stat-label { font-size: 0.8rem; color: #fff; }
+
+        .insta-bio { padding: 0 15px 15px 15px; font-size: 0.9rem; }
+        .bio-name { font-weight: bold; }
+        .bio-link { color: #e0f1ff; text-decoration: none; }
+
+        .insta-actions { padding: 0 15px 15px 15px; display: flex; gap: 8px; }
+        .i-btn { flex: 1; background: #fff; color: #000; border-radius: 8px; padding: 7px 0; font-weight: 600; font-size: 0.9rem; border: none; cursor: pointer; }
+        .i-btn.gray { background: #363636; color: #fff; }
+
+        .insta-tabs { display: flex; justify-content: space-around; border-top: 1px solid #262626; padding: 10px 0; }
+        .i-tab { font-size: 1.5rem; opacity: 0.5; }
+        .i-tab.active { opacity: 1; border-bottom: 1px solid #fff; }
+
+        .insta-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2px; overflow-y: auto; padding-bottom: 50px; }
         .insta-square { width: 100%; aspect-ratio: 1; object-fit: cover; }
-        .insta-story { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #d62976; padding: 2px; flex-shrink: 0; }
-        .insta-story img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid #000; }
+
+        /* --- SPOTIFY & NOTIFS --- */
         #p23 { background: linear-gradient(to bottom, #444, #000); align-items: center; justify-content: center; font-family: 'Roboto', sans-serif; }
         .spot-card { width: 90%; text-align: center; }
         .spot-img { width: 250px; height: 250px; object-fit: cover; box-shadow: 0 20px 40px rgba(0,0,0,0.5); margin-bottom: 30px; border-radius:10px;}
         .spot-bar { width: 100%; height: 4px; background: #555; margin: 20px 0; position: relative; }
         .spot-fill { width: 30%; height: 100%; background: #fff; }
+
         #p24 { background-image: url('mag_cover.jpg'); background-size: cover; background-position: center; align-items: center; justify-content: center; }
         .backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.6); }
         .notif-stack { position: relative; z-index: 10; width: 90%; display: flex; flex-direction: column; gap: 10px; }
         .notif { background: rgba(255,255,255,0.95); border-radius: 12px; padding: 15px; color: #000; display: flex; gap: 10px; align-items: center; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
         .notif-icon { width: 30px; height: 30px; border-radius: 5px; }
-        .next-btn { background: #fff; color: #000; padding: 25px 60px; border: none; font-size: 1.2rem; font-family: 'Syne'; font-weight: 800; cursor: pointer; transition: 0.3s; width: 100%; margin-top: 20px; }
+
+        .next-btn {
+            background: #fff; color: #000; padding: 25px 60px; border: none; font-size: 1.2rem;
+            font-family: 'Syne'; font-weight: 800; cursor: pointer; transition: 0.3s; width: 100%; margin-top: 20px;
+        }
         .next-btn:hover { background: var(--neon); color: #fff; }
-        .top-btn { background: transparent; border: 1px solid #666; color: #666; padding: 10px 20px; margin-top: 20px; font-size: 0.8rem; cursor: pointer; }
+        .top-btn {
+            background: transparent; border: 1px solid #666; color: #666; padding: 10px 20px; 
+            margin-top: 20px; font-size: 0.8rem; cursor: pointer;
+        }
+
+        @keyframes blink { 50% { opacity: 0; } }
     </style>
 </head>
 <body>
@@ -326,65 +373,42 @@
                         <p>Violina Vlogs • 45M views • 2 hours ago</p>
                     </div>
                 </div>
-                <div class="video-card">
-                    <div class="rank">2</div>
-                    <img src="mag_fashion.jpg" class="vid-thumb">
-                    <div class="vid-info">
-                        <h3>My Gucci Photoshoot (Behind Scenes)</h3>
-                        <p>Violina Vlogs • 22M views • 5 hours ago</p>
-                    </div>
-                </div>
-                <div class="video-card">
-                    <div class="rank">3</div>
-                    <img src="mag_candid.jpg" class="vid-thumb">
-                    <div class="vid-info">
-                        <h3>Q&A: Addressing the Rumors</h3>
-                        <p>Violina Vlogs • 18M views • 1 day ago</p>
-                    </div>
-                </div>
-                <div class="video-card">
-                    <div class="rank">4</div>
-                    <img src="mag_beauty.jpg" class="vid-thumb">
-                    <div class="vid-info">
-                        <h3>Skincare Routine (Finally)</h3>
-                        <p>Violina Vlogs • 15M views • 1 day ago</p>
-                    </div>
-                </div>
-                <div class="video-card">
-                    <div class="rank">5</div>
-                    <img src="mag_carpet.jpg" class="vid-thumb">
-                    <div class="vid-info">
-                        <h3>Met Gala Preparation Vlog</h3>
-                        <p>Violina Vlogs • 12M views • 2 days ago</p>
-                    </div>
-                </div>
-                 <div class="video-card">
-                    <div class="rank">6</div>
-                    <img src="mag_cover.jpg" class="vid-thumb">
-                    <div class="vid-info">
-                        <h3>Reacting to Fan Edits</h3>
-                        <p>Violina Vlogs • 10M views • 2 days ago</p>
-                    </div>
-                </div>
+                <div class="video-card"><div class="rank">2</div><img src="mag_fashion.jpg" class="vid-thumb"><div class="vid-info"><h3>My Gucci Photoshoot</h3><p>Violina Vlogs • 22M views</p></div></div>
+                <div class="video-card"><div class="rank">3</div><img src="mag_candid.jpg" class="vid-thumb"><div class="vid-info"><h3>Q&A: Addressing Rumors</h3><p>Violina Vlogs • 18M views</p></div></div>
+                <div class="video-card"><div class="rank">4</div><img src="mag_beauty.jpg" class="vid-thumb"><div class="vid-info"><h3>Skincare Routine</h3><p>Violina Vlogs • 15M views</p></div></div>
+                <div class="video-card"><div class="rank">5</div><img src="mag_carpet.jpg" class="vid-thumb"><div class="vid-info"><h3>Met Gala Prep</h3><p>Violina Vlogs • 12M views</p></div></div>
+                <div class="video-card"><div class="rank">6</div><img src="mag_cover.jpg" class="vid-thumb"><div class="vid-info"><h3>Fan Edits Reaction</h3><p>Violina Vlogs • 10M views</p></div></div>
             </div>
         </div>
 
         <div class="page" id="p21">
             <div class="phone-frame rise-up">
-                <div style="padding: 15px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-weight:bold;">violina_official</span>
-                    <span>...</span>
+                <div class="insta-header">
+                    <i class="fas fa-lock"></i> violina_official
+                    <i class="fas fa-bars"></i>
                 </div>
-                <div class="insta-stats">
-                    <div class="stat-box"><div class="stat-num">582</div><div class="stat-label">Posts</div></div>
-                    <div class="stat-box"><div class="stat-num">100M</div><div class="stat-label">Followers</div></div>
-                    <div class="stat-box"><div class="stat-num">0</div><div class="stat-label">Following</div></div>
+                <div class="insta-profile-section">
+                    <div class="insta-pfp"><img src="mag_cover.jpg"></div>
+                    <div class="insta-stats-group">
+                        <div><span class="i-stat-num">582</span><span class="i-stat-label">Posts</span></div>
+                        <div><span class="i-stat-num">100M</span><span class="i-stat-label">Followers</span></div>
+                        <div><span class="i-stat-num">0</span><span class="i-stat-label">Following</span></div>
+                    </div>
                 </div>
-                <div style="padding: 10px; display:flex; gap:10px; overflow-x: auto; flex-shrink: 0;">
-                    <div class="insta-story"><img src="mag_cover.jpg"></div>
-                    <div class="insta-story"><img src="mag_beauty.jpg"></div>
-                    <div class="insta-story"><img src="mag_fashion.jpg"></div>
-                    <div class="insta-story"><img src="mag_vlog.jpg"></div>
+                <div class="insta-bio">
+                    <div class="bio-name">Violina Sharma</div>
+                    <div>Digital Creator<br>She/Her<br>Living in the moment ☁️</div>
+                    <a href="#" class="bio-link">www.violina.com</a>
+                </div>
+                <div class="insta-actions">
+                    <button class="i-btn" style="background:#0095f6; color:#fff;">Follow</button>
+                    <button class="i-btn gray">Message</button>
+                    <button class="i-btn gray">Email</button>
+                </div>
+                <div class="insta-tabs">
+                    <i class="fas fa-th i-tab active"></i>
+                    <i class="fas fa-video i-tab"></i>
+                    <i class="fas fa-user-tag i-tab"></i>
                 </div>
                 <div class="insta-grid">
                     <img src="mag_fashion.jpg" class="insta-square">
@@ -454,12 +478,16 @@
         let activeKey = null; // Track current sound key
         let burstTimeouts = [];
 
-        // Preload Audio Objects
+        // Preload Audio Objects (Burst channels separated)
         const tracks = {
             'sfx_page.mp3': new Audio('sfx_page.mp3'),
             'sfx_shutter.mp3': new Audio('sfx_shutter.mp3'),
             'sfx_flash.mp3': new Audio('sfx_flash.mp3'),
-            'sfx_notification.mp3': new Audio('sfx_notification.mp3')
+            'sfx_notification.mp3': new Audio('sfx_notification.mp3'),
+            // Separate Burst Channels
+            'burst_1': new Audio('sfx_notification.mp3'),
+            'burst_2': new Audio('sfx_notification.mp3'),
+            'burst_3': new Audio('sfx_notification.mp3')
         };
 
         // --- 2. SILENT UNLOCK (Fixes Explosion) ---
@@ -507,7 +535,7 @@
 
             // IF SAME KEY: RE-TRIGGER (Don't ignore)
             // This ensures page turns sound every time
-            if (activeKey === realKey) {
+            if (activeKey === realKey && key !== 'sfx_burst') {
                 const audio = tracks[realKey];
                 audio.pause();
                 audio.currentTime = 0; // Reset
@@ -526,24 +554,32 @@
             burstTimeouts.forEach(t => clearTimeout(t));
             burstTimeouts = [];
 
-            // Play NEW track
+            // Burst Logic (Dedicated channels)
+            if (key === 'sfx_burst') {
+                // Play 1st immediately
+                tracks['burst_1'].volume = 1.0;
+                tracks['burst_1'].play().catch(()=>{});
+                
+                // Play 2nd after 250ms
+                burstTimeouts.push(setTimeout(() => {
+                    tracks['burst_2'].volume = 1.0; 
+                    tracks['burst_2'].play().catch(()=>{});
+                }, 250));
+                
+                // Play 3rd after 500ms
+                burstTimeouts.push(setTimeout(() => {
+                    tracks['burst_3'].volume = 1.0; 
+                    tracks['burst_3'].play().catch(()=>{});
+                }, 500));
+                return;
+            }
+
+            // Normal Play Logic
             const currentAudio = tracks[realKey];
             if (currentAudio) {
                 currentAudio.volume = 1.0;
                 currentAudio.play().catch(e => {});
                 activeKey = realKey;
-            }
-
-            // Burst Logic (Special Case)
-            if (key === 'sfx_burst') {
-                burstTimeouts.push(setTimeout(() => {
-                    const s2 = tracks[realKey].cloneNode(); // Clone only for burst overlap
-                    s2.volume = 1.0; s2.play().catch(()=>{});
-                }, 200));
-                burstTimeouts.push(setTimeout(() => {
-                    const s3 = tracks[realKey].cloneNode(); 
-                    s3.volume = 1.0; s3.play().catch(()=>{});
-                }, 400));
             }
         }
 
@@ -560,9 +596,6 @@
                     }
                 } else {
                     entry.target.classList.remove('active');
-                    // Note: We DO NOT stop sound on exit. 
-                    // We let the next page's entry handle the switch.
-                    // This prevents "silence gaps" on mobile scroll.
                 }
             });
         }, { threshold: 0.5 }); // 50% visible to trigger
