@@ -23,7 +23,7 @@
             --yt-red: #ff0000;
         }
 
-        /* --- 1. ROTATE OVERLAY --- */
+        /* --- 1. ROTATE OVERLAY (LAPTOP FIX) --- */
         #rotate-overlay {
             position: fixed; inset: 0; z-index: 11000;
             background: rgba(5, 5, 5, 0.98); 
@@ -37,8 +37,8 @@
         .btn-overlay-close { background: transparent; border: 1px solid #fff; color: #fff; padding: 15px 40px; font-family: 'Syne'; font-weight: bold; cursor: pointer; font-size: 1rem; }
         @keyframes rotatePhone { 0% { transform: rotate(0deg); } 50% { transform: rotate(-90deg); } 100% { transform: rotate(0deg); } }
 
-        /* iPad/Tablet Landscape Check */
-        @media (orientation: landscape) and (max-height: 1024px) {
+        /* FIX: Only show if landscape AND it's a touch device (hover: none) */
+        @media (orientation: landscape) and (hover: none) {
             #rotate-overlay { display: flex; }
         }
 
@@ -326,11 +326,46 @@
                         <p>Violina Vlogs • 45M views • 2 hours ago</p>
                     </div>
                 </div>
-                <div class="video-card"><div class="rank">2</div><img src="mag_fashion.jpg" class="vid-thumb"><div class="vid-info"><h3>My Gucci Photoshoot</h3></div></div>
-                <div class="video-card"><div class="rank">3</div><img src="mag_candid.jpg" class="vid-thumb"><div class="vid-info"><h3>Q&A: Addressing Rumors</h3></div></div>
-                <div class="video-card"><div class="rank">4</div><img src="mag_beauty.jpg" class="vid-thumb"><div class="vid-info"><h3>Skincare Routine</h3></div></div>
-                <div class="video-card"><div class="rank">5</div><img src="mag_carpet.jpg" class="vid-thumb"><div class="vid-info"><h3>Met Gala Prep</h3></div></div>
-                <div class="video-card"><div class="rank">6</div><img src="mag_cover.jpg" class="vid-thumb"><div class="vid-info"><h3>Fan Edits Reaction</h3></div></div>
+                <div class="video-card">
+                    <div class="rank">2</div>
+                    <img src="mag_fashion.jpg" class="vid-thumb">
+                    <div class="vid-info">
+                        <h3>My Gucci Photoshoot (Behind Scenes)</h3>
+                        <p>Violina Vlogs • 22M views • 5 hours ago</p>
+                    </div>
+                </div>
+                <div class="video-card">
+                    <div class="rank">3</div>
+                    <img src="mag_candid.jpg" class="vid-thumb">
+                    <div class="vid-info">
+                        <h3>Q&A: Addressing the Rumors</h3>
+                        <p>Violina Vlogs • 18M views • 1 day ago</p>
+                    </div>
+                </div>
+                <div class="video-card">
+                    <div class="rank">4</div>
+                    <img src="mag_beauty.jpg" class="vid-thumb">
+                    <div class="vid-info">
+                        <h3>Skincare Routine (Finally)</h3>
+                        <p>Violina Vlogs • 15M views • 1 day ago</p>
+                    </div>
+                </div>
+                <div class="video-card">
+                    <div class="rank">5</div>
+                    <img src="mag_carpet.jpg" class="vid-thumb">
+                    <div class="vid-info">
+                        <h3>Met Gala Preparation Vlog</h3>
+                        <p>Violina Vlogs • 12M views • 2 days ago</p>
+                    </div>
+                </div>
+                 <div class="video-card">
+                    <div class="rank">6</div>
+                    <img src="mag_cover.jpg" class="vid-thumb">
+                    <div class="vid-info">
+                        <h3>Reacting to Fan Edits</h3>
+                        <p>Violina Vlogs • 10M views • 2 days ago</p>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -470,10 +505,18 @@
             let realKey = key;
             if (key === 'sfx_burst') realKey = 'sfx_notification.mp3';
 
-            // If same sound is already playing, do nothing (Prevent stutter)
-            if (activeKey === realKey && !tracks[realKey].paused) return;
+            // IF SAME KEY: RE-TRIGGER (Don't ignore)
+            // This ensures page turns sound every time
+            if (activeKey === realKey) {
+                const audio = tracks[realKey];
+                audio.pause();
+                audio.currentTime = 0; // Reset
+                audio.volume = 1.0;
+                audio.play().catch(e=>{});
+                return;
+            }
 
-            // Stop ALL tracks
+            // Stop ALL tracks (Clean slate)
             Object.values(tracks).forEach(track => {
                 track.pause();
                 track.currentTime = 0;
