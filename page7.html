@@ -451,6 +451,7 @@
 </div>
 
 <script>
+    /* --- AUDIO ENGINE --- */
     const sounds = {
         'sfx_page.mp3': new Audio('sfx_page.mp3'),
         'sfx_shutter.mp3': new Audio('sfx_shutter.mp3'),
@@ -458,20 +459,54 @@
         'sfx_notification.mp3': new Audio('sfx_notification.mp3')
     };
 
+    // Function to handle playback logic
+    function playAudio(filename) {
+        const audio = sounds[filename];
+        if (!audio) return;
+
+        // Reset the audio first
+        audio.pause();
+        audio.currentTime = 0;
+
+        // SPECIAL LOGIC: If it's the notification sound, repeat it 3 times (Burst Mode)
+        if (filename === 'sfx_notification.mp3') {
+            audio.play().catch(() => {}); 
+            
+            // Play 2nd time after 300ms
+            setTimeout(() => { 
+                audio.currentTime = 0; 
+                audio.play().catch(() => {}); 
+            }, 300);
+
+            // Play 3rd time after 600ms
+            setTimeout(() => { 
+                audio.currentTime = 0; 
+                audio.play().catch(() => {}); 
+            }, 600);
+            
+        } else {
+            // For all other sounds (Page turn, Shutter, Flash), play normally (once)
+            audio.play().catch(() => {});
+        }
+    }
+
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('active');
+                
+                // Get the sound name from the HTML tag
                 const soundFile = entry.target.getAttribute('data-sound');
-                if (soundFile && sounds[soundFile]) {
-                    sounds[soundFile].currentTime = 0;
-                    sounds[soundFile].play().catch(() => {});
+                
+                // Play it using our new smart function
+                if (soundFile) {
+                    playAudio(soundFile);
                 }
             } else {
                 entry.target.classList.remove('active');
             }
         });
-    }, { threshold: 0.4 });
+    }, { threshold: 0.4 }); // Trigger when 40% of the page is visible
 
     document.querySelectorAll('.page').forEach(page => { observer.observe(page); });
 </script>
