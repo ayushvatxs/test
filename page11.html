@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>THE FINALE</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;900&family=Monoton&display=swap" rel="stylesheet">
     <style>
         /* --- RESET --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -65,8 +65,8 @@
             width: 80%; max-width: 600px;
             /* Start below screen, animate up */
             transform: translateY(100vh);
-            animation: roll-credits 45s linear forwards; 
-            /* 45s duration - adjust for speed */
+            animation: roll-credits 55s linear forwards; 
+            /* Extended duration to fit new name */
         }
 
         .role-group {
@@ -90,9 +90,32 @@
             text-shadow: 0 0 10px rgba(255,255,255,0.5);
         }
 
+        /* --- SPECIAL DIRECTOR STYLE --- */
+        .director-group {
+            margin-bottom: 100px; /* Extra space to let it shine */
+            transform: scale(1.1);
+        }
+        
+        .director-role {
+            font-size: 1rem;
+            color: #d4af37; /* Gold Tint */
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+        }
+
+        .director-name {
+            font-family: 'Monoton', cursive; /* The Cinema Font */
+            font-size: 3rem;
+            color: #d4af37;
+            text-transform: uppercase;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.6), 0 0 40px rgba(212, 175, 55, 0.4);
+            animation: name-pulse 2s infinite alternate;
+        }
+
         .final-logo {
-            font-size: 4rem; font-weight: 900; margin-top: 100px; margin-bottom: 300px;
-            color: #d4af37; letter-spacing: 5px;
+            font-size: 4rem; font-weight: 900; margin-top: 50px; margin-bottom: 300px;
+            color: #fff; letter-spacing: 5px; opacity: 0.8;
         }
 
         /* --- 4. THE WHITE FLASH & ENDING --- */
@@ -144,7 +167,7 @@
 
         @keyframes roll-credits {
             0% { transform: translateY(110vh); }
-            100% { transform: translateY(-150%); } /* Moves way up off screen */
+            100% { transform: translateY(-160%); } /* Moves way up off screen */
         }
 
         @keyframes flash-bang {
@@ -154,11 +177,17 @@
         }
 
         @keyframes fade-in-slow { to { opacity: 1; } }
+        
+        @keyframes name-pulse {
+            from { text-shadow: 0 0 20px rgba(212, 175, 55, 0.6); }
+            to { text-shadow: 0 0 40px rgba(212, 175, 55, 1); transform: scale(1.05); }
+        }
 
         /* Responsive */
         @media (max-width: 600px) {
             .name { font-size: 1.4rem; }
             .role { font-size: 0.7rem; }
+            .director-name { font-size: 2rem; }
             .credits-content { width: 90%; }
             .final-logo { font-size: 3rem; }
             .message-text { font-size: 1.2rem; }
@@ -243,6 +272,10 @@
                 <div class="role" style="margin-top:5px; font-size:0.7rem;">(For connecting us)</div>
             </div>
 
+            <div class="director-group">
+                <div class="director-role">Directed By</div>
+                <div class="director-name">AYUSH</div>
+            </div>
             <div class="final-logo">VIOLINA</div>
 
         </div>
@@ -258,54 +291,36 @@
 
     <script>
         // --- TIMING ENGINE ---
-        // The animation is set to 45s in CSS (.credits-content animation)
-        // We need to trigger the flash just before the text disappears completely.
+        // Animation is 55 seconds (slower scroll for effect)
+        // Flash triggers at 50 seconds
         
         const credits = document.getElementById('creditsContent');
         const flash = document.getElementById('flash');
         const endCard = document.getElementById('endCard');
         const wrapper = document.getElementById('creditsWrapper');
 
-        // Audio Auto-Play Attempt
+        // Audio Auto-Play
         const audio = new Audio('final_theme.mp3');
         audio.volume = 0.8;
         
-        // Try to unlock audio on first click anywhere
         window.addEventListener('click', () => {
             if(audio.paused) audio.play().catch(()=>{});
         }, {once:true});
 
         // Trigger The Ending
-        // 40000ms = 40 seconds. Adjust this if you change CSS animation duration
         setTimeout(() => {
             // 1. Flash White
             flash.style.animation = "flash-bang 2s forwards";
             
-            // 2. Hide Credits immediately
+            // 2. Hide Credits
             wrapper.style.display = 'none';
             
-            // 3. Stop Music (Fade out ideally, but hard cut for now)
-            // fadeAudioOut(); 
-
-            // 4. Show End Text after flash peaks (1s in)
+            // 3. Show End Text
             setTimeout(() => {
                 endCard.style.animation = "fade-in-slow 2s forwards";
             }, 1000);
 
-        }, 40000); // Trigger at 40s mark of the 45s scroll
-
-        function fadeAudioOut() {
-            let vol = 0.8;
-            let fade = setInterval(() => {
-                if (vol > 0.1) {
-                    vol -= 0.1;
-                    audio.volume = vol;
-                } else {
-                    clearInterval(fade);
-                    audio.pause();
-                }
-            }, 200);
-        }
+        }, 50000); // 50 seconds
 
     </script>
 
