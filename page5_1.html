@@ -91,8 +91,9 @@
             background-size: 50px 50px;
             transform-style: preserve-3d;
         }
-        .grid-top { top: 0; transform: rotateX(60deg); transform-origin: bottom; animation: gridMove 5s linear infinite; border-bottom: 2px solid var(--pink); }
-        .grid-bottom { bottom: 0; transform: rotateX(-60deg); transform-origin: top; animation: gridMove 5s linear infinite; border-top: 2px solid var(--pink); }
+        /* REMOVED BORDERS to eliminate the middle line */
+        .grid-top { top: 0; transform: rotateX(60deg); transform-origin: bottom; animation: gridMove 5s linear infinite; }
+        .grid-bottom { bottom: 0; transform: rotateX(-60deg); transform-origin: top; animation: gridMove 5s linear infinite; }
 
         @keyframes gridMove { from { background-position: 0 0; } to { background-position: 0 50px; } }
 
@@ -174,8 +175,9 @@
             position: relative;
         }
 
+        /* REDUCED SIZE of the main circle */
         .main-circle {
-            width: 450px; height: 450px;
+            width: 350px; height: 350px; /* Was 450px */
             border-radius: 50%;
             border: 2px solid rgba(255,0,60,0.3);
             position: relative;
@@ -235,7 +237,8 @@
         @media (max-width: 900px) {
             .content-grid { grid-template-columns: 1fr; }
             .panel-left { display: none; } /* Hide log on small screens to focus on circle */
-            .main-circle { width: 300px; height: 300px; }
+            /* REDUCED SIZE for mobile */
+            .main-circle { width: 250px; height: 250px; } /* Was 300px */
         }
 
     </style>
@@ -339,9 +342,17 @@
         audio.scan.loop = true;
 
         // --- ROTATION CHECKER ---
+        let rotateMsgClosed = false; // Flag to track if user closed the message
+
         function checkRotation() {
-            // Check if mobile (screen width < 768px) and portrait (height > width)
-            if (window.innerWidth < 768 && window.innerHeight > window.innerWidth) {
+            if (rotateMsgClosed) return; // Do nothing if already closed
+
+            // Increased breakpoint to 900px to include tablets like iPad in portrait
+            // Also ensure it's actually a touch device or small screen
+            const isPortrait = window.innerHeight > window.innerWidth;
+            const isSmallScreen = window.innerWidth < 900;
+
+            if (isSmallScreen && isPortrait) {
                 document.getElementById('rotate-msg').style.display = 'flex';
             } else {
                 document.getElementById('rotate-msg').style.display = 'none';
@@ -354,6 +365,7 @@
 
         function closeRotateMsg() {
             document.getElementById('rotate-msg').style.display = 'none';
+            rotateMsgClosed = true; // Set flag so it doesn't reappear
         }
 
 
@@ -367,6 +379,10 @@
 
             document.getElementById('start-screen').style.display = 'none';
             document.getElementById('ui-layer').style.display = 'block';
+            
+            // Re-check rotation after UI is revealed, just in case
+            setTimeout(checkRotation, 100);
+            
             runSequence();
         }
 
