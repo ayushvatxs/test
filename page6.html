@@ -8,27 +8,28 @@
     <style>
         /* --- CORE --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
+        html, body {
             background-color: #000; overflow: hidden; 
-            height: 100vh; width: 100vw;
+            width: 100%; height: 100%;
             font-family: 'Share Tech Mono', monospace; user-select: none;
-            position: fixed; top: 0; left: 0; /* iPad Scroll Lock */
-            touch-action: none;
+            /* iPad Scroll Fixes */
+            position: fixed; top: 0; left: 0; overscroll-behavior: none;
         }
 
         /* --- CAMERA RIG --- */
         #camera-rig {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; justify-content: center; align-items: center;
+            display: block; /* Changed from flex to block to allow canvas absolute positioning */
             transform-style: preserve-3d;
             will-change: transform;
-            /* Smooth cinematic movement */
             transition: transform 2.0s cubic-bezier(0.25, 1, 0.5, 1); 
+            z-index: 10;
         }
 
-        /* CANVAS - Centered in the Rig */
+        /* CANVAS - Force Full Screen Overlay */
         canvas {
             display: block;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             filter: drop-shadow(0 0 4px #ff003c);
             opacity: 0; transition: opacity 1s;
         }
@@ -47,8 +48,9 @@
         }
 
         #bottom-ui {
-            bottom: 50px; opacity: 0; transition: opacity 2s; pointer-events: auto;
+            bottom: 30px; opacity: 0; transition: opacity 2s; pointer-events: auto;
             width: 100%; display: flex; flex-direction: column; align-items: center;
+            padding-bottom: env(safe-area-inset-bottom); /* iPhone X+ safety */
         }
         .status-main { font-family: 'Orbitron'; font-size: clamp(1.2rem, 4vw, 2.5rem); color: #fff; text-shadow: 0 0 30px #ff003c; margin-bottom: 8px; }
         .status-sub { color: #ff003c; font-size: clamp(0.7rem, 2.5vw, 1rem); letter-spacing: 3px; margin-bottom: 25px; text-align: center; }
@@ -58,6 +60,7 @@
             font-family: 'Orbitron'; font-size: 1.2rem; padding: 15px 50px;
             cursor: pointer; box-shadow: 0 0 20px rgba(255, 0, 60, 0.2);
             transition: 0.3s; clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
+            background: rgba(0,0,0,0.8); /* Readability bg */
         }
         .btn-final:hover { background: #ff003c; color: #000; box-shadow: 0 0 60px #ff003c; }
 
@@ -65,12 +68,13 @@
         .stars { position: fixed; inset: 0; z-index: -1; background: radial-gradient(white 1px, transparent 1px); background-size: 60px 60px; opacity: 0.15; }
         .vignette { position: fixed; inset: 0; z-index: 5; background: radial-gradient(circle, transparent 10%, #000 130%); pointer-events: none; }
         
-        .ring { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 1px solid #ff003c; border-radius: 50%; opacity: 0; transition: opacity 2s; pointer-events: none; z-index: 5; }
+        .ring { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); border: 1px solid #ff003c; border-radius: 50%; opacity: 0; transition: opacity 2s; pointer-events: none; z-index: 5; }
         .r1 { width: 600px; height: 600px; border-style: dashed; animation: spin 60s linear infinite; }
         .r2 { width: 750px; height: 750px; border: 1px solid rgba(255,0,60,0.3); animation: pulse 3s infinite; }
         
-        /* Mobile adjustment for rings */
+        /* Mobile adjustment for rings - Centered higher up to match photo */
         @media (max-width: 768px) {
+            .ring { top: 40%; } /* Match the photo offset */
             .r1 { width: 85vw; height: 85vw; }
             .r2 { width: 105vw; height: 105vw; }
         }
@@ -104,9 +108,10 @@
         const IMAGE_URL = 'violina_reassembly.jpg';
         const DENSITY = 2; 
         
-        // Retina Fix: Bigger particles for iPad/Mobile
+        // Retina Fix
         const dpr = window.devicePixelRatio || 1;
-        const PARTICLE_SIZE = dpr > 1 ? 2.2 : 1.5; 
+        // Increase particle size slightly for visibility on high-res screens
+        const PARTICLE_SIZE = dpr > 1 ? 2.5 : 1.6; 
         
         /* --- AUDIO --- */
         const sfx = {
@@ -128,15 +133,12 @@
         let isFinalized = false;
         let particlesVisible = false;
         
-        // Image Dimensions (Calculated later)
         let imgW = 0, imgH = 0;
 
-        // [FIX 1] Center-Lock Resize Logic
         function resize() {
+            // Set canvas logic size to match screen pixels
             canvas.width = window.innerWidth * dpr;
             canvas.height = window.innerHeight * dpr;
-            canvas.style.width = window.innerWidth + 'px';
-            canvas.style.height = window.innerHeight + 'px';
             ctx.scale(dpr, dpr);
         }
         window.addEventListener('resize', resize);
@@ -146,13 +148,13 @@
         const img = new Image();
         img.src = IMAGE_URL;
         img.onload = () => {
-            // Calculate a safe width (Mobile: 85% width, Desktop: 400px max)
-            let finalW = Math.min(window.innerWidth * 0.85, 420);
+            // Mobile Optimization: Smaller image width for phones to ensure it fits
+            const isMobile = window.innerWidth < 768;
+            let finalW = Math.min(window.innerWidth * (isMobile ? 0.8 : 0.6), 420);
             
             const aspect = img.height / img.width;
             const finalH = finalW * aspect;
             
-            // Store dimensions for camera math
             imgW = finalW;
             imgH = finalH;
 
@@ -163,9 +165,7 @@
             tCtx.drawImage(img, 0, 0, finalW, finalH);
             const data = tCtx.getImageData(0, 0, finalW, finalH).data;
 
-            // [FIX 2] Coordinate System: Relative to Center
-            // We calculate offsets relative to the IMAGE CENTER, not screen top-left.
-            
+            // Coordinate System: Relative to (0,0) center of image
             for(let y=0; y<finalH; y+=DENSITY) {
                 for(let x=0; x<finalW; x+=DENSITY) {
                     const i = (y * finalW + x) * 4;
@@ -173,11 +173,9 @@
 
                     if(brightness > 20) {
                         const cluster = getCluster(x, y, finalW, finalH);
-                        
-                        // Calculate position relative to image center (0,0 is center)
+                        // Store relative to center
                         const rx = x - finalW/2;
                         const ry = y - finalH/2;
-
                         particles.push(new Particle(rx, ry, brightness, cluster));
                     }
                 }
@@ -190,33 +188,24 @@
         function getCluster(x, y, w, h) {
             const nx = x / w;
             const ny = y / h;
-            
-            // Face Area (Approximate middle-top)
-            if (ny < 0.5 && nx > 0.3 && nx < 0.7) return 99; 
-            // Dress (Bottom)
-            if(ny > 0.65) return 0; 
-            // Left Hair/Shoulder
-            if(nx < 0.35) return 1; 
-            // Right Hair/Shoulder
-            if(nx > 0.65) return 2; 
-            // Rest (Forehead/Middle)
+            if (ny < 0.5 && nx > 0.3 && nx < 0.7) return 99; // Face
+            if(ny > 0.65) return 0; // Dress
+            if(nx < 0.35) return 1; // Left
+            if(nx > 0.65) return 2; // Right
             return 3; 
         }
 
         /* --- PARTICLE CLASS --- */
         class Particle {
             constructor(rx, ry, brightness, cluster) {
-                this.rx = rx; // Target X (Relative to center)
-                this.ry = ry; // Target Y (Relative to center)
+                this.rx = rx; 
+                this.ry = ry; 
                 this.cluster = cluster;
-                
                 this.color = `rgba(255, 0, 60, ${brightness/255})`;
 
-                // Start: Chaos far away
                 const spread = Math.max(window.innerWidth, window.innerHeight) * 1.5;
                 this.x = (Math.random() - 0.5) * spread;
                 this.y = (Math.random() - 0.5) * spread;
-
                 this.vx = (Math.random() - 0.5) * 15;
                 this.vy = (Math.random() - 0.5) * 15;
             }
@@ -225,23 +214,19 @@
                 if(!particlesVisible) return;
 
                 if(isFinalized) {
-                    // Slight jitter breathing
                     this.x = this.rx + (Math.random()-0.5)*0.5;
                     this.y = this.ry + (Math.random()-0.5)*0.5;
                     return;
                 }
 
                 if(activeClusters.has(this.cluster)) {
-                    // Fly to target
                     const dx = this.rx - this.x;
                     const dy = this.ry - this.y;
-                    this.x += dx * 0.1; // Smooth snap
-                    this.y += dy * 0.1;
+                    this.x += dx * 0.12; 
+                    this.y += dy * 0.12;
                 } else {
-                    // Chaos orbit
                     this.x += this.vx;
                     this.y += this.vy;
-                    // Bounce off invisible walls far away
                     if(Math.abs(this.x) > 1000) this.vx *= -1;
                     if(Math.abs(this.y) > 1000) this.vy *= -1;
                 }
@@ -250,10 +235,16 @@
             draw() {
                 if(!particlesVisible) return;
                 
-                // [FIX 3] Drawing: Always translate to current Screen Center
-                // This ensures it's always centered regardless of resize/orientation
+                // [FIX] OFFSET LOGIC
+                // Screen Center X
                 const screenCX = window.innerWidth / 2;
-                const screenCY = window.innerHeight / 2;
+                
+                // Screen Center Y - WITH LIFT
+                // We multiply height by 0.4 instead of 0.5 to lift the center point up
+                // This creates space at the bottom for the text
+                const isLandscape = window.innerWidth > window.innerHeight;
+                const liftFactor = isLandscape ? 0.38 : 0.42; // Lift more in landscape
+                const screenCY = window.innerHeight * liftFactor;
 
                 ctx.fillStyle = this.color;
                 ctx.fillRect(screenCX + this.x, screenCY + this.y, PARTICLE_SIZE, PARTICLE_SIZE);
@@ -270,11 +261,8 @@
         async function runDirectorCut() {
             const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-            // [FIX 4] Smart Zoom Levels
-            // Calculate zoom based on screen size vs image size
-            // If screen is wide, zoom more. If narrow (phone), zoom less.
             const isSmallScreen = window.innerWidth < 768;
-            const BASE_SCALE = isSmallScreen ? 3.0 : 4.5; 
+            const BASE_SCALE = isSmallScreen ? 2.8 : 4.5; 
 
             // 1. TEXT PHASE
             await sleep(2000);
@@ -290,51 +278,42 @@
             sfx.vacuum.play().catch(()=>{});
             await sleep(3500);
 
-            // 3. ASSEMBLY - Bottom (Dress)
-            // Move Rig UP to see Bottom
-            // Formula: TranslateY = - (ImageHeight * 0.35) * Zoom
-            // This guarantees we look at the bottom 30% of the image
-            const moveUp = -(imgH * 0.3) * BASE_SCALE; 
-            rig.style.transform = `translateY(${moveUp}px) scale(${BASE_SCALE})`;
-            
+            // 3. ASSEMBLY
+            rig.style.transform = `scale(${BASE_SCALE})`;
+
+            // Bottom
+            rig.style.transformOrigin = "50% 70%"; 
             activeClusters.add(0);
             try{ sfx.part.currentTime=0; sfx.part.play(); } catch(e){}
             await sleep(4000);
 
-            // 4. ASSEMBLY - Left Side
-            // Move Rig RIGHT to see Left
-            const moveRight = (imgW * 0.25) * BASE_SCALE;
-            rig.style.transform = `translate(${moveRight}px, 0px) scale(${BASE_SCALE})`;
+            // Left
+            rig.style.transformOrigin = isSmallScreen ? "45% 55%" : "42% 55%";
             activeClusters.add(1);
             try{ sfx.part.currentTime=0; sfx.part.play(); } catch(e){}
             await sleep(4000);
 
-            // 5. ASSEMBLY - Right Side
-            // Move Rig LEFT
-            const moveLeft = -(imgW * 0.25) * BASE_SCALE;
-            rig.style.transform = `translate(${moveLeft}px, 0px) scale(${BASE_SCALE})`;
+            // Right
+            rig.style.transformOrigin = isSmallScreen ? "55% 55%" : "58% 55%";
             activeClusters.add(2);
             try{ sfx.part.currentTime=0; sfx.part.play(); } catch(e){}
             await sleep(4000);
 
-            // 6. ASSEMBLY - Top/Hair
-            // Move Rig DOWN to see Top
-            const moveDown = (imgH * 0.25) * BASE_SCALE;
-            rig.style.transform = `translateY(${moveDown}px) scale(${BASE_SCALE})`;
+            // Top
+            rig.style.transformOrigin = "50% 40%";
             activeClusters.add(3);
             try{ sfx.part.currentTime=0; sfx.part.play(); } catch(e){}
             await sleep(4000);
 
-            // 7. FACE REVEAL (Center)
-            // Reset Translate, slight zoom out
-            rig.style.transform = `translate(0px, 0px) scale(${BASE_SCALE * 0.9})`;
+            // Face
+            rig.style.transformOrigin = "50% 48%";
             activeClusters.add(99); 
             try{ sfx.part.currentTime=0; sfx.part.play(); } catch(e){}
             await sleep(5000);
 
-            // 8. FINAL FULL VIEW
-            // Reset to Center, Scale 1
-            rig.style.transform = "translate(0px, 0px) scale(1.0)";
+            // 5. ZOOM OUT
+            rig.style.transform = "scale(1.0)";
+            rig.style.transformOrigin = "50% 50%";
             
             sfx.vacuum.pause();
             sfx.impact.play().catch(()=>{});
@@ -343,7 +322,6 @@
 
             await sleep(2000); 
             
-            // UI
             document.getElementById('ring1').style.opacity = '0.5';
             document.getElementById('ring2').style.opacity = '0.3';
             document.getElementById('bottom-ui').style.opacity = '1';
