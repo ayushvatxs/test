@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE FINALE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <style>
+        /* --- RESET --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #000;
+            height: 100vh; width: 100vw; overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+            color: #fff;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* --- 1. ACTIVE BLACK BACKGROUND (The Montage) --- */
+        .montage-container {
+            position: absolute; inset: 0; z-index: 0;
+            opacity: 0.4; /* Darkened */
+            filter: blur(8px) grayscale(60%); /* Cinematic Blur */
+        }
+
+        .montage-slide {
+            position: absolute; inset: 0;
+            background-size: cover; background-position: center;
+            opacity: 0;
+            animation: slide-cycle 20s infinite;
+        }
+
+        /* Cycle through her photos */
+        .slide-1 { background-image: url('mag_bw.jpg'); animation-delay: 0s; }
+        .slide-2 { background-image: url('mag_beauty.jpg'); animation-delay: 5s; }
+        .slide-3 { background-image: url('mag_cover.jpg'); animation-delay: 10s; }
+        .slide-4 { background-image: url('mag_candid.jpg'); animation-delay: 15s; }
+
+        /* --- 2. FILM GRAIN OVERLAY --- */
+        .grain {
+            position: absolute; inset: 0; z-index: 1;
+            background-image: url("https://www.transparenttextures.com/patterns/stardust.png");
+            opacity: 0.3;
+            pointer-events: none;
+            animation: grain-dance 0.2s steps(4) infinite;
+        }
+
+        .vignette {
+            position: absolute; inset: 0; z-index: 2;
+            background: radial-gradient(circle, transparent 40%, #000 100%);
+        }
+
+        /* --- 3. THE SCROLLING CREDITS --- */
+        .credits-wrapper {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            height: 100%;
+            z-index: 10;
+            display: flex; justify-content: center;
+            perspective: 500px;
+            mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
+        }
+
+        .credits-content {
+            text-align: center;
+            width: 80%; max-width: 600px;
+            /* Start below screen, animate up */
+            transform: translateY(100vh);
+            animation: roll-credits 45s linear forwards; 
+            /* 45s duration - adjust for speed */
+        }
+
+        .role-group {
+            margin-bottom: 50px;
+        }
+
+        .role {
+            font-size: 0.9rem;
+            color: #888;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .name {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #fff;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        .final-logo {
+            font-size: 4rem; font-weight: 900; margin-top: 100px; margin-bottom: 300px;
+            color: #d4af37; letter-spacing: 5px;
+        }
+
+        /* --- 4. THE WHITE FLASH & ENDING --- */
+        .flash-overlay {
+            position: absolute; inset: 0;
+            background: #fff;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .final-message {
+            position: absolute; z-index: 101;
+            text-align: center;
+            opacity: 0;
+        }
+
+        .message-text {
+            font-size: 2rem; font-weight: 300; letter-spacing: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .sub-message {
+            font-size: 3rem; font-weight: 900; color: #d4af37;
+        }
+        
+        .replay-btn {
+            margin-top: 40px;
+            background: transparent; border: 1px solid #555; color: #555;
+            padding: 10px 20px; font-size: 0.8rem; cursor: pointer;
+            transition: 0.3s;
+        }
+        .replay-btn:hover { border-color: #fff; color: #fff; }
+
+
+        /* --- ANIMATIONS --- */
+        @keyframes slide-cycle {
+            0% { opacity: 0; transform: scale(1); }
+            5% { opacity: 1; }
+            25% { opacity: 1; }
+            30% { opacity: 0; transform: scale(1.1); }
+            100% { opacity: 0; }
+        }
+
+        @keyframes grain-dance {
+            0% { background-position: 0 0; }
+            100% { background-position: 10px 10px; }
+        }
+
+        @keyframes roll-credits {
+            0% { transform: translateY(110vh); }
+            100% { transform: translateY(-150%); } /* Moves way up off screen */
+        }
+
+        @keyframes flash-bang {
+            0% { opacity: 0; }
+            10% { opacity: 1; } /* BANG white */
+            100% { opacity: 0; } /* Fade out to reveal black again */
+        }
+
+        @keyframes fade-in-slow { to { opacity: 1; } }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .name { font-size: 1.4rem; }
+            .role { font-size: 0.7rem; }
+            .credits-content { width: 90%; }
+            .final-logo { font-size: 3rem; }
+            .message-text { font-size: 1.2rem; }
+            .sub-message { font-size: 2rem; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="montage-container">
+        <div class="montage-slide slide-1"></div>
+        <div class="montage-slide slide-2"></div>
+        <div class="montage-slide slide-3"></div>
+        <div class="montage-slide slide-4"></div>
+    </div>
+    
+    <div class="vignette"></div>
+    <div class="grain"></div>
+
+    <div class="credits-wrapper" id="creditsWrapper">
+        <div class="credits-content" id="creditsContent">
+            
+            <div class="role-group">
+                <div class="role">The Vision</div>
+                <div class="name">Violina</div>
+            </div>
+
+            <div class="role-group">
+                <div class="role">Executive Producer</div>
+                <div class="name">Fate</div>
+            </div>
+
+            <div class="role-group">
+                <div class="role">Chief Lighting Officer</div>
+                <div class="name">Her Smile</div>
+            </div>
+
+            <div class="role-group">
+                <div class="role">Soundtrack By</div>
+                <div class="name">Her Laugh</div>
+            </div>
+
+            <div class="role-group">
+                <div class="role">Screenplay By</div>
+                <div class="name">Our Conversations</div>
+            </div>
+
+            <div class="role-group">
+                <div class="role">Director of Photography</div>
+                <div class="name">Every Mirror</div>
+            </div>
+
+            <div class="role-group">
+                <div class="role">Lead Visual Effects</div>
+                <div class="name">Her Eyes</div>
+            </div>
+
+            <div class="role-group">
+                <div class="role">Stunt Double</div>
+                <div class="name">None</div>
+            </div>
+
+            <div class="role-group">
+                <div class="role">Filmed On Location</div>
+                <div class="name">My Mind</div>
+            </div>
+
+            <div class="role-group">
+                <div class="role">Production Design</div>
+                <div class="name">Effortless Style</div>
+            </div>
+
+            <div class="role-group">
+                <div class="role">Casting Director</div>
+                <div class="name">My Heart</div>
+            </div>
+
+            <div class="role-group">
+                <div class="role">Special Thanks To</div>
+                <div class="name">The Internet</div>
+                <div class="role" style="margin-top:5px; font-size:0.7rem;">(For connecting us)</div>
+            </div>
+
+            <div class="final-logo">VIOLINA</div>
+
+        </div>
+    </div>
+
+    <div class="flash-overlay" id="flash"></div>
+
+    <div class="final-message" id="endCard">
+        <div class="message-text">TO BE CONTINUED...</div>
+        <div class="sub-message">WITH YOU.</div>
+        <button class="replay-btn" onclick="location.reload()">REPLAY MEMORY</button>
+    </div>
+
+    <script>
+        // --- TIMING ENGINE ---
+        // The animation is set to 45s in CSS (.credits-content animation)
+        // We need to trigger the flash just before the text disappears completely.
+        
+        const credits = document.getElementById('creditsContent');
+        const flash = document.getElementById('flash');
+        const endCard = document.getElementById('endCard');
+        const wrapper = document.getElementById('creditsWrapper');
+
+        // Audio Auto-Play Attempt
+        const audio = new Audio('final_theme.mp3');
+        audio.volume = 0.8;
+        
+        // Try to unlock audio on first click anywhere
+        window.addEventListener('click', () => {
+            if(audio.paused) audio.play().catch(()=>{});
+        }, {once:true});
+
+        // Trigger The Ending
+        // 40000ms = 40 seconds. Adjust this if you change CSS animation duration
+        setTimeout(() => {
+            // 1. Flash White
+            flash.style.animation = "flash-bang 2s forwards";
+            
+            // 2. Hide Credits immediately
+            wrapper.style.display = 'none';
+            
+            // 3. Stop Music (Fade out ideally, but hard cut for now)
+            // fadeAudioOut(); 
+
+            // 4. Show End Text after flash peaks (1s in)
+            setTimeout(() => {
+                endCard.style.animation = "fade-in-slow 2s forwards";
+            }, 1000);
+
+        }, 40000); // Trigger at 40s mark of the 45s scroll
+
+        function fadeAudioOut() {
+            let vol = 0.8;
+            let fade = setInterval(() => {
+                if (vol > 0.1) {
+                    vol -= 0.1;
+                    audio.volume = vol;
+                } else {
+                    clearInterval(fade);
+                    audio.pause();
+                }
+            }, 200);
+        }
+
+    </script>
+
+</body>
+</html>
