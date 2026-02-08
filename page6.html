@@ -16,13 +16,18 @@
             position: fixed; top: 0; left: 0; overscroll-behavior: none;
         }
 
-        /* --- CAMERA RIG --- */
+        /* --- CAMERA RIG (FIXED TRANSITION) --- */
         #camera-rig {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: block; /* Changed from flex to block to allow canvas absolute positioning */
+            display: block; 
             transform-style: preserve-3d;
-            will-change: transform;
-            transition: transform 2.0s cubic-bezier(0.25, 1, 0.5, 1); 
+            
+            /* UPDATED: Added transform-origin to will-change */
+            will-change: transform, transform-origin;
+            
+            /* UPDATED: Added transition for transform-origin so it glides instead of snaps */
+            transition: transform 2.5s cubic-bezier(0.25, 1, 0.5, 1), transform-origin 2.5s cubic-bezier(0.25, 1, 0.5, 1); 
+            
             z-index: 10;
         }
 
@@ -235,13 +240,10 @@
             draw() {
                 if(!particlesVisible) return;
                 
-                // [FIX] OFFSET LOGIC
                 // Screen Center X
                 const screenCX = window.innerWidth / 2;
                 
                 // Screen Center Y - WITH LIFT
-                // We multiply height by 0.4 instead of 0.5 to lift the center point up
-                // This creates space at the bottom for the text
                 const isLandscape = window.innerWidth > window.innerHeight;
                 const liftFactor = isLandscape ? 0.38 : 0.42; // Lift more in landscape
                 const screenCY = window.innerHeight * liftFactor;
