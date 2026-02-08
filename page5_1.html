@@ -189,10 +189,19 @@
         .ring-2 { position: absolute; inset: 20px; border: 1px solid var(--pink); border-radius: 50%; box-shadow: 0 0 20px var(--pink); }
         .ring-3 { position: absolute; inset: 100px; border: 4px solid var(--pink); border-radius: 50%; border-left-color: transparent; border-right-color: transparent; animation: spin 4s linear infinite; }
 
-        .core-text {
-            font-family: 'Orbitron'; font-size: 1.5rem; letter-spacing: 2px;
-            text-shadow: 0 0 15px var(--pink); text-align: center; z-index: 20;
-        }
+        /* --- FIND THIS CLASS IN YOUR CSS AND REPLACE IT --- */
+.core-text {
+    font-family: 'Orbitron'; 
+    font-size: 1.5rem; 
+    letter-spacing: 2px;
+    text-align: center; 
+    z-index: 20;
+    
+    /* NEW STYLES START HERE */
+    color: #fff;                          /* 1. Makes text white */
+    -webkit-text-stroke: 1px var(--pink); /* 2. Adds a crisp pink border */
+    text-shadow: 0 0 15px var(--pink);    /* 3. Keeps the neon glow effect */
+}
 
         /* Floating Text */
         .float-text { position: absolute; color: rgba(255,0,60,0.4); font-size: 0.8rem; animation: float 4s ease-in-out infinite; }
