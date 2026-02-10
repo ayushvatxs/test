@@ -231,15 +231,15 @@ body.party-mode { background: #ffe6f2; }
 
 <script>
 // ==========================================
-// 🟢 TEST MODE: Set to 'true' to see changes instantly
-const TEST_MODE = true; 
+// 🔴 TEST MODE: OFF (Timer Active)
+const TEST_MODE = false; 
 // ==========================================
 
 const birthdayDate = new Date("February 13, 2026 00:00:00").getTime();
 const timerEl = document.getElementById("timer");
 const preText = document.getElementById("preText");
 const timeMsg = document.getElementById("timeMsg");
-const timeSub = document.getElementById("timeSub"); // New Element
+const timeSub = document.getElementById("timeSub");
 const queenSub = document.getElementById("queenSub");
 const curvyWrap = document.getElementById("curvyBirthdayWrap");
 const giftLayer = document.getElementById("giftLayer");
@@ -278,7 +278,7 @@ function launchBirthday() {
 
   // 3. Show New Text
   timeMsg.style.display = "block"; 
-  timeSub.style.display = "block"; // Show Sub Header
+  timeSub.style.display = "block";
   curvyWrap.style.display = "block"; 
   queenSub.style.display = "block"; 
   
@@ -286,10 +286,10 @@ function launchBirthday() {
   crown.style.display = "block";
   bdayBtn.disabled = false;
   bdayBtn.classList.add("active-party");
-  bdayBtn.innerHTML = "ENTER WORLD 🎂"; // Updated Text Style
+  bdayBtn.innerHTML = "ENTER WORLD 🎂";
   bdayBtn.onclick = () => window.location.href = "birthday.html";
 
-  // 5. Spawn Floating Particles (No rotation)
+  // 5. Spawn Floating Particles
   bgDecor.style.display = "block";
   spawnParticles();
 
@@ -348,7 +348,7 @@ openGiftBtn.onclick = () => {
   } else { alert("Wrong code 💔"); }
 };
 
-// MUSIC
+// MUSIC TOGGLE
 let musicUnlocked = false;
 const musicBtn = document.getElementById("musicBtn");
 const loudMusic = document.getElementById("loudMusic");
@@ -359,10 +359,16 @@ musicBtn.onclick = () => {
             loudMusic.currentTime = 0;
             musicUnlocked = true;
             musicBtn.style.opacity = "1";
+            musicBtn.innerText = "🔊"; // Changed icon to indicate Active
         });
     } else {
-        if(loudMusic.paused) loudMusic.play();
-        else loudMusic.pause();
+        if(loudMusic.paused) {
+            loudMusic.play();
+            musicBtn.innerText = "🔊";
+        } else {
+            loudMusic.pause();
+            musicBtn.innerText = "🔇";
+        }
     }
 };
 
