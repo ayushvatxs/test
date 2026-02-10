@@ -45,7 +45,7 @@ body{
   transition: all 0.5s ease;
 }
 
-/* PHOTO - ALWAYS PINK */
+/* PHOTO */
 .photo{ 
     width:130px; height:130px; margin:0 auto 15px; border-radius:50%; overflow:hidden; 
     border: 5px solid #ffd1e5; 
@@ -67,11 +67,11 @@ h2 { margin: 10px 0 5px; font-size: 1.6rem; color: #111; font-weight: 800; lette
 
 /* ================= POST-BIRTHDAY STYLES ================= */
 
-/* 1. CURVY BUBBLY TEXT (FIXED SIZE) */
+/* 1. CURVY BUBBLY TEXT */
 #curvyBirthdayWrap {
     display: none;
     margin-top: 10px;
-    height: 160px; /* Adjusted height */
+    height: 160px;
     width: 100%;
     animation: jellyPop 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
@@ -85,7 +85,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
 .curveText {
     font-family: 'Fredoka', sans-serif;
     font-weight: 600;
-    font-size: 42px; /* Slightly smaller to ensure fit */
+    font-size: 42px;
     fill: #40E0D0; /* Sky Blue */
     stroke: #fff;
     stroke-width: 4px;
@@ -96,7 +96,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
 
 /* 2. HEADERS (UPDATED) */
 .time-msg {
-    font-size: 1.4rem; /* Increased size */
+    font-size: 1.4rem; 
     font-weight: 800; color: #333; 
     margin-bottom: 8px;
     display: none; animation: fadeIn 1s ease;
@@ -114,7 +114,6 @@ svg { width: 100%; height: 100%; overflow: visible; }
 }
 @keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
 
-
 /* ACTIONS & BUTTON */
 .actions { transition: margin 0.5s ease; }
 
@@ -124,23 +123,16 @@ svg { width: 100%; height: 100%; overflow: visible; }
   cursor:not-allowed; transition: all 0.3s ease;
 }
 
-/* PREMIUM ACTIVE BUTTON */
 .bday.active-party {
-  /* Clean Gradient */
   background: linear-gradient(135deg, #ff5e9a 0%, #ff8fbe 100%) !important;
   color: white !important; 
   cursor: pointer !important;
-  
-  /* Styling */
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
   font-size: 1.1rem;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  
-  /* Shadow & Glow */
   box-shadow: 0 8px 20px rgba(255, 94, 154, 0.4);
-  
   animation: gentlePulse 2s infinite;
 }
 
@@ -155,7 +147,6 @@ svg { width: 100%; height: 100%; overflow: visible; }
 #giftText { margin-top:5px; font-size:.9rem; color:#ff4f9a; font-weight:600; }
 @keyframes giftFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 
-/* CROWN */
 #queenCrown { 
     display: none; font-size: 4rem; margin-top: 10px; 
     animation: giftFloat 3s infinite reverse; 
@@ -231,11 +222,19 @@ body.party-mode { background: #ffe6f2; }
 
 <script>
 // ==========================================
-// 🔴 TEST MODE: OFF (Timer Active)
-const TEST_MODE = True; 
+// 🟢 TEST MODE: True = Starts a 5-second countdown immediately
+const TEST_MODE = true; 
 // ==========================================
 
-const birthdayDate = new Date("February 13, 2026 00:00:00").getTime();
+// Default Real Birthday Date
+let targetDate = new Date("February 13, 2026 00:00:00").getTime();
+
+// If Testing, override the date to be 6 seconds from NOW
+if (TEST_MODE) {
+    const now = new Date().getTime();
+    targetDate = now + 6000; // 6 seconds future so you see 5,4,3,2,1
+}
+
 const timerEl = document.getElementById("timer");
 const preText = document.getElementById("preText");
 const timeMsg = document.getElementById("timeMsg");
@@ -247,23 +246,23 @@ const crown = document.getElementById("queenCrown");
 const bdayBtn = document.getElementById("bdayBtn");
 const bgDecor = document.getElementById("bg-decor");
 
-// TIMER LOGIC
+// Update Timer Every Second
 const x = setInterval(function() {
-  let now = new Date().getTime();
-  let distance = birthdayDate - now;
+    let now = new Date().getTime();
+    let distance = targetDate - now;
 
-  if (TEST_MODE) { distance = -1; }
-
-  if (distance < 0) {
-    clearInterval(x);
-    launchBirthday();
-  } else {
-    let days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    let seconds = Math.floor((distance % (1000 * 60)) / 1000);
-    timerEl.innerHTML = `<div class="box">${days}d</div><div class="box">${hours}h</div><div class="box">${minutes}m</div><div class="box">${seconds}s</div>`;
-  }
+    if (distance < 0) {
+        clearInterval(x);
+        timerEl.innerHTML = ""; // Clear timer text
+        launchBirthday();
+    } else {
+        let days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        
+        timerEl.innerHTML = `<div class="box">${days}d</div><div class="box">${hours}h</div><div class="box">${minutes}m</div><div class="box">${seconds}s</div>`;
+    }
 }, 1000);
 
 function launchBirthday() {
@@ -293,18 +292,17 @@ function launchBirthday() {
   bgDecor.style.display = "block";
   spawnParticles();
 
-  // 6. AUDIO SEQUENCE
+  // 6. AUDIO & CONFETTI
   const popAudio = document.getElementById("popSound");
   const musicAudio = document.getElementById("loudMusic");
   
+  try { fireConfetti(); } catch(e) {}
+  
   if(musicUnlocked) {
       popAudio.play().catch(()=>{});
-      fireConfetti();
       setTimeout(() => {
           musicAudio.play().catch(()=>{});
       }, 1500);
-  } else {
-      fireConfetti();
   }
 }
 
@@ -322,6 +320,7 @@ function spawnParticles() {
 }
 
 function fireConfetti() {
+  if (typeof confetti === 'undefined') return; 
   var duration = 3 * 1000; var end = Date.now() + duration;
   (function frame() {
     confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#40E0D0', '#FFD700', '#FF69B4'] });
@@ -359,7 +358,7 @@ musicBtn.onclick = () => {
             loudMusic.currentTime = 0;
             musicUnlocked = true;
             musicBtn.style.opacity = "1";
-            musicBtn.innerText = "🔊"; // Changed icon to indicate Active
+            musicBtn.innerText = "🔊"; 
         });
     } else {
         if(loudMusic.paused) {
@@ -372,6 +371,7 @@ musicBtn.onclick = () => {
     }
 };
 
+// PHOTO SLIDESHOW
 const photos=["photo1.jpg","photo2.jpg","photo3.jpg"]; let p=0; const img=document.getElementById("photoImg");
 setInterval(()=>{ img.style.opacity=0; setTimeout(()=>{ p=(p+1)%photos.length; img.src=photos[p]; img.style.opacity=1; },350); },4000);
 
