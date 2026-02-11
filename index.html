@@ -67,31 +67,23 @@ h2 { margin: 10px 0 5px; font-size: 1.6rem; color: #111; font-weight: 800; lette
 
 /* ================= POST-BIRTHDAY STYLES ================= */
 
-/* 1. CURVY BUBBLY TEXT */
-#curvyBirthdayWrap {
+/* BIG BIRTHDAY TITLE */
+#birthdayTitle {
     display: none;
-    margin-top: 10px;
-    height: 160px;
-    width: 100%;
-    animation: jellyPop 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-}
-@keyframes jellyPop {
-    0% { transform: scale(0.5); opacity: 0; }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); opacity: 1; }
-}
-svg { width: 100%; height: 100%; overflow: visible; }
-
-.curveText {
+    margin: 20px 0;
     font-family: 'Fredoka', sans-serif;
-    font-weight: 600;
-    font-size: 42px;
-    fill: #40E0D0; /* Sky Blue */
-    stroke: #fff;
-    stroke-width: 4px;
-    paint-order: stroke fill;
-    filter: drop-shadow(0 4px 0px #2ebfb3) drop-shadow(0 0 10px rgba(64, 224, 208, 0.5));
-    letter-spacing: 1px;
+    font-size: 3rem;
+    background: linear-gradient(45deg, #FF69B4, #40E0D0, #FFD700);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 4px 0px rgba(0,0,0,0.1));
+    animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popIn {
+    0% { transform: scale(0); opacity: 0; }
+    80% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); }
 }
 
 /* 2. HEADERS (UPDATED) */
@@ -109,7 +101,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
 }
 
 .queen-sub {
-    font-size: 0.9rem; color: #888; margin-top: -20px; margin-bottom: 20px;
+    font-size: 0.9rem; color: #888; margin-top: -10px; margin-bottom: 20px;
     display: none; animation: fadeIn 1s ease 0.5s forwards; opacity: 0;
 }
 @keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
@@ -158,12 +150,28 @@ svg { width: 100%; height: 100%; overflow: visible; }
 .codeCard input { width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:8px; }
 #closeModal, #closeMsg { position:absolute; top:10px; right:15px; cursor:pointer; font-size:1.2rem; }
 
+/* INITIAL POPUP (For Sound) */
+#startPopup {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000;
+    display: flex; justify-content: center; align-items: center;
+}
+.start-btn {
+    background: #ff5e9a; color: white; padding: 15px 30px; 
+    border: none; border-radius: 30px; font-size: 1.2rem; font-weight: bold;
+    cursor: pointer; box-shadow: 0 0 20px rgba(255,94,154,0.6);
+    animation: gentlePulse 2s infinite;
+}
+
 /* BODY PINK MODE */
 body.party-mode { background: #ffe6f2; }
 
 </style>
 </head>
 <body>
+
+  <div id="startPopup">
+      <button class="start-btn" onclick="startExperience()">CLICK TO OPEN 💌</button>
+  </div>
 
   <div id="bg-decor"></div>
 
@@ -186,16 +194,7 @@ body.party-mode { background: #ffe6f2; }
 
     <div class="timer" id="timer"></div>
 
-    <div id="curvyBirthdayWrap">
-        <svg viewBox="0 0 400 180">
-          <path id="curvePath" d="M 20 140 Q 200 40 380 140" fill="transparent"/>
-          <text width="400">
-            <textPath href="#curvePath" startOffset="50%" text-anchor="middle" class="curveText">
-              HAPPY BIRTHDAY
-            </textPath>
-          </text>
-        </svg>
-    </div>
+    <div id="birthdayTitle">HAPPY BIRTHDAY</div>
     
     <div class="queen-sub" id="queenSub">The Queen has arrived 👑</div>
 
@@ -214,15 +213,13 @@ body.party-mode { background: #ffe6f2; }
 
   <div id="codeModal"><div class="codeCard"><span id="closeModal">✖</span><h3>Secret Code 💕</h3><input type="password" id="secretInput" placeholder="Enter code"><button id="openGiftBtn">Open</button></div></div>
   <div id="messageBox"><div class="codeCard"><span id="closeMsg">✖</span><p style="text-align:left;color:#555;">Ayoo 😭 only a few days left and I genuinely don’t know how to act normal anymore. My brain is already in celebration mode and my heart is clearly ahead of schedule 🥰💖</p></div></div>
-
-  <button id="musicBtn" class="muted" style="position:fixed;bottom:16px;right:16px;background:#fff;border:none;border-radius:50%;width:50px;height:50px;font-size:20px;box-shadow:0 5px 15px rgba(0,0,0,.2); cursor:pointer;">🎵</button>
   
   <audio id="popSound" src="confetti-pop.mp3"></audio> 
   <audio id="loudMusic" src="happy-birthday.mp3"></audio>
 
 <script>
 // ==========================================
-// 🟢 TEST MODE: True = Starts a 5-second countdown immediately
+// 🟢 TEST MODE: True = Starts a 5-second countdown
 const TEST_MODE = true; 
 // ==========================================
 
@@ -232,7 +229,7 @@ let targetDate = new Date("February 13, 2026 00:00:00").getTime();
 // If Testing, override the date to be 6 seconds from NOW
 if (TEST_MODE) {
     const now = new Date().getTime();
-    targetDate = now + 6000; // 6 seconds future so you see 5,4,3,2,1
+    targetDate = now + 6000; 
 }
 
 const timerEl = document.getElementById("timer");
@@ -240,20 +237,33 @@ const preText = document.getElementById("preText");
 const timeMsg = document.getElementById("timeMsg");
 const timeSub = document.getElementById("timeSub");
 const queenSub = document.getElementById("queenSub");
-const curvyWrap = document.getElementById("curvyBirthdayWrap");
+const bTitle = document.getElementById("birthdayTitle"); // New Title
 const giftLayer = document.getElementById("giftLayer");
 const crown = document.getElementById("queenCrown");
 const bdayBtn = document.getElementById("bdayBtn");
 const bgDecor = document.getElementById("bg-decor");
+const startPopup = document.getElementById("startPopup");
 
-// Update Timer Every Second
-const x = setInterval(function() {
+// --- STARTUP LOGIC ---
+let audioAllowed = false;
+
+function startExperience() {
+    startPopup.style.opacity = '0';
+    setTimeout(() => { startPopup.style.display = 'none'; }, 500);
+    audioAllowed = true;
+    
+    // Resume/Start Timer Logic
+    updateTimer();
+    setInterval(updateTimer, 1000);
+}
+
+function updateTimer() {
     let now = new Date().getTime();
     let distance = targetDate - now;
 
     if (distance < 0) {
-        clearInterval(x);
-        timerEl.innerHTML = ""; // Clear timer text
+        // Stop updating text but don't clear interval to avoid flicker
+        timerEl.style.display = "none";
         launchBirthday();
     } else {
         let days = Math.floor(distance / (1000 * 60 * 60 * 24));
@@ -263,11 +273,14 @@ const x = setInterval(function() {
         
         timerEl.innerHTML = `<div class="box">${days}d</div><div class="box">${hours}h</div><div class="box">${minutes}m</div><div class="box">${seconds}s</div>`;
     }
-}, 1000);
+}
 
+let launched = false;
 function launchBirthday() {
+  if(launched) return; // Prevent double trigger
+  launched = true;
+
   // 1. Hide Old Stuff
-  timerEl.style.display = "none";
   preText.style.display = "none";
   giftLayer.style.display = "none";
 
@@ -278,7 +291,7 @@ function launchBirthday() {
   // 3. Show New Text
   timeMsg.style.display = "block"; 
   timeSub.style.display = "block";
-  curvyWrap.style.display = "block"; 
+  bTitle.style.display = "block"; // Show Big Title
   queenSub.style.display = "block"; 
   
   // 4. Show Crown & Button
@@ -293,15 +306,12 @@ function launchBirthday() {
   spawnParticles();
 
   // 6. AUDIO & CONFETTI
-  const popAudio = document.getElementById("popSound");
-  const musicAudio = document.getElementById("loudMusic");
-  
   try { fireConfetti(); } catch(e) {}
   
-  if(musicUnlocked) {
-      popAudio.play().catch(()=>{});
+  if(audioAllowed) {
+      document.getElementById("popSound").play().catch(()=>{});
       setTimeout(() => {
-          musicAudio.play().catch(()=>{});
+          document.getElementById("loudMusic").play().catch(()=>{});
       }, 1500);
   }
 }
@@ -345,30 +355,6 @@ openGiftBtn.onclick = () => {
   if (secretInput.value === "1313") {
     codeModal.style.display = "none"; messageBox.style.display = "flex"; gift.textContent = "🎊"; document.getElementById("giftText").innerHTML = "Opened 💗";
   } else { alert("Wrong code 💔"); }
-};
-
-// MUSIC TOGGLE
-let musicUnlocked = false;
-const musicBtn = document.getElementById("musicBtn");
-const loudMusic = document.getElementById("loudMusic");
-musicBtn.onclick = () => {
-    if(!musicUnlocked) {
-        loudMusic.play().then(() => {
-            loudMusic.pause();
-            loudMusic.currentTime = 0;
-            musicUnlocked = true;
-            musicBtn.style.opacity = "1";
-            musicBtn.innerText = "🔊"; 
-        });
-    } else {
-        if(loudMusic.paused) {
-            loudMusic.play();
-            musicBtn.innerText = "🔊";
-        } else {
-            loudMusic.pause();
-            musicBtn.innerText = "🔇";
-        }
-    }
 };
 
 // PHOTO SLIDESHOW
