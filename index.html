@@ -26,17 +26,25 @@ body{
   transition: background 1s ease;
 }
 
-/* --- MUSIC BUTTON (Bottom Right) --- */
-#musicControl {
+/* --- MUSIC POPUP (Bottom Right) --- */
+#audioToast {
     position: fixed; bottom: 20px; right: 20px; z-index: 9999;
-    background: white; border: none; border-radius: 50px;
-    padding: 12px 25px; 
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    font-family: 'Outfit', sans-serif; font-weight: 700; color: #ff003c;
-    cursor: pointer; display: flex; align-items: center; gap: 10px;
-    transition: 0.3s;
+    background: white; padding: 15px 25px; border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    display: flex; align-items: center; gap: 15px;
+    animation: slideIn 0.5s ease-out;
 }
-#musicControl:hover { transform: scale(1.05); }
+.toast-text { font-weight: 700; color: #333; font-size: 0.95rem; }
+
+/* Toggle Switch */
+.switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+.slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+input:checked + .slider { background-color: #ff003c; }
+input:checked + .slider:before { transform: translateX(20px); }
+
+@keyframes slideIn { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
 /* --- BIG FINAL COUNTDOWN OVERLAY --- */
 #finalCountdown {
@@ -134,7 +142,13 @@ body.party-mode { background: #ffe6f2; }
 
   <div id="bg-decor"></div>
 
-  <button id="musicControl" onclick="enableAudio()">🎵 Enable Music</button>
+  <div id="audioToast">
+      <span class="toast-text">🎵 Enable Sound?</span>
+      <label class="switch">
+          <input type="checkbox" id="soundToggle" onchange="toggleSound(this)">
+          <span class="slider round"></span>
+      </label>
+  </div>
 
   <div class="card" id="mainCard">
     
@@ -197,7 +211,6 @@ const timerEl = document.getElementById("timer");
 const finalCountdownOverlay = document.getElementById("finalCountdown");
 const bigNum = document.getElementById("bigNum");
 const mainCard = document.getElementById("mainCard");
-const musicBtn = document.getElementById("musicControl");
 
 // Elements to toggle
 const preText = document.getElementById("preText");
@@ -213,20 +226,24 @@ const giftLayer = document.getElementById("giftLayer");
 let bigCountdownStarted = false;
 let audioEnabled = false;
 
-// Audio Enable Function
-function enableAudio() {
-    audioEnabled = true;
+// Audio Toggle Function
+function toggleSound(checkbox) {
     const m = document.getElementById("loudMusic");
-    m.play().then(() => {
+    if(checkbox.checked) {
+        audioEnabled = true;
+        // Try playing momentarily to unlock audio context
+        m.play().then(() => {
+            m.pause();
+            m.currentTime = 0;
+        });
+    } else {
+        audioEnabled = false;
         m.pause();
-        m.currentTime = 0;
-        musicBtn.innerHTML = "🔊 Music Ready";
-        setTimeout(() => musicBtn.style.opacity = "0", 2000);
-    });
+    }
 }
 
 // Timer Logic
-const timerInterval = setInterval(checkTime, 100); // Check faster for precision
+const timerInterval = setInterval(checkTime, 100); 
 
 function checkTime() {
     let now = new Date().getTime();
@@ -305,6 +322,9 @@ function launchBirthdayParty() {
     document.getElementById("popSound").play().catch(()=>{});
     fireConfetti();
     
+    // Hide audio toggle after party starts
+    document.getElementById("audioToast").style.display = 'none';
+
     if(audioEnabled) {
         document.getElementById("loudMusic").play().catch(()=>{});
     }
