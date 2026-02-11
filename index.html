@@ -191,6 +191,7 @@ body.party-mode { background: #ffe6f2; }
   
   <audio id="popSound" src="confetti-pop.mp3"></audio> 
   <audio id="loudMusic" src="happy-birthday.mp3"></audio>
+  <audio id="tickSound" src="countdown-beep.mp3"></audio>
 
 <script>
 // ==========================================
@@ -229,12 +230,17 @@ let audioEnabled = false;
 // Audio Toggle Function
 function toggleSound(checkbox) {
     const m = document.getElementById("loudMusic");
+    const t = document.getElementById("tickSound");
+    const p = document.getElementById("popSound");
+
     if(checkbox.checked) {
         audioEnabled = true;
-        // Try playing momentarily to unlock audio context
-        m.play().then(() => {
-            m.pause();
-            m.currentTime = 0;
+        // Unlock ALL audio contexts immediately so they play on time
+        [m, t, p].forEach(audio => {
+            audio.play().then(() => {
+                audio.pause();
+                audio.currentTime = 0;
+            }).catch(()=>{});
         });
     } else {
         audioEnabled = false;
@@ -280,6 +286,9 @@ function startBigCountdown() {
     let count = 5;
     bigNum.innerText = count;
     bigNum.className = `big-number n-${count}`;
+    
+    // Play initial Tick
+    if(audioEnabled) document.getElementById("tickSound").play().catch(()=>{});
 
     // Update big number every second
     const bigInterval = setInterval(() => {
@@ -287,6 +296,12 @@ function startBigCountdown() {
         if(count > 0) {
             bigNum.innerText = count;
             bigNum.className = `big-number n-${count}`;
+            // Play Tick on 4, 3, 2, 1
+            if(audioEnabled) {
+                const t = document.getElementById("tickSound");
+                t.currentTime = 0;
+                t.play().catch(()=>{});
+            }
         } else {
             clearInterval(bigInterval);
             finalCountdownOverlay.style.display = 'none'; // Hide overlay
@@ -319,15 +334,16 @@ function launchBirthdayParty() {
 
     // FX
     spawnParticles();
-    document.getElementById("popSound").play().catch(()=>{});
-    fireConfetti();
     
     // Hide audio toggle after party starts
     document.getElementById("audioToast").style.display = 'none';
 
     if(audioEnabled) {
+        document.getElementById("popSound").play().catch(()=>{});
         document.getElementById("loudMusic").play().catch(()=>{});
     }
+    
+    fireConfetti();
 }
 
 function spawnParticles() {
